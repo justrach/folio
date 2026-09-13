@@ -116,15 +116,17 @@ async function ownedRun(db: D1Database, ownerId: string, kind: AgentObservationK
   return run;
 }
 export async function getAgentObservation(db: D1Database, ownerId: string, request: AgentObservationInput, env: AgentRunEnvironment, options: AgentObservationOptions = {}) {
-  const input = validateAgentObservationInput(request), { selection } = await selectionFor(db, ownerId, input, env, options);
+  const input = validateAgentObservationInput(request), { selection, site } = await selectionFor(db, ownerId, input, env, options);
   const saved = await findSavedAgentObservation(db, selection), run = saved ? await ownedRun(db, ownerId, input.kind, saved.id) : null;
   // Historical discovery is separate from the strict selection used by paid reuse.
   const historySql = input.kind === "keyword"
     ? "SELECT id,status FROM keyword_benchmark_runs WHERE user_id=? AND case_id=?"
-    : "SELECT id,status FROM evaluation_runs WHERE user_id=? AND target_url=(SELECT url FROM sites WHERE user_id=? AND id=?) AND mode='live' AND deleted_at IS NULL";
-  const values = input.kind === "keyword" ? [ownerId, input.caseId] : [ownerId, ownerId, input.websiteId];
+    : "SELECT id,status FROM evaluation_runs WHERE user_id=? AND target_url=? AND mode='live' AND deleted_at IS NULL";
+  const values = input.kind === "keyword" ? [ownerId, input.caseId] : [ownerId, normalizeScanUrl(site!.url).href];
   const latest = await db.prepare(`${historySql} AND status='completed' ORDER BY created_at DESC,id DESC LIMIT 1`).bind(...values).first<{id:string}>();
   const attempt = await db.prepare(`${historySql} AND status IN ('queued','running','requires_action') ORDER BY created_at DESC,id DESC LIMIT 1`).bind(...values).first<{id:string}>();
+  const latestAttemptRow = await db.prepare(`${historySql} ORDER BY created_at DESC,id DESC LIMIT 1`).bind(...values).first<{id:string}>();
+  const latestAttempt = latestAttemptRow ? await ownedRun(db, ownerId, input.kind, latestAttemptRow.id) : null;
   const historical = latest ? await ownedRun(db, ownerId, input.kind, latest.id) : null;
   const compatibleIds = historical ? await db.prepare(`SELECT id FROM (${selection.matchingSql}) WHERE id=?`).bind(...selection.matchingValues, historical.id).first() : null;
   const mismatchReasons:string[]=[];
@@ -138,8 +140,9 @@ export async function getAgentObservation(db: D1Database, ownerId: string, reque
   const response = envelope(run, input.maxAgeSeconds, run ? "saved" : "missing", options);
   return { ...response, selectionMeaning: "run is the latest completed observation compatible with the current configuration; historical evidence is separate",
     latestCompletedRun: historical ? project(historical) : null, compatibleRun: response.run,
+    latestAttempt: latestAttempt ? project(latestAttempt) : null,
     currentAttempt: attempt ? project(await ownedRun(db, ownerId, input.kind, attempt.id)) : null,
-    historyState: historical ? !compatibleIds ? "incompatible_history" : response.freshness.fresh ? "fresh" : "stale" : attempt ? "incomplete_attempt" : "no_history",
+    historyState: historical ? !compatibleIds ? "incompatible_history" : response.freshness.fresh ? "fresh" : "stale" : attempt ? "incomplete_attempt" : latestAttempt ? "terminal_attempt" : "no_history",
     compatibility: { latestCompletedMatchesCurrent: historical ? Boolean(compatibleIds) : null,
       mismatchReasons } };
 

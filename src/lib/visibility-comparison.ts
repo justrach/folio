@@ -3,7 +3,7 @@ import { keywordRecommendationMetrics } from "./keyword-search-mode";
 
 /** Match the complete question and execution identity, never just the displayed date. */
 export function compareVisibility(baseline:KeywordBenchmarkRun[],comparison:KeywordBenchmarkRun[],publicationAt?:string) {
-  const key=(r:KeywordBenchmarkRun)=>JSON.stringify([r.caseId,r.case.query,r.case.targetUrl,r.case.language,r.case.locale,r.case.rubricVersion,r.case.searchMode??"reviewed-domains",r.model,r.harnessVersion,r.environmentType,r.environmentFingerprint,r.surface,r.case.referenceFacts??null]);
+  const key=(r:KeywordBenchmarkRun)=>JSON.stringify([r.caseId,r.case.query,r.case.targetUrl,r.case.language,r.case.locale,r.case.rubricVersion,r.case.searchMode??"reviewed-domains",r.model,r.harnessVersion,r.environmentType,r.environmentFingerprint,r.surface,[...new Set(r.allowedDomains ?? [])].sort(),r.case.referenceFacts??[]]);
   const latest=(runs:KeywordBenchmarkRun[])=>{const map=new Map<string,KeywordBenchmarkRun>();for(const r of [...runs].sort((a,b)=>b.createdAt.localeCompare(a.createdAt)||b.id.localeCompare(a.id)))if(r.status==="completed"&&r.answer&&!map.has(key(r)))map.set(key(r),r);return map;};
   const before=latest(baseline),after=latest(comparison),pairs=[];
   for(const [identity,a] of before){const b=after.get(identity);if(!b)continue;

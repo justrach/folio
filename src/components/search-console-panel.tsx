@@ -42,6 +42,7 @@ function OwnerSearchConsole({ ownerId }: { ownerId: string | null }) {
   const [report, setReport] = useState<SearchConsoleReport | null>(null);
   const [error, setError] = useState("");
   const [reportError, setReportError] = useState("");
+  const [reportRefresh, setReportRefresh] = useState(0);
   const [busy, setBusy] = useState("");
   const [reading, setReading] = useState(false);
   const [refresh, setRefresh] = useState(0);
@@ -83,7 +84,7 @@ function OwnerSearchConsole({ ownerId }: { ownerId: string | null }) {
       .catch(error => { if (!controller.signal.aborted) setReportError(error.message); })
       .finally(() => { if (!controller.signal.aborted) setReading(false); });
     return () => controller.abort();
-  }, [ownerId, selectedId]);
+  }, [ownerId, selectedId, reportRefresh]);
 
   useEffect(() => {
     if (report?.id !== selectedId || focusRequestedFor.current !== selectedId) return;
@@ -97,6 +98,11 @@ function OwnerSearchConsole({ ownerId }: { ownerId: string | null }) {
       return;
     }
     focusRequestedFor.current = id;
+    if (selectedId === id) {
+      // A failed read can be retried without adding an identical history entry.
+      if (!reading) setReportRefresh(value => value + 1);
+      return;
+    }
     const url = new URL(window.location.href);
     url.searchParams.set("report",id);
     window.history.pushState(null,"",url.pathname+url.search);

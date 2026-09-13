@@ -219,10 +219,13 @@ test("MCP saved discovery pages ties, filters owners, preserves unknown SEO deta
     await assert.rejects(pagedSeo(db,"bob",{reportId:seo.id}));const emptySeo=await pagedSeo(db,"alice",{domain:"other.com"});assert.equal("items" in emptySeo&&emptySeo.items.length,0);
     const base=await createDemoEvaluationRun();const actual={...base,id:crypto.randomUUID(),mode:"live" as const,targetUrl:"https://example.com/",createdAt:new Date().toISOString()};
     await createEvaluationRun(db,"alice",actual,{maxLivePerDay:3});
+    // Evaluation creation normalizes the site's URL; saved reads must use the same key.
+    await db.prepare("UPDATE sites SET url=? WHERE id=? AND user_id=?").bind("https://EXAMPLE.com", "site-a", "alice").run();
     const evidence=await savedPageEvidence(db,"alice",{websiteId:"site-a",runId:actual.id});assert.ok(evidence.items.some(i=>"captureId" in i));assert.ok(evidence.items.every(i=>!("expectedFacts" in i)));
     await assert.rejects(savedPageEvidence(db,"bob",{websiteId:"site-a"}));
     const history=await savedRunHistory(db,"alice",{kind:"website",websiteId:"site-a"});assert.equal(history.items[0]?.id,actual.id);
     assert.equal((await savedRunHistory(db,"bob",{kind:"website"})).items.length,0);
+    await db.prepare("UPDATE sites SET url=? WHERE id=? AND user_id=?").bind("https://example.com/", "site-a", "alice").run();
     const {savedVisibilityComparison}=await import("../src/lib/mcp-saved-evidence");
     const windows={websiteId:"site-a",baselineStart:"2026-01-01T00:00:00Z",baselineEnd:"2026-02-01T00:00:00Z",comparisonStart:"2026-02-01T00:00:00Z",comparisonEnd:"2026-03-01T00:00:00Z"};
     assert.equal((await savedVisibilityComparison(db,"alice",windows)).state,"unmeasured");await assert.rejects(savedVisibilityComparison(db,"bob",windows));

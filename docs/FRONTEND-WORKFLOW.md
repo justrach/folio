@@ -50,6 +50,8 @@ The **Demo report** remains an explicit alternative. Its sample percentages, spa
 
 A saved SEO handoff is resolved against the signed-in account's completed reports and the exact target hostname. An unavailable, mismatched, or other-account report is not attached; the UI explains that the page capture can be used alone. Reopening saved SEO history or selecting its report does not make another DataForSEO request.
 
+Opening an owned SEO report also prepares that report's verified matching domain in the lookup form. The next paid lookup still requires an explicit submission. If a selected Search Console report fails to load, its history button retries the saved-record GET without adding an identical browser-history entry or importing new data.
+
 URL hints contain only context: `target`, `seoReport`, `run`, and `baseline`. `evaluation-navigation.ts` validates each value, ignores ambiguous duplicates, and builds a fixed evaluation pathname. IDs never establish ownership or permit spending. The server checks both again when an action is submitted.
 
 The login return hint accepts only local `/evaluations`, `/agents`, `/benchmarks`, `/search-console`, `/overview`, or `/docs/api` destinations and rebuilds their validated context. Invalid destinations fall back to `/websites`. Reference answers and credentials are not carried through login URLs; a user signs in before entering private reference facts. Browser profiles have separate sessions, so signing in through Chrome does not also sign in the in-app browser.

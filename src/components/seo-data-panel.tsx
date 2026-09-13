@@ -388,6 +388,7 @@ export function SeoDataPanel() {
       const result = parseResult(report.result);
       if (report.domain !== result.domain)
         throw new Error("This saved SEO report could not be matched to its website.");
+      setDomain(result.domain);
       setResultState({ ownerId: requestedBy, value: result });
       setSelectedReport({ ownerId: requestedBy, value: id });
       setStorageNotice(null);

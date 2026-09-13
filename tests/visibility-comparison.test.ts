@@ -9,3 +9,17 @@ test("matched comparisons retain exact evidence and exclude changed model, harne
  for(const changed of [{case:{...b.case,referenceFacts:[{id:"private",statement:"Changed independent reference"}]}},{model:"other"},{harnessVersion:"v2"},{environmentFingerprint:"other"},{case:{...b.case,locale:"fr-FR"}},{case:{...b.case,query:"Changed"}},{case:{...b.case,searchMode:"reviewed-domains" as const}}]){const result=compareVisibility([a],[{...b,...changed}]);assert.equal(result.state,"unmeasured");assert.equal(result.unmatchedComparison.length,1);}
  assert.equal(compareVisibility([a],[]).state,"unmeasured");assert.equal(compareVisibility([a],[run("failed",{status:"failed",answer:null})]).incompleteRuns.length,1);
 });
+
+
+test("matched visibility requires the same saved research domains and treats domain order as irrelevant", () => {
+ const a = run("a", { allowedDomains: ["example.com", "docs.example.com"] });
+ const changed = run("b", { allowedDomains: ["other.com"] });
+ assert.equal(compareVisibility([a], [changed]).state, "unmeasured");
+ assert.equal(compareVisibility([a], [run("c", { allowedDomains: ["docs.example.com", "example.com"] })]).sampleSize, 1);
+});
+
+test("absent and empty independent references describe the same unmeasured reference coverage", () => {
+ const a = run("a"), b = run("b", { case: { ...a.case, referenceFacts: [] } });
+ assert.equal(compareVisibility([a], [b]).sampleSize, 1);
+ assert.equal(compareVisibility([a], [run("c", { case: { ...a.case, referenceFacts: [{id: "fact", statement: "Independent fixture"}] } })]).state, "unmeasured");
+});

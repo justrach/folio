@@ -47,7 +47,7 @@ Search Console implementation now includes optional Google identity, explicit re
 - [ ] Prepare public Google onboarding at `usefolio.site`: deployed HTTPS, exact production callback, separate production OAuth configuration, public privacy policy, authorized-domain ownership, and applicable branding/data-access verification. Domain ownership and Google review are not established by local setup.
 
 - [x] Configure a valid OpenAI Agents API key, approve a dedicated local test account, and verify one live managed run. Completed on 13 September 2026; credentials and private evidence remain outside Git. See [live validation](docs/LIVE-VALIDATION.md).
-- [ ] Provision the production Cloudflare database, remote migrations, deployment secrets, and intended `https://usefolio.site` application hostname; validate the deployed scheduler. Local configuration currently uses a placeholder database ID.
+- [ ] Finish production application configuration, deployment secrets, the intended `https://usefolio.site` hostname, and deployed scheduler validation. The saved checkpoint below records an existing production D1 with migration `0013` applied; checked-in local Wrangler configuration still uses a placeholder ID. Remote database existence does not establish deployment of this revision or hosted validation.
 - [x] Verify hosted Actions on the public repository. The full `Folio checks` workflow passed on cleaned commit `b9c5cf0` on 13 September 2026 ([run](https://github.com/justrach/folio/actions/runs/34738507709)); validation of later commits is recorded separately.
 - [ ] Choose/configure a payment processor before enabling actual subscriptions. Current pricing is a proposal and creates no charges.
 

@@ -6,6 +6,7 @@ import { getEvaluationRun } from "./eval-store";
 import { getOwnedSeoReport } from "./seo-store";
 import { evaluateHtml } from "./evaluation";
 import { normalizeSeoDomain } from "./dataforseo";
+import { normalizeScanUrl } from "./scanner";
 
 export type SavedPage = { limit?: number; cursor?: string };
 type CursorRow = { id: string; created_at: number };
@@ -46,7 +47,7 @@ export async function savedRunHistory(db:D1Database,owner:string,input:SavedPage
   const table=keyword?"keyword_benchmark_runs":"evaluation_runs";
   const filters=["user_id=?"],values:(string|number|null)[]=[owner];
   if(!keyword)filters.push("mode='live' AND deleted_at IS NULL");
-  if(site){filters.push(`${keyword?"json_extract(case_json,'$.targetUrl')":"target_url"}=?`);values.push(site.url);}
+  if(site){filters.push(`${keyword?"json_extract(case_json,'$.targetUrl')":"target_url"}=?`);values.push(keyword?site.url:normalizeScanUrl(site.url).href);}
   if(input.caseId){if(!keyword)throw new AgentApiError("caseId requires keyword kind.");filters.push("case_id=?");values.push(input.caseId);}
   if(input.status){filters.push("status=?");values.push(input.status);}
   if(input.model){filters.push(`${keyword?"model":"json_extract(result_json,'$.model')"}=?`);values.push(input.model);}
@@ -59,7 +60,7 @@ export async function savedRunHistory(db:D1Database,owner:string,input:SavedPage
 }
 export async function savedPageEvidence(db:D1Database,owner:string,input:SavedPage & {websiteId:string;url?:string;runId?:string;contains?:string}) {
   const site=await savedSite(db,owner,input.websiteId);
-  const page=await savedRows(db,"SELECT id,created_at FROM evaluation_runs WHERE user_id=? AND target_url=? AND mode='live' AND deleted_at IS NULL AND (? IS NULL OR id=?)",[owner,site.url,input.runId??null,input.runId??null],input);
+  const page=await savedRows(db,"SELECT id,created_at FROM evaluation_runs WHERE user_id=? AND target_url=? AND mode='live' AND deleted_at IS NULL AND (? IS NULL OR id=?)",[owner,normalizeScanUrl(site.url).href,input.runId??null,input.runId??null],input);
   const items=[];
   for(const row of page.items){const run=await getEvaluationRun(db,owner,row.id);if(!run)continue;
     const captures=run.captures.filter(c=>c.kind==="page"&&(!input.url||c.url===input.url));

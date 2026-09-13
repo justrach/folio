@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const baseURL = process.env.GUI_BASE_URL || "http://localhost:3001";
+const serverPort = new URL(baseURL).port || (new URL(baseURL).protocol === "https:" ? "443" : "80");
 
 export default defineConfig({
   testDir: "./tests",
@@ -29,8 +30,9 @@ export default defineConfig({
     { name: "mobile", use: { ...devices["Pixel 5"] } },
   ],
   webServer: {
-    command: "bun run dev --port 3001",
-    url: `${baseURL}/api/auth/get-session`,
+    command: `bun run dev --port ${serverPort}`,
+    // Public readiness must not require credentials or a prepared local auth database.
+    url: `${baseURL}/login`,
     reuseExistingServer: true,
     timeout: 120_000,
   },
