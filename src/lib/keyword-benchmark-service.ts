@@ -165,13 +165,10 @@ export async function reconcileKeywordBenchmark(db: D1Database, ownerId: string,
   requireAccess(env, ownerId);
   let run = await ownedRun(db, ownerId, id);
   if (terminal(run) || !run.sessionId) return run;
-  if (run.deadlineAt && (options.now ?? new Date()).getTime() >= Date.parse(run.deadlineAt) && !run.cancelAttemptAt)
-    run = await cancelKeywordBenchmark(db, ownerId, id, env, options);
-  if (terminal(run)) return run;
   try {
     const observation = await reconcileKeywordBenchmarkSession(run.sessionId!, env, { ...options, expectedAllowedDomains: run.allowedDomains, expectedSearchMode: keywordSearchMode(run.case.searchMode) });
     const pendingCancel = run.cancelAttemptAt && ["queued", "running", "requires_action"].includes(observation.status);
-    return await updateKeywordBenchmarkRun(db, ownerId, run.id, run.revision, {
+    run = await updateKeywordBenchmarkRun(db, ownerId, run.id, run.revision, {
       status: pendingCancel ? "requires_action" : observation.status, answer: observation.answer, usage: observation.usage,
       providerMetadata: observation.providerMetadata,
       error: pendingCancel ? "Cancellation was requested. The final provider outcome is not yet confirmed."
@@ -180,10 +177,16 @@ export async function reconcileKeywordBenchmark(db: D1Database, ownerId: string,
     });
   } catch (error) {
     // A simultaneous retriever may have already committed newer or terminal state.
-    if (error instanceof KeywordBenchmarkStoreError) return ownedRun(db, ownerId, id);
-    try { return await updateKeywordBenchmarkRun(db, ownerId, run.id, run.revision, { error: "The provider session could not be retrieved. Try retrieving this saved session again." }); }
-    catch { return ownedRun(db, ownerId, id); }
+    if (error instanceof KeywordBenchmarkStoreError) run = await ownedRun(db, ownerId, id);
+    else {
+      try { run = await updateKeywordBenchmarkRun(db, ownerId, run.id, run.revision, { error: "The provider session could not be retrieved. Try retrieving this saved session again." }); }
+      catch { run = await ownedRun(db, ownerId, id); }
+    }
   }
+  // A saved deadline cannot tell us whether remote work already finished. Retrieve first.
+  if (!terminal(run) && run.deadlineAt && (options.now ?? new Date()).getTime() >= Date.parse(run.deadlineAt) && !run.cancelAttemptAt)
+    return cancelKeywordBenchmark(db, ownerId, id, env, options);
+  return run;
 }
 export { getKeywordBenchmarkRun, getKeywordBenchmarkSuite, listKeywordBenchmarkRuns };
 export { previewKeywordBenchmarkHoldRelease, releaseKeywordBenchmarkHold } from "./keyword-benchmark-store";

@@ -11,6 +11,7 @@ import { createKeywordBenchmarkSuite, getKeywordBenchmarkSuite, reserveKeywordBe
   listKeywordBenchmarkRuns, getKeywordBenchmarkUsage, updateKeywordBenchmarkCase, KeywordBenchmarkStoreError } from "../src/lib/keyword-benchmark-store";
 import { cancelKeywordBenchmark, keywordBenchmarkOverview, reconcileKeywordBenchmark, seedKeywordBenchmark, startKeywordBenchmark } from "../src/lib/keyword-benchmark-service";
 import { compareKeywordBenchmarkRuns } from "../src/lib/keyword-benchmark-types";
+import { matchesCategoryReceipt, recoverCategoryReceipt } from "../scripts/category-batch-recovery";
 
 /** Actual workerd D1, synthetic identities, isolated persistence; no local env or provider calls. */
 function runtime(directory: string) {
@@ -158,6 +159,7 @@ test("real D1 service runs private baseline/fresh answers with one create, safe 
     const domains = ["codegraff.com", "opencode.ai"];
     let creates = 0, cancels = 0, reads = 0, providerState: "completed" | "in_progress" | "cancelled" = "completed";
     const payloads: string[] = [];
+    let recoveredSession: Record<string, unknown> = {};
     const fetcher: typeof fetch = async (url, init) => {
       const address = String(url);
       if (init?.method === "POST" && !address.endsWith("/events")) {
@@ -189,7 +191,8 @@ test("real D1 service runs private baseline/fresh answers with one create, safe 
           citations: [{ url: "https://codegraff.com/docs", title: "Fixture public docs" }], limitations: ["Synthetic evidence; no live provider request."] }) }] },
       ] : [], has_more: false });
       return Response.json({ id: sessionId, object: "agent.session", status: providerState === "in_progress" ? "in_progress" : "idle", required_actions: [],
-        environment: { id: "env_saved", type: "openai_hosted", network: { access: "restricted", allowed_domains: domains } }, usage: null });
+        environment: { id: "env_saved", type: "openai_hosted", network: { access: "restricted", allowed_domains: domains } }, usage: null,
+        ...(sessionId === "session_4" ? recoveredSession : {}) });
     };
     const options = { fetcher, allowedDomains: domains };
     await assert.rejects(startKeywordBenchmark(db, "alice", { caseId: chosen.id, kind: "baseline" }, { ...env, OPENAI_ALLOWED_USER_IDS: "prefix-alice-suffix" }, options), error => error instanceof KeywordBenchmarkStoreError && error.status === 403);
@@ -199,7 +202,8 @@ test("real D1 service runs private baseline/fresh answers with one create, safe 
     await assert.rejects(startKeywordBenchmark(db, "alice", { caseId: chosen.id, kind: "baseline" }, env, options), error => error instanceof KeywordBenchmarkStoreError && error.status === 429);
     await keywordBenchmarkOverview(db, "alice", env); await listKeywordBenchmarkRuns(db, "alice"); await getKeywordBenchmarkRun(db, "alice", baseline.id);
     assert.equal(creates, 1); assert.equal(reads, 0); assert.equal(cancels, 0, "Saved-only reads must never invoke provider operations.");
-    baseline = await reconcileKeywordBenchmark(db, "alice", baseline.id, env, options);
+    baseline = await reconcileKeywordBenchmark(db, "alice", baseline.id, env, { ...options, now: new Date(Date.parse(baseline.deadlineAt!) + 1) });
+    assert.equal(cancels, 0, "An overdue local record must retrieve an already completed remote answer before considering cancellation.");
     assert.equal(baseline.status, "completed"); assert.ok(baseline.answer?.evidence?.some(check => check.id === "live-search-observed"));
     let fresh = await startKeywordBenchmark(db, "alice", { caseId: chosen.id, kind: "fresh", baselineRunId: baseline.id }, env, options);
     assert.equal(creates, 2); assert.equal(payloads[1].includes("PRIVATE_BASELINE_OBSERVATION"), false);
@@ -226,6 +230,31 @@ test("real D1 service runs private baseline/fresh answers with one create, safe 
     assert.deepEqual(await getKeywordBenchmarkRun(restored, "alice", ambiguous.id), ambiguous);
     assert.deepEqual(await getKeywordBenchmarkRun(restored, "alice", overdue.id), overdue);
     assert.equal((await getKeywordBenchmarkUsage(restored, "alice", { maxRunsPerDay: 6, maxActiveRuns: 1 })).remainingRuns, 2);
+    recoveredSession = { id: "session_4", metadata: { run_id: ambiguous.id, case_id: ambiguous.caseId, harness_version: ambiguous.harnessVersion },
+      agent: { model: ambiguous.model }, environment: { type: "openai_hosted", network: { access: "restricted", allowed_domains: domains } } };
+    const candidate = structuredClone(recoveredSession);
+    for (const bad of [
+      { ...candidate, agent: { model: "different-model" } },
+      { ...candidate, metadata: { ...(candidate.metadata as object), harness_version: "different-harness" } },
+      { ...candidate, metadata: { ...(candidate.metadata as object), case_id: "different-case" } },
+      { ...candidate, environment: { type: "openai_hosted", network: { access: "disabled" } } },
+    ]) assert.equal(matchesCategoryReceipt(ambiguous, bad), false);
+    await assert.rejects(recoverCategoryReceipt(restored, "bob", ambiguous.id, [candidate], env, options));
+    await assert.rejects(recoverCategoryReceipt(restored, "alice", ambiguous.id, [candidate, candidate], env, options));
+    recoveredSession = { ...candidate, agent: { model: "changed-after-listing" } };
+    await assert.rejects(recoverCategoryReceipt(restored, "alice", ambiguous.id, [candidate], env, options));
+    assert.equal((await getKeywordBenchmarkRun(restored, "alice", ambiguous.id))?.sessionId, null);
+    recoveredSession = candidate; providerState = "completed";
+    const recovered = await recoverCategoryReceipt(restored, "alice", ambiguous.id, [candidate], env, options);
+    assert.equal(recovered.status, "completed"); assert.equal(recovered.sessionId, "session_4");
+    assert.equal(creates, 3); assert.equal(ambiguousPosts, 1); assert.equal(cancels, 1);
+    assert.equal(recovered.createAttemptAt, ambiguous.createAttemptAt); assert.equal(recovered.usage.costUsd, null);
+    await current.dispose(); current = undefined; current = runtime(directory);
+    const recoveredDb = await current.getD1Database("DB");
+    const previousReads = reads;
+    assert.deepEqual(await recoverCategoryReceipt(recoveredDb, "alice", ambiguous.id, [candidate], env, options), recovered);
+    assert.equal(reads, previousReads, "A saved identical receipt is idempotent even after restart.");
+    assert.equal((await getKeywordBenchmarkUsage(recoveredDb, "alice")).attemptsLast24Hours, 4);
   } finally {
     try { await current?.dispose(); } finally { await rm(directory, { recursive: true, force: true }); }
   }

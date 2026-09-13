@@ -1,3 +1,4 @@
+import { ProviderMutationGate } from "./category-batch-transport";
 import { CategoryBatchRate } from "./category-batch-rate";
 import { readFile, writeFile, rename, mkdir, open, rm } from "node:fs/promises";
 import { createHash } from "node:crypto";
@@ -108,18 +109,21 @@ async function main() {
     const usage = await getKeywordBenchmarkUsage(db, ownerId, { maxRunsPerDay: null, maxActiveRuns: scope.maxConcurrent });
     const slots = Math.min(requestedWorkers, Math.max(0, scope.maxConcurrent - usage.activeRuns));
     if (!slots) throw Error("Existing active attempts occupy all authorized concurrency; no replacement starts.");
-    let next = 0, draining = false, lastCreateAt = 0, heldThisProcess = 0;
+    let next = 0, draining = false, creating = false, lastCreateAt = 0, heldThisProcess = 0;
     const rate = new CategoryBatchRate(slots, Date.now());
     const jobs = new Set<Promise<void>>();
+    const mutations = new ProviderMutationGate();
+    const providerFetch: typeof fetch = (url, init) => (init?.method ?? "GET").toUpperCase() === "GET" ? fetch(url, init) : mutations.run(() => fetch(url, { ...init, signal: AbortSignal.timeout(30_000) }));
     const drain = () => { draining = true; console.log(JSON.stringify({ phase: "draining", confirmedOrCreating: jobs.size })); };
     process.on("SIGUSR2", drain); process.on("SIGTERM", drain); process.on("SIGINT", drain);
-    const updateScheduler = () => { scheduler = { desiredConcurrency: rate.desired, availableCeiling: Math.max(0, slots - heldThisProcess), activeOrCreating: jobs.size, createSpacingMs: rate.spacingMs, cooldownUntil: rate.cooldownUntil ? new Date(rate.cooldownUntil).toISOString() : null, stoppedReason: rate.stoppedReason, draining }; };
+    const updateScheduler = () => { scheduler = { desiredConcurrency: rate.desired, availableCeiling: Math.max(0, slots - heldThisProcess), activeOrCreating: jobs.size, creating, serializedProviderWrites: true, createSpacingMs: rate.spacingMs, cooldownUntil: rate.cooldownUntil ? new Date(rate.cooldownUntil).toISOString() : null, stoppedReason: rate.stoppedReason, draining }; };
     async function executeQuestion(query: PublicSearchQuery) {
-      let run: KeywordBenchmarkRun | undefined;
+      let run: KeywordBenchmarkRun | undefined, inCreatePhase = true;
+      const releaseCreatePhase = () => { if (inCreatePhase) { creating = false; inCreatePhase = false; } };
       try {
-        if (await db.prepare("SELECT id FROM keyword_benchmark_runs WHERE user_id=? AND case_id=?").bind(ownerId, publicCollectionCaseId(ownerId, query)).first()) { stopped = true; rate.stoppedReason = "concurrent-existing-attempt"; return; }
+        if (await db.prepare("SELECT id FROM keyword_benchmark_runs WHERE user_id=? AND case_id=?").bind(ownerId, publicCollectionCaseId(ownerId, query)).first()) { stopped = true; rate.stoppedReason = "concurrent-existing-attempt"; releaseCreatePhase(); return; }
         run = await startKeywordBenchmark(db, ownerId, { caseId: publicCollectionCaseId(ownerId, query), kind: "baseline" }, env, { fetcher: async (url, init) => {
-          const response = await fetch(url, init);
+          const response = await providerFetch(url, init);
           if (!response.ok) {
             const reader = response.clone().body?.getReader(); let body = "";
             if (reader) { const decoder = new TextDecoder(); let bytes=0; try { while(true) { const item=await reader.read(); if(item.done) break; bytes+=item.value.byteLength; if(bytes>65536) break; body+=decoder.decode(item.value,{stream:true}); } } finally { void reader.cancel().catch(()=>{}); } }
@@ -127,6 +131,7 @@ async function main() {
           }
           return response;
         }, reserve: async (input, limits) => ({ run: await reserveKeywordBenchmarkRun(db, ownerId, input, { maxRunsPerDay: limits.maxRunsPerDay, maxActiveRuns: scope.maxConcurrent }), created: true }) });
+        releaseCreatePhase();
         submitted++;
         const httpStatus = run.providerMetadata.creationHttpStatus;
         if ((httpStatus ?? 0) >= 400 || run.status === "requires_action" && !run.sessionId) {
@@ -136,12 +141,13 @@ async function main() {
         updateScheduler(); await save(query, run);
         console.log(JSON.stringify({ queryId: query.id, status: run.status, submitted, hasSession: Boolean(run.sessionId), desiredConcurrency: rate.desired }));
         while (active(run) && run.sessionId && Date.now() < Date.parse(run.deadlineAt ?? run.createdAt) + 30_000) {
-          await new Promise(resolve => setTimeout(resolve, 5000)); run = await reconcileKeywordBenchmark(db, ownerId, run.id, env); updateScheduler(); await save(query, run);
+          await new Promise(resolve => setTimeout(resolve, 5000)); run = await reconcileKeywordBenchmark(db, ownerId, run.id, env, { fetcher: providerFetch }); updateScheduler(); await save(query, run);
         }
-        if (active(run) && run.sessionId) { run = await reconcileKeywordBenchmark(db, ownerId, run.id, env); updateScheduler(); await save(query, run); }
+        if (active(run) && run.sessionId) { run = await reconcileKeywordBenchmark(db, ownerId, run.id, env, { fetcher: providerFetch }); updateScheduler(); await save(query, run); }
         if (active(run)) heldThisProcess++;
         console.log(JSON.stringify({ queryId: query.id, finalStatus: run.status, published: artifact.observations.length }));
       } catch (error) {
+        releaseCreatePhase();
         stopped = true; rate.stoppedReason = "persistence-or-reservation-needs-review";
         if (error instanceof KeywordBenchmarkPersistenceError) await atomic(`${directory}/${query.id}-recovery.json`, error.run);
         console.log(JSON.stringify({ queryId: query.id, status: "stopped-for-review", errorType: error instanceof Error ? error.name : "unknown" }));
@@ -151,8 +157,8 @@ async function main() {
       while ((!stopped && !draining && !rate.stoppedReason && next < Math.min(pending.length, maxNew)) || jobs.size) {
         const available = Math.max(0, slots - heldThisProcess);
         if (!available && !jobs.size) rate.stoppedReason = "capacity-retained-by-unresolved-attempts";
-        if (!stopped && !draining && !rate.stoppedReason && next < Math.min(pending.length, maxNew) && jobs.size < available && rate.canCreate(Date.now(), jobs.size) && Date.now() - lastCreateAt >= rate.spacingMs) {
-          const query = pending[next++]; lastCreateAt = Date.now();
+        if (!creating && !stopped && !draining && !rate.stoppedReason && next < Math.min(pending.length, maxNew) && jobs.size < available && rate.canCreate(Date.now(), jobs.size) && Date.now() - lastCreateAt >= rate.spacingMs) {
+          const query = pending[next++]; lastCreateAt = Date.now(); creating = true;
           const work = executeQuestion(query); jobs.add(work); work.finally(() => jobs.delete(work));
         }
         updateScheduler();
