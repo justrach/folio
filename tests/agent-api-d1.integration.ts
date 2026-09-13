@@ -167,3 +167,34 @@ test("actual D1 website freshness uses frozen capture age and starts once throug
     assert.equal(creates, 1);
   } finally { await current.dispose(); await rm(directory, { recursive: true, force: true }); }
 });
+
+test("visibility reads isolate owners and never create provider work", { timeout:90_000 }, async()=>{
+  const {savedVisibility,visibilityFilters}=await import("../src/lib/visibility-service");
+  const directory=await mkdtemp(join(tmpdir(),"folio-visibility-d1-"));const current=runtime(directory);
+  try{
+    const db=await current.getD1Database("DB");await setup(db);
+    await db.prepare("INSERT INTO sites(id,user_id,url,name,created_at) VALUES(?,?,?,?,?)").bind("site-alice","alice","https://example.com/","Fixture",Date.now()).run();
+    const filters=visibilityFilters(new URLSearchParams("websiteId=site-alice"));
+    await assert.rejects(savedVisibility(db,"bob",filters),error=>error instanceof AgentApiError&&error.status===404);
+    const result=await savedVisibility(db,"alice",filters);
+    assert.equal(result.current.visibilityScore,null);assert.equal(result.coverage.attemptsLoaded,0);
+    assert.deepEqual(result.recommendations,[]);
+    assert.equal((await db.prepare("SELECT COUNT(*) AS n FROM keyword_benchmark_runs").first<{n:number}>())?.n,0);
+    assert.equal(JSON.stringify(result).includes("user_id"),false);
+    const suite=await createKeywordBenchmarkSuite(db,"alice",{name:"Visibility fixture",cases:[trial]});
+    const key=await createAgentApiKey(db,"alice",{name:"Fixture",scopes:["read","evaluate"]});
+    const principal=await authenticateAgentApiKey(db,key.token,"evaluate");
+    let calls=0;
+    const started=await ensureAgentObservation(db,principal,{kind:"keyword",caseId:suite.cases[0].id},"visibility-fixture",env,{fetcher:(async()=>{calls++;return Response.json({id:"session_visibility",object:"agent.session",status:"in_progress",required_actions:[]});}) as typeof fetch});
+    const run=(await getKeywordBenchmarkRun(db,"alice",started.run!.id))!;
+    await updateKeywordBenchmarkRun(db,"alice",run.id,run.revision,{status:"completed",answer:{text:"private-answer-marker",mentions:[{name:"Example",url:"https://example.com/"}],citations:[{url:"https://example.com/docs"}]}});
+    const day=run.createdAt.slice(0,10);
+    const measured=await savedVisibility(db,"alice",visibilityFilters(new URLSearchParams({websiteId:"site-alice",startDate:day,endDate:day,sourceType:"owned"})));
+    assert.equal(measured.current.visibilityScore,100);assert.equal(measured.citations.length,1);assert.equal(calls,1);
+    assert.equal(JSON.stringify(measured).includes("private-answer-marker"),false);
+    assert.equal(JSON.stringify(measured).includes("private-reference"),false);
+    const excluded=await savedVisibility(db,"alice",visibilityFilters(new URLSearchParams({websiteId:"site-alice",endDate:"2000-01-01"})));
+    assert.equal(excluded.current.completedQuestions,0);
+
+  }finally{await current.dispose();await rm(directory,{recursive:true,force:true});}
+});

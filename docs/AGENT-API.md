@@ -77,3 +77,7 @@ A website result verifies captured-page evidence. A keyword result records recom
 This API reads private owner records. It does not publish them. The public search table uses a separately reviewed, allowlisted artifact with public queries, timestamps, execution labels, ordered recommendations, citations and limits; it excludes account/run/session IDs, secrets, usage and raw collection payloads.
 
 Implementation: [HTTP reference](../src/lib/agent-api-reference.ts), [key storage](../src/lib/agent-api-key-store.ts), [freshness service](../src/lib/agent-observation-service.ts), [atomic request ledger](../src/lib/agent-observation-store.ts), and migration `0011_agent_api.sql`. Fixture/D1 tests and actual provider validation are separate; this guide makes no new live-run or deployment claim.
+
+## Saved visibility and recommendations
+
+Read-key HTTP endpoints now provide current visibility, competitors, citations, per-question reports and evidence-linked next steps. See [Visibility API](VISIBILITY-API.md) for curl examples, date filters and exact metric definitions. These GET requests never start work.

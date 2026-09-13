@@ -83,6 +83,8 @@ test("overview uses exact selected-site observations, preserves completed answer
   await expect(first.getByRole("link", { name: `Review latest attempt for ${suite.cases[0].query}` })).toHaveAttribute("href", "/benchmarks?suite=suite-overview&run=unfinished-one");
   await expect(search(page)).not.toContainText("Legacy documentation question");
   await expect(search(page)).not.toContainText("Beta private question");
+  await expect(page.locator(".real-recommendations")).toContainText("Address this question on your website");
+  await expect(page.locator(".real-recommendations a").first()).toHaveAttribute("href", "/benchmarks?run=answer-two");
   const evidence = page.getByRole("region", { name: "Separate website evidence" });
   await expect(evidence).toContainText("1 saved audit"); await expect(evidence).toContainText("61/100");
   await page.screenshot({ path: info.outputPath("real-overview.png"), fullPage: true });
