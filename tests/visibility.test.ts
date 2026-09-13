@@ -21,3 +21,8 @@ test("visibility filters reject ambiguous, unsupported and invalid dates",()=>{
  assert.throws(()=>visibilityFilters(new URLSearchParams(`websiteId=site${suffix}`)));
  assert.equal(visibilityFilters(new URLSearchParams("websiteId=site")).limit,50);
 });
+
+test("unknown target identity cannot become zero share of voice",()=>{
+ const report=visibilityReport([run("10","a",[{name:"Other",url:"https://competitor.com/"},{name:"Unknown",url:null}])]);
+ assert.equal(report.current.visibilityScore,null);assert.equal(report.current.shareOfVoice,null);
+});
