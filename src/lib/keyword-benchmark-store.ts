@@ -303,6 +303,7 @@ const safeErrors = new Set([
   "The benchmark exceeded its local wait deadline; cancellation is not yet confirmed.",
   "Cancellation was requested. The final provider outcome is not yet confirmed.",
   "Cancellation could not be confirmed. Retrieve the saved session; cancellation will not be submitted again automatically.",
+  "Session creation was rejected before a session receipt was confirmed.",
 ]);
 export function sanitizeKeywordBenchmarkError(value: string | null): string | null {
   return value === null ? null : safeErrors.has(value) ? value : "The provider operation needs attention. Retrieve the saved session before continuing.";
@@ -328,8 +329,22 @@ export async function updateKeywordBenchmarkRun(db: D1Database, ownerId: string,
   for (const [field, number] of Object.entries(usage)) if (number !== null && (!Number.isFinite(number) || number < 0 || (field !== "costUsd" && !Number.isInteger(number))))
     throw new KeywordBenchmarkStoreError("Invalid provider usage.", 400);
   const suppliedMetadata = { ...existing.providerMetadata, ...patch.providerMetadata };
-  const providerMetadata = { environmentId: suppliedMetadata.environmentId, requestId: suppliedMetadata.requestId, turnId: suppliedMetadata.turnId };
+  const providerMetadata: KeywordBenchmarkRun["providerMetadata"] = {
+    environmentId: suppliedMetadata.environmentId, requestId: suppliedMetadata.requestId, turnId: suppliedMetadata.turnId,
+    ...(suppliedMetadata.creationHttpStatus === undefined ? {} : { creationHttpStatus: suppliedMetadata.creationHttpStatus }),
+    ...(suppliedMetadata.creationErrorCode === undefined ? {} : { creationErrorCode: suppliedMetadata.creationErrorCode }),
+  };
   for (const field of ["environmentId", "requestId", "turnId"] as const) if (providerMetadata[field] !== null) bounded(providerMetadata[field], "provider metadata", 200);
+  if (providerMetadata.creationHttpStatus !== undefined && (!Number.isInteger(providerMetadata.creationHttpStatus) || providerMetadata.creationHttpStatus < 100 || providerMetadata.creationHttpStatus > 599))
+    throw new KeywordBenchmarkStoreError("Invalid creation HTTP status.", 400);
+  if (providerMetadata.creationErrorCode !== undefined && !["INVALID_INPUT", "NOT_CONFIGURED", "UPSTREAM_ERROR", "INVALID_RESPONSE"].includes(providerMetadata.creationErrorCode))
+    throw new KeywordBenchmarkStoreError("Invalid creation error code.", 400);
+  for (const field of ["creationHttpStatus", "creationErrorCode"] as const) {
+    if (providerMetadata[field] !== undefined && !existing.createAttemptAt)
+      throw new KeywordBenchmarkStoreError("Creation diagnostics require a saved creation attempt.", 400);
+    if (existing.providerMetadata[field] !== undefined && providerMetadata[field] !== existing.providerMetadata[field])
+      throw new KeywordBenchmarkStoreError("Original creation diagnostics cannot be changed.", 409);
+  }
   const error = patch.error === undefined ? existing.error : sanitizeKeywordBenchmarkError(patch.error);
   const row = await db.prepare(`UPDATE keyword_benchmark_runs SET status=?,session_id=?,updated_at=?,revision=revision+1,answer_json=?,usage_json=?,provider_metadata_json=?,error=?,answer_characters=?,mention_count=?,citation_count=?
     WHERE user_id=? AND id=? AND revision=? AND status IN ('queued','running','requires_action') RETURNING ${runColumns},answer_json`)

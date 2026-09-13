@@ -61,7 +61,8 @@ export function projectPublicSearchObservation(run: KeywordBenchmarkRun, query: 
   const observation: PublicSearchObservation = { id: `obs-${query.id.slice(0, 80)}-${hash(projected).slice(0, 24)}`, ...projected };
   assertPublicSearchRankings({ format: "folio-public-search-rankings-v1", queries: [query], observations: [observation] });
   const serialized = JSON.stringify(observation);
-  const privateValues = [run.id, run.caseId, run.suiteId, run.sessionId, ...Object.values(run.providerMetadata),
+  const privateValues = [run.id, run.caseId, run.suiteId, run.sessionId,
+    run.providerMetadata.environmentId, run.providerMetadata.requestId, run.providerMetadata.turnId,
     collection.finalAnswerItemId, ...collection.searchItems.map(item => typeof item.id === "string" ? item.id : ""),
     typeof collection.validationItem.id === "string" ? collection.validationItem.id : "", ...privateIdentifiers];
   if (privateValues.some(value => value && serialized.includes(value))

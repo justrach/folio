@@ -34,6 +34,33 @@ async function setup(db: D1Database) {
 const config = { model: "fixture-model", harnessVersion: "fixture-v1", environmentType: "openai_hosted", environmentFingerprint: "fixture-digest" };
 const input = { query: "Synthetic best developer tools question", targetUrl: "https://example.test/", language: "en", locale: "en-US", rubricVersion: "keyword-observation-v1", referenceFacts: [{ id: "private", statement: "Private independent fixture reference." }] };
 
+test("D1 retains safe creation HTTP diagnostics after restart without retrying an unknown submission", { timeout: 90_000 }, async () => {
+  const directory = await mkdtemp(join(tmpdir(), "folio-keyword-diagnostics-d1-"));
+  let current: Miniflare | undefined;
+  try {
+    current = runtime(directory); let db = await current.getD1Database("DB"); await setup(db);
+    const suite = await createKeywordBenchmarkSuite(db, "alice", { name: "Creation diagnostics", cases: [input] });
+    const env = { OPENAI_API_KEY: "synthetic-fixture", OPENAI_ALLOWED_USER_IDS: "alice" };
+    let calls = 0;
+    const options = { allowedDomains: ["codegraff.com"], fetcher: (async () => {
+      calls++;
+      return Response.json({ error: "private-provider-body-marker" }, { status: 429, headers: { "x-request-id": "req_diagnostics_fixture" } });
+    }) as typeof fetch };
+    const run = await startKeywordBenchmark(db, "alice", { caseId: suite.cases[0].id, kind: "baseline" }, env, options);
+    assert.equal(calls, 1); assert.equal(run.status, "requires_action"); assert.equal(run.sessionId, null);
+    assert.equal(run.providerMetadata.creationHttpStatus, 429); assert.equal(run.providerMetadata.creationErrorCode, "UPSTREAM_ERROR");
+    assert.equal(run.providerMetadata.requestId, "req_diagnostics_fixture"); assert.equal(run.usage.costUsd, null);
+    assert.equal(JSON.stringify(run).includes("private-provider-body-marker"), false);
+    await current.dispose(); current = runtime(directory); db = await current.getD1Database("DB");
+    const restored = await reconcileKeywordBenchmark(db, "alice", run.id, env, options);
+    assert.equal(restored.providerMetadata.creationHttpStatus, 429); assert.equal(restored.providerMetadata.creationErrorCode, "UPSTREAM_ERROR");
+    assert.equal(restored.status, "requires_action"); assert.equal(calls, 1);
+    assert.equal(await getKeywordBenchmarkRun(db, "bob", run.id), null);
+    await assert.rejects(startKeywordBenchmark(db, "alice", { caseId: suite.cases[0].id, kind: "baseline" }, env, options));
+    assert.equal(calls, 1); assert.equal((await getKeywordBenchmarkUsage(db, "alice")).attemptsLast24Hours, 1);
+  } finally { try { await current?.dispose(); } finally { await rm(directory, { recursive: true, force: true }); } }
+});
+
 test("real D1 exempts only the configured owner's daily benchmark cap while preserving one active task", { timeout: 90_000 }, async () => {
   const directory = await mkdtemp(join(tmpdir(), "folio-keyword-exemption-d1-"));
   let current: Miniflare | undefined;

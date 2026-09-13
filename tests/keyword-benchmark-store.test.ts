@@ -37,6 +37,29 @@ function database() {
   return { db, sqlite };
 }
 
+test("creation diagnostics are bounded, require an attempt, and survive retrieval updates unchanged", async () => {
+  const { db, sqlite } = database();
+  try {
+    const suite = await createKeywordBenchmarkSuite(db, "alice", { name: "Diagnostics fixture", cases: [fixture] });
+    let run = await reserveKeywordBenchmarkRun(db, "alice", { ...execution, caseId: suite.cases[0].id, kind: "baseline" });
+    const metadata = { ...run.providerMetadata, creationHttpStatus: 429, creationErrorCode: "UPSTREAM_ERROR" as const };
+    await assert.rejects(updateKeywordBenchmarkRun(db, "alice", run.id, run.revision, { providerMetadata: metadata }), /saved creation attempt/);
+    run = await markKeywordBenchmarkCreateAttempt(db, "alice", run.id, run.revision);
+    for (const status of [99, 600, 429.5, NaN]) await assert.rejects(updateKeywordBenchmarkRun(db, "alice", run.id, run.revision,
+      { providerMetadata: { ...metadata, creationHttpStatus: status } }), /Invalid creation HTTP status/);
+    await assert.rejects(updateKeywordBenchmarkRun(db, "alice", run.id, run.revision,
+      { providerMetadata: { ...metadata, creationErrorCode: "raw-private-message" as "UPSTREAM_ERROR" } }), /Invalid creation error code/);
+    run = await updateKeywordBenchmarkRun(db, "alice", run.id, run.revision, { status: "requires_action", providerMetadata: metadata });
+    for (const patch of [{ creationHttpStatus: 500 }, { creationHttpStatus: undefined }, { creationErrorCode: "INVALID_RESPONSE" as const }])
+      await assert.rejects(updateKeywordBenchmarkRun(db, "alice", run.id, run.revision, { providerMetadata: { ...metadata, ...patch } }), /cannot be changed/);
+    run = await updateKeywordBenchmarkRun(db, "alice", run.id, run.revision,
+      { sessionId: "recovered_fixture_session", providerMetadata: { environmentId: "recovered_env", requestId: "retrieval_request", turnId: "retrieval_turn" } });
+    assert.equal(run.providerMetadata.creationHttpStatus, 429);
+    assert.equal(run.providerMetadata.creationErrorCode, "UPSTREAM_ERROR");
+    assert.equal(run.status, "requires_action"); assert.equal(run.usage.costUsd, null);
+  } finally { sqlite.close(); }
+});
+
 test("benchmark reservations freeze private inputs, guard creation and retain failed/unknown attempts", async () => {
   const { db, sqlite } = database();
   try {

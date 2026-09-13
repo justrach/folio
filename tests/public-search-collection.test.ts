@@ -51,6 +51,18 @@ test("public collection export preserves original positions and excludes private
   assertPublicSearchRankings({ format: "folio-public-search-rankings-v1", queries: [query], observations: [result] });
 });
 
+test("public projection excludes creation diagnostics without confusing HTTP numbers with private identifiers", () => {
+  const source = run();
+  source.providerMetadata.creationHttpStatus = 429;
+  source.providerMetadata.creationErrorCode = "UPSTREAM_ERROR";
+  source.answer!.mentions[0].reason = "Explains HTTP 429 responses in its documentation.";
+  retainAnswer(source);
+  const result = projectPublicSearchObservation(source, query);
+  assert.equal(result.recommendations[0].reason, source.answer!.mentions[0].reason);
+  for (const field of ["providerMetadata", "creationHttpStatus", "creationErrorCode", "UPSTREAM_ERROR"])
+    assert.equal(JSON.stringify(result).includes(field), false);
+});
+
 test("public export rejects wrong provenance, private inputs, missing collection and secret-bearing output", () => {
   const variants = [
     (value: KeywordBenchmarkRun) => { value.status = "failed"; },
