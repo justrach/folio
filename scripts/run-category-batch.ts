@@ -1,4 +1,5 @@
 import { ProviderMutationGate } from "./category-batch-transport";
+import { categoryReceiptCheckpointAction } from "./category-batch-checkpoint";
 import { findCategoryReceipts, recoverCategoryReceipt } from "./category-batch-recovery";
 import { CategoryBatchRate } from "./category-batch-rate";
 import { readFile, writeFile, rename, mkdir, open, rm } from "node:fs/promises";
@@ -184,15 +185,19 @@ async function main() {
     }
     try {
       while ((!stopped && !draining && !rate.stoppedReason && next < Math.min(pending.length, maxNew)) || jobs.size) {
-        if (!stopped && !draining && !rate.stoppedReason && Date.now() >= rate.cooldownUntil && (Date.now() - lastReceiptCheckpoint >= 300_000 || (!jobs.size && slots <= heldThisProcess))) recoveryPending = true;
-        if (recoveryPending && !jobs.size && !creating && !draining && !rate.stoppedReason) {
+        const recoveryAction = !stopped && !draining && !rate.stoppedReason ? categoryReceiptCheckpointAction({
+          now: Date.now(), lastCheckpoint: lastReceiptCheckpoint, cooldownUntil: rate.cooldownUntil,
+          activeJobs: jobs.size, creating, availableSlots: slots - heldThisProcess, pending: recoveryPending,
+        }) : "collect";
+        if (recoveryAction !== "collect") recoveryPending = true;
+        if (recoveryAction === "recover") {
           await receiptCheckpoint();
           const refreshed = await getKeywordBenchmarkUsage(db, ownerId, { maxRunsPerDay: null, maxActiveRuns: scope.maxConcurrent });
           slots = Math.min(requestedWorkers, Math.max(0, scope.maxConcurrent - refreshed.activeRuns));
           heldThisProcess = 0; recoveryPending = false; lastReceiptCheckpoint = Date.now();
         }
         const available = Math.max(0, slots - heldThisProcess);
-        if (!available && !jobs.size) rate.stoppedReason = "capacity-retained-by-unresolved-attempts";
+        if (!available && !jobs.size && !recoveryPending) rate.stoppedReason = "capacity-retained-by-unresolved-attempts";
         if (!recoveryPending && !creating && !stopped && !draining && !rate.stoppedReason && next < Math.min(pending.length, maxNew) && jobs.size < available && rate.canCreate(Date.now(), jobs.size) && Date.now() - lastCreateAt >= rate.spacingMs) {
           const query = pending[next++]; lastCreateAt = Date.now(); creating = true;
           const work = executeQuestion(query); jobs.add(work); work.finally(() => jobs.delete(work));

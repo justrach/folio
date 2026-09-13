@@ -52838,6 +52838,533 @@
         "No page access failures occurred. Interactive plan selections, account-specific terms, startup eligibility, and contractual entitlements were not verified.",
         "No SDK execution, security audit, performance benchmark, or independent verification of isolation, revocation timing, support, or migration coverage was performed. Actual framework, usage, and hosting costs were unspecified."
       ]
+    },
+    {
+      "id": "obs-sandbox-python-jobs-v1-s02-q03-be2405770a18db7a41ba03d3",
+      "queryId": "sandbox-python-jobs-v1-s02-q03",
+      "observedAt": "2026-09-13T16:42:53.791Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Modal",
+          "url": "https://modal.com/pricing",
+          "reason": "First evaluation choice: Starter accommodates two people, with documented sandbox and GPU Function duration and preemption rules.",
+          "citationUrls": [
+            "https://modal.com/pricing",
+            "https://modal.com/docs/guide/sandboxes",
+            "https://modal.com/docs/guide/timeouts",
+            "https://modal.com/docs/guide/preemption"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Daytona",
+          "url": "https://www.daytona.io/pricing",
+          "reason": "Alternative for configurable sandbox lifecycles and spot GPU batches, provided immediate interruption, ephemeral GPU storage and access restrictions fit the workload.",
+          "citationUrls": [
+            "https://www.daytona.io/docs/sandboxes",
+            "https://www.daytona.io/docs/en/persistence/",
+            "https://www.daytona.io/pricing",
+            "https://www.daytona.io/docs/limits"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "E2B",
+          "url": "https://e2b.dev/pricing",
+          "reason": "Budget-compatible Hobby option for sessions under one hour; Pro exceeds the monthly budget and GPU availability was not established.",
+          "citationUrls": [
+            "https://e2b.dev/pricing"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://modal.com/pricing",
+          "title": "Modal — Plan Pricing"
+        },
+        {
+          "url": "https://modal.com/docs/guide/sandboxes",
+          "title": "Modal Docs — Sandboxes"
+        },
+        {
+          "url": "https://modal.com/docs/guide/timeouts",
+          "title": "Modal Docs — Timeouts"
+        },
+        {
+          "url": "https://modal.com/docs/guide/preemption",
+          "title": "Modal Docs — Preemption"
+        },
+        {
+          "url": "https://www.daytona.io/docs/sandboxes",
+          "title": "Daytona — Sandboxes"
+        },
+        {
+          "url": "https://www.daytona.io/docs/en/persistence/",
+          "title": "Daytona — Persistence"
+        },
+        {
+          "url": "https://www.daytona.io/pricing",
+          "title": "Daytona — Pricing"
+        },
+        {
+          "url": "https://www.daytona.io/docs/limits",
+          "title": "Daytona — Limits"
+        },
+        {
+          "url": "https://e2b.dev/pricing",
+          "title": "E2B — Pricing"
+        }
+      ],
+      "limitations": [
+        "Public web research conducted for September 13, 2026. Discovery was not domain-restricted; this is a selective official-source shortlist, not exhaustive market coverage or a measured search-engine ranking.",
+        "No accounts, transactional APIs or compute workloads were used. Actual GPU capacity, workload performance, isolation strength, billed totals and recovery behavior were not independently verified.",
+        "Daytona persistence appeared in live search results, but direct opens of both /docs/en/persistence/ and /docs/persistence returned internal errors; persistence details rely on the returned official search excerpt.",
+        "Daytona's extracted pricing page did not resolve spot versus on-demand GPU rates. Its limits page gives conflicting Tier 1 RAM totals (10 versus 20 GiB); account-specific limits and GPU entitlement remain unconfirmed.",
+        "E2B GPU availability and interruption guarantees, Daytona's contractual maximum runtime, and Modal GPU Sandbox automatic recovery semantics were not established by the consulted evidence.",
+        "Hourly examples are arithmetic from listed USD rates, not quotes or measured costs. Taxes, ancillary infrastructure and workload-dependent charges require a complete budget."
+      ]
+    },
+    {
+      "id": "obs-vector-search-small-app-v1-s02-q03-bc25d803dab952b370129ff3",
+      "queryId": "vector-search-small-app-v1-s02-q03",
+      "observedAt": "2026-09-13T16:45:01.222Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Qdrant",
+          "url": "https://qdrant.tech/pricing/",
+          "reason": "First to evaluate for documented collection-scoped Cloud credentials and a free prototype tier; production budget fit and shared-collection tenant enforcement need validation.",
+          "citationUrls": [
+            "https://qdrant.tech/pricing/",
+            "https://qdrant.tech/documentation/cloud/authentication/",
+            "https://qdrant.tech/documentation/tutorials/multiple-partitions/",
+            "https://qdrant.tech/documentation/security/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Pinecone",
+          "url": "https://www.pinecone.io/pricing/",
+          "reason": "Managed namespaces suit tenant partitioning, but Starter and $20 Builder keys are restricted to All permissions; custom permissions require at least $50-minimum Standard.",
+          "citationUrls": [
+            "https://www.pinecone.io/pricing/",
+            "https://docs.pinecone.io/guides/index-data/implement-multitenancy",
+            "https://docs.pinecone.io/guides/projects/manage-api-keys"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Chroma",
+          "url": "https://www.trychroma.com/pricing",
+          "reason": "Usage-based Starter accommodates two teammates, but Cloud key scoping and read-only/custom permissions were not established by the consulted sources.",
+          "citationUrls": [
+            "https://www.trychroma.com/pricing",
+            "https://docs.trychroma.com/reference/architecture/overview",
+            "https://docs.trychroma.com/cloud/getting-started"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://qdrant.tech/pricing/",
+          "title": "Qdrant Cloud Pricing"
+        },
+        {
+          "url": "https://qdrant.tech/documentation/cloud/authentication/",
+          "title": "Database Authentication in Qdrant Managed Cloud"
+        },
+        {
+          "url": "https://qdrant.tech/documentation/tutorials/multiple-partitions/",
+          "title": "Qdrant Multitenancy"
+        },
+        {
+          "url": "https://qdrant.tech/documentation/security/",
+          "title": "Qdrant Security & Access Control"
+        },
+        {
+          "url": "https://www.pinecone.io/pricing/",
+          "title": "Pinecone Pricing"
+        },
+        {
+          "url": "https://docs.pinecone.io/guides/index-data/implement-multitenancy",
+          "title": "Pinecone: Implement multitenancy"
+        },
+        {
+          "url": "https://docs.pinecone.io/guides/projects/manage-api-keys",
+          "title": "Pinecone: Manage API keys"
+        },
+        {
+          "url": "https://www.trychroma.com/pricing",
+          "title": "Chroma Pricing"
+        },
+        {
+          "url": "https://docs.trychroma.com/reference/architecture/overview",
+          "title": "Chroma Architecture Overview"
+        },
+        {
+          "url": "https://docs.trychroma.com/cloud/getting-started",
+          "title": "Chroma Cloud"
+        }
+      ],
+      "limitations": [
+        "Public-web research only, using live search and page reads; bounded coverage, not an exhaustive market survey or measured search-engine ranking.",
+        "No accounts, dashboards, transactional APIs or vendor workloads were accessed; pricing, permissions and product performance were not independently verified.",
+        "Workload size and traffic were unspecified. No configuration-specific Qdrant production quote or complete under-$100 deployment estimate was established.",
+        "Chroma Cloud API-key scope, read-only/custom roles and customer-to-Cloud-tenant provisioning terms remain unclear in the consulted sources. Pinecone namespace-scoped keys and Qdrant tenant-payload authorization were not established.",
+        "Opening https://docs.trychroma.com/cloud/tenants-databases returned an internal error. Chroma architecture documentation redirected successfully to https://docs.trychroma.com/reference/architecture/overview.",
+        "Official pages and search indexing can change or lag; verify exact plan entitlements, limits and regional availability before purchase."
+      ]
+    },
+    {
+      "id": "obs-research-api-citations-v1-s02-q03-fe17d2c65e7174b961ca7941",
+      "queryId": "research-api-citations-v1-s02-q03",
+      "observedAt": "2026-09-13T16:46:52.250Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Firecrawl",
+          "url": "https://www.firecrawl.dev/pricing",
+          "reason": "First pilot for JavaScript pages requiring explicit interaction; documented actions and Interact plus a $19 monthly Hobby option.",
+          "citationUrls": [
+            "https://docs.firecrawl.dev/features/scrape",
+            "https://www.firecrawl.dev/pricing"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Exa",
+          "url": "https://exa.ai/pricing",
+          "reason": "Evaluate for source discovery and extractive highlights, with documented JavaScript handling and configurable content freshness.",
+          "citationUrls": [
+            "https://exa.ai/docs/reference/contents-api-guide-for-coding-agents",
+            "https://exa.ai/docs/reference/livecrawling-contents",
+            "https://exa.ai/pricing"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Tavily",
+          "url": "https://docs.tavily.com/documentation/api-credits",
+          "reason": "Evaluate for a simple search-and-extract pipeline; advanced extraction explicitly targets JavaScript SPAs and Project costs $30/month.",
+          "citationUrls": [
+            "https://docs.tavily.com/examples/quick-tutorials/extract-api",
+            "https://docs.tavily.com/documentation/api-reference/endpoint/extract",
+            "https://docs.tavily.com/documentation/api-credits"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://docs.firecrawl.dev/features/scrape",
+          "title": "Firecrawl: Scrape"
+        },
+        {
+          "url": "https://www.firecrawl.dev/pricing",
+          "title": "Firecrawl: Pricing"
+        },
+        {
+          "url": "https://exa.ai/docs/reference/contents-api-guide-for-coding-agents",
+          "title": "Exa: Contents API Reference"
+        },
+        {
+          "url": "https://exa.ai/docs/reference/livecrawling-contents",
+          "title": "Exa: Content Freshness"
+        },
+        {
+          "url": "https://exa.ai/pricing",
+          "title": "Exa API Pricing"
+        },
+        {
+          "url": "https://docs.tavily.com/examples/quick-tutorials/extract-api",
+          "title": "Tavily: Clean Content Extraction"
+        },
+        {
+          "url": "https://docs.tavily.com/documentation/api-reference/endpoint/extract",
+          "title": "Tavily Extract API Reference"
+        },
+        {
+          "url": "https://docs.tavily.com/documentation/api-credits",
+          "title": "Tavily: Credits & Pricing"
+        }
+      ],
+      "limitations": [
+        "Public web research using OpenAI live search only; no vendor API calls, accounts or performance tests. Vendor capability claims are not independently verified, and discovery was not exhaustive.",
+        "Consulted extraction docs did not establish Exa/Tavily browser interaction controls, exact rendering completeness, or guaranteed handling of protected pages. Absence of documentation is not proof of product-wide unavailability.",
+        "Two-person seat entitlements, all retention/contract terms, and Exa/Tavily hard spending caps were not established. Taxes, model costs and workload-dependent retries are excluded from illustrative API costs.",
+        "Firecrawl's older Browser page and repository rate-limit documentation differed from the current pricing page on some limits; this answer uses current pricing for plan limits and does not assume the older free browser allowance remains available.",
+        "No source access failures occurred; some searched pages were older or incomplete, so current official pricing and endpoint documentation were prioritized."
+      ]
+    },
+    {
+      "id": "obs-sentry-posthog-product-team-v1-s02-q03-a2b23db45b6665dd12c7f3a9",
+      "queryId": "sentry-posthog-product-team-v1-s02-q03",
+      "observedAt": "2026-09-13T16:50:04.975Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "PostHog",
+          "url": "https://posthog.com/session-replay/pricing",
+          "reason": "First trial for the $100 total infrastructure budget: unlimited free team members and 5,000 free monthly web recordings, provided explicit web text masking passes staging tests.",
+          "citationUrls": [
+            "https://posthog.com/pricing",
+            "https://posthog.com/session-replay/pricing",
+            "https://posthog.com/docs/session-replay/privacy",
+            "https://posthog.com/docs/session-replay/recording-retention"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Sentry",
+          "url": "https://sentry.io/pricing/",
+          "reason": "Prefer when investigating application errors is the main workflow; broader default replay masking and error-triggered sampling are useful, but two users require a paid plan and recurring replay costs need confirmation.",
+          "citationUrls": [
+            "https://sentry.io/pricing/",
+            "https://github.com/getsentry/sentry-docs/blob/master/docs/platforms/javascript/common/session-replay/privacy.mdx",
+            "https://github.com/getsentry/sentry-docs/blob/master/docs/platforms/javascript/common/session-replay/configuration.mdx"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://posthog.com/pricing",
+          "title": "PostHog pricing"
+        },
+        {
+          "url": "https://posthog.com/session-replay/pricing",
+          "title": "PostHog Session Replay pricing"
+        },
+        {
+          "url": "https://posthog.com/docs/session-replay/privacy",
+          "title": "PostHog privacy controls"
+        },
+        {
+          "url": "https://posthog.com/docs/session-replay/recording-retention",
+          "title": "PostHog replay recording retention"
+        },
+        {
+          "url": "https://sentry.io/pricing/",
+          "title": "Sentry pricing"
+        },
+        {
+          "url": "https://github.com/getsentry/sentry-docs/blob/master/docs/platforms/javascript/common/session-replay/privacy.mdx",
+          "title": "Sentry official documentation source: replay privacy"
+        },
+        {
+          "url": "https://github.com/getsentry/sentry-docs/blob/master/docs/platforms/javascript/common/session-replay/configuration.mdx",
+          "title": "Sentry official documentation source: replay configuration"
+        }
+      ],
+      "limitations": [
+        "Public web research only, including unrestricted discovery and targeted official-source searches; not exhaustive market coverage or independently verified redaction, reliability, or performance.",
+        "Sentry's direct JavaScript replay privacy page failed with unsupported text/markdown content; its configuration page also failed. Official getsentry documentation sources on GitHub were consulted instead; their shared privacy-option table was not rendered.",
+        "Sentry's month-to-month Team price and current replay overage rate were not established from the retrieved pricing interface. No account-specific terms or live billing settings were accessed.",
+        "Paid-tier gating for every administrative privacy control, universal automatic PII detection, and retroactive redaction were not established. SDK behavior must be checked against the installed release.",
+        "No traffic volume, framework, hosting costs, or data sensitivity was supplied; the $25 replay example excludes all other products and infrastructure."
+      ]
+    },
+    {
+      "id": "obs-client-project-workspace-v1-s02-q02-0e176d74c3ad81df4e47c0e2",
+      "queryId": "client-project-workspace-v1-s02-q02",
+      "observedAt": "2026-09-13T16:51:49.357Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Basecamp",
+          "url": "https://basecamp.com/",
+          "reason": "First to trial for straightforward client task lists with native assignment and deadlines, provided list-level visibility and client editing permissions fit the workflow.",
+          "citationUrls": [
+            "https://5.basecamp-help.com/article/1077-to-dos",
+            "https://5.basecamp-help.com/article/1082-what-clients-can-see-and-do",
+            "https://5.basecamp-help.com/article/1171-permissions",
+            "https://basecamp.com/pricing"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Notion",
+          "url": "https://www.notion.com/",
+          "reason": "Conditional choice for configurable task databases and client pages, with explicit permission setup and Business or Enterprise for database page-level access rules.",
+          "citationUrls": [
+            "https://www.notion.com/en-gb/help/guides/give-your-to-dos-a-home-with-task-databases",
+            "https://www.notion.com/help/database-properties",
+            "https://www.notion.com/help/sharing-and-permissions",
+            "https://www.notion.com/help/add-members-admins-guests-and-groups",
+            "https://www.notion.com/pricing"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://5.basecamp-help.com/article/1077-to-dos",
+          "title": "To-Dos — Basecamp 5 Help"
+        },
+        {
+          "url": "https://5.basecamp-help.com/article/1082-what-clients-can-see-and-do",
+          "title": "What Clients can see and do — Basecamp 5 Help"
+        },
+        {
+          "url": "https://5.basecamp-help.com/article/1171-permissions",
+          "title": "Permissions — Basecamp 5 Help"
+        },
+        {
+          "url": "https://basecamp.com/pricing",
+          "title": "Basecamp — Pricing"
+        },
+        {
+          "url": "https://www.notion.com/en-gb/help/guides/give-your-to-dos-a-home-with-task-databases",
+          "title": "Give your to-dos a home with Task databases — Notion"
+        },
+        {
+          "url": "https://www.notion.com/help/database-properties",
+          "title": "Database properties — Notion Help"
+        },
+        {
+          "url": "https://www.notion.com/help/add-members-admins-guests-and-groups",
+          "title": "Manage members & guests — Notion Help"
+        },
+        {
+          "url": "https://www.notion.com/help/sharing-and-permissions",
+          "title": "Sharing & permissions — Notion Help"
+        },
+        {
+          "url": "https://www.notion.com/pricing",
+          "title": "Notion Pricing Plans"
+        }
+      ],
+      "limitations": [
+        "Public web research conducted September 13, 2026, including unrestricted discovery and official documentation. This is a targeted comparison, not exhaustive market coverage or independently verified product performance.",
+        "No accounts were created and no product workflows, notification delivery, or permissions were tested. Basecamp client reassignment/deadline-editing rights and Notion guest My Tasks access remain unconfirmed.",
+        "Notion numeric subscription prices and billing cadence were not established from the retrieved pricing text. Confirm current seat costs and Basecamp billing terms before purchase.",
+        "An attempted Basecamp client-guide URL ending in /1083-using-basecamp-as-a-client returned an internal error; search subsequently found the official guide at /1084-using-basecamp-as-a-client. Notion's /help/home-and-my-tasks redirected to sidebar documentation without establishing guest eligibility.",
+        "Search surfaced older Basecamp versions; recommendations rely on Basecamp 5 documentation rather than assuming legacy permissions still apply."
+      ]
+    },
+    {
+      "id": "obs-team-chat-history-v1-s02-q01-f6d28272fb783157c47c16fd",
+      "queryId": "team-chat-history-v1-s02-q01",
+      "observedAt": "2026-09-13T16:53:42.080Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Slack",
+          "url": "https://slack.com/help/articles/202518103-Understand-guest-roles-in-Slack",
+          "reason": "First to evaluate for client-specific channels: paid history controls and up to 25 single-channel guests for five paid active members, with important Slack Connect retention restrictions.",
+          "citationUrls": [
+            "https://slack.com/help/articles/115002422943-Usage-limits-for-free-workspaces",
+            "https://slack.com/help/articles/203457187-Customize-data-retention-in-Slack",
+            "https://slack.com/help/articles/202518103-Understand-guest-roles-in-Slack",
+            "https://slack.com/help/articles/115004151203-Slack-Connect-guide--work-with-external-organizations",
+            "https://slack.com/help/articles/115004152843-How-data-management-features-apply-to-Slack-Connect"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Microsoft Teams",
+          "url": "https://learn.microsoft.com/en-us/microsoftteams/guest-access",
+          "reason": "Conditional fit for Microsoft 365 users, with guest collaboration and configurable retention; administrator preservation does not guarantee ordinary searchable history.",
+          "citationUrls": [
+            "https://learn.microsoft.com/en-us/microsoftteams/guest-access",
+            "https://learn.microsoft.com/en-us/microsoftteams/retention-policies",
+            "https://support.microsoft.com/en-us/teams/troubleshooting/microsoft-teams-messages-about-retention-policies"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Google Chat",
+          "url": "https://support.google.com/chat/answer/7655805?hl=en",
+          "reason": "Conditional fit for Workspace users, but documented restrictions on searching externally created conversations can undermine client-history requirements.",
+          "citationUrls": [
+            "https://support.google.com/chat/answer/7655805?hl=en",
+            "https://support.google.com/chat/answer/16053860?hl=en"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://slack.com/help/articles/115002422943-Usage-limits-for-free-workspaces",
+          "title": "Usage limits for free workspaces"
+        },
+        {
+          "url": "https://slack.com/help/articles/203457187-Customize-data-retention-in-Slack",
+          "title": "Customize data retention in Slack"
+        },
+        {
+          "url": "https://slack.com/help/articles/202518103-Understand-guest-roles-in-Slack",
+          "title": "Understand guest roles in Slack"
+        },
+        {
+          "url": "https://slack.com/help/articles/115004151203-Slack-Connect-guide--work-with-external-organizations",
+          "title": "Slack Connect guide: Work with external organizations"
+        },
+        {
+          "url": "https://slack.com/help/articles/115004152843-How-data-management-features-apply-to-Slack-Connect",
+          "title": "How data management features apply to Slack Connect"
+        },
+        {
+          "url": "https://learn.microsoft.com/en-us/microsoftteams/guest-access",
+          "title": "Guest access in Microsoft Teams"
+        },
+        {
+          "url": "https://learn.microsoft.com/en-us/microsoftteams/retention-policies",
+          "title": "Manage retention policies for Microsoft Teams"
+        },
+        {
+          "url": "https://support.microsoft.com/en-us/teams/troubleshooting/microsoft-teams-messages-about-retention-policies",
+          "title": "Microsoft Teams messages about retention policies"
+        },
+        {
+          "url": "https://support.google.com/chat/answer/7655805?hl=en",
+          "title": "Search for Google Chat messages"
+        },
+        {
+          "url": "https://support.google.com/chat/answer/16053860?hl=en",
+          "title": "Learn about message history for conversations"
+        }
+      ],
+      "limitations": [
+        "Public live-web research only; discovery was not restricted to a predefined vendor list. This is a limited shortlist, not exhaustive market coverage or an independently verified performance comparison.",
+        "No accounts, product trials, searches inside customer workspaces, exports, or deletion tests were performed. The proposed checks remain for the agency to perform.",
+        "Exact current prices, Teams ordinary-search coverage and guest search behavior, Google external-space edition eligibility, and Google Vault licensing and preservation behavior were not fully established.",
+        "Microsoft Learn displayed authorization notices but returned substantive public article text; no login was attempted. A follow-up read of Google's external-chat administration page returned an internal error; a retry returned the page, but its substantive settings were not fully inspected.",
+        "Recommendations depend on unknown existing subscriptions, client numbers, client account types, and required history duration. Consulted vendor documentation establishes stated options and restrictions, not guaranteed behavior in a particular tenant."
+      ]
     }
   ]
 }

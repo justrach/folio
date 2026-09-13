@@ -1,6 +1,6 @@
 {
   "format": "folio-public-search-progress-v1",
-  "updatedAt": "2026-09-13T16:41:10.669Z",
+  "updatedAt": "2026-09-13T16:58:39.591Z",
   "queries": [
     {
       "queryId": "deploy-small-node-app-v1",
@@ -1207,7 +1207,10 @@
     },
     {
       "queryId": "sandbox-python-jobs-v1-s02-q03",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T16:41:13.989Z",
+      "finishedAt": "2026-09-13T16:42:53.809Z",
+      "observationId": "obs-sandbox-python-jobs-v1-s02-q03-be2405770a18db7a41ba03d3"
     },
     {
       "queryId": "sandbox-python-jobs-v1-s02-q04",
@@ -1636,7 +1639,10 @@
     },
     {
       "queryId": "vector-search-small-app-v1-s02-q03",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T16:42:54.183Z",
+      "finishedAt": "2026-09-13T16:45:01.243Z",
+      "observationId": "obs-vector-search-small-app-v1-s02-q03-bc25d803dab952b370129ff3"
     },
     {
       "queryId": "vector-search-small-app-v1-s02-q04",
@@ -2063,7 +2069,10 @@
     },
     {
       "queryId": "research-api-citations-v1-s02-q03",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T16:45:01.431Z",
+      "finishedAt": "2026-09-13T16:46:52.271Z",
+      "observationId": "obs-research-api-citations-v1-s02-q03-fe17d2c65e7174b961ca7941"
     },
     {
       "queryId": "research-api-citations-v1-s02-q04",
@@ -2492,7 +2501,10 @@
     },
     {
       "queryId": "sentry-posthog-product-team-v1-s02-q03",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T16:48:08.723Z",
+      "finishedAt": "2026-09-13T16:50:04.999Z",
+      "observationId": "obs-sentry-posthog-product-team-v1-s02-q03-a2b23db45b6665dd12c7f3a9"
     },
     {
       "queryId": "sentry-posthog-product-team-v1-s02-q04",
@@ -2911,7 +2923,10 @@
     },
     {
       "queryId": "client-project-workspace-v1-s02-q02",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T16:50:05.159Z",
+      "finishedAt": "2026-09-13T16:51:49.378Z",
+      "observationId": "obs-client-project-workspace-v1-s02-q02-0e176d74c3ad81df4e47c0e2"
     },
     {
       "queryId": "client-project-workspace-v1-s02-q03",
@@ -3330,7 +3345,10 @@
     },
     {
       "queryId": "team-chat-history-v1-s02-q01",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T16:51:49.473Z",
+      "finishedAt": "2026-09-13T16:53:42.102Z",
+      "observationId": "obs-team-chat-history-v1-s02-q01-f6d28272fb783157c47c16fd"
     },
     {
       "queryId": "team-chat-history-v1-s02-q02",
@@ -3753,7 +3771,8 @@
     },
     {
       "queryId": "allbirds-first-order-v1-s02-q01",
-      "status": "not-started"
+      "status": "unresolved",
+      "startedAt": "2026-09-13T16:55:02.037Z"
     },
     {
       "queryId": "allbirds-first-order-v1-s02-q02",
