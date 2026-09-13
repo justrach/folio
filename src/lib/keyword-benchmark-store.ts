@@ -113,22 +113,24 @@ function decodeCase(row: CaseRow): KeywordBenchmarkCase {
 }
 /** Suite insertion and all cases are a single D1 transaction; quota failures add no rows. */
 export async function createKeywordBenchmarkSuite(db: D1Database, ownerId: string,
-  input: { name: string; description?: string; cases: (KeywordBenchmarkCaseInput & { id?: string })[] }): Promise<KeywordBenchmarkSuite> {
+  input: { name: string; description?: string; cases: (KeywordBenchmarkCaseInput & { id?: string })[] }, options: { maxSuites?: number } = {}): Promise<KeywordBenchmarkSuite> {
   requireOwner(ownerId);
   const name = bounded(input.name, "suite name", 200), description = bounded(input.description ?? "", "suite description", 4000, true);
   if (!Array.isArray(input.cases) || !input.cases.length || input.cases.length > 50) throw new KeywordBenchmarkStoreError("A benchmark suite requires 1 to 50 cases.", 400);
+  const maxSuites = options.maxSuites ?? 20;
+  if (!Number.isInteger(maxSuites) || maxSuites < 1 || maxSuites > 100) throw new KeywordBenchmarkStoreError("Invalid operator suite allowance.", 400);
   const suiteId = crypto.randomUUID(), now = Date.now();
   const cases = input.cases.map(value => ({ input: validateKeywordBenchmarkCase(value), id: value.id === undefined ? crypto.randomUUID() : benchmarkId(value.id, "case ID") }));
   if (new Set(cases.map(value => value.id)).size !== cases.length) throw new KeywordBenchmarkStoreError("Case IDs must be unique.", 400);
   const result = await db.batch([
     db.prepare(`INSERT INTO keyword_benchmark_suites (id,user_id,name,description,created_at)
-      SELECT ?,?,?,?,? WHERE (SELECT COUNT(*) FROM keyword_benchmark_suites WHERE user_id=?) < 20 RETURNING id`)
-      .bind(suiteId, ownerId, name, description, now, ownerId),
+      SELECT ?,?,?,?,? WHERE (SELECT COUNT(*) FROM keyword_benchmark_suites WHERE user_id=?) < ? RETURNING id`)
+      .bind(suiteId, ownerId, name, description, now, ownerId, maxSuites),
     ...cases.map(value => db.prepare(`INSERT INTO keyword_benchmark_cases(id,user_id,suite_id,revision,created_at,updated_at,case_json)
       SELECT ?,?,?,0,?,?,? WHERE EXISTS(SELECT 1 FROM keyword_benchmark_suites WHERE id=? AND user_id=?)`)
       .bind(value.id, ownerId, suiteId, now, now, json(value.input, 50_000), suiteId, ownerId)),
   ]);
-  if (!result[0].results.length) throw new KeywordBenchmarkStoreError("This account has reached its 20-suite limit.", 429);
+  if (!result[0].results.length) throw new KeywordBenchmarkStoreError(`This account has reached its ${maxSuites}-suite limit.`, 429);
   return (await getKeywordBenchmarkSuite(db, ownerId, suiteId))!;
 }
 export async function getKeywordBenchmarkSuite(db: D1Database, ownerId: string, id: string): Promise<KeywordBenchmarkSuite | null> {

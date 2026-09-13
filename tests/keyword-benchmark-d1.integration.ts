@@ -230,3 +230,16 @@ test("real D1 service runs private baseline/fresh answers with one create, safe 
     try { await current?.dispose(); } finally { await rm(directory, { recursive: true, force: true }); }
   }
 });
+
+test("operator suite allowance is bounded and does not change the browser default or another owner", { timeout: 90_000 }, async () => {
+  const directory = await mkdtemp(join(tmpdir(), "folio-operator-suite-d1-")), current = runtime(directory);
+  try {
+    const db = await current.getD1Database("DB"); await setup(db);
+    for (let i=0;i<20;i++) await createKeywordBenchmarkSuite(db,"alice",{name:`Fixture ${i}`,cases:[input]});
+    await assert.rejects(createKeywordBenchmarkSuite(db,"alice",{name:"Default denied",cases:[input]}), error => error instanceof KeywordBenchmarkStoreError && error.status===429);
+    await createKeywordBenchmarkSuite(db,"alice",{name:"Authorized operator batch",cases:[input]},{maxSuites:100});
+    await assert.rejects(createKeywordBenchmarkSuite(db,"alice",{name:"Default still denied",cases:[input]}), error => error instanceof KeywordBenchmarkStoreError && error.status===429);
+    await createKeywordBenchmarkSuite(db,"bob",{name:"Other owner unaffected",cases:[input]});
+    await assert.rejects(createKeywordBenchmarkSuite(db,"bob",{name:"Unbounded denied",cases:[input]},{maxSuites:101}), error => error instanceof KeywordBenchmarkStoreError && error.status===400);
+  } finally { await current.dispose(); await rm(directory,{recursive:true,force:true}); }
+});
