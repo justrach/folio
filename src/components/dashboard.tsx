@@ -71,6 +71,7 @@ import { EvaluationsPanel } from "./evaluations-panel";
 import { AgentRunsPanel, AgentRunDock } from "./agent-runs-panel";
 import { evaluationHref, readEvaluationIntent } from "@/lib/evaluation-navigation";
 import { WebsiteSwitcher } from "./website-switcher";
+import { GithubConnection } from "./github-connection";
 
 type Modal = "scan" | "methodology" | "notifications" | "search" | null;
 const navigation = [
@@ -296,6 +297,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
   const privateOverview = section === "overview" && !demoRequested;
   const { data: session, isPending } = authClient.useSession();
   const [modal, setModal] = useState<Modal>(null);
+  const [auditTarget, setAuditTarget] = useState<{ ownerId: string | null; url: string } | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [period, setPeriod] = useState("28d");
   const [compare, setCompare] = useState(true);
@@ -385,6 +387,10 @@ function WorkspaceDashboard({ section }: { section: string }) {
     );
     notify("Your report has been downloaded.");
   }
+  function prepareAudit(url = activeScan?.url ?? "") {
+    setAuditTarget({ ownerId, url });
+    setModal("scan");
+  }
   function openScan(scan: Scan) {
     setScanOwnerId(ownerId);
     setActiveScan(scan);
@@ -426,7 +432,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
               router.push(evaluationHref({ targetUrl: site.url }).replace("/evaluations", "/search-data"));
             }
           }}
-          onAdd={() => { setMobileOpen(false); setModal("scan"); }}
+          onAdd={() => { setMobileOpen(false); prepareAudit(""); }}
         />
         <span className="nav-caption">WORKSPACE</span>
         <nav aria-label="Main navigation">
@@ -552,7 +558,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
               {section === "evaluations" ? null : section === "benchmarks" ? (
                 <Link href="/docs/api" className="button secondary">API reference <ArrowRight size={14} /></Link>
               ) : section === "overview" && !demoRequested ? (
-                <><Link href="/websites" className="button secondary">My websites <ArrowRight size={14} /></Link><Button onClick={() => setModal("scan")}><Plus size={16} />Run an audit</Button></>
+                <><Link href="/websites" className="button secondary">My websites <ArrowRight size={14} /></Link><Button onClick={() => prepareAudit()}><Plus size={16} />Run an audit</Button></>
               ) : section === "agents" ? (
                 <Link href="/pricing" className="button secondary">
                   Plans & usage <ArrowUpRight size={14} />
@@ -571,7 +577,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
                     <ArrowDownToLine size={15} />
                     Export report
                   </Button>
-                  <Button onClick={() => setModal("scan")}>
+                  <Button onClick={() => prepareAudit()}>
                     <Plus size={16} />
                     Run an audit
                   </Button>
@@ -626,7 +632,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
               title={loadingScans ? "Loading your saved audits…" : "Your first chapter starts here."}
               text={session ? "Run a website audit to measure technical health. Agent evaluations are saved separately in Evaluations." : "Sign in and run a website audit to start building your own report. Every result is saved with its source evidence."}
               action={
-                <Button onClick={() => setModal("scan")}>
+                <Button onClick={() => prepareAudit()}>
                   Run your first audit <ArrowRight size={15} />
                 </Button>
               }
@@ -898,7 +904,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
                 <Websites
                   scans={scans}
                   session={!!session}
-                  onScan={() => setModal("scan")}
+                  onScan={prepareAudit}
                   onOpen={openScan}
                   onNotify={notify}
                 />
@@ -1072,6 +1078,8 @@ function WorkspaceDashboard({ section }: { section: string }) {
         >
           {modal === "scan" && (
             <ScanForm
+              key={ownerId ?? "signed-out"}
+              initialUrl={auditTarget?.ownerId === ownerId ? auditTarget.url : ""}
               signedIn={!!session}
               onComplete={(scan) => {
                 setScanOwnerId(ownerId);
@@ -1586,13 +1594,13 @@ function Websites({
 }: {
   scans: Scan[];
   session: boolean;
-  onScan: () => void;
+  onScan: (url?: string) => void;
   onOpen: (s: Scan) => void;
   onNotify: (s: string) => void;
 }) {
   return (
     <>
-      {session && <OwnedWebsites />}
+      {session && <OwnedWebsites onAudit={onScan} />}
       {!session && <div className="websites-grid">
         <section className="panel website-card">
           <div className="website-card-top">
@@ -1622,7 +1630,7 @@ function Websites({
             Open demo report <ArrowRight size={15} />
           </Link>
         </section>
-        <button className="add-website-card" onClick={onScan}>
+        <button className="add-website-card" onClick={() => onScan()}>
           <span>
             <Plus size={24} />
           </span>
@@ -1673,7 +1681,7 @@ function Websites({
             }
             action={
               session ? (
-                <Button onClick={onScan}>
+                <Button onClick={() => onScan()}>
                   Run an audit <ArrowRight size={14} />
                 </Button>
               ) : (
@@ -1873,6 +1881,7 @@ function Settings({
   agentStatus: boolean;
   onNotify: (s: string) => void;
 }) {
+  const settingsQuery = useSearchParams();
   return (
     <div className="settings-layout">
       <section className="panel">
@@ -1921,6 +1930,8 @@ function Settings({
           <h2>Your connections</h2>
           <Code2 size={19} />
         </div>
+        {!pending && <GithubConnection key={session?.user.id ?? "signed-out"} ownerId={session?.user.id ?? null} />}
+        {session && settingsQuery.get("connection") === "github-error" && <p className="form-error" role="alert">GitHub could not be linked. Try again with a GitHub account that has the same verified email as your Folio account.</p>}
         {[
           {
             name: "Website scanner",
@@ -1968,13 +1979,15 @@ function Settings({
 }
 
 function ScanForm({
+  initialUrl,
   signedIn,
   onComplete,
 }: {
+  initialUrl: string;
   signedIn: boolean;
   onComplete: (s: Scan) => void;
 }) {
-  const [url, setUrl] = useState("https://example.com");
+  const [url, setUrl] = useState(initialUrl);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   return (
@@ -2019,8 +2032,7 @@ function ScanForm({
         />
       </div>
       <p className="form-hint">
-        The initial live scanner supports example.com. Additional public hosts
-        can be enabled in the server configuration.
+        Enter the public page you want to check. The audit saves its HTML findings to your account.
       </p>
       <div className="scan-includes">
         <span>
@@ -2114,11 +2126,16 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [googleConfigured, setGoogleConfigured] = useState(false);
+  const [githubConfigured, setGithubConfigured] = useState(false);
   useEffect(() => {
     const controller = new AbortController();
     fetch("/api/search-console", { signal: controller.signal, cache: "no-store" })
       .then(response => response.ok ? response.json() : null)
       .then(data => { if (!controller.signal.aborted) setGoogleConfigured(data?.configured === true); })
+      .catch(() => {});
+    fetch("/api/github", { signal: controller.signal, cache: "no-store" })
+      .then(response => response.ok ? response.json() : null)
+      .then(data => { if (!controller.signal.aborted) setGithubConfigured(data?.configured === true); })
       .catch(() => {});
     return () => controller.abort();
   }, []);
@@ -2200,6 +2217,15 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
             finally { setBusy(false); }
           }}>Sign in with Google</button>}
           {searchParams.get("error") === "google" && <p className="form-error" role="alert">Google sign-in could not be completed. If you already use email and password, sign in that way before linking Google in Search Console.</p>}
+          {githubConfigured && <button className="button secondary" type="button" disabled={busy} onClick={async () => {
+            setBusy(true); setError("");
+            try {
+              const result = await authClient.signIn.social({ provider: "github", callbackURL: returnTo, errorCallbackURL: "/login?error=github" });
+              if (result.error) setError("GitHub sign-in could not be completed. If you already have a Folio account, sign in with your existing method and connect GitHub in Settings.");
+            } catch { setError("GitHub sign-in could not be completed. Please try again."); }
+            finally { setBusy(false); }
+          }}>Sign in with GitHub</button>}
+          {searchParams.get("error") === "github" && <p className="form-error" role="alert">GitHub sign-in could not be completed. If you already have a Folio account, sign in with your existing method and connect GitHub in Settings.</p>}
           {signup && (
             <label>
               Your name

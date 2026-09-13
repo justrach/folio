@@ -6,6 +6,10 @@ BETTER_AUTH_SECRET=replace-with-a-random-secret-of-at-least-32-characters
 # Enable the Search Console API. Read-only consent is requested explicitly in the app.
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
+# Optional GitHub OAuth App for identity only; no repository permissions.
+# Local callback: http://localhost:3001/api/auth/callback/github
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
 # Add the server-side provider key when available; never use a NEXT_PUBLIC_ variable.
 OPENAI_API_KEY=
 OPENAI_AGENTS_MODEL=gpt-6-astra

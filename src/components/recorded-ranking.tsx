@@ -24,13 +24,13 @@ export function RecordedRanking({ query, observation }: { query: PublicSearchQue
     {observation.recommendations.length > 0 ? <table className="ranked-search-table">
       <caption className="ranked-search-sr-only">Returned recommendations</caption>
       <colgroup><col className="ranked-search-rank-column" /><col /></colgroup>
-      <thead><tr><th scope="col">Rank</th><th scope="col">Website</th></tr></thead>
+      <thead><tr><th scope="col">Position</th><th scope="col">Recommendation</th></tr></thead>
       <tbody>{observation.recommendations.map((recommendation, index) => <RecommendationRow
         key={`${recommendation.position}-${index}`} recommendation={recommendation} citations={observation.citations} />)}</tbody>
     </table> : <div className="ranked-search-empty" role="status"><h3>No recommendations returned.</h3><p>This completed observation did not include a recommendation list.</p></div>}
     <details className="ranked-search-provenance">
       <summary>About this observation</summary>
-      <p>Rank is the position in this query’s returned recommendation list. Another run can return a different order. Reasons and citations were returned with the observation and remain evidence to review.</p>
+      <p>Position follows the returned list for this question. Depending on the question, recommendations may be websites, products, resources or steps. Another run can return a different order. Reasons and citations remain evidence to review.</p>
       <dl>
         <dt>Model</dt><dd>{observation.model}</dd>
         <dt>Observed at</dt><dd>{observation.observedAt}</dd>
