@@ -35,6 +35,7 @@ export function PublicBenchmarkDashboard() {
   const [error, setError] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [revision, setRevision] = useState(0);
+  const [initialTaskId, setInitialTaskId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [audience, setAudience] = useState("All audiences");
   const [status, setStatus] = useState("All tasks");
@@ -53,6 +54,9 @@ export function PublicBenchmarkDashboard() {
         assertPublicDashboardData(next);
         if (disposed) return;
         setData(next); setError(false);
+        setInitialTaskId(current => current ?? [...next.queries].filter(task => task.latestObservation)
+          .sort((a, b) => Date.parse(b.latestObservation!.observedAt) - Date.parse(a.latestObservation!.observedAt))[0]?.id
+          ?? next.queries.find(task => ["running", "queued"].includes(task.collection.status))?.id ?? next.queries[0]?.id ?? null);
         // This retrieves published snapshots only; it never starts or reconciles agent work.
         if (next.queries.some(task => !task.latestObservation && !["failed", "cancelled"].includes(task.collection.status))) {
           timer = setTimeout(() => { if (!disposed) void load(); }, 15_000);
@@ -83,7 +87,7 @@ export function PublicBenchmarkDashboard() {
     return (audience === "All audiences" || audience === task.audience) && text.includes(search.toLowerCase().trim())
       && (status === "All tasks" || status === "Published" && state.key === "published" || status === "In progress" && inProgress || status === "Not started" && state.key === "pending" || status === "Needs attention" && needsAttention);
   });
-  const selected = filtered.find(task => task.id === queryId) ?? latest.find(task => filtered.includes(task)) ?? active.find(task => filtered.includes(task)) ?? filtered[0];
+  const selected = filtered.find(task => task.id === (queryId ?? initialTaskId)) ?? latest.find(task => filtered.includes(task)) ?? active.find(task => filtered.includes(task)) ?? filtered[0];
   function selectTask(id: string, focus = false) {
     const next = new URLSearchParams(); next.set("query", id);
     window.history.pushState(null, "", `/overview?${next}`);

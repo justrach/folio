@@ -421,6 +421,196 @@
         "Daytona GPU documentation differed on maximum GPU count, and its pricing extraction did not clearly distinguish the on-demand/preemptible toggle; no GPU count limit or comparable GPU price quote is asserted.",
         "Actual GPU capacity, cold-start costs, workload-specific metering, storage retention charges and negotiated pricing were not independently verified. No access failures blocked the cited sources."
       ]
+    },
+    {
+      "id": "obs-vector-search-small-app-v1-066ddb0e78d1d8f94020ca92",
+      "queryId": "vector-search-small-app-v1",
+      "observedAt": "2026-09-13T06:25:28.608Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Qdrant",
+          "url": "https://qdrant.tech/pricing/",
+          "reason": "Recommended first for explicit payload indexing, collection-scoped access, and managed or self-managed deployment flexibility.",
+          "citationUrls": [
+            "https://qdrant.tech/documentation/manage-data/indexing/",
+            "https://qdrant.tech/documentation/security/?q=jwt",
+            "https://qdrant.tech/pricing/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Pinecone",
+          "url": "https://www.pinecone.io/pricing/",
+          "reason": "Recommended for teams prioritizing managed operations; compare security-plan minimums and namespace-dependent query costs.",
+          "citationUrls": [
+            "https://www.pinecone.io/pricing/",
+            "https://docs.pinecone.io/guides/manage-cost/understanding-cost",
+            "https://docs.pinecone.io/guides/search/filter-by-metadata"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Chroma",
+          "url": "https://www.trychroma.com/pricing",
+          "reason": "Recommended for quick local prototyping and a serverless cloud path, subject to local/cloud feature parity and access-control verification.",
+          "citationUrls": [
+            "https://docs.trychroma.com/?trk=public_post-text",
+            "https://docs.trychroma.com/docs/overview/oss",
+            "https://www.trychroma.com/pricing"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://qdrant.tech/documentation/manage-data/indexing/",
+          "title": "Qdrant — Indexing"
+        },
+        {
+          "url": "https://qdrant.tech/pricing/",
+          "title": "Qdrant Cloud Pricing"
+        },
+        {
+          "url": "https://qdrant.tech/documentation/security/?q=jwt",
+          "title": "Qdrant — Security & Access Control"
+        },
+        {
+          "url": "https://qdrant.tech/documentation/cloud-rbac/",
+          "title": "Qdrant — Cloud RBAC"
+        },
+        {
+          "url": "https://docs.pinecone.io/guides/search/filter-by-metadata",
+          "title": "Pinecone — Filter by metadata"
+        },
+        {
+          "url": "https://www.pinecone.io/pricing/",
+          "title": "Pinecone — Pricing"
+        },
+        {
+          "url": "https://docs.pinecone.io/guides/manage-cost/understanding-cost",
+          "title": "Pinecone — Understanding cost"
+        },
+        {
+          "url": "https://docs.trychroma.com/?trk=public_post-text",
+          "title": "Chroma — Getting Started"
+        },
+        {
+          "url": "https://docs.trychroma.com/docs/overview/oss",
+          "title": "Chroma — Open Source"
+        },
+        {
+          "url": "https://www.trychroma.com/pricing",
+          "title": "Chroma — Pricing"
+        }
+      ],
+      "limitations": [
+        "Public web research on September 13, 2026; discovery was not domain-restricted. This covers the three requested products, not the whole market. Recommendations are not measured search-engine ranks or independently verified performance results.",
+        "Vendor documentation and pricing were consulted; no accounts, deployments, benchmarks, or billing transactions were performed. Workload-specific costs and negotiated prices remain unknown.",
+        "Chroma authentication pages at /production/administration/auth and /docs/run-chroma/authentication returned internal errors; a follow-up authentication search returned no results. Current fine-grained Cloud permissions and self-hosted authentication remain unverified.",
+        "Qdrant security URLs under /documentation/guides/security/ and /documentation/operations/security/ returned no readable content; a public indexed security page supplied the evidence instead. Pinecone's older /guides/manage-data/filter-by-metadata URL failed; the /guides/search/filter-by-metadata page was successfully retrieved.",
+        "Some search results reflect older crawls. Chroma's documentation acknowledges local/distributed feature differences; confirm exact deployed versions, plan entitlements, and current pricing before committing."
+      ]
+    },
+    {
+      "id": "obs-research-api-citations-v1-924b57b6b1fdd7a5f38d69a3",
+      "queryId": "research-api-citations-v1",
+      "observedAt": "2026-09-13T06:27:02.454Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Exa",
+          "url": "https://exa.ai/docs/reference/search",
+          "reason": "First choice for a direct cited-answer workflow: search can include content, and Answer returns explicit citation records.",
+          "citationUrls": [
+            "https://exa.ai/docs/reference/search",
+            "https://exa.ai/docs/reference/answer",
+            "https://exa.ai/docs/reference/pricing"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Tavily",
+          "url": "https://docs.tavily.com/documentation/api-reference/endpoint/search",
+          "reason": "Strong fit for an app using its own answer model: relevant content, optional raw pages and known-URL extraction with credit-based pricing.",
+          "citationUrls": [
+            "https://docs.tavily.com/documentation/api-reference/endpoint/search",
+            "https://docs.tavily.com/documentation/api-reference/endpoint/extract",
+            "https://docs.tavily.com/documentation/api-credits"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Firecrawl",
+          "url": "https://docs.firecrawl.dev/features/search",
+          "reason": "Best fit here when flexible page extraction drives the requirements; search and scraping combine, with additive credit costs.",
+          "citationUrls": [
+            "https://docs.firecrawl.dev/features/search",
+            "https://docs.firecrawl.dev/api-reference/endpoint/scrape",
+            "https://www.firecrawl.dev/pricing"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://exa.ai/docs/reference/search",
+          "title": "Exa Search"
+        },
+        {
+          "url": "https://exa.ai/docs/reference/contents-api-guide",
+          "title": "Exa Contents API"
+        },
+        {
+          "url": "https://exa.ai/docs/reference/answer",
+          "title": "Exa Answer"
+        },
+        {
+          "url": "https://exa.ai/docs/reference/pricing",
+          "title": "Exa Pricing"
+        },
+        {
+          "url": "https://docs.tavily.com/documentation/api-reference/endpoint/search",
+          "title": "Tavily Search"
+        },
+        {
+          "url": "https://docs.tavily.com/documentation/api-reference/endpoint/extract",
+          "title": "Tavily Extract"
+        },
+        {
+          "url": "https://docs.tavily.com/documentation/api-credits",
+          "title": "Tavily Credits & Pricing"
+        },
+        {
+          "url": "https://docs.firecrawl.dev/features/search",
+          "title": "Firecrawl Search"
+        },
+        {
+          "url": "https://docs.firecrawl.dev/api-reference/endpoint/scrape",
+          "title": "Firecrawl Scrape"
+        },
+        {
+          "url": "https://www.firecrawl.dev/pricing",
+          "title": "Firecrawl Pricing"
+        }
+      ],
+      "limitations": [
+        "Public web research using OpenAI live search; discovery had no domain allowlist. This compares the three requested products, not the whole market or consumer ChatGPT visibility.",
+        "No provider APIs were executed. Search quality, freshness, latency, extraction success and citation accuracy were not independently tested; no access failures occurred for the cited pages.",
+        "Older search results and Exa's Contents guide conflict with current Exa pricing on some rates or summary charges; the current official pricing page takes precedence here.",
+        "Cost examples are calculations, not invoices. They exclude taxes, free promotional credits, your own model costs and optional features. Firecrawl's example uses monthly Hobby pricing and its top-up rate; other plans differ.",
+        "Tavily Search documentation does not establish claim-level citation mapping for its optional answer. Provider citation records still require checking against the supporting content."
+      ]
     }
   ]
 }

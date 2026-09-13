@@ -158,3 +158,42 @@ test("refresh retrieves only public GET state and an invalid payload fails safel
   await expect(page.locator("body")).not.toContainText("9999");
   noPrivateWork(state);
 });
+
+test("background publication updates totals without replacing the task already being read", async ({ page }) => {
+  const state = await setup(page);
+  await page.clock.install({ time: new Date(at) });
+  await page.goto("/overview");
+  const detail = page.getByRole("region", { name: "Selected task", exact: true });
+  await expect(detail.getByRole("heading", { name: questions[0], exact: true })).toBeVisible();
+  await expect(page).toHaveURL(/\/overview$/);
+
+  const next = fixture();
+  const newer: PublicSearchObservation = {
+    ...structuredClone(published), id: "fixture-newer-observation", queryId: "fixture-task-2", observedAt: "2026-09-13T09:05:00.000Z",
+    recommendations: [{ position: 1, name: "Gamma Planner", url: "https://gamma.example.com/", reason: "The returned answer described shared planning features.", citationUrls: ["https://gamma.example.com/planning"] }],
+    citations: [{ url: "https://gamma.example.com/planning", title: "Gamma planning source" }],
+  };
+  next.updatedAt = newer.observedAt;
+  next.observations.push(newer);
+  next.queries[1].latestObservation = structuredClone(newer);
+  next.queries[1].resultStatus = "published";
+  next.queries[1].observationCount = 1;
+  next.queries[1].collection.finishedAt = newer.observedAt;
+  next.summary.publishedQueryCount = 2;
+  next.summary.publishedObservationCount = 2;
+  next.summary.completedUnpublishedQueryCount = 0;
+  next.summary.uniqueRecommendedWebsiteCount = 3;
+  next.summary.uniqueCitedSourceCount = 3;
+  state.response = next;
+  const reads = state.publicReads;
+
+  await page.clock.runFor(15_100);
+  await expect.poll(() => state.publicReads).toBeGreaterThan(reads);
+  await expect(page.getByRole("progressbar", { name: "Tasks with published answers", exact: true })).toHaveAttribute("aria-valuenow", "2");
+  await expect(page.locator('dl[aria-label="Benchmark totals"]').locator("dd")).toHaveText(["2 / 15", "1", "3", "3"]);
+  await expect(detail.getByRole("heading", { name: questions[0], exact: true })).toBeVisible();
+  await expect(detail.getByRole("link", { name: "Beta Basics", exact: true })).toBeVisible();
+  await expect(detail).not.toContainText("Gamma Planner");
+  await expect(page).toHaveURL(/\/overview$/);
+  noPrivateWork(state);
+});

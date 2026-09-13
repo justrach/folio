@@ -10,6 +10,11 @@ function sourceLabel(url: string) {
   catch { return url; }
 }
 
+function citationLabel(url: string, title?: string | null) {
+  const label = title?.trim() || sourceLabel(url);
+  return label.length > 90 ? `${label.slice(0, 87)}…` : label;
+}
+
 export function RecordedRanking({ query, observation }: { query: PublicSearchQuery; observation: PublicSearchObservation }) {
   return <>
     <p className="ranked-search-meta">
@@ -55,7 +60,10 @@ function RecommendationRow({ recommendation, citations }: { recommendation: Publ
         : <span className="ranked-search-name">{recommendation.name}</span>}
       <p className="ranked-search-domain">{recommendation.url ? sourceLabel(recommendation.url) : "Website URL not returned"}</p>
       {sourceUrls.length > 0 ? <div className="ranked-search-citations"><span>Sources:</span><ul>
-        {sourceUrls.map(url => <li key={url}><a href={url} target="_blank" rel="noreferrer" aria-label={citations.find(citation => citation.url === url)?.title || url}>{sourceLabel(url)}</a></li>)}
+        {sourceUrls.map(url => {
+          const title = citations.find(citation => citation.url === url)?.title;
+          return <li key={url}><a href={url} target="_blank" rel="noreferrer" aria-label={title || url} title={title || url}>{citationLabel(url, title)}</a></li>;
+        })}
       </ul></div> : <p className="ranked-search-no-source">No source attached</p>}
       <details className="ranked-search-evidence"><summary>Returned reason</summary>
         <p>{recommendation.reason || "No reason was recorded for this recommendation."}</p>
