@@ -58,7 +58,7 @@ async function showHtmlChecks(page: Page) {
   await page.keyboard.press("Enter");
   await expect(htmlButton).toHaveAttribute("aria-pressed", "true");
   await expect(switcher.getByRole("button", { name: "Search rankings", exact: true })).toHaveAttribute("aria-pressed", "false");
-  await expect(page.getByRole("tabpanel", { name: "HTML page checks", exact: true })).toBeVisible();
+  await expect(page.getByRole("region", { name: "HTML page checks", exact: true })).toBeVisible();
 }
 
 async function noOverflow(page: Page) {

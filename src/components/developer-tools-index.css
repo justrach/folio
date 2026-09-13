@@ -1,11 +1,4 @@
 .developer-tools-index{display:grid;gap:24px;min-width:0;color:#263f2f}
-.devtools-view-switch{display:flex;flex-wrap:wrap;gap:8px;border-bottom:1px solid #bdc9b4;padding-bottom:12px}
-.devtools-view-switch button{min-height:44px;padding:10px 16px;border:1px solid #adbca7;border-radius:4px;background:#fffef8;color:#2f4634;font:inherit;font-size:14px;cursor:pointer}
-.devtools-view-switch button[aria-pressed="true"]{background:#294b34;border-color:#294b34;color:#fffef8}
-.devtools-view-switch button:hover{border-color:#294b34}
-.devtools-view-switch button:focus-visible{outline:2px solid #355b3f;outline-offset:3px}
-.devtools-view-panel{min-width:0}
-.devtools-html-checks{display:grid;gap:24px}
 .devtools-intro{display:grid;gap:8px}
 .devtools-intro h2{font-size:24px;font-family:var(--font-display,Georgia,serif);font-weight:400;line-height:1.25;color:#203d2a;margin:0}
 .devtools-intro p{line-height:1.6;max-width:800px;font-size:14px;color:#455448;margin:0}
@@ -46,7 +39,6 @@
 .devtool-observation .devtool-capture-error{color:#70502a}
 .devtools-methodology{border-block:1px solid #bdc9b4;padding:18px 2px;font-size:14px;line-height:1.7;color:#455448}
 .devtools-methodology summary{color:#24472f;font-weight:600;cursor:pointer}
-.index-view-tabs{flex-wrap:wrap}
 /* Local contrast overrides retain Spectrum's native table and focus behavior. */
 .devtools-directory .spectrum-table{color:#293e2e}
 .devtools-directory .spectrum-table-scroll{position:relative;border-color:#b4c0ac}

@@ -55,7 +55,8 @@ export function KeywordActivitySummary() {
         if (live()) setSnapshot(previous => ({ ownerId, runs: previous.ownerId === ownerId ? previous.runs : [], loading: false, error: true }));
       }
     }
-    void load();
+    // Skip an effect disposed by Strict Mode replay or an immediate owner change.
+    queueMicrotask(() => { if (live()) void load(); });
     return () => { disposed = true; controller.abort(); if (timer !== undefined) clearTimeout(timer); };
   }, [ownerId, isPending, refresh]);
 

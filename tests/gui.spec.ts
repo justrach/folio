@@ -33,7 +33,7 @@ const routes = [
   {
     path: "/leaderboard",
     label: /^The Folio Index$/,
-    heading: "Search rankings, with the evidence.",
+    heading: "The Folio Index",
   },
   {
     path: "/agents",

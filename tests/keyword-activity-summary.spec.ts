@@ -71,11 +71,22 @@ test("keyword activity opens the exact saved run, shows only latest three, and c
 });
 
 test("keyword activity polls saved GET state while active and stops when the run finishes", async ({page}) => {
-  await page.clock.install();
+  // Freeze time before mounting: install() alone still advances with wall time.
+  // CI navigation/hydration must not spend the first polling interval.
+  await page.clock.install({ time: new Date(at) });
+  await page.clock.pauseAt(new Date(Date.parse(at) + 60_000));
   const state = await fixture(page);
   state.runs = [{...run(3), status: "running", answer: null}];
   await page.goto("/agents");
-  await expect(activity(page)).toContainText("Running");
+  // Let startup timers run in bounded increments while wall-clock time stays paused.
+  // Hydration may need several turns; it must never advance a 10-second poll.
+  let startupTime = 0;
+  await expect.poll(async () => {
+    startupTime += 50;
+    expect(startupTime).toBeLessThan(1_000);
+    await page.clock.runFor(50);
+    return activity(page).getByText("Running", { exact: true }).count();
+  }).toBe(1);
   expect(state.reads).toBe(1); expect(state.posts).toEqual([]);
   await page.clock.runFor(10_100);
   await expect.poll(() => state.reads).toBe(2);

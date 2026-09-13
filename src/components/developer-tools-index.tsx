@@ -1,12 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ExternalLink, Search } from "lucide-react";
 import { DEVELOPER_TOOLS, WEBSITE_AUDIENCES, type DeveloperTool } from "@/lib/developer-tools-source";
 import evaluationBatch from "@/data/developer-tool-evaluations.json";
 import { DataTable, type DataTableColumn } from "./ui/spectrum-data-table";
-import { RankedSearchTable } from "./ranked-search-table";
 import "./developer-tools-index.css";
 
 type PageObservation = {
@@ -46,8 +45,6 @@ function CheckSummary({ observation }: { observation: PageObservation }) {
 }
 
 export function DeveloperToolsIndex() {
-  const viewId = useId();
-  const [view, setView] = useState<"rankings" | "html">("rankings");
   const [query, setQuery] = useState("");
   const [audience, setAudience] = useState("All audiences");
   const [category, setCategory] = useState("All categories");
@@ -78,16 +75,6 @@ export function DeveloperToolsIndex() {
   ];
 
   return <div className="developer-tools-index">
-    <div className="devtools-view-switch" role="group" aria-label="Evaluation view">
-      <button type="button" id={`${viewId}-rankings-button`} aria-pressed={view === "rankings"}
-        aria-controls={`${viewId}-rankings-panel`} onClick={() => setView("rankings")}>Search rankings</button>
-      <button type="button" id={`${viewId}-html-button`} aria-pressed={view === "html"}
-        aria-controls={`${viewId}-html-panel`} onClick={() => setView("html")}>HTML page checks</button>
-    </div>
-    {view === "rankings" ? <section className="devtools-view-panel" id={`${viewId}-rankings-panel`}
-      role="tabpanel" aria-labelledby={`${viewId}-rankings-button`}><RankedSearchTable /></section>
-      : <section className="devtools-view-panel devtools-html-checks" id={`${viewId}-html-panel`}
-        role="tabpanel" aria-labelledby={`${viewId}-html-button`}>
     <section className="devtools-intro">
       <h2>HTML page checks</h2>
       <p>{completed} of {DEVELOPER_TOOLS.length} public homepages measured. Open a row for its checks and capture evidence.</p>
@@ -115,7 +102,6 @@ export function DeveloperToolsIndex() {
       <p>Checks needing attention include partial points and failures. Official description sources and review dates appear in each row, separately from Folio’s capture time. Inclusion does not establish endorsement or domain ownership.</p>
       <Link href="/evaluations">Open private website evaluations</Link>
     </details>
-    </section>}
   </div>;
 }
 

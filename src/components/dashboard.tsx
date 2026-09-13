@@ -63,6 +63,8 @@ import { KeywordActivitySummary } from "./keyword-activity-summary";
 import "./evaluation-page-shell.css";
 import { KeywordBenchmarksPanel } from "./keyword-benchmarks-panel";
 import { DeveloperToolsIndex } from "./developer-tools-index";
+import { RankedSearchTable } from "./ranked-search-table";
+import "./index-page.css";
 import { EvaluationsPanel } from "./evaluations-panel";
 import { AgentRunsPanel, AgentRunDock } from "./agent-runs-panel";
 import { evaluationHref, readEvaluationIntent } from "@/lib/evaluation-navigation";
@@ -141,10 +143,10 @@ const titles: Record<
     description: "Review a suggestion. Make it yours. Publish on your terms.",
   },
   leaderboard: {
-    eyebrow: "THE FOLIO INDEX · VOL. 001",
-    title: "Search rankings, with the evidence.",
+    eyebrow: "",
+    title: "The Folio Index",
     description:
-      "Compare the websites Astra recommended for each question, then inspect their sources and page checks.",
+      "Recorded answers, recommendations and page checks.",
   },
   evaluations: {
     eyebrow: "THE EVIDENCE BEHIND THE ANSWER",
@@ -505,10 +507,10 @@ export function Dashboard({ section }: { section: string }) {
             </Link>
           </div>
         </header>
-        <main className={`page-content${["evaluations", "benchmarks", "overview"].includes(section) ? " evaluation-page" : ""}${section === "overview" ? " overview-page" : ""}`}>
+        <main className={`page-content${["evaluations", "benchmarks", "overview"].includes(section) ? " evaluation-page" : ""}${section === "overview" ? " overview-page" : ""}${section === "leaderboard" ? " index-page" : ""}`}>
           <div className="page-heading">
             <div>
-              {!["evaluations", "benchmarks", "overview"].includes(section) && <div className="eyebrow">{title.eyebrow}</div>}
+              {!["evaluations", "benchmarks", "overview", "leaderboard"].includes(section) && <div className="eyebrow">{title.eyebrow}</div>}
               <h1>{title.title}</h1>
               <p>{title.description}</p>
             </div>
@@ -526,9 +528,9 @@ export function Dashboard({ section }: { section: string }) {
                   Manage access <Settings2 size={14} />
                 </Link>
               ) : section === "leaderboard" ? (
-                <Button onClick={() => setModal("scan")}>
-                  Get your website graded <ArrowUpRight size={15} />
-                </Button>
+                <Link href="/evaluations" className="button secondary">
+                  Evaluate a website <ArrowUpRight size={15} />
+                </Link>
               ) : (
                 <>
                   <Button kind="secondary" onClick={exportReport}>
@@ -1123,7 +1125,7 @@ export function Dashboard({ section }: { section: string }) {
           )}
         </Dialog>
       )}
-      <AgentRunDock />
+      {section !== "leaderboard" && <AgentRunDock />}
       {toast && (
         <div className="toast" role="status">
           <CheckCheck size={18} />
@@ -1296,7 +1298,7 @@ function Leaderboard({
   const [category, setCategory] = useState("All industries");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<string | null>(null);
-  const [indexView, setIndexView] = useState<"tools" | "sample" | "published">("tools");
+  const [indexView, setIndexView] = useState<"rankings" | "html" | "sample" | "published">("rankings");
   const filtered = brands
     .filter(
       (b) =>
@@ -1315,22 +1317,18 @@ function Leaderboard({
     .sort((a, b) => b.value - a.value);
   return (
     <>
-      <div className="index-view-tabs">
-        <button onClick={() => setIndexView("tools")} className={indexView === "tools" ? "active" : ""}>Search rankings</button>
-        <button
-          onClick={() => setIndexView("sample")}
-          className={indexView === "sample" ? "active" : ""}
-        >
-          Explore sample rankings
-        </button>
-        <button
-          onClick={() => setIndexView("published")}
-          className={indexView === "published" ? "active" : ""}
-        >
-          Published page audits <Globe2 size={13} />
-        </button>
+      <div className="index-view-tabs" role="group" aria-label="Evaluation view">
+        {([
+          ["rankings", "Search rankings"],
+          ["html", "HTML page checks"],
+          ["published", "Published page audits"],
+          ["sample", "Explore sample rankings"],
+        ] as const).map(([value, label]) => <button key={value} type="button"
+          id={`index-view-${value}`} aria-pressed={indexView === value}
+          aria-controls="index-view-panel" onClick={() => setIndexView(value)}>{label}</button>)}
       </div>
-      {indexView === "tools" ? <DeveloperToolsIndex /> : indexView === "published" ? (
+      <section id="index-view-panel" className="index-view-panel" role="region" aria-labelledby={`index-view-${indexView}`}>
+      {indexView === "rankings" ? <RankedSearchTable /> : indexView === "html" ? <DeveloperToolsIndex /> : indexView === "published" ? (
         <PublishedIndex />
       ) : (
         <>
@@ -1540,6 +1538,7 @@ function Leaderboard({
           </Button>
         </Dialog>
       )}
+      </section>
     </>
   );
 }
