@@ -1,5 +1,21 @@
 # Frontend evaluation workflow
 
+## Workspace presentation
+
+The application shell uses `src/app/workspace-theme.css` for the warm plaster,
+charcoal, and muted foliage palette inspired by the owner's reference photo.
+The photo itself is not included in the application. The shared navigation,
+controls, and overview use this theme; route-specific forms retain their existing
+behavior. Overview metrics share a divided strip that becomes two columns on
+smaller screens. Sample labels remain visible alongside the report controls.
+
+DM Sans is self-hosted through `next/font/local` for site typography, including
+headings, navigation, landing, pricing, and login. Regular and italic variable
+fonts and their OFL license live in `src/app/fonts`. Source/code inspection keeps
+monospace formatting. The workspace uses a quiet text navigation rail, omits
+promotional sidebar artwork and redundant heading eyebrows, and keeps essential
+evidence, account, and spending states visible.
+
 Folio connects saved technical audits, private SEO reports, and managed website evaluations through prepared forms and owned records. Moving between pages does not start a paid lookup or model task. The owner reviews the inputs and chooses the action that creates work.
 
 This guide describes the current UI. The [evaluation loop](EVALUATION-LOOP.md) explains execution and recovery; the [evaluation strategy](../EVALUATION-STRATEGY.md) defines what the checks establish.
@@ -9,6 +25,8 @@ This guide describes the current UI. The [evaluation loop](EVALUATION-LOOP.md) e
 `/overview` defaults to **My website results**. Signed-out visitors see a sign-in prompt; signed-in owners choose an existing saved website. The overview loads saved application records with GET requests only. It does not reconcile provider sessions, start a search, or import an SEO report.
 
 **Search observations** uses the latest completed answer for each question targeting that exact website. Open-web and reviewed-documentation observations occupy separate tabs. A newer pending, failed, cancelled, or needs-attention attempt stays visible without replacing its earlier completed answer. Each question links to its answer and, when different, its latest attempt.
+
+The sidebar's **Switch website** control opens the authenticated account's saved websites from `/api/sites`, including sites without audits. Choosing a website reads its own audit history and opens its latest saved SEO audit; a site without an audit opens Search & backlinks with the target prepared. The picker includes loading, retry, signed-out, and empty states, plus **Add a website** to open the audit form. Opening or selecting never starts an audit, paid SEO lookup, or evaluation. The menu reloads on opening, supports keyboard dismissal, and clears its private state when the account changes.
 
 The appearance rate uses only completed answers with a known target-identity result; unknown identities are reported and excluded from the denominator. Distinct cited pages counts source URLs across the loaded answers, including other websites. Question coverage, unfinished attempts, and read failures appear beside the metrics. The overview loads up to 20 suites and 100 recent attempts; these bounds and comparable same-question history are under **Details and history**. No trend is inferred from unrelated questions.
 

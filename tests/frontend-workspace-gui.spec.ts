@@ -167,3 +167,94 @@ test("an external login return target falls back to the private websites workspa
   expect(state.signIns).toBe(1);
   noStartedWork(state);
 });
+
+async function openWebsitePicker(page: Page) {
+  const menu = page.getByRole("button", { name: "Open navigation", exact: true });
+  if (await menu.isVisible()) await menu.click();
+  await page.getByRole("button", { name: "Switch website", exact: true }).click();
+}
+
+test("website picker lists owned sites and opens the selected audit without starting work", async ({ page }) => {
+  const state = await fixture(page);
+  const second = { ...olderAudit, url: "https://second.example.org/", id: "second-site-audit" };
+  await page.route("**/api/scans", route => route.fulfill({ json: { scans: [latestAudit, second] } }));
+  await page.route("**/api/sites", route => route.fulfill({ json: { sites: [
+    { id: "first-site", name: "Example", url: latestUrl },
+    { id: "second-site", name: "Second website", url: second.url },
+    { id: "unscanned-site", name: "New website", url: "https://new.example.org/" },
+  ] } }));
+  const reads: string[] = [];
+  await page.route("**/api/scans?siteId=*", route => {
+    reads.push(route.request().url());
+    return route.fulfill({ json: { scans: new URL(route.request().url()).searchParams.get("siteId") === "second-site" ? [second] : [] } });
+  });
+  await page.goto("/overview?view=workspace");
+  await openWebsitePicker(page);
+  const picker = page.locator("#saved-website-picker");
+  await expect(picker.getByRole("button", { name: /Example https/ })).toBeVisible();
+  await picker.getByRole("button", { name: /Second website/ }).click();
+  await expect(page).toHaveURL(/\/seo$/);
+  await expect(page.locator(".audit-evaluation-bridge")).toContainText("second.example.org");
+  await page.reload();
+  await expect(page.locator(".audit-evaluation-bridge")).toContainText("second.example.org");
+  await openWebsitePicker(page);
+  await expect(picker.getByRole("button", { name: /Second website/ })).toHaveAttribute("aria-pressed", "true");
+  await picker.getByRole("button", { name: /New website/ }).click();
+  await expect(page).toHaveURL(/\/search-data\?target=/);
+  expect(new URL(page.url()).searchParams.get("target")).toBe("https://new.example.org/");
+  expect(reads).toHaveLength(2);
+  noStartedWork(state);
+});
+
+test("website picker has recoverable errors, an empty state, and keyboard dismissal", async ({ page }) => {
+  const state = await fixture(page);
+  let fail = true;
+  await page.route("**/api/sites", route => route.fulfill(fail ? { status: 503, json: {} } : { json: { sites: [] } }));
+  await page.goto("/overview?view=workspace");
+  await openWebsitePicker(page);
+  const picker = page.locator("#saved-website-picker");
+  await expect(picker.getByRole("alert")).toContainText("Your websites could not be loaded");
+  fail = false;
+  await picker.getByRole("button", { name: "Retry websites" }).click();
+  await expect(picker).toContainText("No websites saved yet");
+  await picker.getByRole("button", { name: "Add a website" }).focus();
+  await page.keyboard.press("Escape");
+  await expect(picker).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Switch website" })).toBeFocused();
+  await page.keyboard.press("Enter");
+  await picker.getByRole("button", { name: "Add a website" }).click();
+  await expect(page.getByLabel("Website URL", { exact: true })).toBeVisible();
+  noStartedWork(state);
+});
+
+test("signed-out website picker asks for sign-in instead of showing fictional websites", async ({ page }) => {
+  const state = await fixture(page, { signedIn: false });
+  await page.goto("/overview?view=workspace");
+  await openWebsitePicker(page);
+  await expect(page.locator("#saved-website-picker")).toContainText("Sign in to switch between your saved websites");
+  await expect(page.locator("#saved-website-picker").getByRole("link", { name: "Sign in" })).toBeVisible();
+  noStartedWork(state);
+});
+
+test("website picker clears private websites on logout", async ({ page }) => {
+  const state = await fixture(page);
+  await page.route("**/api/auth/sign-out", route => {
+    state.signedIn = false;
+    return route.fulfill({ json: { success: true } });
+  });
+  await page.route("**/api/sites", route => route.fulfill({ json: { sites: [
+    { id: "private-site", name: "Private owner website", url: latestUrl },
+  ] } }));
+  await page.goto("/settings");
+  await openWebsitePicker(page);
+  await expect(page.locator("#saved-website-picker")).toContainText("Private owner website");
+  await page.getByRole("button", { name: "Switch website" }).press("Escape");
+  const close = page.getByRole("button", { name: "Close navigation", exact: true });
+  if (await close.isVisible()) await close.click({ position: { x: 380, y: 400 } });
+  await page.getByRole("button", { name: "Sign out", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Sign out", exact: true })).toHaveCount(0);
+  await openWebsitePicker(page);
+  await expect(page.locator("#saved-website-picker")).not.toContainText("Private owner website");
+  await expect(page.locator("#saved-website-picker")).toContainText("Sign in to switch");
+  noStartedWork(state);
+});

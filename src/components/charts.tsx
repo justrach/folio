@@ -39,8 +39,8 @@ export function VisibilityChart({
         >
           <defs>
             <linearGradient id="chart-fill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#d0dba9" stopOpacity={0.65} />
-              <stop offset="100%" stopColor="#d0dba9" stopOpacity={0.02} />
+              <stop offset="0%" stopColor="#a9b38a" stopOpacity={0.4} />
+              <stop offset="100%" stopColor="#a9b38a" stopOpacity={0.02} />
             </linearGradient>
           </defs>
           <CartesianGrid
@@ -82,7 +82,7 @@ export function VisibilityChart({
             type="monotone"
             dataKey="aeo"
             name="AI visibility"
-            stroke="#285943"
+            stroke="#435c38"
             fill="url(#chart-fill)"
             strokeWidth={2.8}
             isAnimationActive={false}
@@ -91,7 +91,7 @@ export function VisibilityChart({
             type="monotone"
             dataKey="seo"
             name="SEO health"
-            stroke="#a5b758"
+            stroke="#8c9971"
             strokeWidth={2}
             dot={false}
             isAnimationActive={false}

@@ -70,6 +70,7 @@ import "./index-page.css";
 import { EvaluationsPanel } from "./evaluations-panel";
 import { AgentRunsPanel, AgentRunDock } from "./agent-runs-panel";
 import { evaluationHref, readEvaluationIntent } from "@/lib/evaluation-navigation";
+import { WebsiteSwitcher } from "./website-switcher";
 
 type Modal = "scan" | "methodology" | "notifications" | "search" | null;
 const navigation = [
@@ -411,17 +412,22 @@ function WorkspaceDashboard({ section }: { section: string }) {
             folio<span className="wordmark-period">.</span>
           </span>
         </Link>
-        <button
-          className="workspace-switch"
-          onClick={() => router.push("/websites")}
-        >
-          <span className="workspace-avatar">{session?.user.name?.[0] ?? (privateOverview ? "—" : "A")}</span>
-          <span>
-            {session ? `${session.user.name || "Your"} workspace` : privateOverview ? "Your workspace" : "Acme workspace"}
-            <small>{session ? "Personal workspace" : privateOverview ? "Sign in" : "Demo workspace"}</small>
-          </span>
-          <ChevronDown size={14} />
-        </button>
+        <WebsiteSwitcher
+          key={isPending ? "pending" : ownerId ?? "signed-out"}
+          ownerId={isPending ? null : ownerId}
+          name={session?.user.name || "Your"}
+          activeUrl={activeScan?.url}
+          onSelect={(site, scan) => {
+            setMobileOpen(false);
+            if (scan) openScan(scan);
+            else {
+              setActiveScan(null);
+              if (ownerId) sessionStorage.removeItem(`folio-active-${ownerId}`);
+              router.push(evaluationHref({ targetUrl: site.url }).replace("/evaluations", "/search-data"));
+            }
+          }}
+          onAdd={() => { setMobileOpen(false); setModal("scan"); }}
+        />
         <span className="nav-caption">WORKSPACE</span>
         <nav aria-label="Main navigation">
           {navigation.map((item) => (
@@ -433,9 +439,6 @@ function WorkspaceDashboard({ section }: { section: string }) {
             >
               <item.icon size={17} />
               <span>{item.label}</span>
-              {item.section === "patches" && !(privateOverview && !session) && (
-                <span className="nav-count">{actual?.patches.length ?? (mode === "sample" && !privateOverview ? 3 : 0)}</span>
-              )}
             </Link>
           ))}
         </nav>
@@ -447,7 +450,6 @@ function WorkspaceDashboard({ section }: { section: string }) {
           >
             <Trophy size={17} />
             <span>The Folio Index</span>
-            <ArrowUpRight size={13} />
           </Link>
           <Link
             href="/agents"
@@ -465,21 +467,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
           <Link href="/pricing" className="nav-link">
             <BookOpen size={17} />
             <span>Plans & usage</span>
-            <ArrowUpRight size={13} />
           </Link>
-          <div className="sidebar-note">
-            <span className="edition">A NOTE FROM FOLIO</span>
-            <h3>
-              The next search
-              <br />
-              is an answer.
-            </h3>
-            <p>Make sure you’re part of it.</p>
-            <Link href="/leaderboard">
-              Explore the index <ArrowUpRight size={14} />
-            </Link>
-            <div className="note-lines" aria-hidden="true" />
-          </div>
           <Link
             href="/settings"
             className={`nav-link ${section === "settings" ? "active" : ""}`}
@@ -557,7 +545,6 @@ function WorkspaceDashboard({ section }: { section: string }) {
         <main className={`page-content${["evaluations", "benchmarks", "overview"].includes(section) ? " evaluation-page" : ""}${section === "overview" ? " overview-page" : ""}${section === "leaderboard" ? " index-page" : ""}`}>
           <div className="page-heading">
             <div>
-              {!["evaluations", "benchmarks", "overview", "leaderboard"].includes(section) && <div className="eyebrow">{title.eyebrow}</div>}
               <h1>{title.title}</h1>
               <p>{title.description}</p>
             </div>
