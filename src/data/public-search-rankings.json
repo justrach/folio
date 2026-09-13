@@ -31470,6 +31470,914 @@
         "Exact total costs, support response commitments, outage recovery guarantees, Render's numerical artifact-retention allowance, and database-provider terms for Vercel/Workers were not established. Verify these for the chosen configuration.",
         "Runtime compatibility for the user's unspecified Node.js application remains untested. No guarantee is made about native dependencies, background processes, ORM behavior, or recovery duration."
       ]
+    },
+    {
+      "id": "obs-auth-b2b-small-team-v1-s01-q01-5920e3cfdb3adb53c6af19b0",
+      "queryId": "auth-b2b-small-team-v1-s01-q01",
+      "observedAt": "2026-09-13T14:14:56.203Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Clerk",
+          "url": "https://clerk.com/pricing",
+          "reason": "First for launch speed: documented managed social sign-in and prebuilt UI; both requested providers fit the three-connection Hobby allowance.",
+          "citationUrls": [
+            "https://clerk.com/docs/nextjs/guides/configure/auth-strategies/social-connections/overview",
+            "https://clerk.com/pricing"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Better Auth",
+          "url": "https://better-auth.com/docs/authentication/google",
+          "reason": "Best when direct TypeScript configuration and application control outweigh the responsibility to operate and maintain authentication.",
+          "citationUrls": [
+            "https://better-auth.com/docs/authentication/google",
+            "https://better-auth.com/docs/authentication/github"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "WorkOS",
+          "url": "https://workos.com/pricing",
+          "reason": "Strong candidate for a future enterprise SaaS: documented Google/GitHub options and free AuthKit allowance, with separate SSO and domain costs.",
+          "citationUrls": [
+            "https://workos.com/docs/integrations/google-oauth",
+            "https://workos.com/docs/integrations/github-oauth",
+            "https://workos.com/pricing"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Auth0",
+          "url": "https://auth0.com/pricing",
+          "reason": "Consider for specific broader identity requirements; both social connections are available, but account-linking and upgrade terms deserve scrutiny.",
+          "citationUrls": [
+            "https://auth0.com/docs/authenticate/identity-providers/social-identity-providers/google",
+            "https://auth0.com/docs/authenticate/identity-providers/social-identity-providers/github",
+            "https://auth0.com/pricing"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://clerk.com/docs/nextjs/guides/configure/auth-strategies/social-connections/overview",
+          "title": "Clerk: Social connections (OAuth) for Next.js"
+        },
+        {
+          "url": "https://clerk.com/pricing",
+          "title": "Clerk pricing"
+        },
+        {
+          "url": "https://better-auth.com/docs/authentication/google",
+          "title": "Better Auth: Google"
+        },
+        {
+          "url": "https://better-auth.com/docs/authentication/github",
+          "title": "Better Auth: GitHub"
+        },
+        {
+          "url": "https://workos.com/docs/integrations/google-oauth",
+          "title": "WorkOS: Google OAuth"
+        },
+        {
+          "url": "https://workos.com/docs/integrations/github-oauth",
+          "title": "WorkOS: GitHub OAuth"
+        },
+        {
+          "url": "https://workos.com/pricing",
+          "title": "WorkOS pricing"
+        },
+        {
+          "url": "https://auth0.com/docs/authenticate/identity-providers/social-identity-providers/google",
+          "title": "Auth0: Add Google Login to Your App"
+        },
+        {
+          "url": "https://auth0.com/docs/authenticate/identity-providers/social-identity-providers/github",
+          "title": "Auth0: Add GitHub Login to Your App"
+        },
+        {
+          "url": "https://auth0.com/pricing",
+          "title": "Auth0 pricing"
+        }
+      ],
+      "limitations": [
+        "Public web research only; no logins, account creation, provider API calls or integration tests. No independent verification of performance, reliability or setup time, and no exhaustive market coverage.",
+        "Pricing pages contain selectors and footnotes; cited figures are the retrieved public view, not a quote or confirmation of all contractual terms. Commercial-use eligibility and Better Auth licensing were not separately audited.",
+        "WorkOS's Google guide mixes Workspace wording with global-domain instructions; personal Gmail behavior was not tested. Auth0 GitHub App support was not established by its consulted OAuth App guide.",
+        "Provider-specific Clerk callback instructions, exact framework/version compatibility, migration/export completeness and Google verification requirements for the user's eventual scopes were not fully researched. No access failures occurred for the cited pages."
+      ]
+    },
+    {
+      "id": "obs-vector-search-small-app-v1-s01-q01-8c149b3491377c276ae8d857",
+      "queryId": "vector-search-small-app-v1-s01-q01",
+      "observedAt": "2026-09-13T14:14:59.143Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Qdrant",
+          "url": "https://qdrant.tech/documentation/search/filtering/",
+          "reason": "First to evaluate for rich metadata logic, especially same-element nested ACL matching, datetime ranges, and explicit empty/null conditions.",
+          "citationUrls": [
+            "https://qdrant.tech/documentation/search/filtering/",
+            "https://qdrant.tech/documentation/search/text-search/text-filtering/",
+            "https://qdrant.tech/documentation/ops-configuration/administration/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Chroma",
+          "url": "https://docs.trychroma.com/reference/where-filter",
+          "reason": "Good candidate for flat document metadata and typed tag arrays; document text predicates must be distinguished from unsupported scalar metadata pattern matching.",
+          "citationUrls": [
+            "https://docs.trychroma.com/reference/where-filter",
+            "https://docs.trychroma.com/docs/collections/add-data?lang=typescript",
+            "https://docs.trychroma.com/cloud/search-api/filtering"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Pinecone",
+          "url": "https://docs.pinecone.io/guides/search/filter-by-metadata",
+          "reason": "Fits conventional flat metadata predicates, with explicit existence checks; richer text predicates belong to a separately documented preview Documents API.",
+          "citationUrls": [
+            "https://docs.pinecone.io/guides/search/filter-by-metadata",
+            "https://docs.pinecone.io/guides/index-data/data-modeling",
+            "https://www.pinecone.io/blog/full-text-search-architecture/",
+            "https://docs.pinecone.io/guides/index-data/create-an-index"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://qdrant.tech/documentation/search/filtering/",
+          "title": "Qdrant: Filtering"
+        },
+        {
+          "url": "https://qdrant.tech/documentation/search/text-search/text-filtering/",
+          "title": "Qdrant: Text Filtering"
+        },
+        {
+          "url": "https://qdrant.tech/documentation/ops-configuration/administration/",
+          "title": "Qdrant: Administration"
+        },
+        {
+          "url": "https://docs.trychroma.com/reference/where-filter",
+          "title": "Chroma: Where Filters"
+        },
+        {
+          "url": "https://docs.trychroma.com/docs/collections/add-data?lang=typescript",
+          "title": "Chroma: Adding Data to Collections"
+        },
+        {
+          "url": "https://docs.trychroma.com/cloud/search-api/filtering",
+          "title": "Chroma Cloud: Filtering with Where"
+        },
+        {
+          "url": "https://docs.pinecone.io/guides/search/filter-by-metadata",
+          "title": "Pinecone: Filter by metadata"
+        },
+        {
+          "url": "https://docs.pinecone.io/guides/index-data/data-modeling",
+          "title": "Pinecone: Data modeling"
+        },
+        {
+          "url": "https://www.pinecone.io/blog/full-text-search-architecture/",
+          "title": "Pinecone: Full Text Search: Architecture and Design"
+        },
+        {
+          "url": "https://docs.pinecone.io/guides/index-data/create-an-index",
+          "title": "Pinecone: Create an index"
+        }
+      ],
+      "limitations": [
+        "Public web research performed on 2026-09-13; discovery was not domain-restricted, while product claims use official sources. Coverage is limited to this comparison, not exhaustive market research.",
+        "No vendor APIs or workloads were executed. Performance, correctness, operating costs, pricing, plan eligibility, and production suitability were not independently verified.",
+        "Chroma's older official GitHub guide and current Cloud Search guide describe different missing-key negation behavior; API/version parity is unverified. Nested-object and explicit existence filtering were not established in the current references consulted.",
+        "Pinecone documentation has API-specific and apparently inconsistent wording: direct-field filter examples versus top-level restrictions, and preview schema examples versus current schema rules. Confirm the exact SDK/API contract; preview availability is not a stable-service guarantee.",
+        "No access failures occurred. Some evidence was available through search excerpts; search freshness and official documentation do not establish deployed feature availability."
+      ]
+    },
+    {
+      "id": "obs-sandbox-python-jobs-v1-s01-q01-ca2db52fa766d00a01cd27c7",
+      "queryId": "sandbox-python-jobs-v1-s01-q01",
+      "observedAt": "2026-09-13T14:14:59.425Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Modal",
+          "url": "https://modal.com/docs/guide/sandbox-networking",
+          "reason": "First to evaluate for documented GPU batch execution alongside configurable Sandbox egress; domain filtering is beta and VM Sandboxes cannot use GPUs.",
+          "citationUrls": [
+            "https://modal.com/docs/guide/sandbox-networking",
+            "https://modal.com/docs/guide/batch-processing",
+            "https://modal.com/docs/guide/vm-sandboxes"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "E2B",
+          "url": "https://e2b.dev/pricing",
+          "reason": "Candidate for the Python sandbox portion with SDK-documented egress controls; a selectable GPU offering and deployed feature availability were not established.",
+          "citationUrls": [
+            "https://github.com/e2b-dev/E2B/blob/main/packages/js-sdk/src/sandbox/sandboxApi.ts",
+            "https://e2b.dev/pricing"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Daytona",
+          "url": "https://www.daytona.io/docs/en/sandboxes/",
+          "reason": "Documents GPU sandboxes and configurable egress, but tier-based network restrictions and the Tier 3 top-up requirement materially affect a solo developer.",
+          "citationUrls": [
+            "https://www.daytona.io/docs/en/network-limits/",
+            "https://www.daytona.io/docs/limits",
+            "https://www.daytona.io/docs/en/sandboxes/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://modal.com/docs/guide/sandbox-networking",
+          "title": "Modal: Networking and security"
+        },
+        {
+          "url": "https://modal.com/docs/guide/batch-processing",
+          "title": "Modal: Batch Processing"
+        },
+        {
+          "url": "https://modal.com/docs/guide/vm-sandboxes",
+          "title": "Modal: VM Sandboxes"
+        },
+        {
+          "url": "https://github.com/e2b-dev/E2B/blob/main/packages/js-sdk/src/sandbox/sandboxApi.ts",
+          "title": "E2B: Official sandbox SDK source"
+        },
+        {
+          "url": "https://e2b.dev/pricing",
+          "title": "E2B: Pricing"
+        },
+        {
+          "url": "https://www.daytona.io/docs/en/network-limits/",
+          "title": "Daytona: Network Limits (Firewall)"
+        },
+        {
+          "url": "https://www.daytona.io/docs/limits",
+          "title": "Daytona: Limits and tier requirements"
+        },
+        {
+          "url": "https://www.daytona.io/docs/en/sandboxes/",
+          "title": "Daytona: Sandboxes"
+        }
+      ],
+      "limitations": [
+        "Public web research conducted on September 13, 2026; discovery was not restricted to a predefined vendor/domain list. This is a focused recommendation order, not exhaustive market coverage or a search-engine ranking.",
+        "E2B's internet-access documentation failed to load through web search: its redirect to docs.e2b.dev was rejected as unsafe by the tool, and a direct attempt also failed. Egress details therefore rely on official SDK source, which does not establish released Python SDK parity or plan availability.",
+        "Daytona's /docs/sandboxes URL initially failed to open; /docs/en/sandboxes/ loaded successfully.",
+        "No accounts, sandbox jobs, network-policy tests, or GPU benchmarks were run. Actual capacity, isolation enforcement, latency, and performance were not independently verified.",
+        "Exact egress charges, complete commercial-use terms, support commitments, and all plan-specific feature gates were not established. E2B GPU availability remains unconfirmed; Modal Sandbox egress controls were not verified for batch Functions.",
+        "Some search crawl timestamps were anomalous, and Daytona's limits page contains conflicting Tier 1 RAM figures. Do not treat crawl metadata or inconsistent resource tables as guarantees."
+      ]
+    },
+    {
+      "id": "obs-research-api-citations-v1-s01-q01-2645e0dc6599f9b10d9b67ce",
+      "queryId": "research-api-citations-v1-s01-q01",
+      "observedAt": "2026-09-13T14:15:09.467Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Exa",
+          "url": "https://exa.ai/docs/reference/search",
+          "reason": "First evaluation candidate for query-driven research: documented search filters, content options and separate Contents pricing support testing discovery and retrieval independently.",
+          "citationUrls": [
+            "https://exa.ai/docs/reference/search",
+            "https://exa.ai/pricing",
+            "https://exa.ai/assets/Exa_Labs_Terms_of_Service.pdf/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Firecrawl",
+          "url": "https://docs.firecrawl.dev/features/search",
+          "reason": "Prioritize when extraction dominates: search can include scraping or feed selected URLs into a separate scrape step; commercial authorization and paid-plan overage restrictions require attention.",
+          "citationUrls": [
+            "https://docs.firecrawl.dev/features/search",
+            "https://docs.firecrawl.dev/billing",
+            "https://www.firecrawl.dev/terms-of-service"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Tavily",
+          "url": "https://docs.tavily.com/documentation/api-reference/endpoint/search",
+          "reason": "Candidate for a compact research workflow with optional search content and dedicated extraction; evaluate depth costs and clarify customer-facing rights.",
+          "citationUrls": [
+            "https://docs.tavily.com/documentation/api-reference/endpoint/search",
+            "https://docs.tavily.com/documentation/api-reference/endpoint/extract",
+            "https://docs.tavily.com/documentation/api-credits",
+            "https://www.tavily.com/terms"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://exa.ai/docs/reference/search",
+          "title": "Exa Search API reference"
+        },
+        {
+          "url": "https://exa.ai/pricing",
+          "title": "Exa API pricing"
+        },
+        {
+          "url": "https://exa.ai/assets/Exa_Labs_Terms_of_Service.pdf/",
+          "title": "Exa Labs Terms of Service"
+        },
+        {
+          "url": "https://docs.firecrawl.dev/features/search",
+          "title": "Firecrawl Search"
+        },
+        {
+          "url": "https://docs.firecrawl.dev/billing",
+          "title": "Firecrawl Billing"
+        },
+        {
+          "url": "https://www.firecrawl.dev/terms-of-service",
+          "title": "Firecrawl Terms of Service"
+        },
+        {
+          "url": "https://docs.tavily.com/documentation/api-reference/endpoint/search",
+          "title": "Tavily Search API reference"
+        },
+        {
+          "url": "https://docs.tavily.com/documentation/api-reference/endpoint/extract",
+          "title": "Tavily Extract API reference"
+        },
+        {
+          "url": "https://docs.tavily.com/documentation/api-credits",
+          "title": "Tavily Credits & Pricing"
+        },
+        {
+          "url": "https://www.tavily.com/terms",
+          "title": "Tavily Terms"
+        }
+      ],
+      "limitations": [
+        "Public-web research used OpenAI live search with unrestricted discovery followed by official-source reads. Coverage is limited to this question, not an exhaustive market survey.",
+        "No vendor APIs were executed; relevance, extraction success, latency, freshness and production reliability were not independently verified.",
+        "No consulted official page failed to open. Some search results were unofficial mirrors and were not used as authority.",
+        "The public terms do not conclusively establish permission for this specific paid-product architecture. No private order forms, negotiated permissions or account-specific terms were available.",
+        "Firecrawl's base subscription prices, complete plan-specific rate limits, retention terms and self-hosted/cloud feature parity were not established in this review. Do not assume those options or guarantees.",
+        "Live pages are mutable and not an archived snapshot for September 13, 2026. Firecrawl's current search page also contains a future-dated November 16, 2026 migration notice; this answer does not treat that scheduled change as already effective."
+      ]
+    },
+    {
+      "id": "obs-deploy-small-node-app-v1-s02-q02-25438f98c63b666fbb622cbd",
+      "queryId": "deploy-small-node-app-v1-s02-q02",
+      "observedAt": "2026-09-13T14:15:13.544Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Render",
+          "url": "https://render.com/pricing",
+          "reason": "First choice for a conventional Node/PostgreSQL app: a $51 illustrative baseline and integrated pooling on paid databases.",
+          "citationUrls": [
+            "https://render.com/pricing",
+            "https://render.com/docs/postgresql-connection-pooling"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Railway",
+          "url": "https://docs.railway.com/pricing/plans",
+          "reason": "Flexible Node services with usage-inclusive Pro pricing; database maintenance and sleep behavior require evaluation.",
+          "citationUrls": [
+            "https://docs.railway.com/pricing/plans",
+            "https://docs.railway.com/databases/postgresql",
+            "https://docs.railway.com/deployments/serverless"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Vercel",
+          "url": "https://vercel.com/docs/plans/pro-plan",
+          "reason": "Useful application workflow and documented Fluid Compute pooling, but two deployment seats consume $40 before database costs and overages.",
+          "citationUrls": [
+            "https://vercel.com/docs/plans/pro-plan",
+            "https://vercel.com/kb/guide/connection-pooling-with-functions",
+            "https://vercel.com/docs/functions/limitations"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Cloudflare Workers",
+          "url": "https://developers.cloudflare.com/workers/platform/pricing/",
+          "reason": "Low entry cost with Hyperdrive pooling for compatible HTTP APIs; external PostgreSQL and runtime compatibility must be evaluated.",
+          "citationUrls": [
+            "https://developers.cloudflare.com/workers/platform/pricing/",
+            "https://developers.cloudflare.com/hyperdrive/examples/connect-to-postgres/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://render.com/pricing",
+          "title": "Render pricing"
+        },
+        {
+          "url": "https://render.com/docs/postgresql-connection-pooling",
+          "title": "Connection Pooling for Render Postgres"
+        },
+        {
+          "url": "https://docs.railway.com/pricing/plans",
+          "title": "Railway Pricing Plans"
+        },
+        {
+          "url": "https://docs.railway.com/databases/postgresql",
+          "title": "Railway PostgreSQL"
+        },
+        {
+          "url": "https://docs.railway.com/deployments/serverless",
+          "title": "Railway Serverless"
+        },
+        {
+          "url": "https://vercel.com/docs/plans/pro-plan",
+          "title": "Vercel Pro Plan"
+        },
+        {
+          "url": "https://vercel.com/kb/guide/connection-pooling-with-functions",
+          "title": "Connection Pooling with Vercel Functions"
+        },
+        {
+          "url": "https://vercel.com/docs/functions/limitations",
+          "title": "Vercel Functions Limits"
+        },
+        {
+          "url": "https://developers.cloudflare.com/workers/platform/pricing/",
+          "title": "Cloudflare Workers Pricing"
+        },
+        {
+          "url": "https://developers.cloudflare.com/hyperdrive/examples/connect-to-postgres/",
+          "title": "Hyperdrive: Connect to PostgreSQL"
+        }
+      ],
+      "limitations": [
+        "Public official documentation research only; no accounts, deployments, transactions or performance benchmarks. Coverage is not exhaustive, and costs depend on unprovided traffic, data size, region and dependencies.",
+        "Render's pricing page open returned an incomplete shell; official search-index content supplied the compute prices. Current pooling documentation conflicts with an older official tutorial that says no integrated pooler exists.",
+        "Railway's Serverless page initially returned an internal access error; its official search result subsequently supplied the reference text. A separate official guide says 10 minutes, while the reference explains a 5–10 minute sampling window.",
+        "An included managed PgBouncer endpoint on Railway was not established. Do not interpret missing evidence as proof that no deployable pooling option exists.",
+        "Cloudflare's PostgreSQL guide lists pg 8.13.0 in its table but 8.16.3 in its example note, and Postgres.js 3.4.4 versus 3.4.5. Confirm the exact supported driver/runtime combination before deployment.",
+        "External PostgreSQL pricing for Vercel and Workers, exact backup/HA costs, and every platform's spend-cap enforcement were not established; no claim that $100 is a guaranteed ceiling."
+      ]
+    },
+    {
+      "id": "obs-client-project-workspace-v1-s01-q01-9abddb1f5450f55aa6ffd80b",
+      "queryId": "client-project-workspace-v1-s01-q01",
+      "observedAt": "2026-09-13T14:16:36.661Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Basecamp",
+          "url": "https://basecamp.com/pricing",
+          "reason": "First choice to evaluate for explicit client visibility controls alongside internal project work; inherited visibility and client-role restrictions require checking.",
+          "citationUrls": [
+            "https://5.basecamp-help.com/article/1082-what-clients-can-see-and-do",
+            "https://5.basecamp-help.com/article/1171-permissions",
+            "https://basecamp.com/pricing"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Notion",
+          "url": "https://www.notion.com/pricing",
+          "reason": "Evaluate for configurable client pages and database workflows, with page-based guest access and Business/Enterprise database rules; verify creation permissions and avoid treating hidden fields as security.",
+          "citationUrls": [
+            "https://www.notion.com/help/sharing-and-permissions",
+            "https://www.notion.com/en-gb/help/intro-to-databases",
+            "https://www.notion.com/pricing"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://5.basecamp-help.com/article/1081-working-with-clients",
+          "title": "Working with Clients — Basecamp 5 Help"
+        },
+        {
+          "url": "https://5.basecamp-help.com/article/1082-what-clients-can-see-and-do",
+          "title": "What Clients can see and do — Basecamp 5 Help"
+        },
+        {
+          "url": "https://5.basecamp-help.com/article/1171-permissions",
+          "title": "Permissions — Basecamp 5 Help"
+        },
+        {
+          "url": "https://basecamp.com/pricing",
+          "title": "Basecamp — Pricing"
+        },
+        {
+          "url": "https://www.notion.com/help/add-members-admins-guests-and-groups",
+          "title": "Manage members, admins & guests in Notion"
+        },
+        {
+          "url": "https://www.notion.com/help/sharing-and-permissions",
+          "title": "Sharing & permissions settings — Notion"
+        },
+        {
+          "url": "https://www.notion.com/en-gb/help/intro-to-databases",
+          "title": "Intro to databases — Notion"
+        },
+        {
+          "url": "https://www.notion.com/pricing",
+          "title": "Notion Pricing Plans"
+        }
+      ],
+      "limitations": [
+        "Public discovery used unrestricted web search, followed by official documentation. Coverage is limited to this comparison, not an exhaustive market survey or measured search-engine ranking.",
+        "No accounts were accessed and no product behavior or performance was independently tested. No source-page access failures occurred.",
+        "Notion documentation lists Can create but separately directs page-level-only users to forms; the combined guest workflow and account availability remain unverified.",
+        "Property-level security in Notion and separate per-client audiences within one Basecamp project were not established by the consulted sources.",
+        "Notion pricing rendered in euros; US-dollar prices were not verified. Confirm billing terms and plan entitlements before purchase.",
+        "Basecamp findings use current Basecamp 5 documentation; older editions and legacy accounts may differ."
+      ]
+    },
+    {
+      "id": "obs-team-chat-history-v1-s01-q01-932b1d008d9413569da2fdf0",
+      "queryId": "team-chat-history-v1-s01-q01",
+      "observedAt": "2026-09-13T14:16:37.822Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Slack Pro",
+          "url": "https://slack.com/help/articles/203457187-Customize-data-retention-in-Slack",
+          "reason": "First to evaluate for ongoing history and documented paid retention controls; Free has a 90-day search window, and Pro does not include all-conversation exports.",
+          "citationUrls": [
+            "https://slack.com/help/articles/115002422943-Usage-limits-for-free-workspaces",
+            "https://slack.com/help/articles/203457187-Customize-data-retention-in-Slack",
+            "https://slack.com/help/articles/201658943-Export-your-workspace-data"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Chanty Free",
+          "url": "https://www.chanty.com/pricing/",
+          "reason": "A two-person team fits its free member limit and advertised unlimited searchable history; configurable retention and import/export are listed under Business.",
+          "citationUrls": [
+            "https://www.chanty.com/pricing/"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Twist Unlimited",
+          "url": "https://twist.com/pricing",
+          "reason": "Paid searchable discussion history with explicit preservation across free-plan limits and downgrades; configurable retention and usable export terms remain unconfirmed.",
+          "citationUrls": [
+            "https://twist.com/pricing",
+            "https://twist.com/help/articles/what-is-twist-unlimited-mehD6bnu",
+            "https://twist.com/help/articles/can-i-export-data-from-twist-93Ppg4Jl"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://slack.com/help/articles/115002422943-Usage-limits-for-free-workspaces",
+          "title": "Slack: Usage limits for free workspaces"
+        },
+        {
+          "url": "https://slack.com/help/articles/203457187-Customize-data-retention-in-Slack",
+          "title": "Slack: Customize data retention"
+        },
+        {
+          "url": "https://slack.com/help/articles/201658943-Export-your-workspace-data",
+          "title": "Slack: Export your workspace data"
+        },
+        {
+          "url": "https://www.chanty.com/pricing/",
+          "title": "Chanty: Pricing"
+        },
+        {
+          "url": "https://twist.com/pricing",
+          "title": "Twist: Pricing"
+        },
+        {
+          "url": "https://twist.com/help/articles/what-is-twist-unlimited-mehD6bnu",
+          "title": "Twist: What is Twist Unlimited?"
+        },
+        {
+          "url": "https://twist.com/help/articles/can-i-export-data-from-twist-93Ppg4Jl",
+          "title": "Twist: Can I export data from Twist?"
+        }
+      ],
+      "limitations": [
+        "Public web research conducted September 13, 2026. Discovery included unrestricted queries; this is a selective shortlist, not exhaustive market coverage or a search-engine ranking.",
+        "Official documentation and vendor claims were consulted; no accounts, product tests, exports, or independent retention/performance verification were performed.",
+        "Slack's retention page returned HTTP 429 on direct opening; its substantive English text was available through live search. Later Slack pricing and free-limit opens redirected to Japanese pages; no current US Slack price is asserted.",
+        "Chanty's pricing page rendered euro prices, so US paid pricing was not confirmed. Exact retention settings, export scope, and recovery terms were not established.",
+        "Twist's export help page returned no substantive answer. Export availability and configurable retention remain unclear; absence of documentation is not proof of absence of a feature."
+      ]
+    },
+    {
+      "id": "obs-sentry-posthog-product-team-v1-s01-q01-0af04b88a38e274fc8a386cc",
+      "queryId": "sentry-posthog-product-team-v1-s01-q01",
+      "observedAt": "2026-09-13T14:16:44.081Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Sentry",
+          "url": "https://sentry.io/pricing/",
+          "reason": "First evaluation choice for debugging-focused triage because grouping decisions are inspectable and multiple error-grouping controls are documented; free-plan and integration restrictions need checking.",
+          "citationUrls": [
+            "https://www.sentry.help/en/articles/13964350-why-are-my-events-grouped-or-separated-incorrectly-in-sentry",
+            "https://sentry.io/pricing/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "PostHog",
+          "url": "https://posthog.com/pricing",
+          "reason": "Strong conditional choice when combining exceptions with product events and replay simplifies investigation; configurable grouping and larger free allowances warrant testing against your own errors.",
+          "citationUrls": [
+            "https://posthog.com/docs/error-tracking/issues-and-exceptions",
+            "https://posthog.com/docs/error-tracking/grouping-issues",
+            "https://posthog.com/pricing"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.sentry.help/en/articles/13964350-why-are-my-events-grouped-or-separated-incorrectly-in-sentry",
+          "title": "Why are my events grouped or separated incorrectly in Sentry?"
+        },
+        {
+          "url": "https://docs.sentry.io/product/issues/issue-details/?promo_name=hp-banner",
+          "title": "Sentry Issue Details"
+        },
+        {
+          "url": "https://sentry.io/pricing/",
+          "title": "Sentry pricing"
+        },
+        {
+          "url": "https://www.sentry.help/en/articles/13965037-can-i-set-up-an-on-demand-pay-as-you-go-budget-for-my-free-developer-plan",
+          "title": "Can I set up an On-Demand/Pay-As-You-Go budget for my free Developer plan?"
+        },
+        {
+          "url": "https://posthog.com/docs/error-tracking/issues-and-exceptions",
+          "title": "PostHog Issues and exceptions"
+        },
+        {
+          "url": "https://posthog.com/docs/error-tracking/grouping-issues",
+          "title": "PostHog Grouping exceptions into issues"
+        },
+        {
+          "url": "https://posthog.com/docs/error-tracking/fingerprints",
+          "title": "PostHog Fingerprints"
+        },
+        {
+          "url": "https://posthog.com/docs/error-tracking/stack-traces",
+          "title": "PostHog Stack traces"
+        },
+        {
+          "url": "https://posthog.com/pricing",
+          "title": "PostHog pricing"
+        },
+        {
+          "url": "https://posthog.com/docs/error-tracking/pricing",
+          "title": "PostHog Error Tracking pricing"
+        }
+      ],
+      "limitations": [
+        "Public web research on September 13, 2026; discovery included an unrestricted search, with final claims based on official sources. This is not exhaustive market coverage or independently verified product performance.",
+        "Sentry's main grouping documentation failed to open twice. Its Issue Details page without query parameters failed with unsupported text/markdown content; the cited query-parameter version was consulted through a search result whose crawl was older. Current official Help Center guidance supported grouping claims.",
+        "An attempted PostHog /docs/error-tracking/grouping URL failed; the correct grouping-issues page was subsequently accessed through official documentation links.",
+        "No accounts, SDK installations, or product trials were used. Exact framework support, replay capture settings, historical split/unmerge capabilities, and all feature-by-plan entitlements were not verified; missing evidence is not proof of absence.",
+        "PostHog fingerprint documentation has ambiguous message-fallback wording. Product-specific retention and automatic suspect-commit attribution in PostHog were not established. Sentry pricing-table checkmark entitlements were not fully represented in extracted text."
+      ]
+    },
+    {
+      "id": "obs-allbirds-first-order-v1-s01-q01-9b193a8d4facd08d28d66dfb",
+      "queryId": "allbirds-first-order-v1-s01-q01",
+      "observedAt": "2026-09-13T14:16:53.690Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "New Balance 574 Core",
+          "url": "https://www.newbalance.com/pd/574-core/WL574EVN-B-065.html",
+          "reason": "Best starting point for width comparison: the consulted women’s style has B/D selectors, half sizes, and an explicit runs-small warning.",
+          "citationUrls": [
+            "https://www.newbalance.com/pd/574-core/WL574EVN-B-065.html",
+            "https://www.newbalance.com/faqs/product-sizing/",
+            "https://www.newbalance.com/returns/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Kizik Athens 2",
+          "url": "https://kizik.com/products/mens-athens-2-bright-white",
+          "reason": "Hands-free everyday option with Standard/Wide EE choices; its actual selector is narrower than its general size and width chart.",
+          "citationUrls": [
+            "https://kizik.com/products/mens-athens-2-bright-white"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Allbirds Tree Runner",
+          "url": "https://www.allbirds.com/products/mens-tree-runners-mist",
+          "reason": "Conditional lightweight everyday option with specific size-up guidance, but stock and final-sale language require checking the exact variant.",
+          "citationUrls": [
+            "https://www.allbirds.com/products/mens-tree-runners-mist",
+            "https://www.allbirds.com/pages/returns-exchanges"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Rothy’s Original Slip On Sneaker",
+          "url": "https://rothys.com/products/the-original-slip-on-sneaker-black-solid?yoReviewsPage=5",
+          "reason": "Provides specific sockless versus socks/roomier-fit guidance and half sizes; selected-size stock remains unconfirmed.",
+          "citationUrls": [
+            "https://rothys.com/products/the-original-slip-on-sneaker-black-solid?yoReviewsPage=5",
+            "https://rothys.com/pages/returns"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.newbalance.com/pd/574-core/WL574EVN-B-065.html",
+          "title": "New Balance women’s 574 Core — WL574EVN"
+        },
+        {
+          "url": "https://www.newbalance.com/faqs/product-sizing/",
+          "title": "New Balance Product & Fit"
+        },
+        {
+          "url": "https://www.newbalance.com/returns/",
+          "title": "New Balance Return Policy"
+        },
+        {
+          "url": "https://kizik.com/products/mens-athens-2-bright-white",
+          "title": "Kizik Men’s Athens 2 — Bright White"
+        },
+        {
+          "url": "https://www.allbirds.com/products/mens-tree-runners-mist",
+          "title": "Allbirds Men’s Tree Runner — Mist"
+        },
+        {
+          "url": "https://www.allbirds.com/pages/returns-exchanges",
+          "title": "Allbirds Returns & Exchanges"
+        },
+        {
+          "url": "https://rothys.com/products/the-original-slip-on-sneaker-black-solid?yoReviewsPage=5",
+          "title": "Rothy’s Original Slip On Sneaker — Black Solid"
+        },
+        {
+          "url": "https://rothys.com/pages/returns",
+          "title": "Rothy’s Returns & Exchanges"
+        }
+      ],
+      "limitations": [
+        "Public web research was selective, not exhaustive. Recommendations reflect the consulted official evidence, not measured search-engine rank or independently verified fit, comfort, or durability.",
+        "No foot measurements, sizing category, budget, or style preferences were supplied; examples span men’s and women’s listings and are not interchangeable size recommendations.",
+        "Dynamic selectors and stock messages do not prove that a particular size/color/width can currently be purchased. No checkout, account, or transaction was attempted.",
+        "The attempted US Allbirds Tree Runner NZ product URL redirected to the men’s collection; the attempted US Wool Runner Natural Grey page failed with a non-retryable safe-open error. Current US sizing for those styles was not established, and UK/Canadian guidance was not substituted.",
+        "Kizik’s extracted fit-scale position was unclear. Numeric toe-box dimensions, personalized fit predictions, and dedicated wide options for the consulted Allbirds and Rothy’s listings were not established.",
+        "The Rothy’s returns portal search result required JavaScript; return terms were instead checked on its readable US policy page."
+      ]
+    },
+    {
+      "id": "obs-everyday-clothing-returns-v1-s01-q01-9ca48c2bbf0001566d035f10",
+      "queryId": "everyday-clothing-returns-v1-s01-q01",
+      "observedAt": "2026-09-13T14:17:01.000Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Distinguish body charts from garment measurements",
+          "url": "https://www.sanmar.com/p/1163/specSheetMeasurements",
+          "reason": "The official Gildan sheet separates body sizing from flat garment dimensions and defines measurement methods.",
+          "citationUrls": [
+            "https://www.sanmar.com/p/1163/specSheetMeasurements"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Evaluate Everlane cotton T-shirts with both tables",
+          "url": "https://www.everlane.com/products/mens-essential-organic-crew-uniform-deep-navy",
+          "reason": "The sampled tee provides distinct body and garment values plus fiber and care information, while leaving shrinkage allowance and some measurement methods unclear.",
+          "citationUrls": [
+            "https://www.everlane.com/products/mens-essential-organic-crew-uniform-deep-navy"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Evaluate jeans by multiple garment dimensions",
+          "url": "https://www.everlane.com/products/womens-90s-cheeky-straight-jean-wshdblk",
+          "reason": "The sampled jeans provide waist, hip, thigh, leg-opening and inseam values; another Everlane page illustrates why chart headings alone are insufficient.",
+          "citationUrls": [
+            "https://www.everlane.com/products/womens-90s-cheeky-straight-jean-wshdblk",
+            "https://www.everlane.com/products/womens-low-boyfriend-jean-dark-indigo",
+            "https://support.everlane.com/en_us/what-size-am-i-BkLbhH6Ri"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Check US return eligibility before a first fit trial",
+          "url": "https://www.everlane.com/policies/refund-policy",
+          "reason": "Return deadlines, original-condition requirements, mail fees and Final Sale exclusions affect the cost of choosing an unfamiliar size.",
+          "citationUrls": [
+            "https://www.everlane.com/policies/refund-policy"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.sanmar.com/p/1163/specSheetMeasurements",
+          "title": "SanMar: Gildan 2300 Spec Sheet & Measurements"
+        },
+        {
+          "url": "https://www.everlane.com/products/mens-essential-organic-crew-uniform-deep-navy",
+          "title": "Everlane: The Essential Organic Crew — Deep Navy"
+        },
+        {
+          "url": "https://www.everlane.com/products/womens-90s-cheeky-straight-jean-wshdblk",
+          "title": "Everlane: The ’90s Cheeky Jean — Washed Black"
+        },
+        {
+          "url": "https://www.everlane.com/products/womens-low-boyfriend-jean-dark-indigo",
+          "title": "Everlane: Low-Rise Straight Jean — Dark Indigo"
+        },
+        {
+          "url": "https://support.everlane.com/en_us/what-size-am-i-BkLbhH6Ri",
+          "title": "Everlane: What size am I?"
+        },
+        {
+          "url": "https://www.everlane.com/policies/refund-policy",
+          "title": "Everlane: Refund policy"
+        }
+      ],
+      "limitations": [
+        "Public live-web research checked on September 13, 2026; discovery included unrestricted searches, but this is a selective evaluation guide, not exhaustive market coverage.",
+        "Interactive controls and live size/color inventory were not tested. Retrieved pages can expose multiple chart states together; unavailable extracted values do not prove the website lacks them.",
+        "The Everlane sizing FAQ returned no readable body when opened; its guidance was available in the official-domain search result. No other cited page access failure occurred.",
+        "Exact manufacturing tolerances, quantified shrinkage and complete garment measurement methods were not established for the sampled Everlane products. Fit, durability and product performance were not independently tested.",
+        "No personal measurements or preferred fit were supplied, so no individual size is recommended. Product examples span men's and women's categories; SanMar is used as a measurement reference, not a verified direct consumer purchase recommendation."
+      ]
     }
   ]
 }

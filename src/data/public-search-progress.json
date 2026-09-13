@@ -1,6 +1,6 @@
 {
   "format": "folio-public-search-progress-v1",
-  "updatedAt": "2026-09-13T14:13:44.558Z",
+  "updatedAt": "2026-09-13T14:17:42.309Z",
   "queries": [
     {
       "queryId": "deploy-small-node-app-v1",
@@ -309,8 +309,10 @@
     },
     {
       "queryId": "deploy-small-node-app-v1-s02-q02",
-      "status": "running",
-      "startedAt": "2026-09-13T14:13:13.122Z"
+      "status": "completed",
+      "startedAt": "2026-09-13T14:13:13.122Z",
+      "finishedAt": "2026-09-13T14:15:13.559Z",
+      "observationId": "obs-deploy-small-node-app-v1-s02-q02-25438f98c63b666fbb622cbd"
     },
     {
       "queryId": "deploy-small-node-app-v1-s02-q03",
@@ -666,8 +668,10 @@
     },
     {
       "queryId": "auth-b2b-small-team-v1-s01-q01",
-      "status": "running",
-      "startedAt": "2026-09-13T14:13:13.133Z"
+      "status": "completed",
+      "startedAt": "2026-09-13T14:13:13.133Z",
+      "finishedAt": "2026-09-13T14:14:56.218Z",
+      "observationId": "obs-auth-b2b-small-team-v1-s01-q01-5920e3cfdb3adb53c6af19b0"
     },
     {
       "queryId": "auth-b2b-small-team-v1-s01-q02",
@@ -1063,8 +1067,10 @@
     },
     {
       "queryId": "sandbox-python-jobs-v1-s01-q01",
-      "status": "running",
-      "startedAt": "2026-09-13T14:13:13.142Z"
+      "status": "completed",
+      "startedAt": "2026-09-13T14:13:13.142Z",
+      "finishedAt": "2026-09-13T14:14:59.439Z",
+      "observationId": "obs-sandbox-python-jobs-v1-s01-q01-ca2db52fa766d00a01cd27c7"
     },
     {
       "queryId": "sandbox-python-jobs-v1-s01-q02",
@@ -1460,8 +1466,10 @@
     },
     {
       "queryId": "vector-search-small-app-v1-s01-q01",
-      "status": "running",
-      "startedAt": "2026-09-13T14:13:13.152Z"
+      "status": "completed",
+      "startedAt": "2026-09-13T14:13:13.152Z",
+      "finishedAt": "2026-09-13T14:14:59.158Z",
+      "observationId": "obs-vector-search-small-app-v1-s01-q01-8c149b3491377c276ae8d857"
     },
     {
       "queryId": "vector-search-small-app-v1-s01-q02",
@@ -1857,8 +1865,10 @@
     },
     {
       "queryId": "research-api-citations-v1-s01-q01",
-      "status": "running",
-      "startedAt": "2026-09-13T14:13:13.160Z"
+      "status": "completed",
+      "startedAt": "2026-09-13T14:13:13.160Z",
+      "finishedAt": "2026-09-13T14:15:09.483Z",
+      "observationId": "obs-research-api-citations-v1-s01-q01-2645e0dc6599f9b10d9b67ce"
     },
     {
       "queryId": "research-api-citations-v1-s01-q02",
@@ -2254,7 +2264,10 @@
     },
     {
       "queryId": "sentry-posthog-product-team-v1-s01-q01",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T14:14:56.282Z",
+      "finishedAt": "2026-09-13T14:16:44.097Z",
+      "observationId": "obs-sentry-posthog-product-team-v1-s01-q01-0af04b88a38e274fc8a386cc"
     },
     {
       "queryId": "sentry-posthog-product-team-v1-s01-q02",
@@ -2650,7 +2663,10 @@
     },
     {
       "queryId": "client-project-workspace-v1-s01-q01",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T14:14:59.219Z",
+      "finishedAt": "2026-09-13T14:16:36.676Z",
+      "observationId": "obs-client-project-workspace-v1-s01-q01-9abddb1f5450f55aa6ffd80b"
     },
     {
       "queryId": "client-project-workspace-v1-s01-q02",
@@ -3046,7 +3062,10 @@
     },
     {
       "queryId": "team-chat-history-v1-s01-q01",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T14:14:59.496Z",
+      "finishedAt": "2026-09-13T14:16:37.837Z",
+      "observationId": "obs-team-chat-history-v1-s01-q01-932b1d008d9413569da2fdf0"
     },
     {
       "queryId": "team-chat-history-v1-s01-q02",
@@ -3442,7 +3461,10 @@
     },
     {
       "queryId": "allbirds-first-order-v1-s01-q01",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T14:15:09.548Z",
+      "finishedAt": "2026-09-13T14:16:53.705Z",
+      "observationId": "obs-allbirds-first-order-v1-s01-q01-9b193a8d4facd08d28d66dfb"
     },
     {
       "queryId": "allbirds-first-order-v1-s01-q02",
@@ -3838,7 +3860,10 @@
     },
     {
       "queryId": "everyday-clothing-returns-v1-s01-q01",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T14:15:13.622Z",
+      "finishedAt": "2026-09-13T14:17:01.016Z",
+      "observationId": "obs-everyday-clothing-returns-v1-s01-q01-9ca48c2bbf0001566d035f10"
     },
     {
       "queryId": "everyday-clothing-returns-v1-s01-q02",
@@ -4234,7 +4259,8 @@
     },
     {
       "queryId": "ikea-small-apartment-v1-s01-q01",
-      "status": "not-started"
+      "status": "running",
+      "startedAt": "2026-09-13T14:16:36.734Z"
     },
     {
       "queryId": "ikea-small-apartment-v1-s01-q02",
@@ -4630,7 +4656,8 @@
     },
     {
       "queryId": "taskrabbit-assembly-booking-v1-s01-q01",
-      "status": "not-started"
+      "status": "running",
+      "startedAt": "2026-09-13T14:16:37.898Z"
     },
     {
       "queryId": "taskrabbit-assembly-booking-v1-s01-q02",
@@ -5026,7 +5053,8 @@
     },
     {
       "queryId": "japan-small-group-comparison-v1-s01-q01",
-      "status": "not-started"
+      "status": "running",
+      "startedAt": "2026-09-13T14:16:44.165Z"
     },
     {
       "queryId": "japan-small-group-comparison-v1-s01-q02",
@@ -5422,7 +5450,8 @@
     },
     {
       "queryId": "python-course-fit-v1-s01-q01",
-      "status": "not-started"
+      "status": "running",
+      "startedAt": "2026-09-13T14:16:53.765Z"
     },
     {
       "queryId": "python-course-fit-v1-s01-q02",
@@ -5818,7 +5847,8 @@
     },
     {
       "queryId": "duolingo-spanish-fit-v1-s01-q01",
-      "status": "not-started"
+      "status": "running",
+      "startedAt": "2026-09-13T14:17:01.077Z"
     },
     {
       "queryId": "duolingo-spanish-fit-v1-s01-q02",
