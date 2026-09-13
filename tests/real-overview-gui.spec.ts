@@ -67,7 +67,7 @@ async function login(page: Page) {
 test("overview uses exact selected-site observations, preserves completed answers beside unknown attempts, and navigates without spending", async ({ page }, info) => {
   const state = await fixture(page);
   const errors: string[] = []; page.on("pageerror", error => errors.push(error.message));
-  await page.goto("/overview");
+  await page.goto("/overview?website=site-alpha");
   await expect(metric(page, "Appeared in answers").locator("dd")).toHaveText("50%");
   await expect(metric(page, "Appeared in answers")).toContainText("1 of 2 completed answers");
   await expect(metric(page, "Questions with completed answers").locator("dd")).toHaveText("2 / 3 loaded");
@@ -94,6 +94,7 @@ test("overview uses exact selected-site observations, preserves completed answer
   await expect(metric(page, "Appeared in answers").locator("dd")).toHaveText("100%");
   await page.getByRole("button", { name: "Open-web observations", exact: true }).click();
   await page.getByLabel("Selected website", { exact: true }).selectOption(beta.id);
+  expect(new URL(page.url()).searchParams.get("view")).toBe("workspace");
   await expect(search(page)).toContainText("Beta private question"); await expect(search(page)).not.toContainText(suite.cases[0].query);
   await expect(evaluations.getByRole("listitem")).toHaveCount(3);
   await expect(evaluations).not.toContainText("Alpha saved evaluation");
@@ -109,25 +110,41 @@ test("overview uses exact selected-site observations, preserves completed answer
 
 test("signed-out overview offers private login, samples require selection, and login returns safely", async ({ page }) => {
   const state = await fixture(page); state.owner = null;
-  await page.goto("/overview");
+  await page.goto("/overview?view=workspace");
   await expect(page.getByRole("heading", { name: "Sign in to see your website’s results" })).toBeVisible();
   await expect(page.locator(".metric-card")).toHaveCount(0);
   await expect(page.locator(".workspace-switch")).not.toContainText("Acme workspace");
   await expect(page.locator(".profile")).not.toContainText("Alex Morgan");
   await expect(page.locator(".nav-count")).toHaveCount(0);
-  await page.getByRole("button", { name: "Demo report", exact: true }).click();
+  await page.getByRole("link", { name: "Demo report", exact: true }).click();
   await expect(page).toHaveURL(/\/overview\?view=demo$/);
   await expect(page.locator(".metric-card").first()).toContainText("AI visibility");
   await page.goBack(); await page.getByRole("link", { name: "Sign in to your workspace" }).click();
-  await expect(page).toHaveURL(/\/login\?next=%2Foverview$/);
-  await login(page); await expect(page).toHaveURL(/\/overview$/);
+  await expect(page).toHaveURL(/\/login\?next=%2Foverview%3Fview%3Dworkspace$/);
+  await login(page); await expect(page).toHaveURL(/\/overview\?view=workspace$/);
   await expect(page.getByLabel("Selected website", { exact: true })).toHaveValue(beta.id);
+  expect(state.writes).toEqual([]);
+});
+
+test("legacy website and scope hints return to the exact private workspace after sign-in", async ({ page }) => {
+  const state = await fixture(page); state.owner = null;
+  await page.goto("/overview?website=site-beta&scope=reviewed-domains&query=unrelated-public-task");
+  const signIn = page.getByRole("link", { name: "Sign in to your workspace", exact: true });
+  const href = new URL((await signIn.getAttribute("href"))!, "http://localhost:3001");
+  expect(href.searchParams.get("next")).toBe("/overview?view=workspace&website=site-beta&scope=reviewed-domains");
+  await signIn.click(); await login(page);
+  await expect(page).toHaveURL(/\/overview\?view=workspace&website=site-beta&scope=reviewed-domains$/);
+  const params = new URL(page.url()).searchParams;
+  expect(params.get("view")).toBe("workspace"); expect(params.get("website")).toBe(beta.id);
+  expect(params.get("scope")).toBe("reviewed-domains"); expect(params.has("query")).toBe(false);
+  await expect(page.getByLabel("Selected website", { exact: true })).toHaveValue(beta.id);
+  await expect(page.getByRole("button", { name: "Reviewed documentation", exact: true })).toHaveAttribute("aria-pressed", "true");
   expect(state.writes).toEqual([]);
 });
 
 test("missing reads remain unavailable, unknown identities are excluded, and refresh is GET only", async ({ page }) => {
   const state = await fixture(page); state.failRuns = true;
-  await page.goto("/overview");
+  await page.goto("/overview?view=workspace");
   await expect(search(page).getByRole("alert")).toContainText("No search metrics are available");
   await expect(page.locator(".real-overview-metrics")).toHaveCount(0);
   state.failRuns = false; state.runs.push({ ...run("pending-third", 2, false), status: "queued", answer: null });
@@ -144,11 +161,11 @@ test("missing reads remain unavailable, unknown identities are excluded, and ref
 test("delayed previous-owner answers are discarded after logout and a new owner sees only their site", async ({ page }) => {
   const state = await fixture(page);
   let release!: () => void; state.holdDetails = new Promise<void>(resolve => { release = resolve; });
-  await page.goto("/overview"); await expect.poll(() => state.detailReads.length).toBe(2);
+  await page.goto("/overview?view=workspace"); await expect.poll(() => state.detailReads.length).toBe(2);
   await page.goto("/settings"); await page.getByRole("button", { name: "Sign out", exact: true }).click();
   await expect(page.getByRole("link", { name: "Sign in with Better Auth" })).toBeVisible();
   release(); state.holdDetails = null;
-  await page.goto("/overview"); await expect(page.locator(".real-overview-metrics")).toHaveCount(0);
+  await page.goto("/overview?view=workspace"); await expect(page.locator(".real-overview-metrics")).toHaveCount(0);
   await expect(page.getByText(suite.cases[0].query, { exact: true })).toHaveCount(0);
   await page.getByRole("link", { name: "Sign in to your workspace" }).click(); await login(page);
   await expect(page.getByLabel("Selected website", { exact: true })).toHaveValue(beta.id);

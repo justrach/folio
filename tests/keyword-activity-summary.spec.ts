@@ -64,7 +64,7 @@ test("keyword activity opens the exact saved run, shows only latest three, and c
   await page.getByRole("button", {name: "Sign out", exact: true}).click();
   await expect(page.getByRole("link", {name: "Sign in with Better Auth"})).toBeVisible();
   const before = state.reads;
-  await page.goto("/overview");
+  await page.goto("/overview?view=workspace");
   await expect(activity(page)).toHaveCount(0);
   await expect(page.getByText("Private keyword question 3", {exact: true})).toHaveCount(0);
   expect(state.reads).toBe(before); expect(state.posts).toEqual([]);

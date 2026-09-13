@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { EVAL_SUITE } from "../src/lib/evals";
-import { KEYWORD_BENCHMARK_SURFACE, type KeywordBenchmarkRun, type KeywordBenchmarkSuite } from "../src/lib/keyword-benchmark-types";
+import { isKeywordBenchmarkBlocking, KEYWORD_BENCHMARK_SURFACE, type KeywordBenchmarkRun, type KeywordBenchmarkSuite } from "../src/lib/keyword-benchmark-types";
 
 const at = "2026-09-13T08:00:00.000Z";
 const target = "https://codegraff-fixture.dev/";
@@ -48,8 +48,8 @@ async function fixture(page: Page, initialRuns: KeywordBenchmarkRun[] = [], save
       templates: [{ id: "template-fixture", name: "Developer questions fixture", description: "Saved questions only.", cases: suite.cases }],
       access: { configured: true, authorized: true, canRun: true, model: "fixture-model", maxRunsPerDay: state.unmetered ? null : 6, maxActiveRuns: 1 },
       usage: { attemptsLast24Hours: state.starts.length, remainingRuns: state.unmetered ? null : 6 - state.starts.length,
-        activeRuns: state.runs.filter(value => ["queued", "running", "requires_action"].includes(value.status)).length,
-        remainingActiveRuns: state.runs.some(value => ["queued", "running", "requires_action"].includes(value.status)) ? 0 : 1 },
+        activeRuns: state.runs.filter(isKeywordBenchmarkBlocking).length,
+        remainingActiveRuns: state.runs.some(isKeywordBenchmarkBlocking) ? 0 : 1 },
     } });
     if (path === "/api/benchmarks" && method === "POST") { state.saves.push(req.postDataJSON()); state.saved = true; return route.fulfill({ status: 201, json: { suite } }); }
     const selectedSuite = state.suites.find(item => path === `/api/benchmarks/${item.id}`);
@@ -340,4 +340,17 @@ test("website handoff selects only an exactly matching private suite", async ({ 
   await expect(page.getByText("Choose a saved suite. No suite was selected automatically for this website.",{exact:true})).toBeVisible();
   await expect(page.getByRole("button",{name:"Run baseline",exact:true})).toHaveCount(0);
   expect(state.starts).toEqual([]);expect(state.saves).toEqual([]);expect(state.forbidden).toEqual([]);
+});
+
+test("a released unknown creation permits a different question while its original question stays blocked", async ({ page }) => {
+  const held = { ...run(), status: "requires_action" as const, sessionId: null, answer: null,
+    holdReleasedAt: at, holdReleaseReason: "owner-acknowledged-unknown-creation-cost" as const };
+  const state = await fixture(page, [held]);
+  state.suites = [{ ...suite, cases: [...suite.cases, { ...suite.cases[0], id: "different-question", query: "Which tools suit a different task?" }] }];
+  await page.goto(`/benchmarks?suite=${suite.id}`);
+  await expect(page.getByRole("button", { name: "Run baseline", exact: true })).toBeDisabled();
+  await expect(page.getByText("This question has an unresolved earlier attempt. Choose a different question while it is reviewed.", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Which tools suit a different task?", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Run baseline", exact: true })).toBeEnabled();
+  expect(state.starts).toEqual([]); expect(state.forbidden).toEqual([]);
 });

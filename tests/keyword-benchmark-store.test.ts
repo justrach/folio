@@ -18,7 +18,7 @@ const answer: KeywordBenchmarkAnswer = { text: "Synthetic observation recommends
 function database() {
   const sqlite = new DatabaseSync(":memory:");
   sqlite.exec("PRAGMA foreign_keys=ON");
-  for (const name of ["0001_initial.sql", "0009_keyword_benchmarks.sql", "0010_keyword_benchmark_lifecycle.sql"]) sqlite.exec(readFileSync(new URL(`../migrations/${name}`, import.meta.url), "utf8"));
+  for (const name of ["0001_initial.sql", "0009_keyword_benchmarks.sql", "0010_keyword_benchmark_lifecycle.sql", "0012_keyword_benchmark_hold_release.sql"]) sqlite.exec(readFileSync(new URL(`../migrations/${name}`, import.meta.url), "utf8"));
   for (const owner of ["alice", "bob"]) sqlite.prepare("INSERT INTO user(id,name,email,created_at,updated_at) VALUES(?,?,?,?,?)").run(owner, owner, `${owner}@example.test`, Date.now(), Date.now());
   const prepare = (sql: string) => {
     let values: SQLInputValue[] = [];

@@ -117,7 +117,7 @@ test("CLI keeps collection spend and publication as distinct explicit actions", 
 
 test("private collection suite reuse rejects edited questions and isolates account selectors", async t => {
   const sqlite = new DatabaseSync(":memory:"); t.after(() => sqlite.close());
-  for (const filename of ["0001_initial.sql", "0009_keyword_benchmarks.sql", "0010_keyword_benchmark_lifecycle.sql"])
+  for (const filename of ["0001_initial.sql", "0009_keyword_benchmarks.sql", "0010_keyword_benchmark_lifecycle.sql", "0012_keyword_benchmark_hold_release.sql"])
     sqlite.exec(readFileSync(new URL(`../migrations/${filename}`, import.meta.url), "utf8"));
   for (const owner of ["alice", "bob"]) sqlite.prepare("INSERT INTO user(id,name,email,created_at,updated_at) VALUES(?,?,?,?,?)").run(owner, owner, `${owner}@example.test`, Date.now(), Date.now());
   const prepare = (sql: string, values: SQLInputValue[] = []) => ({

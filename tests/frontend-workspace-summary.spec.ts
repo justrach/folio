@@ -78,6 +78,7 @@ async function navigate(page: Page, href: string) {
   if (await menu.isVisible()) await menu.click();
   await page.locator(`.nav-link[href="${href}"]`).click();
   await expect(page).toHaveURL(new RegExp(`${href}$`));
+  if (href === "/overview") await page.getByRole("link", { name: "My website results", exact: true }).click();
 }
 
 test("overview shows the three recent private evaluations without requiring a technical audit", async ({ page }, testInfo) => {
@@ -86,7 +87,7 @@ test("overview shows the three recent private evaluations without requiring a te
   const state = await fixture(page, [runs.older, runs.attention, runs.failed, runs.completed]);
   const errors: string[] = [];
   page.on("pageerror", error => errors.push(error.message));
-  await page.goto("/overview");
+  await page.goto("/overview?view=workspace");
   const summary = page.getByRole("region", { name: "Workspace evaluations", exact: true });
   await expect(summary).toBeVisible();
   await expect(summary.getByRole("heading", { level: 3 })).toHaveText(["Alpha private review", "Beta private review", "Gamma private review"]);
@@ -125,7 +126,7 @@ test("summary errors can be retried and an update event refreshes empty saved st
   const { completed } = await makeRuns();
   const state = await fixture(page, []);
   state.failReads = true;
-  await page.goto("/overview");
+  await page.goto("/overview?view=workspace");
   const summary = page.getByRole("region", { name: "Workspace evaluations", exact: true });
   await expect(summary.getByRole("alert")).toContainText("saved evaluations are unavailable");
   state.failReads = false;
@@ -146,7 +147,7 @@ test("loading and late responses cannot restore one owner's summary after logout
   const state = await fixture(page, [completed]);
   let release: () => void = () => {};
   state.holdReads = new Promise<void>(resolve => { release = resolve; });
-  await page.goto("/overview");
+  await page.goto("/overview?view=workspace");
   const summary = page.getByRole("region", { name: "Workspace evaluations", exact: true });
   await expect(summary.getByRole("status")).toHaveText("Loading your saved evaluations…");
   await expect(summary.getByRole("listitem")).toHaveCount(0);

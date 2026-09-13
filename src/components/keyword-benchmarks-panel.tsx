@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ArrowDownToLine, ArrowRight, ChevronDown, Loader2, RefreshCw } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
-import { isKeywordBenchmarkId, type KeywordBenchmarkRun, type KeywordBenchmarkRunSummary, type KeywordBenchmarkSuite, type KeywordBenchmarkSuiteSummary } from "@/lib/keyword-benchmark-types";
+import { isKeywordBenchmarkBlocking, isKeywordBenchmarkId, type KeywordBenchmarkRun, type KeywordBenchmarkRunSummary, type KeywordBenchmarkSuite, type KeywordBenchmarkSuiteSummary } from "@/lib/keyword-benchmark-types";
 import { KeywordObservationReport } from "./keyword-observation-report";
 import { QuestionSuiteEditor } from "./question-suite-editor";
 import "./keyword-benchmarks-panel.css";
@@ -19,7 +19,7 @@ type RecoverySnapshot = { recovery: { runId: string; sessionId: string | null };
 class KeywordRecoveryError extends Error {
   constructor(message: string, readonly snapshot: RecoverySnapshot) { super(message); this.name = "KeywordRecoveryError"; }
 }
-const active = (run: Pick<KeywordBenchmarkRun, "status">) => ["queued", "running", "requires_action"].includes(run.status);
+const active = isKeywordBenchmarkBlocking;
 const statusLabel = (status: string) => ({ queued: "Queued", running: "Working", requires_action: "Needs attention", completed: "Completed", failed: "Failed", cancelled: "Cancelled" })[status] ?? status;
 const date = (value: string) => new Date(value).toLocaleString();
 function safeLink(value: string | null | undefined) {
@@ -202,7 +202,8 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
     finally { pendingAction.current = false; if (!signal.aborted) setBusy(""); }
   }
   function start(caseId: string, kind: "baseline" | "fresh", baselineRunId?: string) {
-    if (!ready || (kind === "fresh" && !baselineRunId)) return;
+    if (!ready || runs.some(item => item.caseId === caseId && item.holdReleasedAt && item.status === "requires_action" && !item.sessionId)
+      || (kind === "fresh" && !baselineRunId)) return;
     void action(`start-${caseId}`, async signal => {
       const result = await request<{run:KeywordBenchmarkRun}>("/api/benchmarks/runs", signal, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({caseId,kind,...(baselineRunId ? {baselineRunId} : {})}) });
       if (signal.aborted) return;
@@ -223,6 +224,7 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
     });
   }
   const selectedCase = currentSuite?.cases.find(item => item.id === caseChoice) ?? currentSuite?.cases.find(item => item.id === currentRun?.caseId) ?? currentSuite?.cases[0];
+  const selectedCaseUnresolved = runs.some(item => item.caseId === selectedCase?.id && item.holdReleasedAt && item.status === "requires_action" && !item.sessionId);
   const baselines = runs.filter(item => item.caseId === selectedCase?.id && item.kind === "baseline" && item.status === "completed");
   const baselineId = selectedCase && baselines.some(item => item.id === baselineChoices[selectedCase.id]) ? baselineChoices[selectedCase.id] : baselines[0]?.id ?? "";
   const caseRuns = (caseId: string) => runs.filter(item => item.caseId === caseId);
@@ -249,7 +251,8 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
       <div className="benchmark-question-list" aria-label="Saved questions">{currentSuite.cases.map(item => <button key={item.id} type="button" aria-label={item.query} aria-pressed={item.id===selectedCase?.id} onClick={() => setCaseChoice(item.id)}>{item.query}<span className="question-result-state">{caseRuns(item.id)[0] ? statusLabel(caseRuns(item.id)[0].status) : "Draft · not started"}</span></button>)}</div>
       {selectedCase && <div className="benchmark-selected-question"><h2>{selectedCase.query}</h2><p className="benchmark-muted">{selectedCase.targetUrl ?? "No website target"} · {selectedCase.language} · {selectedCase.locale}</p><p className="benchmark-muted">{selectedCase.searchMode === "open-web" ? "Search scope: open web" : "Search scope: reviewed documentation"}. The recorded answer is private.</p>
         {baselines.length > 0 && <label>Baseline for {selectedCase.query}<select value={baselineId} onChange={event => setBaselineChoices(value => ({...value,[selectedCase.id]:event.target.value}))}>{baselines.map(item => <option value={item.id} key={item.id}>{date(item.createdAt)}</option>)}</select></label>}
-        <div className="benchmark-actions"><button className="button secondary" type="button" disabled={!ready || !!busy} onClick={() => start(selectedCase.id,"baseline")}>Run baseline</button><button className="button primary" type="button" disabled={!ready || !baselineId || !!busy} onClick={() => start(selectedCase.id,"fresh",baselineId)}>Run fresh observation</button></div>
+        <div className="benchmark-actions"><button className="button secondary" type="button" disabled={!ready || selectedCaseUnresolved || !!busy} onClick={() => start(selectedCase.id,"baseline")}>Run baseline</button><button className="button primary" type="button" disabled={!ready || selectedCaseUnresolved || !baselineId || !!busy} onClick={() => start(selectedCase.id,"fresh",baselineId)}>Run fresh observation</button></div>
+        {selectedCaseUnresolved && <p className="benchmark-muted">This question has an unresolved earlier attempt. Choose a different question while it is reviewed.</p>}
         {!baselineId && <p className="benchmark-muted">A completed baseline is needed before a fresh comparison.</p>}
       </div>}
       {overview && <p className="benchmark-run-allowance">{overview.access.canRun ? `${overview.usage.remainingRuns === null ? "No daily limit" : `${overview.usage.remainingRuns} runs remaining in the rolling 24-hour allowance`}. ${overview.usage.activeRuns} active.` : "New agent runs are not currently available for this workspace. Saved observations remain readable."} Each explicit start can incur usage charges. Only one observation can be active at a time.</p>}

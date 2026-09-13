@@ -76,6 +76,9 @@ export type KeywordBenchmarkRun = KeywordBenchmarkExecution & {
   status: KeywordBenchmarkStatus;
   sessionId: string | null;
   createAttemptAt: string | null;
+  /** Owner released only the local cross-case hold; provider outcome and cost remain unresolved. */
+  holdReleasedAt?: string | null;
+  holdReleaseReason?: "owner-acknowledged-unknown-creation-cost" | null;
   allowedDomains: string[];
   deadlineAt: string | null;
   cancelAttemptAt: string | null;
@@ -92,6 +95,12 @@ export type KeywordBenchmarkRunSummary = Omit<KeywordBenchmarkRun, "answer" | "c
   case: Omit<KeywordBenchmarkCaseInput, "referenceFacts">;
   answerCharacters: number; mentionCount: number; citationCount: number;
 };
+
+/** Released unknown creations stay in history but do not block a different case. */
+export function isKeywordBenchmarkBlocking(run: Pick<KeywordBenchmarkRun, "status" | "sessionId" | "createAttemptAt" | "holdReleasedAt">): boolean {
+  return ["queued", "running", "requires_action"].includes(run.status)
+    && !(run.status === "requires_action" && !run.sessionId && run.createAttemptAt && run.holdReleasedAt);
+}
 export type KeywordBenchmarkComparison = {
   comparable: boolean;
   reasons: string[];

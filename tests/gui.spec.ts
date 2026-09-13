@@ -7,8 +7,8 @@ import { evaluationMethodology } from "../src/lib/evaluation";
 const routes = [
   {
     path: "/overview",
-    label: /^Overview$/,
-    heading: "Overview",
+    label: /^Public dashboard$/,
+    heading: "Benchmark dashboard",
   },
   {
     path: "/websites",
@@ -69,7 +69,7 @@ async function noPageOverflow(page: Page) {
 }
 
 async function navigate(page: Page, route: (typeof routes)[number]) {
-  const link = page.locator(".nav-link").filter({ hasText: route.label });
+  const link = page.locator(`.nav-link[href="${route.path}"]`);
   const menu = page.getByRole("button", {
     name: "Open navigation",
     exact: true,
@@ -143,7 +143,7 @@ test("all navigation pages work without layout overflow or runtime errors", asyn
 test("audit, methodology, and search dialogs support keyboard dismissal and navigation", async ({
   page,
 }) => {
-  await page.goto("/overview");
+  await page.goto("/overview?view=workspace");
   await page.getByRole("button", { name: "Run an audit", exact: true }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await expect(page.getByLabel("Website URL", { exact: true })).toHaveValue(

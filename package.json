@@ -15,7 +15,7 @@
     "db:migrate:local": "node scripts/local-db.mjs migrate",
     "db:status:local": "node scripts/local-db.mjs status",
     "db:backup:local": "node scripts/local-db.mjs backup",
-    "test:d1": "node --conditions=react-server --import tsx --test tests/d1-runtime.integration.ts tests/search-console-d1.integration.ts tests/keyword-benchmark-d1.integration.ts tests/agent-api-d1.integration.ts tests/question-suites-d1.integration.ts",
+    "test:d1": "node --conditions=react-server --import tsx --test tests/d1-runtime.integration.ts tests/search-console-d1.integration.ts tests/keyword-benchmark-d1.integration.ts tests/agent-api-d1.integration.ts tests/question-suites-d1.integration.ts tests/keyword-hold-release-d1.integration.ts",
     "benchmark": "node --conditions=react-server --import tsx scripts/keyword-benchmark.ts",
     "rankings:collect": "node --conditions=react-server --import tsx scripts/collect-public-search-rankings.ts",
     "index:evaluate": "node --conditions=react-server --import tsx scripts/evaluate-developer-tools.ts",

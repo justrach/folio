@@ -1,0 +1,13 @@
+.public-overview-shell .sidebar .nav-caption{margin-top:22px}
+.public-overview-shell .sidebar-bottom{padding-top:18px}
+.public-overview-shell .public-workspace-link{font-size:13px;color:var(--green);padding:12px 0;display:flex;align-items:center;gap:8px}
+.public-overview-shell .topbar a{color:var(--green);font-size:13px;text-decoration:none}
+.public-overview-shell .page-content{padding-top:20px}
+.public-overview-shell .page-heading{margin-bottom:14px;gap:20px}
+.public-overview-shell .page-heading h1{font:400 32px/1.2 var(--serif);letter-spacing:-.5px;margin:0}
+.public-overview-shell .page-heading p{margin-top:9px;font-size:14px;line-height:1.6;color:#52614f;max-width:680px}
+.public-overview-shell .heading-actions .button{min-height:38px;font-size:13px;white-space:nowrap}
+.public-overview-shell .page-footer a{color:var(--green);font-size:12px}
+.public-overview-shell a:focus-visible,.public-overview-shell button:focus-visible{outline:2px solid var(--green);outline-offset:4px}
+@media(max-width:760px){.public-overview-shell .page-content{padding-top:22px}.public-overview-shell .page-heading{align-items:flex-start;gap:14px;margin-bottom:23px}.public-overview-shell .page-heading h1{font-size:30px}.public-overview-shell .page-heading p{font-size:13px}.public-overview-shell .heading-actions{padding-top:0}.public-overview-shell .heading-actions .button{min-height:34px;font-size:12px}.public-overview-shell .breadcrumb{min-width:0}.public-overview-shell .breadcrumb>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.public-overview-shell .topbar-actions{flex-shrink:0}}
+.real-overview-tabs>a{font-size:12px;padding:12px 0;border-bottom:2px solid transparent;color:#68746d;text-decoration:none;white-space:nowrap}.real-overview-tabs>a[aria-current=page]{color:var(--green);border-color:var(--green);font-weight:600}.real-overview-tabs{flex-wrap:wrap;column-gap:22px;row-gap:0}.real-overview-tabs>a:focus-visible{outline:2px solid var(--green);outline-offset:3px}

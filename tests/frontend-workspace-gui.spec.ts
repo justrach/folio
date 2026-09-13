@@ -67,6 +67,7 @@ async function navigate(page: Page, path: string) {
   if (await menu.isVisible()) await menu.click();
   await page.locator(`.nav-link[href="${path}"]`).click();
   await expect(page).toHaveURL(new RegExp(`${path}$`));
+  if (path === "/overview") await page.getByRole("link", { name: "My website results", exact: true }).click();
 }
 
 function noStartedWork(state: Awaited<ReturnType<typeof fixture>>) {
@@ -79,10 +80,10 @@ test("a signed-in workspace opens its latest saved audit and preserves the websi
   const state = await fixture(page);
   const errors: string[] = [];
   page.on("pageerror", error => errors.push(error.message));
-  await page.goto("/overview");
+  await page.goto("/overview?view=workspace");
   // A fresh browser has no remembered audit; history supplies the default.
   expect(await page.evaluate(id => sessionStorage.getItem(`folio-active-${id}`), ownerId)).toBeNull();
-  await expect(page.getByRole("button", { name: "My website results", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("link", { name: "My website results", exact: true })).toHaveAttribute("aria-current", "page");
   await expect(page.locator(".workspace-switch")).toContainText("Morgan workspace");
   await expect(page.locator(".workspace-switch")).not.toContainText("Acme workspace");
   const bridge = page.getByRole("region", { name: "Separate website evidence", exact: true });

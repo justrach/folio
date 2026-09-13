@@ -305,7 +305,8 @@ export async function reconcileKeywordBenchmarkSession(sessionId: string, env: A
         : "Returned URLs are approved HTTPS hosts. Citation presence does not independently verify source content or claims." },
       { id: "product-accuracy", outcome: "unmeasured", detail: "No vendor API task, transaction, consumer ChatGPT visibility, or product quality was measured." },
     ];
-    if (toolItems.length > KEYWORD_AGENT_TOOL_TARGET) answer.limitations?.push("Observed tool calls exceeded the requested task target; no provider-enforced tool cap is available.");
+    if (toolItems.length > KEYWORD_AGENT_TOOL_TARGET) answer.evidence.push({ id: "tool-call-target", outcome: "failed",
+      detail: "Observed tool calls exceeded the requested task target; no provider-enforced tool cap is available." });
     return { ...observation, status: "completed", answer };
   } catch { return { ...observation, status: "failed", error: "The final research answer did not match the bounded JSON, search-mode citation, and retained evidence contract." }; }
 }

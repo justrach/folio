@@ -1,0 +1,1123 @@
+{
+  "format": "folio-website-search-query-plan-v1",
+  "preparedOn": "2026-09-13",
+  "status": "prepared",
+  "primaryQueries": [
+    {
+      "id": "deploy-small-node-app-v1",
+      "audience": "Developer tools",
+      "category": "Application deployment",
+      "query": "For a small Node.js app with a PostgreSQL database, how do Vercel, Render, Railway and Cloudflare Workers compare on setup, recurring cost and runtime limits?",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "auth-b2b-small-team-v1",
+      "audience": "Developer tools",
+      "category": "Authentication",
+      "query": "How should a small TypeScript SaaS team choose between Better Auth, Clerk, WorkOS and Auth0 if it needs GitHub login now and customer SSO later? Compare setup, hosting responsibility and pricing triggers.",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "sandbox-python-jobs-v1",
+      "audience": "Developer tools",
+      "category": "Compute and sandboxes",
+      "query": "Which platforms should a small team compare for isolated Python execution and occasional GPU batch jobs? Explain sandbox isolation, file persistence, network controls, job timeouts and how runtime resources affect cost.",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "vector-search-small-app-v1",
+      "audience": "Developer tools",
+      "category": "Search and databases",
+      "query": "How should a small team compare Chroma, Qdrant and Pinecone for document search with vector embeddings and metadata filters? Explain setup, hosted versus self-managed options, access control and costs as usage grows.",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "research-api-citations-v1",
+      "audience": "Developer tools",
+      "category": "Web research",
+      "query": "How do Firecrawl, Exa and Tavily compare for an app that searches the web and returns source-backed answers? Explain search versus page extraction, citation data and usage-based costs.",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "sentry-posthog-product-team-v1",
+      "audience": "Developer tools",
+      "category": "Observability and analytics",
+      "query": "For a small web product, when would we use Sentry, PostHog or both? Compare error diagnosis, product funnels, session replay, setup effort, data controls and usage-based costs without treating the tools as interchangeable.",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "client-project-workspace-v1",
+      "audience": "Software & work",
+      "category": "Client projects",
+      "query": "For a five-person agency sharing project plans and documents with clients, should we choose Notion or Basecamp? Compare client access, permissions, setup effort and the current cost for five staff.",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "team-chat-history-v1",
+      "audience": "Software & work",
+      "category": "Team communication",
+      "query": "Which team chat tools suit a ten-person US business that needs searchable conversation history and occasional external guests? Compare free-plan limits, paid costs and what happens to older messages.",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "allbirds-first-order-v1",
+      "audience": "Shops & brands",
+      "category": "Footwear shopping",
+      "query": "Is Allbirds a sensible option for a first online everyday-shoe purchase in the US? Explain how to choose a size, check material and care information, and verify shipping and return terms before ordering.",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "everyday-clothing-returns-v1",
+      "audience": "Shops & brands",
+      "category": "Everyday clothing",
+      "query": "Which online clothing brands should a US shopper compare for everyday cotton T-shirts and jeans? Explain how to check sizing, fabric composition, delivery costs and return fees before choosing.",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "ikea-small-apartment-v1",
+      "audience": "Shops & brands",
+      "category": "Furniture and home",
+      "query": "Should I buy a small-apartment desk from IKEA in the US? Explain how to check dimensions, delivery versus pickup costs, assembly requirements and returns before comparing alternatives.",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "taskrabbit-assembly-booking-v1",
+      "audience": "Services & travel",
+      "category": "Home services",
+      "query": "What should I check before booking Taskrabbit for furniture assembly in New York City? Explain service availability, how the total price is determined, provider selection and cancellation terms.",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "japan-small-group-comparison-v1",
+      "audience": "Services & travel",
+      "category": "Small-group travel",
+      "query": "For a solo adult considering a small-group Japan trip, how do Intrepid Travel and G Adventures compare? Explain trip style, age restrictions, room sharing, included costs and booking cancellation conditions.",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "python-course-fit-v1",
+      "audience": "Learning",
+      "category": "Beginner programming",
+      "query": "For a complete beginner learning Python alongside a full-time job, how should I compare Coursera and edX? Explain prerequisites, weekly workload, hands-on exercises, free access and the cost of a certificate.",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "duolingo-spanish-fit-v1",
+      "audience": "Learning",
+      "category": "Language practice",
+      "query": "What can a beginner learning Spanish realistically use Duolingo for, and when would another learning option help? Compare lesson format, speaking practice, free versus paid access and subscription cancellation.",
+      "language": "en",
+      "locale": "en-US"
+    }
+  ],
+  "primaryCoverage": [
+    {
+      "queryId": "deploy-small-node-app-v1",
+      "queryType": "named-comparison",
+      "expectedWebsiteIds": [
+        "vercel",
+        "render",
+        "railway",
+        "cloudflare-workers"
+      ],
+      "reviewQuestions": [
+        "Identify the database and runtime setup for each option.",
+        "Explain usage assumptions behind current prices.",
+        "Distinguish unsupported features from features that were not verified."
+      ]
+    },
+    {
+      "queryId": "auth-b2b-small-team-v1",
+      "queryType": "named-comparison",
+      "expectedWebsiteIds": [
+        "better-auth",
+        "clerk",
+        "workos",
+        "auth0"
+      ],
+      "reviewQuestions": [
+        "Distinguish social login from enterprise SSO.",
+        "Identify self-managed versus hosted responsibilities.",
+        "Cite current pricing or plan gates without assuming the cheapest option."
+      ]
+    },
+    {
+      "queryId": "sandbox-python-jobs-v1",
+      "queryType": "unbranded-discovery",
+      "expectedWebsiteIds": [
+        "e2b",
+        "daytona",
+        "modal"
+      ],
+      "reviewQuestions": [
+        "Separate untrusted-code sandboxing from general batch compute.",
+        "Check actual GPU, network and persistence support rather than assume all platforms are equivalent.",
+        "Explain usage units and timeout or concurrency limits."
+      ]
+    },
+    {
+      "queryId": "vector-search-small-app-v1",
+      "queryType": "named-comparison",
+      "expectedWebsiteIds": [
+        "chroma",
+        "qdrant",
+        "pinecone"
+      ],
+      "reviewQuestions": [
+        "Check metadata-filter and retrieval requirements.",
+        "Distinguish hosted service costs from self-managed operations.",
+        "Explain pricing assumptions and relevant limits."
+      ]
+    },
+    {
+      "queryId": "research-api-citations-v1",
+      "queryType": "named-comparison",
+      "expectedWebsiteIds": [
+        "firecrawl",
+        "exa",
+        "tavily"
+      ],
+      "reviewQuestions": [
+        "Separate search from page extraction.",
+        "Check what source URL or citation fields are actually returned.",
+        "Give comparable usage assumptions instead of bare starting prices."
+      ]
+    },
+    {
+      "queryId": "sentry-posthog-product-team-v1",
+      "queryType": "named-comparison",
+      "expectedWebsiteIds": [
+        "sentry",
+        "posthog"
+      ],
+      "reviewQuestions": [
+        "Distinguish application diagnosis from product behavior analysis.",
+        "Check current overlapping features and relevant limitations.",
+        "Explain instrumentation, data controls and comparable cost assumptions."
+      ]
+    },
+    {
+      "queryId": "client-project-workspace-v1",
+      "queryType": "named-comparison",
+      "expectedWebsiteIds": [
+        "notion",
+        "basecamp"
+      ],
+      "reviewQuestions": [
+        "Distinguish staff seats from client or guest access.",
+        "Explain project and document workflows.",
+        "State monthly versus annual pricing assumptions."
+      ]
+    },
+    {
+      "queryId": "team-chat-history-v1",
+      "queryType": "unbranded-discovery",
+      "expectedWebsiteIds": [
+        "slack"
+      ],
+      "reviewQuestions": [
+        "Describe searchable history limits and retention separately.",
+        "Explain guest access restrictions.",
+        "Use the same team size and billing assumptions for price comparisons."
+      ]
+    },
+    {
+      "queryId": "allbirds-first-order-v1",
+      "queryType": "named-product-question",
+      "expectedWebsiteIds": [
+        "allbirds"
+      ],
+      "reviewQuestions": [
+        "Use product-specific sizing and material evidence where available.",
+        "Check US shipping and return terms, including exceptions.",
+        "Avoid claiming comfort, fit or durability was personally tested."
+      ]
+    },
+    {
+      "queryId": "everyday-clothing-returns-v1",
+      "queryType": "unbranded-discovery",
+      "expectedWebsiteIds": [
+        "everlane"
+      ],
+      "reviewQuestions": [
+        "Distinguish item-specific composition from brand-level claims.",
+        "Check delivery and returns for the US market.",
+        "State missing product or policy evidence rather than guess."
+      ]
+    },
+    {
+      "queryId": "ikea-small-apartment-v1",
+      "queryType": "named-product-question",
+      "expectedWebsiteIds": [
+        "ikea"
+      ],
+      "reviewQuestions": [
+        "Require exact product dimensions rather than a generic size claim.",
+        "Explain location-dependent delivery or pickup availability.",
+        "Separate included assembly from separately booked assembly services."
+      ]
+    },
+    {
+      "queryId": "taskrabbit-assembly-booking-v1",
+      "queryType": "named-product-question",
+      "expectedWebsiteIds": [
+        "taskrabbit"
+      ],
+      "reviewQuestions": [
+        "Use the requested city for availability evidence.",
+        "Distinguish advertised rates from total fees and minimums.",
+        "Check booking and cancellation conditions without making a booking."
+      ]
+    },
+    {
+      "queryId": "japan-small-group-comparison-v1",
+      "queryType": "named-comparison",
+      "expectedWebsiteIds": [
+        "intrepid-travel",
+        "g-adventures"
+      ],
+      "reviewQuestions": [
+        "Use comparable trip styles rather than universal brand claims.",
+        "Check age and room-sharing restrictions.",
+        "Separate inclusions, additional costs and cancellation conditions."
+      ]
+    },
+    {
+      "queryId": "python-course-fit-v1",
+      "queryType": "named-comparison",
+      "expectedWebsiteIds": [
+        "coursera",
+        "edx"
+      ],
+      "reviewQuestions": [
+        "Use named current courses where requirements differ.",
+        "Separate learning access from a paid certificate.",
+        "Check workload and exercises rather than infer career outcomes."
+      ]
+    },
+    {
+      "queryId": "duolingo-spanish-fit-v1",
+      "queryType": "named-product-question",
+      "expectedWebsiteIds": [
+        "duolingo"
+      ],
+      "reviewQuestions": [
+        "Distinguish available practice from evidence of learning effectiveness.",
+        "Check current plan and device or market limits.",
+        "Describe cancellation and renewal terms without promising fluency."
+      ]
+    }
+  ],
+  "websiteCoverage": [
+    {
+      "websiteId": "cloudflare-workers",
+      "websiteName": "Cloudflare Workers",
+      "audience": "Developer tools",
+      "websiteUrl": "https://www.cloudflare.com/products/workers/",
+      "sourceUrls": [
+        "https://developers.cloudflare.com/workers/",
+        "https://www.cloudflare.com/products/workers/"
+      ],
+      "primaryQueryIds": [
+        "deploy-small-node-app-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "deployment-fit",
+          "query": "Can Cloudflare Workers run my Node.js API with a PostgreSQL database and scheduled jobs, and what compatibility or runtime limits should I check?"
+        },
+        {
+          "id": "cost-and-setup",
+          "query": "What is needed to deploy a small paid web app on Cloudflare Workers, and how do requests, CPU time and database usage affect its monthly cost?"
+        }
+      ]
+    },
+    {
+      "websiteId": "vercel",
+      "websiteName": "Vercel",
+      "audience": "Developer tools",
+      "websiteUrl": "https://vercel.com/",
+      "sourceUrls": [
+        "https://vercel.com/docs"
+      ],
+      "primaryQueryIds": [
+        "deploy-small-node-app-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "deployment-fit",
+          "query": "Is Vercel suitable for a commercial Next.js app with server functions and background work, and what platform limits could change that decision?"
+        },
+        {
+          "id": "cost-and-setup",
+          "query": "How do I connect a GitHub repository and production domain to Vercel, and which usage or team features require a paid plan?"
+        }
+      ]
+    },
+    {
+      "websiteId": "render",
+      "websiteName": "Render",
+      "audience": "Developer tools",
+      "websiteUrl": "https://render.com/",
+      "sourceUrls": [
+        "https://render.com/docs"
+      ],
+      "primaryQueryIds": [
+        "deploy-small-node-app-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "deployment-fit",
+          "query": "How does Render support a web service, a background worker and PostgreSQL for one small application, and what should I check before choosing it?"
+        },
+        {
+          "id": "cost-and-availability",
+          "query": "What would a continuously available small app and database cost on Render, and how do free-service limits, persistent storage and backups affect the choice?"
+        }
+      ]
+    },
+    {
+      "websiteId": "railway",
+      "websiteName": "Railway",
+      "audience": "Developer tools",
+      "websiteUrl": "https://railway.com/",
+      "sourceUrls": [
+        "https://docs.railway.com/"
+      ],
+      "primaryQueryIds": [
+        "deploy-small-node-app-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "deployment-fit",
+          "query": "Can I deploy a Node.js service and PostgreSQL together on Railway, and how are environment variables, persistent data and deployments managed?"
+        },
+        {
+          "id": "cost-and-controls",
+          "query": "How does Railway bill a small app and database, and what budget controls, usage limits and backup options should I verify?"
+        }
+      ]
+    },
+    {
+      "websiteId": "e2b",
+      "websiteName": "E2B",
+      "audience": "Developer tools",
+      "websiteUrl": "https://e2b.dev/",
+      "sourceUrls": [
+        "https://docs.e2b.dev/"
+      ],
+      "primaryQueryIds": [
+        "sandbox-python-jobs-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "sandbox-fit",
+          "query": "Is E2B suitable for running user-generated Python code in an isolated sandbox, and what file, network and lifecycle controls are available?"
+        },
+        {
+          "id": "cost-and-recovery",
+          "query": "How do E2B sandbox duration, resource size and concurrency affect cost, and what happens to files or work when a sandbox ends?"
+        }
+      ]
+    },
+    {
+      "websiteId": "daytona",
+      "websiteName": "Daytona",
+      "audience": "Developer tools",
+      "websiteUrl": "https://www.daytona.io/",
+      "sourceUrls": [
+        "https://www.daytona.io/docs/"
+      ],
+      "primaryQueryIds": [
+        "sandbox-python-jobs-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "sandbox-fit",
+          "query": "What should I check before using Daytona to run untrusted code in programmable sandboxes, including isolation, network access and supported SDKs?"
+        },
+        {
+          "id": "cost-and-lifecycle",
+          "query": "How do Daytona sandbox resources, persistence and auto-stop behavior affect cost and restoring a previous working environment?"
+        }
+      ]
+    },
+    {
+      "websiteId": "modal",
+      "websiteName": "Modal",
+      "audience": "Developer tools",
+      "websiteUrl": "https://modal.com/",
+      "sourceUrls": [
+        "https://modal.com/docs"
+      ],
+      "primaryQueryIds": [
+        "sandbox-python-jobs-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "compute-fit",
+          "query": "When is Modal a good fit for a Python batch job that sometimes needs a GPU, and how are dependencies, data and scheduled runs configured?"
+        },
+        {
+          "id": "cost-and-retries",
+          "query": "How is Modal compute priced for intermittent jobs, and what should I verify about cold starts, timeouts, concurrency and retries?"
+        }
+      ]
+    },
+    {
+      "websiteId": "browserbase",
+      "websiteName": "Browserbase",
+      "audience": "Developer tools",
+      "websiteUrl": "https://www.browserbase.com/",
+      "sourceUrls": [
+        "https://docs.browserbase.com/welcome/introduction"
+      ],
+      "primaryQueryIds": [],
+      "followUpIntents": [
+        {
+          "id": "browser-workflow",
+          "query": "Can Browserbase support a Playwright workflow that needs a persistent browser login, and what session, region and recording controls should I check?"
+        },
+        {
+          "id": "cost-and-data",
+          "query": "What drives Browserbase costs for scheduled browser tasks, and how do session duration, concurrency and retained recordings affect the plan choice?"
+        }
+      ]
+    },
+    {
+      "websiteId": "better-auth",
+      "websiteName": "Better Auth",
+      "audience": "Developer tools",
+      "websiteUrl": "https://better-auth.com/",
+      "sourceUrls": [
+        "https://better-auth.com/docs/introduction"
+      ],
+      "primaryQueryIds": [
+        "auth-b2b-small-team-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "authentication-fit",
+          "query": "What must a TypeScript team implement and host itself to use Better Auth for email and GitHub login, sessions and organization access?"
+        },
+        {
+          "id": "enterprise-and-operations",
+          "query": "How can a Better Auth application add enterprise SSO, and what database, secret management and maintenance responsibilities remain with the team?"
+        }
+      ]
+    },
+    {
+      "websiteId": "clerk",
+      "websiteName": "Clerk",
+      "audience": "Developer tools",
+      "websiteUrl": "https://clerk.com/",
+      "sourceUrls": [
+        "https://clerk.com/docs"
+      ],
+      "primaryQueryIds": [
+        "auth-b2b-small-team-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "authentication-fit",
+          "query": "How would a small SaaS team add GitHub login and organization membership with Clerk, and what setup or application changes are required?"
+        },
+        {
+          "id": "pricing-and-sso",
+          "query": "Which Clerk plan and usage limits matter for a growing B2B app that needs enterprise SSO, and what is included versus separately charged?"
+        }
+      ]
+    },
+    {
+      "websiteId": "workos",
+      "websiteName": "WorkOS",
+      "audience": "Developer tools",
+      "websiteUrl": "https://workos.com/",
+      "sourceUrls": [
+        "https://workos.com/docs"
+      ],
+      "primaryQueryIds": [
+        "auth-b2b-small-team-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "authentication-fit",
+          "query": "How should a small TypeScript SaaS team use WorkOS for user login now and enterprise SSO later, and what integration steps differ?"
+        },
+        {
+          "id": "cost-and-enterprise",
+          "query": "How does WorkOS price user authentication and enterprise connections, and what should a team verify before quoting SSO access to customers?"
+        }
+      ]
+    },
+    {
+      "websiteId": "auth0",
+      "websiteName": "Auth0",
+      "audience": "Developer tools",
+      "websiteUrl": "https://auth0.com/",
+      "sourceUrls": [
+        "https://auth0.com/docs"
+      ],
+      "primaryQueryIds": [
+        "auth-b2b-small-team-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "authentication-fit",
+          "query": "How do I evaluate Auth0 for GitHub login, organization access and enterprise SSO in a small web app, including integration and hosting responsibility?"
+        },
+        {
+          "id": "pricing-and-limits",
+          "query": "Which Auth0 plan limits and pricing dimensions matter for a B2B application, and how do tenant, organization and enterprise-connection needs affect cost?"
+        }
+      ]
+    },
+    {
+      "websiteId": "chroma",
+      "websiteName": "Chroma",
+      "audience": "Developer tools",
+      "websiteUrl": "https://www.trychroma.com/",
+      "sourceUrls": [
+        "https://docs.trychroma.com/docs/overview/introduction"
+      ],
+      "primaryQueryIds": [
+        "vector-search-small-app-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "search-fit",
+          "query": "Is Chroma a good fit for semantic search over a small document collection that needs metadata filtering, and how would I choose local versus hosted deployment?"
+        },
+        {
+          "id": "operations-and-cost",
+          "query": "What should I verify about Chroma persistence, backups, access control and scaling costs before using it for a production knowledge-search app?"
+        }
+      ]
+    },
+    {
+      "websiteId": "qdrant",
+      "websiteName": "Qdrant",
+      "audience": "Developer tools",
+      "websiteUrl": "https://qdrant.tech/",
+      "sourceUrls": [
+        "https://qdrant.tech/documentation/"
+      ],
+      "primaryQueryIds": [
+        "vector-search-small-app-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "search-fit",
+          "query": "How can Qdrant support vector search with metadata filters and hybrid retrieval, and what must a team configure for a small document-search application?"
+        },
+        {
+          "id": "deployment-and-cost",
+          "query": "How should a small team compare self-hosted Qdrant with Qdrant Cloud for backups, resource limits, scaling and ongoing cost?"
+        }
+      ]
+    },
+    {
+      "websiteId": "pinecone",
+      "websiteName": "Pinecone",
+      "audience": "Developer tools",
+      "websiteUrl": "https://www.pinecone.io/",
+      "sourceUrls": [
+        "https://docs.pinecone.io/guides/get-started/overview"
+      ],
+      "primaryQueryIds": [
+        "vector-search-small-app-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "search-fit",
+          "query": "Is Pinecone suitable for semantic search with tenant-specific metadata filters, and what index, embedding and retrieval choices must I make?"
+        },
+        {
+          "id": "cost-and-limits",
+          "query": "How do storage, read and write usage affect Pinecone costs, and what free-plan or production limits should a small application verify?"
+        }
+      ]
+    },
+    {
+      "websiteId": "resend",
+      "websiteName": "Resend",
+      "audience": "Developer tools",
+      "websiteUrl": "https://resend.com/",
+      "sourceUrls": [
+        "https://resend.com/docs/introduction"
+      ],
+      "primaryQueryIds": [],
+      "followUpIntents": [
+        {
+          "id": "email-setup",
+          "query": "What is required to send transactional email from a new domain with Resend, including domain verification, DNS records and handling delivery events?"
+        },
+        {
+          "id": "email-cost-and-limits",
+          "query": "How do Resend sending limits, contact or campaign features and paid plans affect a small application sending account and billing emails?"
+        }
+      ]
+    },
+    {
+      "websiteId": "firecrawl",
+      "websiteName": "Firecrawl",
+      "audience": "Developer tools",
+      "websiteUrl": "https://www.firecrawl.dev/",
+      "sourceUrls": [
+        "https://docs.firecrawl.dev/introduction"
+      ],
+      "primaryQueryIds": [
+        "research-api-citations-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "research-workflow",
+          "query": "Which Firecrawl endpoints would I use to search for relevant pages and extract readable content, and what source URLs or structured fields are returned?"
+        },
+        {
+          "id": "retrieval-cost-and-limits",
+          "query": "How do Firecrawl credits, page limits, JavaScript rendering and crawl behavior affect the cost of collecting a small website knowledge base?"
+        }
+      ]
+    },
+    {
+      "websiteId": "exa",
+      "websiteName": "Exa",
+      "audience": "Developer tools",
+      "websiteUrl": "https://exa.ai/",
+      "sourceUrls": [
+        "https://exa.ai/docs/reference/search-api-guide"
+      ],
+      "primaryQueryIds": [
+        "research-api-citations-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "research-workflow",
+          "query": "How does Exa combine web search with page text or highlights, and which returned source fields can a research app use to support its answers?"
+        },
+        {
+          "id": "search-cost-and-control",
+          "query": "Which Exa search and content options affect price, freshness, result filtering and the number of pages a small research app can retrieve?"
+        }
+      ]
+    },
+    {
+      "websiteId": "tavily",
+      "websiteName": "Tavily",
+      "audience": "Developer tools",
+      "websiteUrl": "https://www.tavily.com/",
+      "sourceUrls": [
+        "https://docs.tavily.com/"
+      ],
+      "primaryQueryIds": [
+        "research-api-citations-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "research-workflow",
+          "query": "How do Tavily search and extraction differ, and what source and content fields can an application use when writing answers with citations?"
+        },
+        {
+          "id": "search-cost-and-limits",
+          "query": "How do Tavily credits and search-depth settings affect the cost and limits of a research app, and when would I need a separate extraction call?"
+        }
+      ]
+    },
+    {
+      "websiteId": "stripe",
+      "websiteName": "Stripe",
+      "audience": "Developer tools",
+      "websiteUrl": "https://stripe.com/",
+      "sourceUrls": [
+        "https://docs.stripe.com/"
+      ],
+      "primaryQueryIds": [],
+      "followUpIntents": [
+        {
+          "id": "payment-setup",
+          "query": "What must a US software business set up to accept one-time payments and subscriptions with Stripe, including webhooks, account eligibility and test mode?"
+        },
+        {
+          "id": "payment-cost-and-terms",
+          "query": "Which Stripe processing, subscription, refund and dispute fees should a small US SaaS company include when comparing payment providers?"
+        }
+      ]
+    },
+    {
+      "websiteId": "temporal",
+      "websiteName": "Temporal",
+      "audience": "Developer tools",
+      "websiteUrl": "https://temporal.io/",
+      "sourceUrls": [
+        "https://docs.temporal.io/"
+      ],
+      "primaryQueryIds": [],
+      "followUpIntents": [
+        {
+          "id": "workflow-fit",
+          "query": "When should a Node.js service use Temporal for a workflow with retries and external API calls, and what does the team need to operate?"
+        },
+        {
+          "id": "workflow-cost-and-recovery",
+          "query": "How should a small team compare Temporal Cloud and self-hosted Temporal for pricing, worker hosting, failure recovery and ongoing maintenance?"
+        }
+      ]
+    },
+    {
+      "websiteId": "box",
+      "websiteName": "Box",
+      "audience": "Developer tools",
+      "websiteUrl": "https://www.box.com/",
+      "sourceUrls": [
+        "https://developer.box.com/"
+      ],
+      "primaryQueryIds": [],
+      "followUpIntents": [
+        {
+          "id": "content-integration",
+          "query": "Can a web application use Box for customer file uploads and sharing, and what authentication, permissions and upload limits should I check?"
+        },
+        {
+          "id": "content-cost-and-governance",
+          "query": "What should a team verify about Box API usage limits, user licensing, version retention and external sharing before building a document workflow?"
+        }
+      ]
+    },
+    {
+      "websiteId": "sentry",
+      "websiteName": "Sentry",
+      "audience": "Developer tools",
+      "websiteUrl": "https://sentry.io/welcome/",
+      "sourceUrls": [
+        "https://sentry.io/welcome/"
+      ],
+      "primaryQueryIds": [
+        "sentry-posthog-product-team-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "observability-setup",
+          "query": "What is involved in adding Sentry to a Next.js application for errors and performance traces, and how can source maps and sensitive data be handled?"
+        },
+        {
+          "id": "observability-cost-and-retention",
+          "query": "How do Sentry event volume, traces, replays and retention limits affect cost for a small production application?"
+        }
+      ]
+    },
+    {
+      "websiteId": "posthog",
+      "websiteName": "PostHog",
+      "audience": "Developer tools",
+      "websiteUrl": "https://posthog.com/",
+      "sourceUrls": [
+        "https://posthog.com/docs/product-analytics"
+      ],
+      "primaryQueryIds": [
+        "sentry-posthog-product-team-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "analytics-setup",
+          "query": "How would a small web product set up PostHog for events, funnels and retention, and what should it configure for user consent and sensitive data?"
+        },
+        {
+          "id": "analytics-cost-and-control",
+          "query": "How do PostHog event volume, session replay, retention and hosting choices affect cost and data control for a small product team?"
+        }
+      ]
+    },
+    {
+      "websiteId": "notion",
+      "websiteName": "Notion",
+      "audience": "Software & work",
+      "websiteUrl": "https://www.notion.com/",
+      "sourceUrls": [
+        "https://www.notion.com/",
+        "https://www.notion.com/help"
+      ],
+      "primaryQueryIds": [
+        "client-project-workspace-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "client-project-fit",
+          "query": "Would Notion work for a five-person agency sharing documents and project plans with clients, and how do guest permissions and plan limits affect that setup?"
+        },
+        {
+          "id": "knowledge-portability",
+          "query": "What should a team check when using Notion as an internal handbook, including search, access control, offline needs and export formats?"
+        }
+      ]
+    },
+    {
+      "websiteId": "slack",
+      "websiteName": "Slack",
+      "audience": "Software & work",
+      "websiteUrl": "https://slack.com/intl/en-sg/",
+      "sourceUrls": [
+        "https://slack.com/",
+        "https://slack.com/intl/en-sg/",
+        "https://slack.com/help"
+      ],
+      "primaryQueryIds": [
+        "team-chat-history-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "history-and-guests",
+          "query": "Which Slack plan fits a ten-person US team that needs older conversations to stay searchable and occasionally collaborates with external guests?"
+        },
+        {
+          "id": "setup-and-data",
+          "query": "How should a small team set up Slack channels and access, and what should it verify about retention, export rights and account deactivation?"
+        }
+      ]
+    },
+    {
+      "websiteId": "basecamp",
+      "websiteName": "Basecamp",
+      "audience": "Software & work",
+      "websiteUrl": "https://basecamp.com/",
+      "sourceUrls": [
+        "https://basecamp.com/",
+        "https://basecamp.com/features"
+      ],
+      "primaryQueryIds": [
+        "client-project-workspace-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "client-project-fit",
+          "query": "How does Basecamp organize tasks, documents and conversations for a small agency with clients, and what can each client see?"
+        },
+        {
+          "id": "cost-and-portability",
+          "query": "What would Basecamp cost for five staff and client collaborators, and how can the team export or archive its project data later?"
+        }
+      ]
+    },
+    {
+      "websiteId": "ikea",
+      "websiteName": "IKEA",
+      "audience": "Shops & brands",
+      "websiteUrl": "https://www.ikea.com/us/en/",
+      "sourceUrls": [
+        "https://www.ikea.com/us/en/",
+        "https://www.ikea.com/us/en/customer-service/"
+      ],
+      "primaryQueryIds": [
+        "ikea-small-apartment-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "product-and-delivery",
+          "query": "What should a US shopper verify about an IKEA desk before ordering, including dimensions, stock by location, delivery or pickup fees and assembly?"
+        },
+        {
+          "id": "returns-and-services",
+          "query": "What are the current US IKEA return conditions for assembled versus unopened furniture, and how do collection or assembly services affect the total purchase cost?"
+        }
+      ]
+    },
+    {
+      "websiteId": "allbirds",
+      "websiteName": "Allbirds",
+      "audience": "Shops & brands",
+      "websiteUrl": "https://www.allbirds.com/",
+      "sourceUrls": [
+        "https://www.allbirds.com/",
+        "https://www.allbirds.com/pages/help"
+      ],
+      "primaryQueryIds": [
+        "allbirds-first-order-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "product-fit-and-care",
+          "query": "How should a first-time US Allbirds shopper compare shoe sizing, product materials and care instructions without assuming every style fits or performs the same?"
+        },
+        {
+          "id": "shipping-and-returns",
+          "query": "What should a US Allbirds buyer verify about shipping costs, delivery estimates, exchanges, return windows and sale-item exceptions before ordering?"
+        }
+      ]
+    },
+    {
+      "websiteId": "everlane",
+      "websiteName": "Everlane",
+      "audience": "Shops & brands",
+      "websiteUrl": "https://www.everlane.com/",
+      "sourceUrls": [
+        "https://www.everlane.com/",
+        "https://www.everlane.com/pages/about"
+      ],
+      "primaryQueryIds": [
+        "everyday-clothing-returns-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "product-and-sizing",
+          "query": "How can a US Everlane shopper compare T-shirt and jean sizing, fabric composition and care instructions before choosing specific items?"
+        },
+        {
+          "id": "shipping-and-returns",
+          "query": "What are the current US Everlane shipping and return conditions, including fees, refund method and final-sale exceptions?"
+        }
+      ]
+    },
+    {
+      "websiteId": "taskrabbit",
+      "websiteName": "Taskrabbit",
+      "audience": "Services & travel",
+      "websiteUrl": "https://www.taskrabbit.com/",
+      "sourceUrls": [
+        "https://www.taskrabbit.com/",
+        "https://www.taskrabbit.com/services"
+      ],
+      "primaryQueryIds": [
+        "taskrabbit-assembly-booking-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "local-booking-fit",
+          "query": "How can someone in New York City check Taskrabbit furniture-assembly availability, compare providers and understand what the chosen service includes?"
+        },
+        {
+          "id": "price-and-cancellation",
+          "query": "How is the total Taskrabbit furniture-assembly price calculated, and what minimum charges, fees or cancellation conditions should a customer check?"
+        }
+      ]
+    },
+    {
+      "websiteId": "intrepid-travel",
+      "websiteName": "Intrepid Travel",
+      "audience": "Services & travel",
+      "websiteUrl": "https://www.intrepidtravel.com/en",
+      "sourceUrls": [
+        "https://www.intrepidtravel.com/en",
+        "https://www.intrepidtravel.com/en/about"
+      ],
+      "primaryQueryIds": [
+        "japan-small-group-comparison-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "trip-fit",
+          "query": "What should a solo adult compare across Intrepid Travel Japan itineraries, including group size, trip style, physical demands, age rules and room sharing?"
+        },
+        {
+          "id": "trip-cost-and-terms",
+          "query": "Which costs are included in an Intrepid Travel Japan trip, and what should a US customer verify about optional activities, single-room charges, deposits and cancellation?"
+        }
+      ]
+    },
+    {
+      "websiteId": "g-adventures",
+      "websiteName": "G Adventures",
+      "audience": "Services & travel",
+      "websiteUrl": "https://www.gadventures.com/",
+      "sourceUrls": [
+        "https://www.gadventures.com/",
+        "https://www.gadventures.com/about-us/"
+      ],
+      "primaryQueryIds": [
+        "japan-small-group-comparison-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "trip-fit",
+          "query": "How should a first-time solo traveler compare G Adventures Japan trips by travel style, age eligibility, pace, group size and room-sharing arrangements?"
+        },
+        {
+          "id": "trip-cost-and-terms",
+          "query": "What should a US customer verify before booking a G Adventures Japan tour, including included meals, additional transport, solo-room costs and cancellation conditions?"
+        }
+      ]
+    },
+    {
+      "websiteId": "coursera",
+      "websiteName": "Coursera",
+      "audience": "Learning",
+      "websiteUrl": "https://www.coursera.org/",
+      "sourceUrls": [
+        "https://www.coursera.org/",
+        "https://www.coursera.org/about"
+      ],
+      "primaryQueryIds": [
+        "python-course-fit-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "course-fit",
+          "query": "How can a complete beginner find a Coursera Python course with a manageable weekly workload, practical exercises and suitable prerequisites?"
+        },
+        {
+          "id": "course-access-and-cost",
+          "query": "For a specific Coursera Python course, what can I study without paying and what requires a subscription or certificate fee, including cancellation conditions?"
+        }
+      ]
+    },
+    {
+      "websiteId": "duolingo",
+      "websiteName": "Duolingo",
+      "audience": "Learning",
+      "websiteUrl": "https://www.duolingo.com/",
+      "sourceUrls": [
+        "https://www.duolingo.com/",
+        "https://blog.duolingo.com/new-subjects/"
+      ],
+      "primaryQueryIds": [
+        "duolingo-spanish-fit-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "learning-fit",
+          "query": "What Spanish practice does Duolingo offer a complete beginner, and how do its lesson and speaking formats differ from a course with a teacher?"
+        },
+        {
+          "id": "plan-and-cancellation",
+          "query": "What features differ between free and paid Duolingo access in the US, and what should a subscriber check about trials, automatic renewal and cancellation?"
+        }
+      ]
+    },
+    {
+      "websiteId": "edx",
+      "websiteName": "edX",
+      "audience": "Learning",
+      "websiteUrl": "https://www.edx.org/",
+      "sourceUrls": [
+        "https://www.edx.org/",
+        "https://www.edx.org/about-us"
+      ],
+      "primaryQueryIds": [
+        "python-course-fit-v1"
+      ],
+      "followUpIntents": [
+        {
+          "id": "course-fit",
+          "query": "How should a complete beginner choose an edX Python course based on prerequisites, weekly workload, exercise format and course dates?"
+        },
+        {
+          "id": "course-access-and-cost",
+          "query": "For a specific edX Python course, how do audit access and a paid certificate differ in content, deadlines and support, and what are the refund conditions?"
+        }
+      ]
+    }
+  ]
+}

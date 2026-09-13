@@ -30,8 +30,19 @@ async function settledMap<T,U>(items:T[],work:(item:T)=>Promise<U>) {
   await Promise.all(Array.from({length:Math.min(4,items.length)},async()=>{while(cursor<items.length){const index=cursor++;try{results[index]={status:"fulfilled",value:await work(items[index])};}catch(reason){results[index]={status:"rejected",reason};}}}));return results;
 }
 
+export function workspaceOverviewHref(query: Pick<URLSearchParams, "getAll">): string {
+  const params = new URLSearchParams({ view: "workspace" });
+  const websites = query.getAll("website");
+  if (websites.length === 1 && isKeywordBenchmarkId(websites[0])) params.set("website", websites[0]);
+  const scopes = query.getAll("scope");
+  if (scopes.length === 1 && scopes[0] === "reviewed-domains") params.set("scope", scopes[0]);
+  return `/overview?${params}`;
+}
+
 export function RealOverview({ownerId,scans,scansLoading,scansError,onRetryScans,onOpenScan}:{ownerId:string|null;scans:Scan[];scansLoading:boolean;scansError:string;onRetryScans:()=>void;onOpenScan:(scan:Scan)=>void}) {
-  if(!ownerId)return <section className="panel real-overview-signin"><LockKeyhole size={23}/><h2>Sign in to see your website’s results</h2><p>Your saved search observations, website checks and reports stay private to your account.</p><Link className="button primary" href="/login?next=%2Foverview">Sign in to your workspace <ArrowRight size={14}/></Link></section>;
+  const query = useSearchParams();
+  const signInHref = `/login?next=${encodeURIComponent(workspaceOverviewHref(query))}`;
+  if(!ownerId)return <section className="panel real-overview-signin"><LockKeyhole size={23}/><h2>Sign in to see your website’s results</h2><p>Your saved search observations, website checks and reports stay private to your account.</p><Link className="button primary" href={signInHref}>Sign in to your workspace <ArrowRight size={14}/></Link></section>;
   return <OwnedOverview key={ownerId} scans={scans} scansLoading={scansLoading} scansError={scansError} onRetryScans={onRetryScans} onOpenScan={onOpenScan}/>;
 }
 
@@ -109,7 +120,7 @@ function OwnedOverview({scans,scansLoading,scansError,onRetryScans,onOpenScan}:O
   }):[];
   const history=ordered(records.filter(run=>run.caseId===historyCase)).reverse();
   const comparableHistory=history.length>1&&history.every(run=>compareKeywordBenchmarkRuns(history[0],run).comparable);
-  function select(website:string,nextScope=scope){const params=new URLSearchParams({website});if(nextScope!=="open-web")params.set("scope",nextScope);window.history.pushState(null,"",`/overview?${params}`);}
+  function select(website:string,nextScope=scope){const params=new URLSearchParams({view:"workspace",website});if(nextScope!=="open-web")params.set("scope",nextScope);window.history.pushState(null,"",`/overview?${params}`);}
   return <div className="real-overview">
     <div className="real-overview-select"><label>Selected website<select aria-label="Selected website" value={selected?.id??""} disabled={data.sites.state==="loading"} onChange={event=>select(event.target.value)}><option value="" disabled>Choose your website</option>{data.sites.items.map(site=><option key={site.id} value={site.id}>{site.name||site.url} · {site.url}</option>)}</select></label><button className="button secondary" onClick={()=>setRefresh(value=>value+1)} aria-label="Refresh saved overview"><RefreshCw size={14}/>Refresh saved data</button></div>
     {data.sites.state==="loading"&&<p role="status">Loading your saved websites…</p>}

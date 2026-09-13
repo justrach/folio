@@ -172,3 +172,4 @@ export async function reconcileKeywordBenchmark(db: D1Database, ownerId: string,
   }
 }
 export { getKeywordBenchmarkRun, getKeywordBenchmarkSuite, listKeywordBenchmarkRuns };
+export { previewKeywordBenchmarkHoldRelease, releaseKeywordBenchmarkHold } from "./keyword-benchmark-store";

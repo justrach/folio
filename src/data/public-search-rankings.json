@@ -2,29 +2,425 @@
   "format": "folio-public-search-rankings-v1",
   "queries": [
     {
-      "id": "clothing-basics-us",
+      "id": "deploy-small-node-app-v1",
+      "audience": "Developer tools",
+      "category": "Application deployment",
+      "query": "For a small Node.js app with a PostgreSQL database, how do Vercel, Render, Railway and Cloudflare Workers compare on setup, recurring cost and runtime limits?",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "auth-b2b-small-team-v1",
+      "audience": "Developer tools",
+      "category": "Authentication",
+      "query": "How should a small TypeScript SaaS team choose between Better Auth, Clerk, WorkOS and Auth0 if it needs GitHub login now and customer SSO later? Compare setup, hosting responsibility and pricing triggers.",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "sandbox-python-jobs-v1",
+      "audience": "Developer tools",
+      "category": "Compute and sandboxes",
+      "query": "Which platforms should a small team compare for isolated Python execution and occasional GPU batch jobs? Explain sandbox isolation, file persistence, network controls, job timeouts and how runtime resources affect cost.",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "vector-search-small-app-v1",
+      "audience": "Developer tools",
+      "category": "Search and databases",
+      "query": "How should a small team compare Chroma, Qdrant and Pinecone for document search with vector embeddings and metadata filters? Explain setup, hosted versus self-managed options, access control and costs as usage grows.",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "research-api-citations-v1",
+      "audience": "Developer tools",
+      "category": "Web research",
+      "query": "How do Firecrawl, Exa and Tavily compare for an app that searches the web and returns source-backed answers? Explain search versus page extraction, citation data and usage-based costs.",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "sentry-posthog-product-team-v1",
+      "audience": "Developer tools",
+      "category": "Observability and analytics",
+      "query": "For a small web product, when would we use Sentry, PostHog or both? Compare error diagnosis, product funnels, session replay, setup effort, data controls and usage-based costs without treating the tools as interchangeable.",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "client-project-workspace-v1",
+      "audience": "Software & work",
+      "category": "Client projects",
+      "query": "For a five-person agency sharing project plans and documents with clients, should we choose Notion or Basecamp? Compare client access, permissions, setup effort and the current cost for five staff.",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "team-chat-history-v1",
+      "audience": "Software & work",
+      "category": "Team communication",
+      "query": "Which team chat tools suit a ten-person US business that needs searchable conversation history and occasional external guests? Compare free-plan limits, paid costs and what happens to older messages.",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "allbirds-first-order-v1",
+      "audience": "Shops & brands",
+      "category": "Footwear shopping",
+      "query": "Is Allbirds a sensible option for a first online everyday-shoe purchase in the US? Explain how to choose a size, check material and care information, and verify shipping and return terms before ordering.",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "everyday-clothing-returns-v1",
       "audience": "Shops & brands",
       "category": "Everyday clothing",
-      "query": "What are good online brands for everyday basics and casual clothing in the United States?",
+      "query": "Which online clothing brands should a US shopper compare for everyday cotton T-shirts and jeans? Explain how to check sizing, fabric composition, delivery costs and return fees before choosing.",
       "language": "en",
       "locale": "en-US"
     },
     {
-      "id": "small-team-projects",
-      "audience": "Software & work",
-      "category": "Project management",
-      "query": "Which project management tools work well for a small team planning tasks and sharing documents?",
+      "id": "ikea-small-apartment-v1",
+      "audience": "Shops & brands",
+      "category": "Furniture and home",
+      "query": "Should I buy a small-apartment desk from IKEA in the US? Explain how to check dimensions, delivery versus pickup costs, assembly requirements and returns before comparing alternatives.",
       "language": "en",
       "locale": "en-US"
     },
     {
-      "id": "beginner-python",
+      "id": "taskrabbit-assembly-booking-v1",
+      "audience": "Services & travel",
+      "category": "Home services",
+      "query": "What should I check before booking Taskrabbit for furniture assembly in New York City? Explain service availability, how the total price is determined, provider selection and cancellation terms.",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "japan-small-group-comparison-v1",
+      "audience": "Services & travel",
+      "category": "Small-group travel",
+      "query": "For a solo adult considering a small-group Japan trip, how do Intrepid Travel and G Adventures compare? Explain trip style, age restrictions, room sharing, included costs and booking cancellation conditions.",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "python-course-fit-v1",
       "audience": "Learning",
-      "category": "Online courses",
-      "query": "Where can a beginner learn Python online with structured courses?",
+      "category": "Beginner programming",
+      "query": "For a complete beginner learning Python alongside a full-time job, how should I compare Coursera and edX? Explain prerequisites, weekly workload, hands-on exercises, free access and the cost of a certificate.",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "duolingo-spanish-fit-v1",
+      "audience": "Learning",
+      "category": "Language practice",
+      "query": "What can a beginner learning Spanish realistically use Duolingo for, and when would another learning option help? Compare lesson format, speaking practice, free versus paid access and subscription cancellation.",
       "language": "en",
       "locale": "en-US"
     }
   ],
-  "observations": []
+  "observations": [
+    {
+      "id": "obs-deploy-small-node-app-v1-7a9709ee10ed14704ac4cc36",
+      "queryId": "deploy-small-node-app-v1",
+      "observedAt": "2026-09-13T06:20:21.823Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Render",
+          "url": "https://render.com/pricing",
+          "reason": "First choice for a conventional Node server and PostgreSQL, with a straightforward deployment model and a $13 monthly compute baseline before storage and usage.",
+          "citationUrls": [
+            "https://render.com/pricing",
+            "https://render.com/docs/free"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Railway",
+          "url": "https://railway.com/pricing",
+          "reason": "Flexible deployment and resource-based billing suit a small app, provided the combined app and database usage is budgeted beyond the $5 minimum.",
+          "citationUrls": [
+            "https://railway.com/pricing",
+            "https://docs.railway.com/networking/public-networking/specs-and-limits"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Vercel",
+          "url": "https://vercel.com/pricing",
+          "reason": "Good fit for framework-oriented, request-driven applications; external PostgreSQL costs and function duration limits make it less direct for a persistent Node server.",
+          "citationUrls": [
+            "https://vercel.com/pricing",
+            "https://vercel.com/docs/functions/limitations",
+            "https://vercel.com/docs/postgres"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Cloudflare Workers",
+          "url": "https://developers.cloudflare.com/workers/platform/pricing/",
+          "reason": "Low entry compute cost for a lightweight API, with additional compatibility work, a 128 MB isolate limit, and separately hosted PostgreSQL.",
+          "citationUrls": [
+            "https://developers.cloudflare.com/workers/platform/pricing/",
+            "https://developers.cloudflare.com/workers/platform/limits/",
+            "https://developers.cloudflare.com/workers/tutorials/postgres/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://render.com/pricing",
+          "title": "Render pricing"
+        },
+        {
+          "url": "https://render.com/docs/free",
+          "title": "Render free service limits"
+        },
+        {
+          "url": "https://railway.com/pricing",
+          "title": "Railway pricing"
+        },
+        {
+          "url": "https://docs.railway.com/networking/public-networking/specs-and-limits",
+          "title": "Railway networking specifications and limits"
+        },
+        {
+          "url": "https://vercel.com/pricing",
+          "title": "Vercel pricing"
+        },
+        {
+          "url": "https://vercel.com/docs/functions/limitations",
+          "title": "Vercel Functions limits"
+        },
+        {
+          "url": "https://vercel.com/docs/postgres",
+          "title": "Postgres on Vercel"
+        },
+        {
+          "url": "https://developers.cloudflare.com/workers/platform/pricing/",
+          "title": "Cloudflare Workers pricing"
+        },
+        {
+          "url": "https://developers.cloudflare.com/workers/platform/limits/",
+          "title": "Cloudflare Workers limits"
+        },
+        {
+          "url": "https://developers.cloudflare.com/workers/tutorials/postgres/",
+          "title": "Connect Workers to PostgreSQL"
+        }
+      ],
+      "limitations": [
+        "Recommendation order is an assessment for this query, not a measured search-engine rank, deployment benchmark, or independently verified performance comparison. Public discovery was not domain-restricted; the final comparison uses vendor documentation and is not exhaustive market coverage.",
+        "No app code, traffic profile, memory measurements, database size, region, or backup requirements were supplied. Total costs, package compatibility, and production suitability were not tested; external PostgreSQL pricing was not compared.",
+        "Render's pricing page omitted its pricing tables in the direct text read; its indexed official-page excerpts supplied the quoted prices. Opening Railway's Express guide returned an internal error; its search excerpt was available.",
+        "Not every proxy timeout, quota, storage charge, or operational database responsibility was verified. Published limits and pricing can change; retrieved pages had different crawl dates."
+      ]
+    },
+    {
+      "id": "obs-auth-b2b-small-team-v1-4e6bdebb0b8181007991607a",
+      "queryId": "auth-b2b-small-team-v1",
+      "observedAt": "2026-09-13T06:22:01.364Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Clerk",
+          "url": "https://clerk.com/pricing",
+          "reason": "First choice for quick implementation with managed authentication and prebuilt UI; budget the Enhanced B2B add-on when linking customer SSO to Organizations.",
+          "citationUrls": [
+            "https://clerk.com/pricing",
+            "https://clerk.com/docs/guides/configure/auth-strategies/social-connections/github"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "WorkOS",
+          "url": "https://workos.com/pricing",
+          "reason": "Prefer when enterprise SSO is a near-term sales requirement: managed AuthKit and included Admin Portal, with explicit per-connection SSO pricing.",
+          "citationUrls": [
+            "https://workos.com/pricing",
+            "https://workos.com/docs/reference/authkit/authentication/get-authorization-url"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Better Auth",
+          "url": "https://better-auth.com/pricing",
+          "reason": "Prefer for application-level control and self-hosting, provided the team accepts database, maintenance and authentication operations responsibility.",
+          "citationUrls": [
+            "https://better-auth.com/pricing",
+            "https://better-auth.com/docs/authentication/github",
+            "https://better-auth.com/docs/plugins/sso"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Auth0",
+          "url": "https://auth0.com/pricing",
+          "reason": "Prefer when broader identity controls matter; the free enterprise connection helps initial adoption, but paid B2B entitlements require careful pricing confirmation.",
+          "citationUrls": [
+            "https://auth0.com/pricing",
+            "https://auth0.com/docs/authenticate/identity-providers/social-identity-providers/github"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://clerk.com/pricing",
+          "title": "Clerk pricing"
+        },
+        {
+          "url": "https://clerk.com/docs/guides/configure/auth-strategies/social-connections/github",
+          "title": "Clerk: Add GitHub as a social connection"
+        },
+        {
+          "url": "https://workos.com/pricing",
+          "title": "WorkOS pricing"
+        },
+        {
+          "url": "https://workos.com/docs/reference/authkit/authentication/get-authorization-url",
+          "title": "WorkOS: Get authorization URL"
+        },
+        {
+          "url": "https://better-auth.com/pricing",
+          "title": "Better Auth pricing"
+        },
+        {
+          "url": "https://better-auth.com/docs/authentication/github",
+          "title": "Better Auth: GitHub"
+        },
+        {
+          "url": "https://better-auth.com/docs/plugins/sso",
+          "title": "Better Auth: Single Sign-On"
+        },
+        {
+          "url": "https://auth0.com/pricing",
+          "title": "Auth0 pricing"
+        },
+        {
+          "url": "https://auth0.com/docs/authenticate/identity-providers/social-identity-providers/github",
+          "title": "Auth0: Add GitHub Login to Your App"
+        }
+      ],
+      "limitations": [
+        "Public web research as of September 13, 2026. Discovery was not domain-restricted; recommendations focus on the four requested options and do not represent exhaustive market coverage.",
+        "Setup effort and recommendations are reasoned assessments of vendor documentation. No implementation, API execution, reliability, security or performance testing was performed.",
+        "Auth0’s retrieved pricing page did not expose a complete paid B2B price matrix; exact B2B base prices, connection allowances and expansion charges remain unconfirmed.",
+        "Better Auth’s SSO documentation says to contact enterprise for self-service SSO, while its pricing page lists self-service SSO on Pro. Confirm that entitlement before budgeting.",
+        "The WorkOS GitHub guide URL https://workos.com/docs/user-management/social-login/github failed to open. GitHub support was confirmed through the official authorization API documentation; detailed provider-credential setup was not verified.",
+        "Prices are published USD amounts, excluding taxes, negotiated discounts and unlisted add-ons. Clerk base pricing quoted uses annual billing; MRU, MAU and connection counts are not interchangeable."
+      ]
+    },
+    {
+      "id": "obs-sandbox-python-jobs-v1-588b89ec4a0513233176fe74",
+      "queryId": "sandbox-python-jobs-v1",
+      "observedAt": "2026-09-13T06:23:40.871Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Modal",
+          "url": "https://modal.com/docs/guide/sandboxes",
+          "reason": "Best initial comparison for a single platform offering isolated Python sandboxes, GPU resources, durable volumes and explicit network policies.",
+          "citationUrls": [
+            "https://modal.com/docs/guide/sandboxes",
+            "https://modal.com/docs/guide/sandbox-networking",
+            "https://modal.com/pricing"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Daytona",
+          "url": "https://www.daytona.io/docs/sandboxes",
+          "reason": "Useful for persistent Python workspaces plus ephemeral GPU execution, with configurable sandbox classes, egress policies and lifecycle controls.",
+          "citationUrls": [
+            "https://www.daytona.io/docs/sandboxes",
+            "https://www.daytona.io/docs/en/persistence/",
+            "https://www.daytona.io/docs/en/python-sdk/sync/sandbox/",
+            "https://www.daytona.io/pricing"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "E2B",
+          "url": "https://e2b.dev/pricing",
+          "reason": "Useful for Firecracker-isolated Python sessions with persistence and network controls when GPU execution can be handled separately.",
+          "citationUrls": [
+            "https://github.com/e2b-dev/runtime",
+            "https://github.com/e2b-dev/E2B/blob/main/packages/js-sdk/src/sandbox/sandboxApi.ts",
+            "https://e2b.dev/pricing"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://modal.com/docs/guide/sandboxes",
+          "title": "Modal: Sandboxes"
+        },
+        {
+          "url": "https://modal.com/docs/guide/sandbox-networking",
+          "title": "Modal: Networking and security"
+        },
+        {
+          "url": "https://modal.com/pricing",
+          "title": "Modal: Plan Pricing"
+        },
+        {
+          "url": "https://www.daytona.io/docs/sandboxes",
+          "title": "Daytona: Sandboxes"
+        },
+        {
+          "url": "https://www.daytona.io/docs/en/persistence/",
+          "title": "Daytona: Persistence"
+        },
+        {
+          "url": "https://www.daytona.io/docs/en/python-sdk/sync/sandbox/",
+          "title": "Daytona: Python Sandbox SDK"
+        },
+        {
+          "url": "https://www.daytona.io/pricing",
+          "title": "Daytona: Pricing"
+        },
+        {
+          "url": "https://github.com/e2b-dev/runtime",
+          "title": "E2B: Runtime documentation"
+        },
+        {
+          "url": "https://github.com/e2b-dev/E2B/blob/main/packages/js-sdk/src/sandbox/sandboxApi.ts",
+          "title": "E2B: Sandbox API SDK source"
+        },
+        {
+          "url": "https://e2b.dev/pricing",
+          "title": "E2B: Pricing"
+        }
+      ],
+      "limitations": [
+        "Public live-web research as of September 13, 2026; discovery was not restricted to a predefined vendor list. This shortlist is not exhaustive and is not a search-engine rank or API execution benchmark.",
+        "Isolation, persistence and billing descriptions are vendor claims; no workloads, security tests or performance benchmarks were run.",
+        "E2B hosted GPU availability and pricing were not established. Runtime/source capabilities may depend on SDK version, deployment and plan.",
+        "Daytona GPU documentation differed on maximum GPU count, and its pricing extraction did not clearly distinguish the on-demand/preemptible toggle; no GPU count limit or comparable GPU price quote is asserted.",
+        "Actual GPU capacity, cold-start costs, workload-specific metering, storage retention charges and negotiated pricing were not independently verified. No access failures blocked the cited sources."
+      ]
+    }
+  ]
 }

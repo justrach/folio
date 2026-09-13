@@ -149,6 +149,11 @@ test("open-web completion preserves full provider search evidence and final answ
   assert.equal(observed.answer?.collection?.finalAnswerItemId, items[2].id);
   assert.equal(observed.answer?.collection?.searchMode, "open-web");
   assert.equal(observed.answer?.evidence?.find(item => item.id === "citation-support")?.outcome, "unmeasured");
+  const manyCalls = await reconcileKeywordBenchmarkSession(session.id, env, { ...options,
+    fetcher: fixture({ session: openSession, items: [...openItems, ...Array.from({ length: 8 }, (_, index) => ({ ...search, id: `extra_search_${index}` }))] }) });
+  assert.equal(manyCalls.status, "completed");
+  assert.deepEqual(manyCalls.answer?.limitations, openAnswer.limitations, "Collector diagnostics must not modify the retained model answer's public fields.");
+  assert.equal(manyCalls.answer?.evidence?.find(item => item.id === "tool-call-target")?.outcome, "failed");
   assert.equal(parseKeywordBenchmarkAnswer(openAnswer, input.allowedDomains), null);
   assert.ok(parseKeywordBenchmarkAnswer(openAnswer, [], "open-web"));
   await assert.rejects(reconcileKeywordBenchmarkSession(session.id, env, { ...options, fetcher: fixture() }), /frozen reservation/);

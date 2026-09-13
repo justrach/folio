@@ -58,7 +58,9 @@ import { PublishedIndex, PublicationControls } from "./published-index";
 import { SeoDataPanel } from "./seo-data-panel";
 import { SearchConsolePanel } from "./search-console-panel";
 import { OwnedWebsites } from "./owned-websites";
-import { RealOverview } from "./real-overview";
+import { RealOverview, workspaceOverviewHref } from "./real-overview";
+import { PublicBenchmarkDashboard } from "./public-benchmark-dashboard";
+import "./public-overview-shell.css";
 import { KeywordActivitySummary } from "./keyword-activity-summary";
 import "./evaluation-page-shell.css";
 import { KeywordBenchmarksPanel } from "./keyword-benchmarks-panel";
@@ -72,7 +74,7 @@ import { evaluationHref, readEvaluationIntent } from "@/lib/evaluation-navigatio
 type Modal = "scan" | "methodology" | "notifications" | "search" | null;
 const navigation = [
   {
-    label: "Overview",
+    label: "Public dashboard",
     href: "/overview",
     section: "overview",
     icon: LayoutDashboard,
@@ -117,7 +119,7 @@ const titles: Record<
 > = {
   overview: {
     eyebrow: "THE BIG PICTURE",
-    title: "Overview",
+    title: "My website results",
     description: "Saved results for your website.",
   },
   websites: {
@@ -241,10 +243,54 @@ function Button({
   );
 }
 
+/** The public overview mounts no account hooks or private workspace effects. */
 export function Dashboard({ section }: { section: string }) {
+  const query = useSearchParams();
+  const views = query.getAll("view");
+  const view = views.length === 1 ? views[0] : null;
+  const workspace = view === "workspace" || query.has("website") || query.has("scope");
+  if (section === "overview" && view !== "demo" && !workspace) return <PublicOverviewShell />;
+  return <WorkspaceDashboard section={section} />;
+}
+
+function PublicOverviewShell() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  useEffect(() => {
+    const close = (event: KeyboardEvent) => { if (event.key === "Escape") setMobileOpen(false); };
+    window.addEventListener("keydown", close);
+    return () => window.removeEventListener("keydown", close);
+  }, []);
+  return <div className="app-shell public-overview-shell">
+    {mobileOpen && <button className="sidebar-scrim" onClick={() => setMobileOpen(false)} aria-label="Close navigation" />}
+    <aside className={`sidebar ${mobileOpen ? "open" : ""}`}>
+      <Link href="/" className="wordmark" aria-label="Folio home"><FolioMark /><span>folio<span className="wordmark-period">.</span></span></Link>
+      <span className="nav-caption">PUBLIC</span>
+      <nav aria-label="Public navigation">
+        <Link href="/overview" className="nav-link active" aria-current="page" onClick={() => setMobileOpen(false)}><LayoutDashboard size={17}/><span>Public dashboard</span></Link>
+        <Link href="/leaderboard" className="nav-link" onClick={() => setMobileOpen(false)}><Trophy size={17}/><span>The Folio Index</span></Link>
+        <Link href="/docs/api" className="nav-link" onClick={() => setMobileOpen(false)}><Code2 size={17}/><span>API reference</span></Link>
+      </nav>
+      <span className="nav-caption">WORKSPACE</span>
+      <nav aria-label="Main navigation">{navigation.filter(item => item.section !== "overview").map(item => <Link key={item.section} href={item.href} className="nav-link" onClick={() => setMobileOpen(false)}><item.icon size={17}/><span>{item.label}</span></Link>)}
+        <Link href="/agents" className="nav-link" onClick={() => setMobileOpen(false)}><Bot size={17}/><span>Your agents</span></Link>
+      </nav>
+      <div className="sidebar-bottom"><Link href="/overview?view=workspace" className="public-workspace-link">Private workspace<ArrowUpRight size={14}/></Link></div>
+    </aside>
+    <div className="main-shell">
+      <header className="topbar"><div className="breadcrumb"><button className="mobile-menu icon-button" onClick={() => setMobileOpen(true)} aria-label="Open navigation"><Menu size={21}/></button><Globe2 size={15}/><span>Public benchmarks</span></div><div className="topbar-actions"><Link href="/login" aria-label="Account">Sign in</Link></div></header>
+      <main className="page-content">
+        <div className="page-heading"><div><h1>Benchmark dashboard</h1><p>Recorded answers, citations and run status.</p></div><div className="heading-actions"><Link href="/overview?view=workspace" className="button secondary">My website results<ArrowRight size={14}/></Link></div></div>
+        <PublicBenchmarkDashboard />
+        <footer className="page-footer"><span><FolioMark small/></span><Link href="/overview?view=demo">Demo report<ArrowUpRight size={12}/></Link></footer>
+      </main>
+    </div>
+  </div>;
+}
+
+function WorkspaceDashboard({ section }: { section: string }) {
   const router = useRouter();
   const query = useSearchParams();
-  const demoRequested = query.get("view") === "demo";
+  const demoRequested = query.getAll("view").length === 1 && query.get("view") === "demo";
   const privateOverview = section === "overview" && !demoRequested;
   const { data: session, isPending } = authClient.useSession();
   const [modal, setModal] = useState<Modal>(null);
@@ -347,7 +393,7 @@ export function Dashboard({ section }: { section: string }) {
   }
   if (section === "login") return <Login onNotify={notify} />;
   if (isPending) return <main className="workspace-loading" role="status">Loading your workspace…</main>;
-  const title = titles[section] ?? titles.overview;
+  const title = section === "overview" && demoRequested ? { ...titles.overview, title: "Demo report", description: "Illustrative sample data." } : titles[section] ?? titles.overview;
   return (
     <div className="app-shell">
       {mobileOpen && (
@@ -545,7 +591,7 @@ export function Dashboard({ section }: { section: string }) {
               )}
             </div>
           </div>
-          {section === "overview" && <div className="real-overview-tabs" aria-label="Overview view"><button type="button" aria-pressed={!demoRequested} onClick={() => window.history.pushState(null, "", "/overview")}>My website results</button><button type="button" aria-pressed={demoRequested} onClick={() => { setMode("sample"); window.history.pushState(null, "", "/overview?view=demo"); }}>Demo report</button></div>}
+          {section === "overview" && <nav className="real-overview-tabs" aria-label="Overview view"><Link href="/overview">Public dashboard</Link><Link href={workspaceOverviewHref(query)} aria-current={!demoRequested ? "page" : undefined}>My website results</Link><Link href="/overview?view=demo" aria-current={demoRequested ? "page" : undefined} onClick={() => setMode("sample")}>Demo report</Link></nav>}
           {section === "overview" && !demoRequested ? <RealOverview ownerId={ownerId} scans={scans} scansLoading={loadingScans} scansError={scanOwnerId === ownerId ? scanError : ""} onRetryScans={() => setScanRefresh(value => value + 1)} onOpenScan={openScan} /> : <>
 
           {scanOwnerId === ownerId && scanError && ["overview", "websites", "seo", "patches"].includes(section) && (
@@ -2046,7 +2092,11 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
         returnTo = `/benchmarks${params.size ? `?${params}` : ""}`;
       }
       if (next.origin === "https://folio.invalid" && next.pathname === "/search-console") returnTo = "/search-console";
-      if (next.origin === "https://folio.invalid" && next.pathname === "/overview") returnTo = "/overview";
+      if (next.origin === "https://folio.invalid" && next.pathname === "/overview") {
+        const views = next.searchParams.getAll("view");
+        const view = views.length === 1 ? views[0] : null;
+        returnTo = view === "demo" ? "/overview?view=demo" : view === "workspace" || next.searchParams.has("website") || next.searchParams.has("scope") ? workspaceOverviewHref(next.searchParams) : "/overview";
+      }
       if (next.origin === "https://folio.invalid" && next.pathname === "/docs/api") returnTo = "/docs/api";
       if (next.origin === "https://folio.invalid" && ["/evaluations", "/agents"].includes(next.pathname)) {
         const views = next.searchParams.getAll("view");
