@@ -1,4 +1,5 @@
 import { ProviderMutationGate } from "./category-batch-transport";
+import { findCategoryReceipts, recoverCategoryReceipt } from "./category-batch-recovery";
 import { CategoryBatchRate } from "./category-batch-rate";
 import { readFile, writeFile, rename, mkdir, open, rm } from "node:fs/promises";
 import { createHash } from "node:crypto";
@@ -81,6 +82,31 @@ async function main() {
       });
       publishing = work.catch(() => {}); return work;
     };
+    // Caller holds the runner lock and has drained all jobs before entering this checkpoint.
+    const receiptCheckpoint = async () => {
+      await publishing;
+      const waiting = [...queue.values()].filter(active);
+      const found = await findCategoryReceipts(waiting.filter(run => !run.sessionId && Boolean(run.createAttemptAt)), env);
+      await atomic(`${directory}/checkpoint-receipts.json`, { ...found, checkedAt: new Date().toISOString() });
+      let recovered = 0, terminal = 0;
+      for (const query of artifact.queries) {
+        const previous = queue.get(query.id); if (!previous || !active(previous)) continue;
+        let run = (await getKeywordBenchmarkRun(db, ownerId, previous.id))!;
+        if (!run) throw Error("Owned checkpoint record disappeared.");
+        if (!run.sessionId && found.complete && found.candidates.some(candidate => (candidate as { metadata?: {run_id?: string} }).metadata?.run_id === run.id)) {
+          try { run = await recoverCategoryReceipt(db, ownerId, run.id, found.candidates, env); recovered++; }
+          catch { console.log(JSON.stringify({ phase: "receipt-not-recovered", queryId: query.id })); }
+        } else if (run.sessionId && active(run)) {
+          try {
+            const result = await reconcileKeywordBenchmarkSession(run.sessionId, env, { expectedSearchMode: run.case.searchMode, expectedAllowedDomains: run.allowedDomains });
+            if (["completed", "failed", "cancelled"].includes(result.status)) run = await updateKeywordBenchmarkRun(db, ownerId, run.id, run.revision, { status: result.status, answer: result.answer, usage: result.usage, providerMetadata: result.providerMetadata, error: result.error });
+          } catch { console.log(JSON.stringify({ phase: "receipt-outcome-unconfirmed", queryId: query.id })); }
+        }
+        if (!active(run)) terminal++;
+        await save(query, run);
+      }
+      console.log(JSON.stringify({ phase: "receipt-checkpoint", complete: found.complete, checked: found.checked, recovered, terminal }));
+    };
     // Resume from D1, never from a missing filesystem receipt. Reconcile pre-existing sessions with GETs only.
     const rows = await db.prepare("SELECT id,case_id FROM keyword_benchmark_runs WHERE user_id=? ORDER BY created_at DESC").bind(ownerId).all<{ id: string; case_id: string }>();
     const byCase = new Map<string, string>(); for (const row of rows.results) if (!byCase.has(row.case_id)) byCase.set(row.case_id, row.id);
@@ -95,6 +121,7 @@ async function main() {
       }
       await save(query, run);
     }
+    await receiptCheckpoint();
     const pending = interleaveCategories(artifact.queries.filter(query => !queue.has(query.id)));
     // Separate <=50-case operator suites, with an explicit account-local ceiling; normal creation stays at20.
     const savedCases = await db.prepare("SELECT id FROM keyword_benchmark_cases WHERE user_id=?").bind(ownerId).all<{ id: string }>();
@@ -107,16 +134,17 @@ async function main() {
     console.log(JSON.stringify({ phase: "prepared", ...scope, previouslyAttempted: queue.size, unstarted: pending.length, published: artifact.observations.length }));
     if (!execute) return;
     const usage = await getKeywordBenchmarkUsage(db, ownerId, { maxRunsPerDay: null, maxActiveRuns: scope.maxConcurrent });
-    const slots = Math.min(requestedWorkers, Math.max(0, scope.maxConcurrent - usage.activeRuns));
+    let slots = Math.min(requestedWorkers, Math.max(0, scope.maxConcurrent - usage.activeRuns));
     if (!slots) throw Error("Existing active attempts occupy all authorized concurrency; no replacement starts.");
     let next = 0, draining = false, creating = false, lastCreateAt = 0, heldThisProcess = 0;
-    const rate = new CategoryBatchRate(slots, Date.now());
+    const rate = new CategoryBatchRate(requestedWorkers, Date.now());
+    let recoveryPending = false, lastReceiptCheckpoint = Date.now();
     const jobs = new Set<Promise<void>>();
     const mutations = new ProviderMutationGate();
     const providerFetch: typeof fetch = (url, init) => (init?.method ?? "GET").toUpperCase() === "GET" ? fetch(url, init) : mutations.run(() => fetch(url, { ...init, signal: AbortSignal.timeout(30_000) }));
     const drain = () => { draining = true; console.log(JSON.stringify({ phase: "draining", confirmedOrCreating: jobs.size })); };
     process.on("SIGUSR2", drain); process.on("SIGTERM", drain); process.on("SIGINT", drain);
-    const updateScheduler = () => { scheduler = { desiredConcurrency: rate.desired, availableCeiling: Math.max(0, slots - heldThisProcess), activeOrCreating: jobs.size, creating, serializedProviderWrites: true, createSpacingMs: rate.spacingMs, cooldownUntil: rate.cooldownUntil ? new Date(rate.cooldownUntil).toISOString() : null, stoppedReason: rate.stoppedReason, draining }; };
+    const updateScheduler = () => { scheduler = { desiredConcurrency: rate.desired, availableCeiling: Math.max(0, slots - heldThisProcess), activeOrCreating: jobs.size, creating, serializedProviderWrites: true, recoveryPending, lastReceiptCheckpoint: new Date(lastReceiptCheckpoint).toISOString(), createSpacingMs: rate.spacingMs, cooldownUntil: rate.cooldownUntil ? new Date(rate.cooldownUntil).toISOString() : null, stoppedReason: rate.stoppedReason, draining }; };
     async function executeQuestion(query: PublicSearchQuery) {
       let run: KeywordBenchmarkRun | undefined, inCreatePhase = true;
       const releaseCreatePhase = () => { if (inCreatePhase) { creating = false; inCreatePhase = false; } };
@@ -155,9 +183,16 @@ async function main() {
     }
     try {
       while ((!stopped && !draining && !rate.stoppedReason && next < Math.min(pending.length, maxNew)) || jobs.size) {
+        if (!stopped && !draining && !rate.stoppedReason && Date.now() >= rate.cooldownUntil && (Date.now() - lastReceiptCheckpoint >= 300_000 || (!jobs.size && slots <= heldThisProcess))) recoveryPending = true;
+        if (recoveryPending && !jobs.size && !creating && !draining && !rate.stoppedReason) {
+          await receiptCheckpoint();
+          const refreshed = await getKeywordBenchmarkUsage(db, ownerId, { maxRunsPerDay: null, maxActiveRuns: scope.maxConcurrent });
+          slots = Math.min(requestedWorkers, Math.max(0, scope.maxConcurrent - refreshed.activeRuns));
+          heldThisProcess = 0; recoveryPending = false; lastReceiptCheckpoint = Date.now();
+        }
         const available = Math.max(0, slots - heldThisProcess);
         if (!available && !jobs.size) rate.stoppedReason = "capacity-retained-by-unresolved-attempts";
-        if (!creating && !stopped && !draining && !rate.stoppedReason && next < Math.min(pending.length, maxNew) && jobs.size < available && rate.canCreate(Date.now(), jobs.size) && Date.now() - lastCreateAt >= rate.spacingMs) {
+        if (!recoveryPending && !creating && !stopped && !draining && !rate.stoppedReason && next < Math.min(pending.length, maxNew) && jobs.size < available && rate.canCreate(Date.now(), jobs.size) && Date.now() - lastCreateAt >= rate.spacingMs) {
           const query = pending[next++]; lastCreateAt = Date.now(); creating = true;
           const work = executeQuestion(query); jobs.add(work); work.finally(() => jobs.delete(work));
         }

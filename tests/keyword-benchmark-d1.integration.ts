@@ -244,9 +244,15 @@ test("real D1 service runs private baseline/fresh answers with one create, safe 
     recoveredSession = { ...candidate, agent: { model: "changed-after-listing" } };
     await assert.rejects(recoverCategoryReceipt(restored, "alice", ambiguous.id, [candidate], env, options));
     assert.equal((await getKeywordBenchmarkRun(restored, "alice", ambiguous.id))?.sessionId, null);
-    recoveredSession = candidate; providerState = "completed";
-    const recovered = await recoverCategoryReceipt(restored, "alice", ambiguous.id, [candidate], env, options);
+    recoveredSession = candidate; providerState = "in_progress";
+    const pendingReceipt = await recoverCategoryReceipt(restored, "alice", ambiguous.id, [candidate], env, options);
+    assert.equal(pendingReceipt.status, "requires_action"); assert.equal(pendingReceipt.sessionId, "session_4");
+    assert.equal(pendingReceipt.answer, null); assert.equal(pendingReceipt.usage.costUsd, null);
+    assert.equal((await getKeywordBenchmarkUsage(restored, "alice")).activeRuns, 1, "A recovered nonterminal receipt retains capacity.");
+    providerState = "completed";
+    const recovered = await reconcileKeywordBenchmark(restored, "alice", ambiguous.id, env, options);
     assert.equal(recovered.status, "completed"); assert.equal(recovered.sessionId, "session_4");
+    assert.equal((await getKeywordBenchmarkUsage(restored, "alice")).activeRuns, 0, "Only a validated terminal outcome frees capacity.");
     assert.equal(creates, 3); assert.equal(ambiguousPosts, 1); assert.equal(cancels, 1);
     assert.equal(recovered.createAttemptAt, ambiguous.createAttemptAt); assert.equal(recovered.usage.costUsd, null);
     await current.dispose(); current = undefined; current = runtime(directory);
