@@ -100,3 +100,9 @@ Current workflow/runtime validation: Bun's frozen dependency installation, TypeS
 See [frontend workflow](docs/FRONTEND-WORKFLOW.md), [local D1 persistence](docs/LOCAL-D1.md), and [agent guidance](AGENTS.md) for operating the finished paths. Local tests do not establish hosted CI or production database readiness.
 
 Production Cloudflare deployment and payment setup remain unchecked. Hosted CI passed for the explicitly identified public commit above; local live inference does not establish a deployed scheduler or active paid subscription.
+
+## MCP and sandbox SEO
+
+- [x] Add scoped bearer-authenticated Streamable HTTP MCP, coding-client setup, and explicit idempotent SEO lookups shared with REST.
+- [x] Add opt-in selected-domain SEO capability for managed open-web keyword sandboxes, with separate harness identity and no shell credential exposure.
+- [ ] Validate hosted sandbox-to-MCP connectivity and a real DataForSEO tool result separately from fixture tests.

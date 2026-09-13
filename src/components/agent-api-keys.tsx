@@ -18,6 +18,7 @@ function OwnerApiKeys({account}:{account:string}) {
   const [keys, setKeys] = useState<AgentApiKeySummary[]>([]);
   const [name, setName] = useState("");
   const [canEvaluate, setCanEvaluate] = useState(false);
+  const [canSeo, setCanSeo] = useState(false);
   const [days, setDays] = useState(30);
   const [token, setToken] = useState<string | null>(null);
   const [error, setError] = useState("");
@@ -56,9 +57,9 @@ function OwnerApiKeys({account}:{account:string}) {
   async function create() {
     setBusy("create"); setError(""); setNotice(""); setToken(null);
     try {
-      const body = await request<{ key: AgentApiKeySummary; token: string }>("/api/agent-keys", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, scopes: canEvaluate ? ["read", "evaluate"] : ["read"], expiresInDays: days }) });
+      const body = await request<{ key: AgentApiKeySummary; token: string }>("/api/agent-keys", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, scopes: ["read", ...(canEvaluate ? ["evaluate"] : []), ...(canSeo ? ["seo"] : [])], expiresInDays: days }) });
       if (!body || !mounted.current) return;
-      setKeys(current => [body.key, ...current]); setToken(body.token); setName(""); setCanEvaluate(false);
+      setKeys(current => [body.key, ...current]); setToken(body.token); setName(""); setCanEvaluate(false); setCanSeo(false);
     } catch (failure) { if (mounted.current) setError("Key creation could not be confirmed. Reload the key list before trying again."); }
     finally { if (mounted.current) setBusy(""); }
   }
@@ -78,13 +79,14 @@ function OwnerApiKeys({account}:{account:string}) {
     <form onSubmit={event => { event.preventDefault(); void create(); }}>
       <div className="api-key-fields"><label>Key name<input value={name} maxLength={100} required onChange={event => setName(event.target.value)} placeholder="My research agent" disabled={Boolean(busy)} /></label><label>Expires after<select value={days} onChange={event => setDays(Number(event.target.value))} disabled={Boolean(busy)}><option value={7}>7 days</option><option value={30}>30 days</option><option value={90}>90 days</option></select></label></div>
       <label className="api-key-permission"><input type="checkbox" checked={canEvaluate} disabled={Boolean(busy)} onChange={event => setCanEvaluate(event.target.checked)} /><span>Allow this key to start evaluations<small>Can incur usage charges. Your account’s website access, run limits, and active-task limits still apply.</small></span></label>
+      <label className="api-key-permission"><input type="checkbox" checked={canSeo} disabled={Boolean(busy)} onChange={event => setCanSeo(event.target.checked)} /><span>Allow paid SEO lookups<small>DataForSEO charges apply. Up to 20 lookups per hour; repeated requests with the same idempotency key reuse the saved report.</small></span></label>
       <button className="button primary" disabled={Boolean(busy) || !name.trim()}>{busy === "create" ? <Loader2 size={15} className="eval-spin" /> : <KeyRound size={15} />}Create API key</button><p className="api-small">Read access is always included. Keys expire and can be revoked here.</p>
     </form>
     {error && <p role="alert" className="api-error">{error}</p>}{notice && <p role="status">{notice}</p>}
     {token && <div className="api-new-token"><h3>Save this key now</h3><p>It is shown only once. Store it in your agent’s secret environment.</p><label className="sr-only" htmlFor="new-folio-key">New Folio API key</label><div><input id="new-folio-key" type="password" value={token} readOnly autoComplete="off" /><button className="button secondary" onClick={() => { void navigator.clipboard.writeText(token).then(() => { if (mounted.current) setNotice("API key copied."); }).catch(() => { if (mounted.current) setError("Clipboard unavailable. Select the key field to copy it."); }); }}><Copy size={14} />Copy key</button></div><button className="api-text-button" onClick={() => setToken(null)}>I saved it · hide key</button></div>}
     <div className="api-key-list"><h3>Your keys</h3>{busy === "loading" ? <p role="status">Loading keys…</p> : !keys.length ? <p>No keys yet.</p> : keys.map(key => {
       const expired = Date.parse(key.expiresAt) <= Date.now();
-      return <article key={key.id}><div><strong>{key.name}</strong><code>{key.prefix}…</code><p>{key.scopes.includes("evaluate") ? "Read and evaluate" : "Read only"} · {key.revokedAt ? "Revoked" : expired ? "Expired" : `Expires ${new Date(key.expiresAt).toLocaleDateString()}`}</p></div>{!key.revokedAt && !expired && <button className="button secondary" disabled={Boolean(busy)} onClick={() => void revoke(key)}>Revoke <span className="sr-only">{key.name}</span></button>}</article>;
+      return <article key={key.id}><div><strong>{key.name}</strong><code>{key.prefix}…</code><p>{key.scopes.join(" · ")} · {key.revokedAt ? "Revoked" : expired ? "Expired" : `Expires ${new Date(key.expiresAt).toLocaleDateString()}`}</p></div>{!key.revokedAt && !expired && <button className="button secondary" disabled={Boolean(busy)} onClick={() => void revoke(key)}>Revoke <span className="sr-only">{key.name}</span></button>}</article>;
     })}</div>
   </div>;
 }

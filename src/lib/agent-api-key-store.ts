@@ -26,8 +26,8 @@ export async function createAgentApiKey(db: D1Database, ownerId: string,
   input: { name: string; scopes: AgentApiScope[]; expiresInDays?: number }, options: { now?: Date } = {}) {
   owner(ownerId);
   if (typeof input.name !== "string" || !input.name.trim() || input.name.length > 100 || /[\u0000-\u001f]/.test(input.name)) throw new AgentApiError("Use a key name of 1–100 characters.");
-  if (!Array.isArray(input.scopes) || !input.scopes.includes("read") || input.scopes.length > 2 || new Set(input.scopes).size !== input.scopes.length || input.scopes.some(scope => !["read", "evaluate"].includes(scope)))
-    throw new AgentApiError("Choose read access, optionally with permission to start evaluations.");
+  if (!Array.isArray(input.scopes) || !input.scopes.includes("read") || input.scopes.length > 3 || new Set(input.scopes).size !== input.scopes.length || input.scopes.some(scope => !["read", "evaluate", "seo"].includes(scope)))
+    throw new AgentApiError("Choose read access, optionally with evaluation or paid SEO permission.");
   const days = input.expiresInDays ?? 30;
   if (!Number.isInteger(days) || days < 1 || days > 90) throw new AgentApiError("Keys must expire in 1–90 days.");
   const now = timestamp(options.now), id = crypto.randomUUID();

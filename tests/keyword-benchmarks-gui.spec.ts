@@ -354,3 +354,16 @@ test("a released unknown creation permits a different question while its origina
   await expect(page.getByRole("button", { name: "Run baseline", exact: true })).toBeEnabled();
   expect(state.starts).toEqual([]); expect(state.forbidden).toEqual([]);
 });
+
+test("sandbox SEO is off by default and only the explicit start carries authorization", async ({ page }) => {
+  const state = await fixture(page);
+  state.suites = [{ ...suite, cases: suite.cases.map(item => ({ ...item, searchMode: "open-web" })) }];
+  await page.goto(`/benchmarks?suite=${suite.id}`);
+  const checkbox = page.getByRole("checkbox", { name: /Let this agent look up search and backlinks/ });
+  await expect(checkbox).not.toBeChecked();
+  expect(state.starts).toHaveLength(0);
+  await checkbox.check(); expect(state.starts).toHaveLength(0);
+  await page.getByRole("button", { name: "Run baseline", exact: true }).click();
+  await expect.poll(() => state.starts.length).toBe(1);
+  expect(state.starts[0]).toMatchObject({ caseId: suite.cases[0].id, kind: "baseline", useSeoTools: true });
+});

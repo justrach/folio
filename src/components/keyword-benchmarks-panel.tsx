@@ -72,6 +72,7 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
   const [run, setRun] = useState<KeywordBenchmarkRun | null>(null);
   const [baseline, setBaseline] = useState<KeywordBenchmarkRun | null>(null);
   const [baselineChoices, setBaselineChoices] = useState<Record<string, string>>({});
+  const [seoCase, setSeoCase] = useState("");
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -205,7 +206,7 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
     if (!ready || runs.some(item => item.caseId === caseId && item.holdReleasedAt && item.status === "requires_action" && !item.sessionId)
       || (kind === "fresh" && !baselineRunId)) return;
     void action(`start-${caseId}`, async signal => {
-      const result = await request<{run:KeywordBenchmarkRun}>("/api/benchmarks/runs", signal, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({caseId,kind,...(baselineRunId ? {baselineRunId} : {})}) });
+      const result = await request<{run:KeywordBenchmarkRun}>("/api/benchmarks/runs", signal, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({caseId,kind,...(seoCase === `${suiteId}/${caseId}` ? {useSeoTools:true} : {}),...(baselineRunId ? {baselineRunId} : {})}) });
       if (signal.aborted) return;
       if (result.run.suiteId !== suiteId || result.run.caseId !== caseId || result.run.publication !== "private") throw new Error("The returned observation does not match this question.");
       select(result.run.suiteId, result.run.id); setRun(result.run); setRefresh(value => value + 1);
@@ -250,6 +251,7 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
       <p className="benchmark-question-coverage">{answeredQuestions} of {currentSuite.cases.length} questions have a completed answer{attentionQuestions > 0 ? ` · ${attentionQuestions} latest ${attentionQuestions === 1 ? "attempt needs" : "attempts need"} attention` : ""}.</p>
       <div className="benchmark-question-list" aria-label="Saved questions">{currentSuite.cases.map(item => <button key={item.id} type="button" aria-label={item.query} aria-pressed={item.id===selectedCase?.id} onClick={() => setCaseChoice(item.id)}>{item.query}<span className="question-result-state">{caseRuns(item.id)[0] ? statusLabel(caseRuns(item.id)[0].status) : "Draft · not started"}</span></button>)}</div>
       {selectedCase && <div className="benchmark-selected-question"><h2>{selectedCase.query}</h2><p className="benchmark-muted">{selectedCase.targetUrl ?? "No website target"} · {selectedCase.language} · {selectedCase.locale}</p><p className="benchmark-muted">{selectedCase.searchMode === "open-web" ? "Search scope: open web" : "Search scope: reviewed documentation"}. The recorded answer is private.</p>
+        {selectedCase.searchMode === "open-web" && selectedCase.targetUrl && <label><input type="checkbox" checked={seoCase === `${suiteId}/${selectedCase.id}`} disabled={!!busy} onChange={event => setSeoCase(event.target.checked ? `${suiteId}/${selectedCase.id}` : "")}/> Let this agent look up search and backlinks for this website. Allows one additional paid DataForSEO overview; repeated tool calls reuse it.</label>}
         {baselines.length > 0 && <label>Baseline for {selectedCase.query}<select value={baselineId} onChange={event => setBaselineChoices(value => ({...value,[selectedCase.id]:event.target.value}))}>{baselines.map(item => <option value={item.id} key={item.id}>{date(item.createdAt)}</option>)}</select></label>}
         <div className="benchmark-actions"><button className="button secondary" type="button" disabled={!ready || selectedCaseUnresolved || !!busy} onClick={() => start(selectedCase.id,"baseline")}>Run baseline</button><button className="button primary" type="button" disabled={!ready || selectedCaseUnresolved || !baselineId || !!busy} onClick={() => start(selectedCase.id,"fresh",baselineId)}>Run fresh observation</button></div>
         {selectedCaseUnresolved && <p className="benchmark-muted">This question has an unresolved earlier attempt. Choose a different question while it is reviewed.</p>}

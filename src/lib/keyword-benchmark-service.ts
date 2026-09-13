@@ -1,4 +1,6 @@
 import "server-only";
+import { sandboxSeoUrl, createSandboxSeoGrant } from "./sandbox-seo";
+import { agentApiHash } from "./agent-api-key-store";
 import type { D1Database } from "@cloudflare/workers-types";
 import { getAgentsConnectionStatus, isAgentDailyLimitExempt, type AgentsEnvironment } from "./agents";
 import { KEYWORD_BENCHMARK_ALLOWED_DOMAINS, ALL_KEYWORD_BENCHMARK_TEMPLATES } from "./keyword-benchmark-catalog";
@@ -12,7 +14,7 @@ import { acknowledgeKeywordBenchmarkCancellation, createKeywordBenchmarkSuite, g
 import { isKeywordBenchmarkId, keywordSearchMode, type KeywordBenchmarkCaseInput, type KeywordBenchmarkRun } from "./keyword-benchmark-types";
 
 export const KEYWORD_BENCHMARK_LIMITS = { maxRunsPerDay: 6, maxActiveRuns: 1 } as const;
-export type KeywordBenchmarkServiceOptions = KeywordAgentOptions & { now?: Date; allowedDomains?: string[];
+export type KeywordBenchmarkServiceOptions = KeywordAgentOptions & { useSeoTools?: boolean; now?: Date; allowedDomains?: string[];
   reserve?: (input: Parameters<typeof reserveKeywordBenchmarkRun>[2], limits: { maxRunsPerDay: number | null; maxActiveRuns: number }) => Promise<{ run: KeywordBenchmarkRun; created: boolean }> };
 const terminal = (run: KeywordBenchmarkRun) => ["completed", "failed", "cancelled"].includes(run.status);
 export class KeywordBenchmarkPersistenceError extends Error {
@@ -84,9 +86,13 @@ async function persistReceipt(db: D1Database, ownerId: string, run: KeywordBench
 }
 export async function keywordBenchmarkExecutionConfig(trial: KeywordBenchmarkCaseInput, env: AgentsEnvironment, options: KeywordBenchmarkServiceOptions = {}) {
   const searchMode = keywordSearchMode(trial.searchMode);
+  if (options.useSeoTools) {
+    if (searchMode !== "open-web") throw new KeywordBenchmarkStoreError("SEO tools require an open-web question.", 400);
+
+  }
   const allowedDomains = searchMode === "open-web" ? [] : keywordAllowedDomains(options.allowedDomains ?? [...KEYWORD_BENCHMARK_ALLOWED_DOMAINS]);
-  return { searchMode, allowedDomains, model: searchMode === "open-web" ? KEYWORD_OPEN_WEB_MODEL : getAgentsConnectionStatus(env).model, harnessVersion: keywordAgentHarnessVersion(searchMode),
-    environmentType: "openai_hosted", environmentFingerprint: await keywordEnvironmentFingerprint(allowedDomains, searchMode), deadlineMs: KEYWORD_AGENT_DEADLINE_MS };
+  return { searchMode, allowedDomains, model: searchMode === "open-web" ? KEYWORD_OPEN_WEB_MODEL : getAgentsConnectionStatus(env).model, harnessVersion: keywordAgentHarnessVersion(searchMode, options.useSeoTools),
+    environmentType: "openai_hosted", environmentFingerprint: options.useSeoTools ? await agentApiHash((await keywordEnvironmentFingerprint(allowedDomains, searchMode)) + ":sandbox-seo-v1") : await keywordEnvironmentFingerprint(allowedDomains, searchMode), deadlineMs: KEYWORD_AGENT_DEADLINE_MS };
 }
 /** Paid start: validate before reserving, then commit the one-attempt marker before one provider POST. */
 export async function startKeywordBenchmark(db: D1Database, ownerId: string,
@@ -98,6 +104,7 @@ export async function startKeywordBenchmark(db: D1Database, ownerId: string,
   const suite = await getKeywordBenchmarkSuite(db, ownerId, row.suite_id);
   const trial = suite?.cases.find(value => value.id === input.caseId);
   if (!trial) throw new KeywordBenchmarkStoreError("The private benchmark case was not found.", 404);
+  if (options.useSeoTools) sandboxSeoUrl(env, ownerId, trial.targetUrl);
   const config = await keywordBenchmarkExecutionConfig(trial, env, options);
   const providerInput = { runId: "preflight", caseId: trial.id, query: trial.query, language: trial.language, locale: trial.locale,
     model: config.model, allowedDomains: config.allowedDomains, searchMode: config.searchMode };
@@ -108,10 +115,11 @@ export async function startKeywordBenchmark(db: D1Database, ownerId: string,
   let run = reservation?.run ?? await reserveKeywordBenchmarkRun(db, ownerId, reservationInput,
     { maxRunsPerDay: access.maxRunsPerDay, maxActiveRuns: access.maxActiveRuns, now: options.now });
   // Re-project from the atomic frozen snapshot in case its source case changed during preflight.
-  const frozenInput = { ...providerInput, runId: run.id, query: run.case.query, language: run.case.language, locale: run.case.locale,
+  const frozenInput: typeof providerInput & { seoMcp?: { url: string; authorization: string } } = { ...providerInput, runId: run.id, query: run.case.query, language: run.case.language, locale: run.case.locale,
     searchMode: keywordSearchMode(run.case.searchMode) };
   try {
     if (frozenInput.searchMode !== config.searchMode) throw new Error("The case search mode changed during reservation.");
+    if (options.useSeoTools) frozenInput.seoMcp = await createSandboxSeoGrant(db, ownerId, run, env);
     buildKeywordBenchmarkRequest(frozenInput);
   }
   catch { return updateKeywordBenchmarkRun(db, ownerId, run.id, run.revision, { status: "failed", error: "The benchmark case is not valid for this evaluator." }); }

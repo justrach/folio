@@ -190,3 +190,7 @@ The evaluation hub selects **Search questions** for plain `/evaluations`. Explic
 `POST /api/benchmarks` accepts either an existing template selector or a bounded question draft: owned `websiteId`, `name`, 1–10 `questions`, `language`, and `locale`. `question-suite-input.ts` shares validation with the editor; `question-suites.ts` resolves the target from the exact owner's saved site and creates private open-web cases. Draft saving reserves no evaluation and makes no provider call. Four additional six-question starter packs cover work, shopping, services and learning.
 
 `discovery-documents.ts` analyzes supplied text/XML only. The scanner retrieves four fixed origin files through its bounded, allowlisted fetch path and retains status plus parser observations in optional zero-point checks. It does not follow document links, execute instructions, or alter `readiness-v1` weights or the page capture hash. Robots rules are inventoried, llms files are optional conventions, and sitemap analysis is bounded structural checking; none certifies indexing or AI use.
+
+## Authenticated MCP and sandbox SEO
+
+Folio now includes `/api/mcp` for coding clients and `/api/v1/seo` for explicit, idempotent DataForSEO lookups. Keyword sandboxes can opt into one selected-domain SEO lookup with a short-lived capability; existing evaluation keys require a separate `seo` permission. See [MCP setup and behavior](docs/MCP.md) for migration, configuration, client examples and validation limits.

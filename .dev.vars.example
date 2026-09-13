@@ -29,3 +29,6 @@ DATAFORSEO_ALLOWED_USER_IDS=
 # Optional scheduled retrieval of existing managed sessions; no task creation.
 EVALUATION_RECONCILE_ENABLED=false
 EVALUATION_RECONCILE_SECRET=
+
+# Public HTTPS endpoint for opt-in managed sandbox SEO tools; requires migration 0013.
+FOLIO_MCP_URL=

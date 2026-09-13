@@ -68,3 +68,7 @@ The public `/docs/api` reference includes owner-only Folio key management. `/api
 The counter and notification bell use Rare UI source vendored at revision `d146c35264c5905b995903d2d96cd6d188af114a`. The MIT license and attribution are in `LICENSES/rare-ui.txt`. Source: [Rare UI](https://github.com/swamimalode07/rare-ui).
 
 Optional scheduled retrieval uses the same GET-only reconciler with a shared-secret endpoint, a D1 lease, and bounded batches. It never approves function results. See [background jobs](BACKGROUND-JOBS.md). Reference answers, comparisons, local evidence deletion, and the offline verifier are described in [evaluation strategy](../EVALUATION-STRATEGY.md).
+
+## Authenticated MCP and sandbox SEO
+
+Folio now includes `/api/mcp` for coding clients and `/api/v1/seo` for explicit, idempotent DataForSEO lookups. Keyword sandboxes can opt into one selected-domain SEO lookup with a short-lived capability; existing evaluation keys require a separate `seo` permission. See [MCP setup and behavior](MCP.md) for migration, configuration, client examples and validation limits.
