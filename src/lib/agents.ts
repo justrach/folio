@@ -9,6 +9,10 @@ const DEFAULT_MODEL = "gpt-6-astra";
 const MAX_RESPONSE_BYTES = 1_000_000;
 
 export type AgentsEnvironment = {
+  FOLIO_MCP_URL?: string;
+  DATAFORSEO_LOGIN?: string;
+  DATAFORSEO_PASSWORD?: string;
+  DATAFORSEO_ALLOWED_USER_IDS?: string;
   OPENAI_API_KEY?: string;
   OPENAI_AGENTS_MODEL?: string;
   OPENAI_ALLOWED_USER_IDS?: string;

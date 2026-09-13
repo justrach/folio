@@ -56,3 +56,7 @@ Run `node --conditions=react-server --import tsx --test tests/dataforseo.test.ts
 Each explicit lookup reserves an owner-scoped `seo_reports` record before the provider call. Successful normalized responses, including partial failures and unknown costs, are saved without overwriting older observations. An interrupted reservation remains unconfirmed; it is never silently retried. `/api/seo-reports` and its detail route read saved data only. If persistence fails after a paid response, the UI offers a private download and reports the failure.
 
 A live evaluation can attach one completed private report matching its exact target hostname. The managed read-only `read_saved_seo_report` function returns this frozen snapshot only after an owner click; it cannot perform fresh DataForSEO lookups or choose another report. Deleting an evaluation removes its copy, not the separate SEO history record.
+
+## Authenticated MCP and sandbox SEO
+
+Folio now includes `/api/mcp` for coding clients and `/api/v1/seo` for explicit, idempotent DataForSEO lookups. Keyword sandboxes can opt into one selected-domain SEO lookup with a short-lived capability; existing evaluation keys require a separate `seo` permission. See [MCP setup and behavior](MCP.md) for migration, configuration, client examples and validation limits.

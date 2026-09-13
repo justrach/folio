@@ -23,9 +23,10 @@ export function agentMaxAge(value: unknown): number {
 export function parseAgentObservation(input: Record<string, unknown>): AgentObservationInput {
   const kind = agentObservationKind(input.kind);
   const maxAgeSeconds = agentMaxAge(input.maxAgeSeconds);
-  onlyFields(input, ["kind", kind === "website" ? "websiteId" : "caseId", "maxAgeSeconds"]);
+  onlyFields(input, ["kind", kind === "website" ? "websiteId" : "caseId", "maxAgeSeconds", ...(kind === "keyword" ? ["useSeoTools"] : [])]);
+  if (input.useSeoTools !== undefined && typeof input.useSeoTools !== "boolean") throw new AgentApiError("useSeoTools must be boolean.");
   return kind === "website" ? { kind, websiteId: agentIdentifier(input.websiteId), maxAgeSeconds } :
-    { kind, caseId: agentIdentifier(input.caseId), maxAgeSeconds };
+    { kind, caseId: agentIdentifier(input.caseId), maxAgeSeconds, ...(input.useSeoTools === true ? { useSeoTools: true } : {}) };
 }
 export function parseAgentQuery(url: string): Record<string, unknown> {
   const params = new URL(url).searchParams;
@@ -36,13 +37,16 @@ export function parseAgentQuery(url: string): Record<string, unknown> {
     if (key === "maxAgeSeconds") {
       if (!/^\d+$/.test(value)) throw new AgentApiError("maxAgeSeconds must be an integer from 0 to 604800.");
       input[key] = Number(value);
+    } else if (key === "useSeoTools") {
+      if (value !== "true" && value !== "false") throw new AgentApiError("useSeoTools must be true or false.");
+      input[key] = value === "true";
     } else input[key] = value;
   }
   return input;
 }
 export function parseAgentKeyInput(input: Record<string, unknown>): { name: string; scopes: AgentApiScope[]; expiresInDays?: number } {
   onlyFields(input, ["name", "scopes", "expiresInDays"]);
-  if (typeof input.name !== "string" || !Array.isArray(input.scopes) || input.scopes.some(scope => scope !== "read" && scope !== "evaluate") ||
-    (input.expiresInDays !== undefined && typeof input.expiresInDays !== "number")) throw new AgentApiError("Use a name, read/evaluate scopes, and an optional key lifetime.");
+  if (typeof input.name !== "string" || !Array.isArray(input.scopes) || input.scopes.some(scope => scope !== "read" && scope !== "evaluate" && scope !== "seo") ||
+    (input.expiresInDays !== undefined && typeof input.expiresInDays !== "number")) throw new AgentApiError("Use a name, read/evaluate/seo scopes, and an optional key lifetime.");
   return { name: input.name, scopes: input.scopes as AgentApiScope[], ...(input.expiresInDays === undefined ? {} : { expiresInDays: input.expiresInDays as number }) };
 }

@@ -14,9 +14,9 @@ export async function POST(request: Request) {
   try {
     const { db, ownerId, env, baseURL } = await keywordBenchmarkRequestContext(request); requireKeywordBenchmarkOrigin(request, baseURL);
     const body = await readJsonBody(request);
-    if (typeof body.caseId !== "string" || !["baseline", "fresh"].includes(String(body.kind)) || (body.baselineRunId !== undefined && typeof body.baselineRunId !== "string"))
+    if (Object.keys(body).some(key => !["caseId", "kind", "baselineRunId", "useSeoTools"].includes(key)) || (body.useSeoTools !== undefined && typeof body.useSeoTools !== "boolean") || typeof body.caseId !== "string" || !["baseline", "fresh"].includes(String(body.kind)) || (body.baselineRunId !== undefined && typeof body.baselineRunId !== "string"))
       throw new KeywordBenchmarkStoreError("Choose a saved case and baseline or fresh answer.", 400);
-    const run = await startKeywordBenchmark(db, ownerId, { caseId: body.caseId, kind: body.kind as "baseline" | "fresh", baselineRunId: body.baselineRunId as string | undefined }, env);
+    const run = await startKeywordBenchmark(db, ownerId, { caseId: body.caseId, kind: body.kind as "baseline" | "fresh", baselineRunId: body.baselineRunId as string | undefined }, env, { useSeoTools: body.useSeoTools === true });
     return Response.json({ run }, { status: 201, headers: PRIVATE_BENCHMARK_HEADERS });
   } catch (error) { return keywordBenchmarkErrorResponse(error); }
 }

@@ -7,6 +7,8 @@ import type { AgentRunEnvironment } from "./agent-runs";
 import { ScanError } from "./scanner";
 import { KeywordBenchmarkPersistenceError } from "./keyword-benchmark-service";
 import { KeywordBenchmarkStoreError } from "./keyword-benchmark-store";
+import { SeoDataError } from "./dataforseo";
+import { SeoStoreError } from "./seo-store";
 import { EvalStoreError } from "./eval-store";
 
 export const AGENT_API_HEADERS = { "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff", "Referrer-Policy": "no-referrer" };
@@ -20,6 +22,10 @@ export async function agentApiContext(request: Request, scope: AgentApiScope = "
   const { env } = await getCloudflareContext({ async: true });
   const values = env as unknown as AgentRunEnvironment;
   return { db, principal, env: {
+    FOLIO_MCP_URL: values.FOLIO_MCP_URL || process.env.FOLIO_MCP_URL,
+    DATAFORSEO_LOGIN: values.DATAFORSEO_LOGIN || process.env.DATAFORSEO_LOGIN,
+    DATAFORSEO_PASSWORD: values.DATAFORSEO_PASSWORD || process.env.DATAFORSEO_PASSWORD,
+    DATAFORSEO_ALLOWED_USER_IDS: values.DATAFORSEO_ALLOWED_USER_IDS || process.env.DATAFORSEO_ALLOWED_USER_IDS,
     OPENAI_API_KEY: values.OPENAI_API_KEY || process.env.OPENAI_API_KEY,
     OPENAI_AGENTS_MODEL: values.OPENAI_AGENTS_MODEL || process.env.OPENAI_AGENTS_MODEL,
     OPENAI_ALLOWED_USER_IDS: values.OPENAI_ALLOWED_USER_IDS || process.env.OPENAI_ALLOWED_USER_IDS,
@@ -42,7 +48,7 @@ export async function agentKeyContext(request: Request, mutation = false) {
 export function agentApiErrorResponse(error: unknown) {
   if (error instanceof KeywordBenchmarkPersistenceError) return Response.json({ error: { code: "persistence_unconfirmed", message: "The task was submitted but saving its receipt could not be confirmed. Keep these recovery IDs; do not start a replacement task." }, recovery: { runId: error.run.id, sessionId: error.run.sessionId } }, { status: 503, headers: AGENT_API_HEADERS });
   const storeError = error instanceof KeywordBenchmarkStoreError || error instanceof EvalStoreError;
-  const known = error instanceof AgentApiError || error instanceof ScanError || storeError;
+  const known = error instanceof AgentApiError || error instanceof ScanError || error instanceof SeoDataError || error instanceof SeoStoreError || storeError;
   const status = known ? error.status : 503;
   const code = error instanceof AgentApiError ? error.code : storeError ? (status === 409 ? "conflict" : "invalid_request") : known ? "invalid_request" : "temporarily_unavailable";
   const message = error instanceof EvalStoreError

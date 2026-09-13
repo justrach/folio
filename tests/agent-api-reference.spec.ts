@@ -99,6 +99,7 @@ test("key permissions default to read and tokens appear only after explicit crea
   await expect(page.locator(".api-key-list strong").filter({hasText: "Alice private key"})).toBeVisible();
   const allow = page.getByRole("checkbox", {name: /Allow this key to start evaluations/});
   await expect(allow).not.toBeChecked();
+  await expect(page.getByRole("checkbox", {name: "Allow paid SEO lookups"})).not.toBeChecked();
   await expect(page.getByLabel("New Folio API key", {exact: true})).toHaveCount(0);
   expect(state.mutations).toEqual([]);
   await page.getByLabel("Key name", {exact: true}).fill("Read fixture");
@@ -167,12 +168,12 @@ test("public reference endpoints work without cookies while every unauthenticate
   try {
     const schema = await client.get("/api/openapi.json"); expect(schema.status()).toBe(200); expect(await schema.json()).toEqual(agentOpenApiSpec());
     const markdown = await client.get("/docs/api/reference.md"); expect(markdown.status()).toBe(200); expect(await markdown.text()).toBe(agentApiMarkdown());
-    for (const path of ["/auth/status", "/sites", "/benchmark-cases", "/observations?kind=keyword&caseId=fixture", "/runs/keyword/fixture"]) {
+    for (const path of ["/seo", "/auth/status", "/sites", "/benchmark-cases", "/observations?kind=keyword&caseId=fixture", "/runs/keyword/fixture"]) {
       const response = await client.get(`/api/v1${path}`);
       expect(response.status(), path).toBe(401); expect((await response.json()).error.code).toBe("unauthorized");
       expect(response.headers()["cache-control"]).toContain("no-store"); expect(response.headers()["www-authenticate"]).toBe("Bearer");
     }
-    for (const path of ["/observations/ensure", "/runs/keyword/fixture/reconcile", "/runs/keyword/fixture/cancel"]) {
+    for (const path of ["/seo", "/observations/ensure", "/runs/keyword/fixture/reconcile", "/runs/keyword/fixture/cancel"]) {
       const response = await client.post(`/api/v1${path}`, {data: {}});
       expect(response.status(), path).toBe(401); expect((await response.json()).error.code).toBe("unauthorized");
     }

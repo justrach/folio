@@ -65,8 +65,10 @@ test("public schemas and Markdown are static placeholder contracts and distingui
   const spec = agentOpenApiSpec();
   assert.equal(spec.openapi, "3.1.0");
   assert.deepEqual(spec.servers, [{url: "/api/v1"}]);
-  assert.equal(Object.keys(spec.paths).length, 13);
+  assert.equal(Object.keys(spec.paths).length, 14);
   const paths = spec.paths as Record<string, Record<string, {description: string; parameters: {name: string; required?: boolean}[]; requestBody?: unknown; responses: Record<string, unknown>}>>;
+  assert.ok(paths["/seo"].get); assert.ok(paths["/seo"].post);
+  assert.equal(paths["/seo"].post.parameters.find(p => p.name === "Idempotency-Key")?.required, true);
   assert.match(paths["/observations"].get.description, /does not start a task/);
   assert.equal(paths["/observations"].get.requestBody, undefined);
   assert.match(paths["/observations/ensure"].post.description, /usage charges/);

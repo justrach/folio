@@ -18,18 +18,20 @@ export type AgentObservationOptions = Omit<KeywordBenchmarkServiceOptions, "rese
 export function validateAgentObservationInput(input: AgentObservationInput): AgentObservationInput & { maxAgeSeconds: number } {
   if (!input || typeof input !== "object" || Array.isArray(input) || !["website", "keyword"].includes(input.kind)) throw new AgentApiError("Choose a saved website or keyword case.");
   const field = input.kind === "website" ? "websiteId" : "caseId";
-  if (Object.keys(input).some(key => !["kind", field, "maxAgeSeconds"].includes(key))) throw new AgentApiError("This request contains unsupported fields.");
+  if (Object.keys(input).some(key => !["kind", field, "maxAgeSeconds", ...(input.kind === "keyword" ? ["useSeoTools"] : [])].includes(key))) throw new AgentApiError("This request contains unsupported fields.");
+  if (input.kind === "keyword" && input.useSeoTools !== undefined && typeof input.useSeoTools !== "boolean") throw new AgentApiError("useSeoTools must be boolean.");
   const id = input.kind === "website" ? input.websiteId : input.caseId;
   if (!isKeywordBenchmarkId(id)) throw new AgentApiError("Choose a valid saved target.");
   const maxAgeSeconds = input.maxAgeSeconds ?? AGENT_OBSERVATION_DEFAULT_MAX_AGE;
   if (!Number.isInteger(maxAgeSeconds) || maxAgeSeconds < 0 || maxAgeSeconds > 604_800) throw new AgentApiError("maxAgeSeconds must be an integer from 0 to 604800.");
-  return input.kind === "website" ? { kind: "website", websiteId: id, maxAgeSeconds } : { kind: "keyword", caseId: id, maxAgeSeconds };
+  return input.kind === "website" ? { kind: "website", websiteId: id, maxAgeSeconds } : { kind: "keyword", caseId: id, maxAgeSeconds, ...(input.kind === "keyword" && input.useSeoTools ? { useSeoTools: true } : {}) };
 }
-async function livePrincipal(db: D1Database, principal: AgentApiPrincipal, options: AgentObservationOptions = {}) {
+async function livePrincipal(db: D1Database, principal: AgentApiPrincipal, options: AgentObservationOptions = {}, seo = false) {
   requireAgentApiScope(principal, "evaluate");
   const found = await db.prepare(`SELECT id FROM agent_api_keys WHERE id=? AND user_id=? AND revoked_at IS NULL AND expires_at>?
-    AND EXISTS(SELECT 1 FROM json_each(scopes_json) WHERE value='evaluate')`)
-    .bind(principal.keyId, principal.ownerId, (options.now ?? new Date()).getTime()).first();
+    AND EXISTS(SELECT 1 FROM json_each(scopes_json) WHERE value='evaluate')
+    AND (?=0 OR EXISTS(SELECT 1 FROM json_each(scopes_json) WHERE value='seo'))`)
+    .bind(principal.keyId, principal.ownerId, (options.now ?? new Date()).getTime(), seo ? 1 : 0).first();
   if (!found) throw new AgentApiError("This API key no longer permits evaluation actions.", 403, "insufficient_scope");
 }
 function paidAccess(env: AgentRunEnvironment, ownerId: string, kind: AgentObservationKind) {
@@ -66,7 +68,7 @@ async function selectionFor(db: D1Database, ownerId: string, input: AgentObserva
   }
   const row = await db.prepare("SELECT id,case_json FROM keyword_benchmark_cases WHERE user_id=? AND id=?").bind(ownerId, input.caseId).first<{ id: string; case_json: string }>();
   if (!row) throw new AgentApiError("The private keyword case was not found.", 404, "not_found");
-  const trial = JSON.parse(row.case_json) as KeywordBenchmarkCaseInput, config = await keywordBenchmarkExecutionConfig(trial, env, options);
+  const trial = JSON.parse(row.case_json) as KeywordBenchmarkCaseInput, config = await keywordBenchmarkExecutionConfig(trial, env, { ...options, useSeoTools: input.kind === "keyword" && input.useSeoTools === true });
   const selection: AgentObservationSelection = { kind: input.kind, resourceId: row.id,
     matchingSql: `SELECT id,status,strftime('%Y-%m-%dT%H:%M:%fZ',created_at/1000.0,'unixepoch') AS observed_at,
       CASE WHEN answer_json IS NOT NULL THEN 1 ELSE 0 END AS has_result FROM keyword_benchmark_runs
@@ -123,7 +125,8 @@ export async function getAgentObservationRun(db: D1Database, ownerId: string, ki
 }
 export async function ensureAgentObservation(db: D1Database, principal: AgentApiPrincipal, request: AgentObservationInput,
   idempotencyKey: string, env: AgentRunEnvironment, options: AgentObservationOptions = {}): Promise<AgentObservation> {
-  const input = validateAgentObservationInput(request); await livePrincipal(db, principal, options);
+  const input = validateAgentObservationInput(request); await livePrincipal(db, principal, options, input.kind === "keyword" && input.useSeoTools === true);
+  if (input.kind === "keyword" && input.useSeoTools) requireAgentApiScope(principal, "seo");
   const identity = await agentIdempotencyIdentity(idempotencyKey, input);
   const existing = await getAgentObservationRequest(db, principal.ownerId, identity);
   if (existing) {
@@ -144,7 +147,7 @@ export async function ensureAgentObservation(db: D1Database, principal: AgentApi
       },
     });
   } else {
-    run = await startKeywordBenchmark(db, principal.ownerId, { caseId: input.caseId, kind: "baseline" }, env, { ...options,
+    run = await startKeywordBenchmark(db, principal.ownerId, { caseId: input.caseId, kind: "baseline" }, env, { ...options, useSeoTools: input.useSeoTools === true,
       reserve: async (candidate, limits) => {
         const id = crypto.randomUUID();
         const reservation = await reserveAgentObservation(db, principal, identity, selection, id, input.maxAgeSeconds,

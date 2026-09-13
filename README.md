@@ -156,3 +156,7 @@ Agent interaction studies used actual [Beautiful UI](https://www.beautifului.dev
 `/overview?view=workspace` opens saved account results; `/websites` shows the signed-in account’s websites and saved Search Console connections. Opening a connected property brings its existing search report, saved backlink data, website evaluation, and keyword suite together. `/benchmarks` saves private questions and compares baseline/fresh API-agent observations; `/agents` links to research activity and website evaluations. Opening a report or changing a selection does not start a paid lookup. See [keyword API and CLI](docs/KEYWORD-BENCHMARKS.md).
 
 Provider credentials and access controls remain server-side. The public directory and optional technical publication do not expose private Search Console reports or raw agent evidence. Public search observations use a separate reviewed projection; saving a private run grants no publication permission. Chrome and the in-app browser maintain separate login sessions; use Google sign-in in the browser where the private report is opened.
+
+## Authenticated MCP and sandbox SEO
+
+Folio now includes `/api/mcp` for coding clients and `/api/v1/seo` for explicit, idempotent DataForSEO lookups. Keyword sandboxes can opt into one selected-domain SEO lookup with a short-lived capability; existing evaluation keys require a separate `seo` permission. See [MCP setup and behavior](docs/MCP.md) for migration, configuration, client examples and validation limits.

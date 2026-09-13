@@ -1,7 +1,7 @@
 import type { KeywordBenchmarkAnswer, KeywordBenchmarkUsage } from "./keyword-benchmark-types";
 import type { EvaluationRun } from "./evals";
 
-export type AgentApiScope = "read" | "evaluate";
+export type AgentApiScope = "read" | "evaluate" | "seo";
 export type AgentApiPrincipal = { ownerId: string; keyId: string; scopes: AgentApiScope[] };
 export type AgentApiKeySummary = {
   id: string; name: string; prefix: string; scopes: AgentApiScope[];
@@ -10,7 +10,7 @@ export type AgentApiKeySummary = {
 export type AgentObservationKind = "website" | "keyword";
 export type AgentObservationInput =
   | { kind: "website"; websiteId: string; maxAgeSeconds?: number }
-  | { kind: "keyword"; caseId: string; maxAgeSeconds?: number };
+  | { kind: "keyword"; caseId: string; maxAgeSeconds?: number; useSeoTools?: boolean };
 export type AgentObservationRun = {
   id: string; kind: AgentObservationKind; status: EvaluationRun["status"]; model: string | null;
   surface: "openai-managed-agents"; createdAt: string; updatedAt: string; observedAt: string | null;
