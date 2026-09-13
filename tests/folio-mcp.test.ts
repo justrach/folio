@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
-import { serveFolioMcp, type FolioToolContext } from "../src/lib/folio-mcp";
+import { serveFolioMcp, invokeFolioTool, type FolioToolContext } from "../src/lib/folio-mcp";
 import { parseAgentObservation, parseAgentQuery } from "../src/lib/agent-api-input";
 
 const context = { db: {}, principal: { keyId: "fixture", ownerId: "alice", scopes: ["read"] }, env: {} } as FolioToolContext;
@@ -10,7 +10,7 @@ test("Streamable HTTP SDK client initializes, discovers scoped tools, validates 
   const calls: string[] = [];
   const client = new Client({ name: "fixture-client", version: "1" });
   const transport = new StreamableHTTPClientTransport(new URL("https://folio.example/api/mcp"), {
-    fetch: async (url, init) => serveFolioMcp(new Request(url, init), context, async name => { calls.push(name); return { fixture: true }; }),
+    fetch: async (url, init) => serveFolioMcp(new Request(url, init), context, async (name,args,ctx) => { calls.push(name); return invokeFolioTool(name,args,ctx); }),
   });
   await client.connect(transport);
   try {
@@ -18,7 +18,8 @@ test("Streamable HTTP SDK client initializes, discovers scoped tools, validates 
     assert.ok(listed.tools.some(tool => tool.name === "folio_index"));
     assert.ok(!listed.tools.some(tool => tool.name === "folio_seo_lookup" || tool.name === "folio_evaluate"));
     const result = await client.callTool({ name: "folio_index", arguments: {} });
-    assert.deepEqual(result.structuredContent, { result: { fixture: true } });
+    assert.equal(result.isError, undefined);
+    assert.equal((result.structuredContent as {result:{format:string}}).result.format, "folio-public-dashboard-v1");
     assert.equal((await client.callTool({ name: "folio_run", arguments: { kind: "website" } })).isError, true);
     assert.equal((await client.callTool({ name: "folio_index", arguments: { ownerId: "bob" } })).isError, true);
     assert.deepEqual(calls, ["folio_index"]);

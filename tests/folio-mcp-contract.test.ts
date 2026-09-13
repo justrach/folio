@@ -17,15 +17,16 @@ async function connect(execute?: typeof invokeFolioTool) {
 }
 
 test("published envelopes reject empty, ambiguous and malformed outputs and validate real SDK results", async () => {
-  const client = await connect(async () => ({ fixture: true }));
+  const client = await connect();
   try {
     const tools = (await client.listTools()).tools;
     const validators = new AjvJsonSchemaValidator();
     const success = await client.callTool({ name: "folio_index", arguments: {} });
+    assert.equal(success.isError, undefined);
     const error = await client.callTool({ name: "folio_observation", arguments: { kind: "website" } });
     for (const tool of tools) {
       const validate = validators.getValidator(tool.outputSchema!);
-      assert.equal(validate(success.structuredContent).valid, true, tool.name);
+      if (tool.name === "folio_index") assert.equal(validate(success.structuredContent).valid, true, tool.name);
       assert.equal(validate(error.structuredContent).valid, true, tool.name);
       for (const malformed of [{}, { result: null }, { result: [], error: {} }, { result: {}, ...(error.structuredContent as Record<string, unknown>) }, { error: { code: "invalid_input" } }]) {
         assert.equal(validate(malformed).valid, false, `${tool.name}: ${JSON.stringify(malformed)}`);
@@ -37,7 +38,7 @@ test("published envelopes reject empty, ambiguous and malformed outputs and vali
 
 test("published target alternatives match preflight and prevent invalid target execution", async () => {
   let executed = 0;
-  const client = await connect(async () => { executed++; return { fixture: true }; });
+  const client = await connect(async () => { executed++; return {kind:"website",items:[],nextCursor:null,truncated:false,ordering:"created_at DESC"}; });
   try {
     const tools = (await client.listTools()).tools;
     const validators = new AjvJsonSchemaValidator();

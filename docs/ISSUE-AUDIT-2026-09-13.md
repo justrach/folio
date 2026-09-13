@@ -18,3 +18,13 @@ Additional reproducible fixes let a failed selected Search Console report be reo
 The TODO now distinguishes the recorded existing production D1/migration checkpoint from the checked-in local placeholder and outstanding deployment validation. No issue is closed by this audit. Hosted MCP acceptance, live provider checks, production deployment, Google onboarding and billing remain separate dependencies.
 
 Validation passed with Bun 1.4.1: 239 unit tests, 22 actual temporary Miniflare D1 tests, 20 relevant desktop/mobile browser checks, TypeScript, OpenNext Cloudflare build, and scheduler dry run. Both new UI regressions also failed against the original components before the fixes were restored. Browser checks covered saved-report recovery, history, refresh and owner clearing on isolated port 3017 with mocked APIs. This was a targeted browser run, not the entire GUI suite. All new data is synthetic fixture data; collector files, private state, credentials and the concurrent collector's server were outside this audit's ownership.
+
+## Follow-up: large public lists and complete success schemas
+
+The collector owner integrated the first audit commit into the shared checkout without stopping its batch. Follow-up UI work bounds the task list and mobile options to 25 questions per page, with full-snapshot search/filtering and selected-task links/history preserved. A 3,500-question fixture covers late-page links, keyboard paging, focus recovery, refresh, filters and browser navigation on desktop/mobile.
+
+The generic inner success-schema gap in issue #5 is now implemented: all 14 owner tools plus sandbox SEO publish and validate nested per-tool success schemas. Protocol fixtures validate each tool and reject malformed nested output. Website provider usage remains JSON metadata by its existing contract; schema validation does not verify factual truth or metric consistency. Hosted validation remains separate.
+
+During schema-test development, an incorrectly named injected transport option attempted SEO requests with literal dummy credentials. The remote response outcome was not recorded; no live credentials or private data were loaded. The corrected fixture blocks default network access and asserts exactly two injected calls and zero unexpected calls. This incident is not live provider validation.
+
+Follow-up validation passed with Bun 1.4.1: 243 unit tests, 22 actual temporary D1 tests, all 14 dashboard desktop/mobile checks, TypeScript, OpenNext build and scheduler dry run. A new browser-back pagination defect was caught and fixed during iteration; an intermediate mobile loading timeout during development recompilation passed on the final full dashboard rerun. No deployment or new collection is established by these checks.
