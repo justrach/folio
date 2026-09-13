@@ -45347,6 +45347,1534 @@
         "The consulted evidence does not establish a general Temporal-hosted Node.js compute service bundled with Cloud. 'Managed workers' should not be assumed to mean that; documented serverless options use your cloud account/project.",
         "No page-access failures occurred. The older TypeScript core-application URL redirected to the current TypeScript guide; searches for a section named 'Limitations' on provider pages found none, so restrictions were taken from their prerequisites and release-status text."
       ]
+    },
+    {
+      "id": "obs-deploy-small-node-app-v1-s03-q01-a9a8ac768250bcfa039b87d1",
+      "queryId": "deploy-small-node-app-v1-s03-q01",
+      "observedAt": "2026-09-13T15:20:26.853Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Render",
+          "url": "https://render.com/docs/faq",
+          "reason": "First evaluation candidate: native Node or Docker plus managed PostgreSQL offers a plausible low-adaptation path for a small team.",
+          "citationUrls": [
+            "https://render.com/docs/faq",
+            "https://render.com/docs/node-version"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Railway",
+          "url": "https://docs.railway.com/guides/express",
+          "reason": "Container-based Node deployment is a strong compatibility option, but database templates explicitly leave maintenance to your team.",
+          "citationUrls": [
+            "https://docs.railway.com/guides/express",
+            "https://docs.railway.com/databases/postgresql"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Vercel",
+          "url": "https://vercel.com/docs/functions/runtimes/node-js",
+          "reason": "Full documented Node API support and HTTP-server entrypoints are available, subject to Function limits and external PostgreSQL provisioning.",
+          "citationUrls": [
+            "https://vercel.com/docs/functions/runtimes/node-js",
+            "https://vercel.com/docs/functions/limitations",
+            "https://vercel.com/docs/functions/runtimes/edge",
+            "https://vercel.com/docs/postgres"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Cloudflare Workers",
+          "url": "https://developers.cloudflare.com/workers/runtime-apis/nodejs/",
+          "reason": "Consider after validating the Node API subset and exact PostgreSQL driver; importable stubs can conceal incompatibility.",
+          "citationUrls": [
+            "https://developers.cloudflare.com/workers/runtime-apis/nodejs/",
+            "https://developers.cloudflare.com/hyperdrive/examples/connect-to-postgres/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://render.com/docs/faq",
+          "title": "Render FAQ"
+        },
+        {
+          "url": "https://render.com/docs/node-version",
+          "title": "Setting Your Node.js Version"
+        },
+        {
+          "url": "https://docs.railway.com/guides/express",
+          "title": "Deploy an Express App"
+        },
+        {
+          "url": "https://docs.railway.com/databases/postgresql",
+          "title": "Railway PostgreSQL"
+        },
+        {
+          "url": "https://vercel.com/docs/functions/runtimes/node-js",
+          "title": "Using the Node.js Runtime with Vercel Functions"
+        },
+        {
+          "url": "https://vercel.com/docs/functions/limitations",
+          "title": "Vercel Functions Limits"
+        },
+        {
+          "url": "https://vercel.com/docs/functions/runtimes/edge",
+          "title": "Vercel Edge Runtime"
+        },
+        {
+          "url": "https://vercel.com/docs/postgres",
+          "title": "Postgres on Vercel"
+        },
+        {
+          "url": "https://developers.cloudflare.com/workers/runtime-apis/nodejs/",
+          "title": "Cloudflare Workers Node.js compatibility"
+        },
+        {
+          "url": "https://developers.cloudflare.com/hyperdrive/examples/connect-to-postgres/",
+          "title": "Hyperdrive: Connect to PostgreSQL"
+        }
+      ],
+      "limitations": [
+        "Public-web research only, using official documentation as evidence; no application code, deployments, benchmarks or independently verified performance. Coverage is not exhaustive.",
+        "Railway's Express guide was available in search results, but a subsequent direct open returned an Internal Error; its deployment details rely on the consulted official search excerpt.",
+        "Hyperdrive's driver table and detailed minimum-version notes disagree. Some examples retain explicit compatibility flags despite newer prose describing automatic enablement.",
+        "No complete unsupported-API inventory was established for Render or Railway; actual Node versions, OS dependencies and native addons require application-specific verification.",
+        "Exact five-user plan costs, entitlement details, database recovery guarantees and all runtime quotas were not researched. Unreviewed beta features and method-level semantics should not be assumed available."
+      ]
+    },
+    {
+      "id": "obs-sandbox-python-jobs-v1-s01-q08-894f044be66529be89e18761",
+      "queryId": "sandbox-python-jobs-v1-s01-q08",
+      "observedAt": "2026-09-13T15:20:31.025Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Modal",
+          "url": "https://modal.com/docs/guide/sandboxes",
+          "reason": "First to evaluate for a Python-focused setup combining custom-image sandboxes with GPU options, while accounting for V2 beta and GPU routing to V1.",
+          "citationUrls": [
+            "https://modal.com/docs/guide/sandboxes",
+            "https://modal.com/docs/guide/sandbox-v2",
+            "https://modal.com/docs/guide/cold-start"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Daytona",
+          "url": "https://www.daytona.io/docs/sandboxes",
+          "reason": "Reusable dependency snapshots and documented GPU sandboxes fit environment-heavy products, subject to quota, placement, and lifecycle restrictions.",
+          "citationUrls": [
+            "https://www.daytona.io/docs/en/snapshots/",
+            "https://www.daytona.io/docs/sandboxes",
+            "https://www.daytona.io/docs/en/troubleshooting/"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Runpod Serverless",
+          "url": "https://docs.runpod.io/serverless/overview",
+          "reason": "Queue-based GPU workers with Docker-packaged dependencies fit occasional asynchronous batches; per-job hostile-code isolation was not established.",
+          "citationUrls": [
+            "https://docs.runpod.io/serverless/overview",
+            "https://docs.runpod.io/serverless/development/optimization"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://modal.com/docs/guide/sandboxes",
+          "title": "Modal: Sandboxes"
+        },
+        {
+          "url": "https://modal.com/docs/guide/sandbox-v2",
+          "title": "Modal: V2 Sandboxes"
+        },
+        {
+          "url": "https://modal.com/docs/guide/cold-start",
+          "title": "Modal: Cold start performance"
+        },
+        {
+          "url": "https://www.daytona.io/docs/en/snapshots/",
+          "title": "Daytona: Snapshots"
+        },
+        {
+          "url": "https://www.daytona.io/docs/sandboxes",
+          "title": "Daytona: Sandboxes"
+        },
+        {
+          "url": "https://www.daytona.io/docs/en/troubleshooting/",
+          "title": "Daytona: Troubleshooting"
+        },
+        {
+          "url": "https://docs.runpod.io/serverless/overview",
+          "title": "Runpod: Serverless overview"
+        },
+        {
+          "url": "https://docs.runpod.io/serverless/development/optimization",
+          "title": "Runpod: Optimize your endpoints"
+        }
+      ],
+      "limitations": [
+        "Public official documentation consulted on September 13, 2026; discovery was not restricted to a predefined domain list. This shortlist is not exhaustive market coverage.",
+        "No provider workloads were executed. Startup latency, isolation effectiveness, GPU stock, and product performance were not independently verified.",
+        "Account-specific access, full pricing and commercial terms, support eligibility, and end-to-end latency guarantees were not established. Verify these before committing.",
+        "E2B appeared in discovery, but current official GPU availability was not established in this bounded search; omission is not a claim that GPUs are unavailable.",
+        "No web access failures occurred. A search within Modal's sandbox overview for gVisor returned no match; the exact isolation implementation was not established from that page."
+      ]
+    },
+    {
+      "id": "obs-auth-b2b-small-team-v1-s01-q08-b21a7684ae82aabccd0d790b",
+      "queryId": "auth-b2b-small-team-v1-s01-q08",
+      "observedAt": "2026-09-13T15:20:39.943Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Clerk",
+          "url": "https://clerk.com/pricing",
+          "reason": "First prototype choice for prebuilt MFA and backup-code UX, with explicit production gating and developer-owned lost-all-factors verification.",
+          "citationUrls": [
+            "https://clerk.com/docs/guides/secure/mfa-recovery",
+            "https://clerk.com/pricing"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Better Auth",
+          "url": "https://better-auth.com/docs/plugins/2fa",
+          "reason": "Suitable when implementation ownership matters; documented recovery primitives require careful enforcement across credential and passwordless routes.",
+          "citationUrls": [
+            "https://better-auth.com/docs/plugins/2fa"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "WorkOS",
+          "url": "https://workos.com/docs/authkit/mfa",
+          "reason": "Low initial AuthKit cost and hosted TOTP flows, conditional on resolving SMS documentation conflicts and end-user recovery evidence gaps.",
+          "citationUrls": [
+            "https://workos.com/docs/authkit/mfa",
+            "https://workos.com/pricing",
+            "https://workos.com/docs/migrate/stytch"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Auth0",
+          "url": "https://auth0.com/pricing",
+          "reason": "Broad documented factor and policy options, with plan-dependent availability and explicit recovery-code and administrator-reset paths.",
+          "citationUrls": [
+            "https://auth0.com/docs/secure/multi-factor-authentication",
+            "https://auth0.com/pricing",
+            "https://auth0.com/docs/secure/multi-factor-authentication/authenticate-using-ropg-flow-with-mfa/challenge-with-recovery-codes",
+            "https://auth0.com/docs/secure/multi-factor-authentication/reset-user-mfa"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://clerk.com/docs/guides/secure/mfa-recovery",
+          "title": "Clerk: MFA account recovery"
+        },
+        {
+          "url": "https://clerk.com/pricing",
+          "title": "Clerk pricing"
+        },
+        {
+          "url": "https://better-auth.com/docs/plugins/2fa",
+          "title": "Better Auth: Two-Factor Authentication"
+        },
+        {
+          "url": "https://workos.com/docs/authkit/mfa",
+          "title": "WorkOS AuthKit: Multi-Factor Authentication"
+        },
+        {
+          "url": "https://workos.com/pricing",
+          "title": "WorkOS pricing"
+        },
+        {
+          "url": "https://workos.com/docs/migrate/stytch",
+          "title": "WorkOS: Migrate from Stytch"
+        },
+        {
+          "url": "https://auth0.com/docs/secure/multi-factor-authentication",
+          "title": "Auth0: Multi-Factor Authentication"
+        },
+        {
+          "url": "https://auth0.com/pricing",
+          "title": "Auth0 pricing"
+        },
+        {
+          "url": "https://auth0.com/docs/secure/multi-factor-authentication/authenticate-using-ropg-flow-with-mfa/challenge-with-recovery-codes",
+          "title": "Auth0: Challenge with Recovery Codes"
+        },
+        {
+          "url": "https://auth0.com/docs/secure/multi-factor-authentication/reset-user-mfa",
+          "title": "Auth0: Reset User Multi-Factor Authentication and Recovery Codes"
+        }
+      ],
+      "limitations": [
+        "Public live-web research only; no accounts, SDK executions, recovery transactions or independent security/performance verification. Coverage is bounded, not exhaustive.",
+        "WorkOS official sources conflict on SMS MFA; actionable AuthKit end-user backup-code and lost-all-factors recovery behavior was not established.",
+        "Auth0's complete factor-to-plan mapping and B2B pricing were not established; displayed B2C prices are not a SaaS quote.",
+        "Clerk's recovery guide contains both createBackupCode() and createBackupCodes(); verify the correct method against the installed SDK reference.",
+        "Exact SMS costs, delivery restrictions, support commitments, migration guarantees and Better Auth commercial terms were not fully researched.",
+        "No source access failures occurred; some web extracts were partial, and missing documentation evidence is not proof that a feature is absent."
+      ]
+    },
+    {
+      "id": "obs-vector-search-small-app-v1-s01-q08-c79cf39947d2fb7debdf75e6",
+      "queryId": "vector-search-small-app-v1-s01-q08",
+      "observedAt": "2026-09-13T15:20:52.213Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Qdrant",
+          "url": "https://qdrant.tech/documentation/cloud/create-cluster/",
+          "reason": "First to evaluate for broad managed-cloud choice and a Hybrid option, subject to US telemetry and inference exceptions.",
+          "citationUrls": [
+            "https://qdrant.tech/documentation/cloud/create-cluster/",
+            "https://qdrant.tech/security/",
+            "https://qdrant.tech/documentation/cloud/inference/",
+            "https://qdrant.tech/documentation/cloud-pricing-payments/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Pinecone",
+          "url": "https://docs.pinecone.io/reference/api/2026-04/control-plane/create_index",
+          "reason": "Explicit managed region and plan matrix; non-US hosting requires Standard or Enterprise, while BYOC has Enterprise, preview and feature restrictions.",
+          "citationUrls": [
+            "https://docs.pinecone.io/reference/api/2026-04/control-plane/create_index",
+            "https://docs.pinecone.io/guides/production/bring-your-own-cloud",
+            "https://www.pinecone.io/product/bring-your-own-cloud/",
+            "https://www.pinecone.io/legal/2025.06.05_Pinecone%20BYOC%20Services%20Addendum.pdf"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Chroma",
+          "url": "https://docs.trychroma.com/cloud/getting-started",
+          "reason": "Serverless hosting in Virginia or Belgium can fit a small launch, but EU tooling gaps and unclear replication scope require checking.",
+          "citationUrls": [
+            "https://docs.trychroma.com/cloud/getting-started",
+            "https://www.trychroma.com/security"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://qdrant.tech/documentation/cloud/create-cluster/",
+          "title": "Creating a Qdrant Cloud Cluster"
+        },
+        {
+          "url": "https://qdrant.tech/security/",
+          "title": "Qdrant Security"
+        },
+        {
+          "url": "https://qdrant.tech/documentation/cloud/inference/",
+          "title": "Inference in Qdrant Managed Cloud"
+        },
+        {
+          "url": "https://qdrant.tech/documentation/cloud-pricing-payments/",
+          "title": "Qdrant Cloud Billing & Payments"
+        },
+        {
+          "url": "https://docs.pinecone.io/reference/api/2026-04/control-plane/create_index",
+          "title": "Pinecone: Create an index"
+        },
+        {
+          "url": "https://docs.pinecone.io/guides/production/bring-your-own-cloud",
+          "title": "Pinecone: Bring your own cloud"
+        },
+        {
+          "url": "https://www.pinecone.io/product/bring-your-own-cloud/",
+          "title": "Pinecone BYOC availability and restrictions"
+        },
+        {
+          "url": "https://www.pinecone.io/legal/2025.06.05_Pinecone%20BYOC%20Services%20Addendum.pdf",
+          "title": "Pinecone BYOC Services Addendum"
+        },
+        {
+          "url": "https://docs.trychroma.com/cloud/getting-started",
+          "title": "Chroma Cloud: regions and feature availability"
+        },
+        {
+          "url": "https://www.trychroma.com/security",
+          "title": "Chroma Cloud Security"
+        }
+      ],
+      "limitations": [
+        "Public-web official-source review only; no accounts, live console checks, deployments or independent performance tests. This recommendation order is specific to this query, not a search-engine ranking or exhaustive market survey.",
+        "No access failures occurred. Some exact availability and pricing details require console or commercial confirmation; Qdrant's complete current region list and custom deployment quotes were not verified.",
+        "Official pages contain unresolved differences: Qdrant's broad in-cluster inference marketing versus its dedicated inference location rules; Chroma's region confinement versus cross-region replication; Pinecone BYOC's zero-access description versus contractual support-access language.",
+        "Standard managed Pinecone's complete residency scope for inference, logs, backups and support was not established. Full applicable DPAs and negotiated terms across all three vendors were not reviewed; no blanket residency or legal-compliance guarantee is inferred.",
+        "No target jurisdiction, budget, document volume or traffic was supplied; the ordering is provisional. Current numeric production-plan minimums and total costs were not verified."
+      ]
+    },
+    {
+      "id": "obs-research-api-citations-v1-s01-q08-584748644de2757dc0810efc",
+      "queryId": "research-api-citations-v1-s01-q08",
+      "observedAt": "2026-09-13T15:20:53.899Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Tavily",
+          "url": "https://docs.tavily.com/documentation/api-credits",
+          "reason": "First evaluation choice for a straightforward search-to-sources workflow with explicit per-search credit costs and low-commitment PAYGO.",
+          "citationUrls": [
+            "https://docs.tavily.com/documentation/api-credits",
+            "https://docs.tavily.com/documentation/api-reference/endpoint/search"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Exa",
+          "url": "https://exa.ai/pricing",
+          "reason": "Evaluate for search with page text, highlights and freshness controls; distinguish request pricing from standalone per-page content charges.",
+          "citationUrls": [
+            "https://exa.ai/pricing",
+            "https://exa.ai/docs/reference/livecrawling-contents"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Firecrawl",
+          "url": "https://www.firecrawl.dev/pricing",
+          "reason": "Best initial fit when source-document extraction dominates; explicitly documented cached-scrape charges make repeat costs clearer.",
+          "citationUrls": [
+            "https://docs.firecrawl.dev/billing",
+            "https://www.firecrawl.dev/pricing",
+            "https://docs.firecrawl.dev/features/fast-scraping"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://docs.tavily.com/documentation/api-credits",
+          "title": "Tavily — Credits & Pricing"
+        },
+        {
+          "url": "https://docs.tavily.com/documentation/api-reference/endpoint/search",
+          "title": "Tavily — Search API Reference"
+        },
+        {
+          "url": "https://exa.ai/pricing",
+          "title": "Exa — API Pricing"
+        },
+        {
+          "url": "https://exa.ai/docs/reference/livecrawling-contents",
+          "title": "Exa — Content Freshness"
+        },
+        {
+          "url": "https://docs.firecrawl.dev/billing",
+          "title": "Firecrawl — Billing"
+        },
+        {
+          "url": "https://www.firecrawl.dev/pricing",
+          "title": "Firecrawl — Pricing"
+        },
+        {
+          "url": "https://docs.firecrawl.dev/features/fast-scraping",
+          "title": "Firecrawl — Faster Scraping"
+        }
+      ],
+      "limitations": [
+        "Public web research only; no vendor API requests, account access, billing experiments or independent performance verification. Recommendation order is specific to this question and is not an engine rank or exhaustive market comparison.",
+        "No explicit repeat-request discount was found for Exa or Tavily; targeted cache-billing searches returned no results. Tavily server-cache controls were not established. Absence of evidence is not proof that an option is unavailable.",
+        "Commercial-use, storage, redistribution and attribution terms were not reviewed; no legal entitlement is inferred. Failure billing, partial extraction rounding and credit expiry were not fully established across all three services.",
+        "Firecrawl’s retrieved pricing display showed annual-billing prices; its exact current month-to-month Hobby price was not established. Older indexed Firecrawl material differed from current billing documentation; the directly opened current pages were prioritized.",
+        "All cited pages were accessible through live web search. Published documentation and prices can change; cost examples are arithmetic estimates, exclude applicable taxes and other application costs, and are not measured invoices."
+      ]
+    },
+    {
+      "id": "obs-sentry-posthog-product-team-v1-s01-q08-4946a5fddad9283a344d9572",
+      "queryId": "sentry-posthog-product-team-v1-s01-q08",
+      "observedAt": "2026-09-13T15:21:05.412Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Sentry hosted",
+          "url": "https://sentry.io/pricing/",
+          "reason": "Recommended first for a solo developer prioritizing production error diagnosis, with a one-user free plan and explicit paid integration gates.",
+          "citationUrls": [
+            "https://sentry.io/pricing/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "PostHog Cloud",
+          "url": "https://posthog.com/pricing",
+          "reason": "Recommended for product analytics with integrated error context and recurring free allowances, subject to a debugging acceptance test.",
+          "citationUrls": [
+            "https://posthog.com/pricing",
+            "https://posthog.com/docs/error-tracking"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Sentry self-hosted",
+          "url": "https://github.com/getsentry/self-hosted",
+          "reason": "Conditional option for infrastructure control; an active low-volume deployment exists and the server license permits internal use while restricting competing offerings.",
+          "citationUrls": [
+            "https://github.com/getsentry/self-hosted/blob/master/README.md",
+            "https://github.com/getsentry/sentry/blob/master/LICENSE.md"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "PostHog self-hosted",
+          "url": "https://posthog.com/docs/self-host",
+          "reason": "Conditional option only when unsupported operation is acceptable; deployment remains available, but paid features are Cloud-only.",
+          "citationUrls": [
+            "https://posthog.com/docs/self-host"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://sentry.io/pricing/",
+          "title": "Sentry pricing"
+        },
+        {
+          "url": "https://posthog.com/pricing",
+          "title": "PostHog pricing"
+        },
+        {
+          "url": "https://posthog.com/docs/error-tracking",
+          "title": "PostHog error tracking documentation"
+        },
+        {
+          "url": "https://github.com/getsentry/self-hosted/blob/master/README.md",
+          "title": "Sentry active self-hosted README"
+        },
+        {
+          "url": "https://github.com/getsentry/sentry/blob/master/LICENSE.md",
+          "title": "Sentry Functional Source License"
+        },
+        {
+          "url": "https://posthog.com/docs/self-host",
+          "title": "PostHog self-hosting guide"
+        }
+      ],
+      "limitations": [
+        "Public web discovery was unrestricted by a predefined domain list; recommendations use official sources and cover these requested deployment options, not the whole market. No deployment, independent performance test, or transactional action was performed.",
+        "Sentry's current self-hosting documentation at https://develop.sentry.dev/self-hosted/ failed to fetch because the web tool rejected its text/markdown content type. The SaaS-versus-self-hosted Zendesk article redirected to sign-in; no login was attempted.",
+        "The discovered getsentry/develop documentation repository was archived in August 2024. Its hardware requirements and errors-only beta description were not treated as current. Current Sentry self-hosted feature exclusions, Seer availability, hardware minimums, and support commitments remain unconfirmed.",
+        "PostHog's repository README and current self-hosting guide give differing hardware and volume guidance; the answer uses the current guide's hardware figures and makes no capacity guarantee.",
+        "Exact PostHog paid unit rates, product-specific retention exceptions, Sentry monthly-billing price, contractual SLAs, privacy terms, and full export/migration coverage were not established. Public pages may change; recheck before committing."
+      ]
+    },
+    {
+      "id": "obs-allbirds-first-order-v1-s01-q07-92d3b94569646717d29e6162",
+      "queryId": "allbirds-first-order-v1-s01-q07",
+      "observedAt": "2026-09-13T15:22:52.903Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Quoddy",
+          "url": "https://www.quoddy.com/pages/refurbish",
+          "reason": "Documented U.S. mail-in resole/refurbish service with prepaid label; slippers and original Crepe Wrap soles are excluded.",
+          "citationUrls": [
+            "https://www.quoddy.com/pages/refurbish"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Vivobarefoot / ReVivo",
+          "url": "https://www.revivo.com/resole-6-refresh",
+          "reason": "Documented U.S. repair route through NuShoe for eligible models, with explicit style exclusions; partner terms remain unverified.",
+          "citationUrls": [
+            "https://www.revivo.com/resole-6-refresh"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "VEJA",
+          "url": "https://vejastore1.zendesk.com/hc/en-us/articles/41817557954193-VEJA-Repairs",
+          "reason": "Repairs accept all sneaker brands at U.S. workshops, but require an in-person visit; warranty terms include a U.S. exclusion.",
+          "citationUrls": [
+            "https://vejastore1.zendesk.com/hc/en-us/articles/41817557954193-VEJA-Repairs",
+            "https://vejastore1.zendesk.com/hc/en-us/articles/41817425901201-VEJA-Warranty"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Allbirds",
+          "url": "https://www.allbirds.com/pages/shoe-care",
+          "reason": "Official care and replacement-insole guidance are available, but structural repair and product-warranty duration were not established; returns require unworn, unwashed items.",
+          "citationUrls": [
+            "https://www.allbirds.com/pages/shoe-care",
+            "https://www.allbirds.com/pages/help"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.quoddy.com/pages/refurbish",
+          "title": "Quoddy — Resole & Refurbish"
+        },
+        {
+          "url": "https://www.revivo.com/resole-6-refresh",
+          "title": "ReVivo — Resole + Refresh"
+        },
+        {
+          "url": "https://vejastore1.zendesk.com/hc/en-us/articles/41817557954193-VEJA-Repairs",
+          "title": "VEJA Repairs"
+        },
+        {
+          "url": "https://vejastore1.zendesk.com/hc/en-us/articles/41817425901201-VEJA-Warranty",
+          "title": "VEJA Warranty"
+        },
+        {
+          "url": "https://www.allbirds.com/pages/shoe-care",
+          "title": "Allbirds — Wash & Care"
+        },
+        {
+          "url": "https://www.allbirds.com/pages/help",
+          "title": "Allbirds — Help and Returns"
+        }
+      ],
+      "limitations": [
+        "Public web research checked September 13, 2026. Discovery included an unrestricted web query; coverage is selective, not exhaustive.",
+        "No comparable model-specific longevity dataset was established from the consulted official pages. Product performance and repair quality were not independently tested.",
+        "NuShoe's Vivobarefoot repair page timed out; U.S. partner pricing, shipping, turnaround and additional eligibility terms remain unverified.",
+        "The attempted VEJA storefront repair URL could not be opened by the search tool; the accessible VEJA help-center repair and warranty articles were used instead.",
+        "Allbirds' warranty-targeted help URL did not expose a clear product-warranty answer. Structural repair availability, warranty duration and compatible replacement-insole stock remain unconfirmed.",
+        "Model stock, individual repair acceptance, and checkout-specific terms were not verified through purchases, forms or account access."
+      ]
+    },
+    {
+      "id": "obs-ikea-small-apartment-v1-s01-q06-f15313f9b0fb74535925e0b8",
+      "queryId": "ikea-small-apartment-v1-s01-q06",
+      "observedAt": "2026-09-13T15:22:58.362Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "IKEA",
+          "url": "https://www.ikea.com/us/en/p/micke-desk-white-80213074/",
+          "reason": "Explicitly permits new, unused assembled store returns within its opened-product policy; truck returns require disassembly and packaging.",
+          "citationUrls": [
+            "https://www.ikea.com/us/en/p/micke-desk-white-80213074/",
+            "https://www.ikea.com/us/en/customer-service/knowledge/articles/1dfe6100-2442-4647-9569-22f99238g065.html",
+            "https://www.ikea.com/us/en/customer-service/knowledge/articles/e8f3be0d-318d-48b0-895d-g6d79988f372.html",
+            "https://www.ikea.com/us/en/customer-service/returns-claims/return-policy/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Room & Board",
+          "url": "https://www.roomandboard.com/catalog/office/design-a-dedicated-study-zone/slim-desks/788660",
+          "reason": "Compact Slim desk and free return delivery within the contiguous states, subject to like-new condition and exclusions; assembly specifics need confirmation.",
+          "citationUrls": [
+            "https://www.roomandboard.com/catalog/office/design-a-dedicated-study-zone/slim-desks/788660",
+            "https://www.roomandboard.com/customer-service/returns-exchanges"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Article",
+          "url": "https://www.article.com/c/entryway-homeoffice-w39",
+          "reason": "Console desks and modular shelving offer small-space options, but return charges and unclear assembly terms make this a conditional recommendation.",
+          "citationUrls": [
+            "https://www.article.com/c/entryway-homeoffice-w39",
+            "https://www.article.com/faq"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.ikea.com/us/en/p/micke-desk-white-80213074/",
+          "title": "IKEA MICKE desk, white, 41⅜ × 19⅝ inches"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/knowledge/articles/1dfe6100-2442-4647-9569-22f99238g065.html",
+          "title": "IKEA U.S.: Can I return an opened or assembled product?"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/knowledge/articles/e8f3be0d-318d-48b0-895d-g6d79988f372.html",
+          "title": "IKEA U.S.: Do I have to disassemble my furniture before I can return it?"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/returns-claims/return-policy/",
+          "title": "IKEA U.S.: How to return or exchange"
+        },
+        {
+          "url": "https://www.roomandboard.com/catalog/office/design-a-dedicated-study-zone/slim-desks/788660",
+          "title": "Room & Board: Slim desks"
+        },
+        {
+          "url": "https://www.roomandboard.com/customer-service/returns-exchanges",
+          "title": "Room & Board: Returns & Exchanges"
+        },
+        {
+          "url": "https://www.article.com/c/entryway-homeoffice-w39",
+          "title": "Article: Small-space entryway and home-office collection"
+        },
+        {
+          "url": "https://www.article.com/faq",
+          "title": "Article: Frequently Asked Questions"
+        }
+      ],
+      "limitations": [
+        "Public web research conducted September 13, 2026; limited discovery is not exhaustive market coverage or independent product-performance verification.",
+        "Direct opens of Article's /returns and /faq pages returned internal errors. Article findings rely on retrieved official search-index text; development-site and third-party fee claims were not used.",
+        "Room & Board and Article post-assembly handling was not explicit in the consulted evidence. IKEA pickup pricing and address-specific availability were not established.",
+        "No ZIP code, budget or room measurements were provided. Live local inventory, delivery dates, checkout totals and service eligibility were not verified."
+      ]
+    },
+    {
+      "id": "obs-team-chat-history-v1-s01-q07-ae07cba984419b0ad027cf30",
+      "queryId": "team-chat-history-v1-s01-q07",
+      "observedAt": "2026-09-13T15:22:59.467Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Google Chat / Google Workspace Business Starter",
+          "url": "https://workspace.google.com/pricing.html",
+          "reason": "Best starting point when two people also need business email and documents; Chat is bundled and Flexible billing avoids an annual commitment.",
+          "citationUrls": [
+            "https://workspace.google.com/pricing.html",
+            "https://knowledge.workspace.google.com/admin/billing/compare-flexible-and-annual-fixed-term-payment-plans"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Slack",
+          "url": "https://slack.com/pricing",
+          "reason": "Dedicated chat with a usable two-person free option; Pro adds history and integrations, with clearly priced monthly and annual billing.",
+          "citationUrls": [
+            "https://slack.com/pricing",
+            "https://slack.com/help/articles/218915077-Slacks-Fair-Billing-Policy",
+            "https://slack.com/help/articles/48764458651795-Change-or-cancel-your-paid-Slack-plan"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Microsoft Teams Essentials",
+          "url": "https://www.microsoft.com/en-us/microsoft-teams/compare-microsoft-teams-business-options",
+          "reason": "Low published annual cost for paid meetings and chat, provided the annual renewal and cancellation restrictions fit.",
+          "citationUrls": [
+            "https://www.microsoft.com/en-us/microsoft-teams/compare-microsoft-teams-business-options",
+            "https://learn.microsoft.com/en-us/microsoft-365/commerce/subscriptions/cancel-your-subscription?view=o365-worldwide"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://workspace.google.com/pricing.html",
+          "title": "Google Workspace pricing and features"
+        },
+        {
+          "url": "https://knowledge.workspace.google.com/admin/billing/compare-flexible-and-annual-fixed-term-payment-plans",
+          "title": "Google Workspace: Compare Flexible and Annual/Fixed-Term payment plans"
+        },
+        {
+          "url": "https://slack.com/pricing",
+          "title": "Slack pricing"
+        },
+        {
+          "url": "https://slack.com/help/articles/218915077-Slacks-Fair-Billing-Policy",
+          "title": "Slack's Fair Billing Policy"
+        },
+        {
+          "url": "https://slack.com/help/articles/48764458651795-Change-or-cancel-your-paid-Slack-plan",
+          "title": "Change or cancel your paid Slack plan"
+        },
+        {
+          "url": "https://www.microsoft.com/en-us/microsoft-teams/compare-microsoft-teams-business-options",
+          "title": "Microsoft Teams Pricing for Business: Plans & Features"
+        },
+        {
+          "url": "https://learn.microsoft.com/en-us/microsoft-365/commerce/subscriptions/cancel-your-subscription?view=o365-worldwide",
+          "title": "Cancel your Microsoft business subscription in the Microsoft 365 admin center"
+        }
+      ],
+      "limitations": [
+        "Public-web discovery was unrestricted, but this is a focused shortlist, not exhaustive market coverage or a measured search-engine ranking. Recommendation order reflects the stated two-person use case.",
+        "No accounts, checkout screens or products were accessed or tested. Prices and features are vendor statements, not independently verified performance; taxes, promotion eligibility and account-specific terms remain unverified.",
+        "A true month-to-month Teams Essentials offer, exact guest charges, export entitlements and all AI limits were not established. Missing table checkmarks were not treated as evidence of inclusion.",
+        "The legacy Google billing-help URL https://support.google.com/a/answer/1247360?hl=en returned an internal error; Google's current official replacement page was successfully consulted.",
+        "Slack's general FAQ search results described credits surviving a downgrade, while current billing help says credits expire when the paid plan terminates. Do not assume unused credits survive cancellation; confirm the applicable terms."
+      ]
+    },
+    {
+      "id": "obs-everyday-clothing-returns-v1-s01-q07-c6b8086d2d4d33f5436136d6",
+      "queryId": "everyday-clothing-returns-v1-s01-q07",
+      "observedAt": "2026-09-13T15:22:59.989Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Everlane",
+          "url": "https://www.everlane.com/products/womens-organic-cotton-slim-crew-tee-white",
+          "reason": "A cotton tee with disclosed composition and bundle pricing provides a comparison against deeply discounted jeans explicitly marked final sale; ordinary promotional purchases retain standard eligibility.",
+          "citationUrls": [
+            "https://www.everlane.com/products/womens-organic-cotton-slim-crew-tee-white",
+            "https://www.everlane.com/products/mens-organic-cotton-straight-leg-jean-coffee-bean?collection=mens-jeans",
+            "https://www.everlane.com/policies/refund-policy",
+            "https://support.everlane.com/en_us/can-i-return-regular-sale-items-SyOznST0i"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Levi's",
+          "url": "https://www.levi.com/US/en_US/sale/mens-sale/c/levi_clothing_men_sale_us/facets/feature-materialtype/cotton",
+          "reason": "Cotton-filtered tee and jean sale listings offer a comparison with free eligible in-store returns and a delivery-based return window, subject to final-sale and promotion restrictions.",
+          "citationUrls": [
+            "https://www.levi.com/US/en_US/sale/mens-sale/c/levi_clothing_men_sale_us/facets/feature-materialtype/cotton",
+            "https://help.levi.com/hc/en-us/articles/360052069852-How-to-Return-and-Exchange-Items-You-ve-Ordered",
+            "https://help.levi.com/hc/en-us/articles/360052069812-Levi-s-Return-Exchange-Policy",
+            "https://help.levi.com/hc/en-us/articles/15465378030989-Final-sale-items"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.everlane.com/products/womens-organic-cotton-slim-crew-tee-white",
+          "title": "Everlane — The Slim Crew in Essential Cotton, White"
+        },
+        {
+          "url": "https://www.everlane.com/products/mens-organic-cotton-straight-leg-jean-coffee-bean?collection=mens-jeans",
+          "title": "Everlane — The Organic Cotton Straight-Leg Jean, Coffee Bean"
+        },
+        {
+          "url": "https://support.everlane.com/en_us/can-i-return-regular-sale-items-SyOznST0i",
+          "title": "Everlane — Can I return regular sale items?"
+        },
+        {
+          "url": "https://www.everlane.com/policies/refund-policy",
+          "title": "Everlane — Refund policy"
+        },
+        {
+          "url": "https://www.levi.com/US/en_US/sale/mens-sale/c/levi_clothing_men_sale_us/facets/feature-materialtype/cotton",
+          "title": "Levi's US — Men's Clothing On Sale, cotton filter"
+        },
+        {
+          "url": "https://help.levi.com/hc/en-us/articles/360052069852-How-to-Return-and-Exchange-Items-You-ve-Ordered",
+          "title": "Levi's — How to Return and Exchange Items You've Ordered"
+        },
+        {
+          "url": "https://help.levi.com/hc/en-us/articles/360052069812-Levi-s-Return-Exchange-Policy",
+          "title": "Levi's — Return & Exchange Policy"
+        },
+        {
+          "url": "https://help.levi.com/hc/en-us/articles/15465378030989-Final-sale-items",
+          "title": "Levi's — Final sale items"
+        }
+      ],
+      "limitations": [
+        "Public web discovery was unrestricted by a predefined vendor list; this is a limited comparison, not exhaustive market coverage or a measured search-engine ranking.",
+        "Search extracts and opened pages differed: Everlane jeans initially appeared at $38 with an extra-discount message; the refreshed page displayed $32 and 75% off final sale. The refreshed page is used here. An initially abbreviated product response was resolved by reopening.",
+        "No checkout, account, stock reservation or transaction was performed. Exact size/color inventory, final totals, promotion eligibility and stacking were not verified.",
+        "Everlane bundle partial-return treatment and first-order discounts were not established. Levi's product-level fiber percentages and selected-variant final-sale status were not confirmed.",
+        "Levi's sale-page checkout-promotion messaging and its additional-discount restriction were not reconciled. Product durability, shrinkage, opacity, fit and sustainability performance were not independently verified."
+      ]
+    },
+    {
+      "id": "obs-deploy-small-node-app-v1-s03-q02-d6dc725d0354a97f278d5584",
+      "queryId": "deploy-small-node-app-v1-s03-q02",
+      "observedAt": "2026-09-13T15:26:45.506Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Render",
+          "url": "https://render.com/docs/postgresql-connection-pooling",
+          "reason": "First evaluation for a conventional Node.js service: optional integrated PgBouncer on paid PostgreSQL reduces pooler setup, with explicit transaction-mode restrictions.",
+          "citationUrls": [
+            "https://render.com/docs/postgresql-connection-pooling",
+            "https://render.com/docs/free"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Railway",
+          "url": "https://docs.railway.com/databases/postgresql",
+          "reason": "Alternative with documented built-in or separately deployed PgBouncer; requires accepting unmanaged database maintenance and assessing optional sleep behavior.",
+          "citationUrls": [
+            "https://docs.railway.com/guides/connection-pooling-pgbouncer",
+            "https://docs.railway.com/databases/postgresql",
+            "https://docs.railway.com/deployments/serverless"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Vercel",
+          "url": "https://vercel.com/docs/functions/limitations",
+          "reason": "Suitable to evaluate for bounded HTTP workloads using Fluid compute and application pooling, subject to duration, memory and descriptor limits.",
+          "citationUrls": [
+            "https://vercel.com/kb/guide/connection-pooling-with-functions",
+            "https://vercel.com/docs/functions/limitations"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Cloudflare Workers",
+          "url": "https://developers.cloudflare.com/workers/platform/limits/",
+          "reason": "Conditional option for a compatible service using Hyperdrive, requiring separate checks of Worker resource limits and database statement/connection limits.",
+          "citationUrls": [
+            "https://developers.cloudflare.com/hyperdrive/examples/connect-to-postgres/",
+            "https://developers.cloudflare.com/workers/platform/limits/",
+            "https://developers.cloudflare.com/hyperdrive/platform/limits/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://render.com/docs/postgresql-connection-pooling",
+          "title": "Connection Pooling for Render Postgres"
+        },
+        {
+          "url": "https://render.com/docs/free",
+          "title": "Deploy for Free — Render"
+        },
+        {
+          "url": "https://docs.railway.com/guides/connection-pooling-pgbouncer",
+          "title": "Add Connection Pooling to Postgres with PgBouncer"
+        },
+        {
+          "url": "https://docs.railway.com/databases/postgresql",
+          "title": "PostgreSQL — Railway"
+        },
+        {
+          "url": "https://docs.railway.com/deployments/serverless",
+          "title": "Serverless — Railway"
+        },
+        {
+          "url": "https://vercel.com/kb/guide/connection-pooling-with-functions",
+          "title": "Connection Pooling with Vercel Functions"
+        },
+        {
+          "url": "https://vercel.com/docs/functions/limitations",
+          "title": "Vercel Functions Limits"
+        },
+        {
+          "url": "https://developers.cloudflare.com/hyperdrive/examples/connect-to-postgres/",
+          "title": "Connect to PostgreSQL — Cloudflare Hyperdrive"
+        },
+        {
+          "url": "https://developers.cloudflare.com/workers/platform/limits/",
+          "title": "Cloudflare Workers Limits"
+        },
+        {
+          "url": "https://developers.cloudflare.com/hyperdrive/platform/limits/",
+          "title": "Cloudflare Hyperdrive Limits"
+        }
+      ],
+      "limitations": [
+        "Public official-source research consulted on September 13, 2026; discovery used unrestricted web queries. This is one API-agent recommendation order, not exhaustive market coverage, search-engine rank, consumer ChatGPT visibility or an execution benchmark.",
+        "No application code, traffic measurements, account entitlements or five-seat pricing were supplied or independently verified. No deployments or performance tests were executed.",
+        "Render search results included an older official tutorial saying no integrated pooler; the current dedicated documentation explicitly supersedes the earlier standalone setup guidance.",
+        "Railway's pooling guide was available as substantial official search-result text, but opening it directly returned an internal error. A guessed detailed reference URL also failed. Feature eligibility, pricing and exact managed-pooler settings remain unconfirmed.",
+        "Railway's Serverless reference describes a 5–10 minute sleep window, while another official guide states 10 minutes; treat timing as approximate and verify actual behavior.",
+        "Cloudflare's PostgreSQL page has compatibility-date-dependent guidance alongside older driver-table flag instructions; exact compatibility must be checked against the chosen date and dependency versions. Vercel beta eligibility was not independently confirmed."
+      ]
+    },
+    {
+      "id": "obs-auth-b2b-small-team-v1-s01-q09-314aba2ab6f2155fd1651503",
+      "queryId": "auth-b2b-small-team-v1-s01-q09",
+      "observedAt": "2026-09-13T15:26:58.590Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Clerk",
+          "url": "https://clerk.com/docs/guides/development/deployment/production",
+          "reason": "First shortlist for reducing backend authentication operations, with explicit production setup duties and no self-host option.",
+          "citationUrls": [
+            "https://clerk.com/articles/clerk-pricing-explained",
+            "https://clerk.com/docs/guides/development/deployment/production",
+            "https://clerk.com/docs/guides/development/managing-environments"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "WorkOS",
+          "url": "https://workos.com/docs/authkit/overview",
+          "reason": "Managed AuthKit with hosted or custom UI options, suited to evaluating enterprise customer needs without running the auth backend.",
+          "citationUrls": [
+            "https://workos.com/docs/authkit/overview",
+            "https://github.com/workos/authkit/blob/main/README.md",
+            "https://workos.com/docs/authkit/environments"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Auth0",
+          "url": "https://auth0.com/platform/cloud-deployment",
+          "reason": "Managed public cloud plus Enterprise private cloud where isolation, regions, or update control justify the added procurement scope.",
+          "citationUrls": [
+            "https://auth0.com/platform/cloud-deployment"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Better Auth",
+          "url": "https://better-auth.com/docs/installation",
+          "reason": "Deployment and database control for developers willing to maintain auth operations, with optional managed infrastructure additions.",
+          "citationUrls": [
+            "https://better-auth.com/docs/installation",
+            "https://better-auth.com/docs/concepts/database",
+            "https://better-auth.com/docs/infrastructure/introduction"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://clerk.com/articles/clerk-pricing-explained",
+          "title": "Clerk Pricing Explained"
+        },
+        {
+          "url": "https://clerk.com/docs/guides/development/deployment/production",
+          "title": "Deploy your Clerk app to production"
+        },
+        {
+          "url": "https://clerk.com/docs/guides/development/managing-environments",
+          "title": "Clerk Instances / Environments"
+        },
+        {
+          "url": "https://workos.com/docs/authkit/overview",
+          "title": "AuthKit — WorkOS Docs"
+        },
+        {
+          "url": "https://github.com/workos/authkit/blob/main/README.md",
+          "title": "WorkOS AuthKit — official README"
+        },
+        {
+          "url": "https://workos.com/docs/authkit/environments",
+          "title": "Staging vs. production environments — WorkOS"
+        },
+        {
+          "url": "https://auth0.com/platform/cloud-deployment",
+          "title": "Auth0 Cloud Deployment"
+        },
+        {
+          "url": "https://better-auth.com/docs/installation",
+          "title": "Better Auth Installation"
+        },
+        {
+          "url": "https://better-auth.com/docs/concepts/database",
+          "title": "Better Auth Database"
+        },
+        {
+          "url": "https://better-auth.com/docs/infrastructure/introduction",
+          "title": "Better Auth Infrastructure"
+        }
+      ],
+      "limitations": [
+        "Public-web research checked on September 13, 2026; discovery included unrestricted search, with conclusions based on the named products’ official sources. Coverage is not exhaustive.",
+        "No accounts, deployments, provider API calls, or performance tests were performed. Operational burden assessments are architectural inferences, not independently verified reliability or implementation-time measurements.",
+        "Full current pricing contracts, SLA exclusions, support response times, regional availability, export guarantees, and backup/recovery terms were not verified across all four products; these remain pre-purchase checks.",
+        "The consulted sources did not establish a production self-hosted WorkOS backend, a customer-operated Auth0 backend, or fully managed Better Auth core hosting. Absence of documentation here is not proof of a universal contractual prohibition.",
+        "No source access failures occurred. The exact TypeScript framework, runtime, customer requirements, and budget were unspecified."
+      ]
+    },
+    {
+      "id": "obs-vector-search-small-app-v1-s01-q09-49e052ba562c66b8cd35cf30",
+      "queryId": "vector-search-small-app-v1-s01-q09",
+      "observedAt": "2026-09-13T15:27:14.538Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Qdrant",
+          "url": "https://qdrant.tech/documentation/improve-search/retrieval-relevance/",
+          "reason": "First evaluation candidate because official documentation provides an explicit labeled-data retrieval evaluation workflow and distinguishes it from ANN recall.",
+          "citationUrls": [
+            "https://qdrant.tech/documentation/improve-search/retrieval-relevance/",
+            "https://qdrant.tech/documentation/tutorials-search-engineering/ann-recall/",
+            "https://qdrant.tech/documentation/search/search-relevance/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Chroma",
+          "url": "https://docs.trychroma.com/cloud/search-api/overview",
+          "reason": "Useful basic-search candidate with corpus-specific generative benchmarking research; verify the Cloud-only restriction before relying on the newer Search API.",
+          "citationUrls": [
+            "https://www.trychroma.com/research/generative-benchmarking",
+            "https://docs.trychroma.com/cloud/search-api/overview"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Pinecone",
+          "url": "https://docs.pinecone.io/guides/search/rerank-results",
+          "reason": "Consider for integrated hosted reranking, while separating model-specific restrictions and answer evaluation from measured retrieval relevance.",
+          "citationUrls": [
+            "https://docs.pinecone.io/guides/search/rerank-results",
+            "https://docs.pinecone.io/guides/assistant/evaluation-overview"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://qdrant.tech/documentation/improve-search/retrieval-relevance/",
+          "title": "Measuring Retrieval Relevance — Qdrant"
+        },
+        {
+          "url": "https://qdrant.tech/documentation/tutorials-search-engineering/ann-recall/",
+          "title": "Measuring ANN Recall — Qdrant"
+        },
+        {
+          "url": "https://qdrant.tech/documentation/search/search-relevance/",
+          "title": "Search Relevance — Qdrant"
+        },
+        {
+          "url": "https://www.trychroma.com/research/generative-benchmarking",
+          "title": "Generative Benchmarking — Chroma"
+        },
+        {
+          "url": "https://docs.trychroma.com/cloud/search-api/overview",
+          "title": "Search API Overview — Chroma"
+        },
+        {
+          "url": "https://docs.pinecone.io/guides/search/rerank-results",
+          "title": "Rerank results — Pinecone"
+        },
+        {
+          "url": "https://docs.pinecone.io/guides/assistant/evaluation-overview",
+          "title": "Evaluation overview — Pinecone"
+        }
+      ],
+      "limitations": [
+        "Public live-web research consulted official documentation and research; no database, reranker or evaluation API was executed, and performance was not independently verified.",
+        "No user corpus, query logs, budget or deployment constraints were provided. Recommendation order is conditional, not an engine ranking or exhaustive market comparison.",
+        "Pricing, commercial terms, plan entitlements, regional availability and account-specific quotas were not verified; feature documentation does not establish eligibility or affordability.",
+        "A built-in managed Chroma relevance evaluator and a Pinecone retrieval-label evaluation endpoint were not established by the consulted sources; this is missing evidence, not proof that no such options exist.",
+        "No page-access failures were reported. Search coverage was time-bounded, and documentation availability may differ from installed versions."
+      ]
+    },
+    {
+      "id": "obs-sandbox-python-jobs-v1-s01-q09-735ec793c7aec6fff408facc",
+      "queryId": "sandbox-python-jobs-v1-s01-q09",
+      "observedAt": "2026-09-13T15:27:23.984Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Modal",
+          "url": "https://modal.com/docs/guide/sandboxes",
+          "reason": "First evaluation for combined Python sandboxes and GPU batch work, with explicit termination and separately documented Function cancellation semantics.",
+          "citationUrls": [
+            "https://modal.com/docs/guide/sandboxes",
+            "https://modal.com/docs/sdk/py/latest/FunctionCall",
+            "https://modal.com/docs/guide/resources"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "E2B",
+          "url": "https://e2b.dev/pricing",
+          "reason": "CPU sandbox candidate with transparent session tiers; evaluate the Pro subscription floor and confirm Python lifecycle controls while keeping GPU support unassumed.",
+          "citationUrls": [
+            "https://e2b.dev/pricing",
+            "https://github.com/e2b-dev/E2B/blob/main/packages/js-sdk/src/sandbox/sandboxApi.ts"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Daytona",
+          "url": "https://www.daytona.io/docs/sandboxes",
+          "reason": "Detailed cleanup controls and billing-state documentation, with material ephemeral-GPU, regional-placement, and credit restrictions.",
+          "citationUrls": [
+            "https://www.daytona.io/docs/sandboxes",
+            "https://www.daytona.io/docs/en/billing/",
+            "https://www.daytona.io/docs/en/python-sdk/async/async-daytona/"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Runpod Serverless",
+          "url": "https://docs.runpod.io/serverless/pricing",
+          "reason": "Separate occasional GPU batch candidate with queue cancellation and scale-to-zero Flex workers; startup, idle tail, and storage remain cost considerations.",
+          "citationUrls": [
+            "https://docs.runpod.io/serverless/endpoints/send-requests",
+            "https://docs.runpod.io/serverless/pricing"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://modal.com/docs/guide/sandboxes",
+          "title": "Modal: Sandboxes"
+        },
+        {
+          "url": "https://modal.com/docs/sdk/py/latest/FunctionCall",
+          "title": "Modal: FunctionCall"
+        },
+        {
+          "url": "https://modal.com/docs/guide/resources",
+          "title": "Modal: Configuring CPU, memory, and disk"
+        },
+        {
+          "url": "https://e2b.dev/pricing",
+          "title": "E2B: Pricing"
+        },
+        {
+          "url": "https://github.com/e2b-dev/E2B/blob/main/packages/js-sdk/src/sandbox/sandboxApi.ts",
+          "title": "E2B: Official sandbox API source"
+        },
+        {
+          "url": "https://www.daytona.io/docs/sandboxes",
+          "title": "Daytona: Sandboxes"
+        },
+        {
+          "url": "https://www.daytona.io/docs/en/billing/",
+          "title": "Daytona: Billing"
+        },
+        {
+          "url": "https://www.daytona.io/docs/en/python-sdk/async/async-daytona/",
+          "title": "Daytona: Async Python SDK"
+        },
+        {
+          "url": "https://docs.runpod.io/serverless/endpoints/send-requests",
+          "title": "Runpod: Send API requests"
+        },
+        {
+          "url": "https://docs.runpod.io/serverless/pricing",
+          "title": "Runpod: Serverless pricing"
+        }
+      ],
+      "limitations": [
+        "Public web research as of September 13, 2026; discovery was not restricted to a predefined vendor/domain list. This is a selective recommendation order, not exhaustive market coverage or a performance benchmark.",
+        "No accounts, paid jobs, transactional APIs, invoices, security tests, or independently verified performance were accessed.",
+        "Web reads failed for https://modal.com/docs/guide/sandbox-pricing, https://e2b.dev/docs/sandbox-lifecycle, and https://e2b.dev/docs/sandbox/api/lifecycle. Attempts to follow Modal pricing/resources and budgets links also failed. These failures do not establish that the features or pages are unavailable.",
+        "Hard budget-cap semantics, usage-export granularity and reporting delay, commercial-use eligibility for free tiers, and exact cancellation-to-billing-stop guarantees were not established across all candidates.",
+        "E2B lifecycle evidence came from its official JavaScript main-branch source rather than a verified released Python SDK; GPU availability was not established.",
+        "Daytona official documentation is inconsistent on maximum GPU count: the sandbox reference says up to eight, while its consulted vLLM guide describes one as the maximum. Confirm the current account-specific limit; no GPU-count promise is made here."
+      ]
+    },
+    {
+      "id": "obs-research-api-citations-v1-s01-q09-51cfb4badc53de5347b2681d",
+      "queryId": "research-api-citations-v1-s01-q09",
+      "observedAt": "2026-09-13T15:27:27.112Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Exa",
+          "url": "https://exa.ai/docs/reference/search",
+          "reason": "First evaluation candidate for source text/highlights, explicit freshness controls, and separate robots, plan, and safety errors.",
+          "citationUrls": [
+            "https://exa.ai/docs/reference/search",
+            "https://exa.ai/docs/reference/get-contents",
+            "https://crawler.exa.ai/",
+            "https://exa.ai/docs/reference/error-codes"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Tavily",
+          "url": "https://docs.tavily.com/faq/faq",
+          "reason": "Straightforward search-and-extract workflow with explicit failed URLs; crawler coverage and paid-application terms require attention.",
+          "citationUrls": [
+            "https://docs.tavily.com/faq/faq",
+            "https://docs.tavily.com/documentation/api-reference/endpoint/extract",
+            "https://docs.tavily.com/documentation/search-crawler",
+            "https://www.tavily.com/terms"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Firecrawl",
+          "url": "https://www.firecrawl.dev/",
+          "reason": "Useful evaluation candidate when dynamic-page extraction is central; inspect failure content, hosted capabilities, and charges for returned error pages.",
+          "citationUrls": [
+            "https://www.firecrawl.dev/",
+            "https://docs.firecrawl.dev/api-reference/introduction"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://exa.ai/docs/reference/search",
+          "title": "Exa Search API reference"
+        },
+        {
+          "url": "https://exa.ai/docs/reference/get-contents",
+          "title": "Exa Contents API reference"
+        },
+        {
+          "url": "https://crawler.exa.ai/",
+          "title": "Exa Search Crawler"
+        },
+        {
+          "url": "https://exa.ai/docs/reference/error-codes",
+          "title": "Exa Error Codes"
+        },
+        {
+          "url": "https://docs.tavily.com/faq/faq",
+          "title": "Tavily Frequently Asked Questions"
+        },
+        {
+          "url": "https://docs.tavily.com/documentation/api-reference/endpoint/extract",
+          "title": "Tavily Extract API reference"
+        },
+        {
+          "url": "https://docs.tavily.com/documentation/search-crawler",
+          "title": "Tavily Search Crawler"
+        },
+        {
+          "url": "https://www.tavily.com/terms",
+          "title": "Tavily Platform Terms"
+        },
+        {
+          "url": "https://www.firecrawl.dev/",
+          "title": "Firecrawl product and billing FAQ"
+        },
+        {
+          "url": "https://docs.firecrawl.dev/api-reference/introduction",
+          "title": "Firecrawl API introduction and error codes"
+        }
+      ],
+      "limitations": [
+        "Official public sources consulted on September 13, 2026 using OpenAI live web search. Discovery began without domain restrictions; the final comparison uses vendor primary sources. This is one API-agent research answer, not consumer ChatGPT visibility or an exhaustive market survey.",
+        "No vendor APIs were executed, accounts created, or product performance independently verified. No complete, current site-by-site coverage or blocked-domain inventory was established for any provider.",
+        "Guaranteed access to particular social platforms, paywalls, authenticated pages, or anti-bot-protected sites was not established. A missing search result does not establish a site block.",
+        "Firecrawl and Exa commercial terms, full pricing schedules, and all plan entitlements were not reviewed; storage, redistribution, and product-specific contractual suitability remain unresolved.",
+        "The attempted Firecrawl /faq and Exa /reference/contents documentation URLs returned internal access errors. Firecrawl's homepage FAQ and Exa's linked /reference/get-contents page were successfully consulted instead.",
+        "Documentation can change and examples can conflict with field descriptions: Exa's Contents examples include livecrawl alongside maxAgeHours, while its parameter description explicitly says not to combine them. Follow the current field restriction and verify behavior before shipping."
+      ]
+    },
+    {
+      "id": "obs-client-project-workspace-v1-s01-q08-f1b6a0ef654c03a9c9637f57",
+      "queryId": "client-project-workspace-v1-s01-q08",
+      "observedAt": "2026-09-13T15:28:38.816Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Notion",
+          "url": "https://www.notion.com/pricing",
+          "reason": "Evaluate Plus first for two full members collaborating with client guests on selected pages; current paid plans list unlimited free guests, reducing the need for five paid seats.",
+          "citationUrls": [
+            "https://www.notion.com/pricing",
+            "https://www.notion.com/releases/2024-06-26",
+            "https://www.notion.com/en-gb/help/whos-who-in-a-workspace"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Basecamp",
+          "url": "https://basecamp.com/pricing",
+          "reason": "Evaluate for structured client projects with selective client visibility; Freelancer covers five participants for $25/month within its three-project and 20-person limits.",
+          "citationUrls": [
+            "https://basecamp.com/pricing",
+            "https://5.basecamp-help.com/article/1171-permissions",
+            "https://5.basecamp-help.com/article/1144-basecamp-for-free"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.notion.com/pricing",
+          "title": "Notion pricing plans"
+        },
+        {
+          "url": "https://www.notion.com/releases/2024-06-26",
+          "title": "June 26, 2024 — Upcoming changes coming to our Plus plan"
+        },
+        {
+          "url": "https://www.notion.com/en-gb/help/whos-who-in-a-workspace",
+          "title": "Who’s who in a Notion workspace"
+        },
+        {
+          "url": "https://basecamp.com/pricing",
+          "title": "Basecamp pricing"
+        },
+        {
+          "url": "https://5.basecamp-help.com/article/1171-permissions",
+          "title": "Permissions — Basecamp 5 Help"
+        },
+        {
+          "url": "https://5.basecamp-help.com/article/1144-basecamp-for-free",
+          "title": "Basecamp for Free — Basecamp 5 Help"
+        },
+        {
+          "url": "https://www.notion.com/help/sharing-and-permissions",
+          "title": "Sharing and permissions settings in Notion"
+        }
+      ],
+      "limitations": [
+        "Public web research only; no accounts, checkout, permission tests or independently verified product performance. Recommendation order reflects this query, not measured search-engine rank or exhaustive market coverage.",
+        "Notion’s pricing extraction exposed billing controls but not their selected state. Plus monthly pricing is supported by a dated official announcement; current Business monthly pricing was not confirmed from official evidence. Recheck live billing selections.",
+        "Basecamp Free personal-use wording conflicts with broader eligibility wording in its help article. Paid-plan annual discounts or commitments were not established for Freelancer, Studio or Pro.",
+        "No access failures occurred for the cited pages; interactive billing states and account-specific terms were not available through the retrieved text."
+      ]
+    },
+    {
+      "id": "obs-sentry-posthog-product-team-v1-s01-q09-817ab754f38f5e56c01beadc",
+      "queryId": "sentry-posthog-product-team-v1-s01-q09",
+      "observedAt": "2026-09-13T15:28:40.001Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "PostHog",
+          "url": "https://posthog.com/",
+          "reason": "First trial for connecting exceptions and replays with identified users and product-funnel completion in one platform.",
+          "citationUrls": [
+            "https://posthog.com/docs/error-tracking",
+            "https://posthog.com/docs/product-analytics/funnels",
+            "https://posthog.com/pricing"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Sentry",
+          "url": "https://sentry.io/",
+          "reason": "Prefer when incident diagnosis needs issue-level user counts, stack traces, and distributed-trace links from backend failures to browser replays.",
+          "citationUrls": [
+            "https://docs.sentry.io/product/issues/issue-details/?promo_name=hp-banner",
+            "https://www.sentry.help/en/articles/13964352-how-do-i-link-session-replay-to-backend-errors",
+            "https://sentry.io/pricing/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://posthog.com/docs/error-tracking",
+          "title": "PostHog Error Tracking"
+        },
+        {
+          "url": "https://posthog.com/docs/product-analytics/funnels",
+          "title": "PostHog Funnels"
+        },
+        {
+          "url": "https://posthog.com/docs/session-replay",
+          "title": "PostHog Session Replay"
+        },
+        {
+          "url": "https://posthog.com/pricing",
+          "title": "PostHog pricing"
+        },
+        {
+          "url": "https://posthog.com/docs/error-tracking/pricing",
+          "title": "PostHog Error Tracking pricing"
+        },
+        {
+          "url": "https://posthog.com/docs/session-replay/recording-retention",
+          "title": "PostHog Replay recording retention"
+        },
+        {
+          "url": "https://docs.sentry.io/product/issues/issue-details/?promo_name=hp-banner",
+          "title": "Sentry Issue Details"
+        },
+        {
+          "url": "https://www.sentry.help/en/articles/13964352-how-do-i-link-session-replay-to-backend-errors",
+          "title": "Sentry: How do I link Session Replay to backend errors?"
+        },
+        {
+          "url": "https://sentry.io/pricing/",
+          "title": "Sentry pricing"
+        }
+      ],
+      "limitations": [
+        "Public-web documentation research only; no accounts, SDK deployments, transactional APIs, or independent product-performance tests. Coverage is not exhaustive.",
+        "Sentry Issues and JavaScript Session Replay documentation returned internal errors on direct opens. Issue Details was available through search-index text, whose crawl was older; the backend-linking Help Center page was directly accessible.",
+        "The old https://posthog.com/docs/libraries/sentry URL redirected to Error Tracking. Current turnkey integration availability and restrictions remain unverified; this does not establish that no integration exists.",
+        "Exact stack compatibility, alert-channel entitlements, all overage rates, and longer-retention package terms were not verified. Some pricing-table feature indicators and interactive calculator states were unavailable in extracted text.",
+        "No automatic incident-to-lost-revenue calculation or equivalent PostHog distributed-tracing workflow was established by the consulted evidence. Business-impact conclusions require your instrumentation and validation."
+      ]
     }
   ]
 }

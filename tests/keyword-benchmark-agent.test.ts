@@ -72,7 +72,10 @@ test("completed research requires root final JSON, search and successful sandbox
   const missingFinal = await reconcileKeywordBenchmarkSession(session.id, env, {fetcher: fixture({items: items.slice(0,2)})});
   assert.equal(missingFinal.status, "running"); assert.equal(missingFinal.answer, null);
   const noTurn = await reconcileKeywordBenchmarkSession(session.id, env, {fetcher: fixture({turns: [], items: []})});
-  assert.equal(noTurn.status, "running");
+  assert.equal(noTurn.status, "requires_action"); assert.equal(noTurn.initialInputUnconfirmed, true);
+  assert.match(noTurn.error!, /initial submission remains unresolved/);
+  const awaitingTurn = await reconcileKeywordBenchmarkSession(session.id, env, {fetcher: fixture({session: {...session, status: "in_progress"}, turns: [], items: []})});
+  assert.equal(awaitingTurn.status, "running"); assert.equal(awaitingTurn.initialInputUnconfirmed, undefined);
   const subagent = await reconcileKeywordBenchmarkSession(session.id, env, {fetcher: fixture({turns: [{...turn, subagent_id: "child"}]})});
   assert.notEqual(subagent.status, "completed");
   const nullableExit = await reconcileKeywordBenchmarkSession(session.id, env, { fetcher: fixture({ items: items.map(item => item.type === "command_execution" ? { ...item, exit_code: null } : item) }) });

@@ -164,16 +164,19 @@ export async function cancelKeywordBenchmark(db: D1Database, ownerId: string, id
 export async function reconcileKeywordBenchmark(db: D1Database, ownerId: string, id: string, env: AgentsEnvironment, options: KeywordBenchmarkServiceOptions = {}): Promise<KeywordBenchmarkRun> {
   requireAccess(env, ownerId);
   let run = await ownedRun(db, ownerId, id);
+  let initialInputUnconfirmed = false;
   if (terminal(run) || !run.sessionId) return run;
   try {
     const observation = await reconcileKeywordBenchmarkSession(run.sessionId!, env, { ...options, expectedAllowedDomains: run.allowedDomains, expectedSearchMode: keywordSearchMode(run.case.searchMode) });
+    initialInputUnconfirmed = Boolean(observation.initialInputUnconfirmed);
     const pendingCancel = run.cancelAttemptAt && ["queued", "running", "requires_action"].includes(observation.status);
     run = await updateKeywordBenchmarkRun(db, ownerId, run.id, run.revision, {
       status: pendingCancel ? "requires_action" : observation.status, answer: observation.answer, usage: observation.usage,
       providerMetadata: observation.providerMetadata,
       error: pendingCancel ? "Cancellation was requested. The final provider outcome is not yet confirmed."
         : observation.status === "failed" ? "The completed provider answer could not be validated."
-          : observation.status === "requires_action" ? "The provider session requires attention." : null,
+          : observation.initialInputUnconfirmed ? observation.error
+            : observation.status === "requires_action" ? "The provider session requires attention." : null,
     });
   } catch (error) {
     // A simultaneous retriever may have already committed newer or terminal state.
@@ -184,7 +187,7 @@ export async function reconcileKeywordBenchmark(db: D1Database, ownerId: string,
     }
   }
   // A saved deadline cannot tell us whether remote work already finished. Retrieve first.
-  if (!terminal(run) && run.deadlineAt && (options.now ?? new Date()).getTime() >= Date.parse(run.deadlineAt) && !run.cancelAttemptAt)
+  if (!initialInputUnconfirmed && !terminal(run) && run.deadlineAt && (options.now ?? new Date()).getTime() >= Date.parse(run.deadlineAt) && !run.cancelAttemptAt)
     return cancelKeywordBenchmark(db, ownerId, id, env, options);
   return run;
 }

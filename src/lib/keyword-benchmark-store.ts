@@ -306,6 +306,8 @@ const safeErrors = new Set([
   "Cancellation was requested. The final provider outcome is not yet confirmed.",
   "Cancellation could not be confirmed. Retrieve the saved session; cancellation will not be submitted again automatically.",
   "Session creation was rejected before a session receipt was confirmed.",
+  "The provider session is idle with no saved turn, items or requested action. The initial submission remains unresolved; do not resend it.",
+  "The missing receipt was recovered; its final provider outcome is still unresolved.",
 ]);
 export function sanitizeKeywordBenchmarkError(value: string | null): string | null {
   return value === null ? null : safeErrors.has(value) ? value : "The provider operation needs attention. Retrieve the saved session before continuing.";

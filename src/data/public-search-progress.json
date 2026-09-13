@@ -1,6 +1,6 @@
 {
   "format": "folio-public-search-progress-v1",
-  "updatedAt": "2026-09-13T15:14:57.168Z",
+  "updatedAt": "2026-09-13T15:28:40.041Z",
   "queries": [
     {
       "queryId": "deploy-small-node-app-v1",
@@ -359,11 +359,17 @@
     },
     {
       "queryId": "deploy-small-node-app-v1-s03-q01",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:18:33.755Z",
+      "finishedAt": "2026-09-13T15:20:26.872Z",
+      "observationId": "obs-deploy-small-node-app-v1-s03-q01-a9a8ac768250bcfa039b87d1"
     },
     {
       "queryId": "deploy-small-node-app-v1-s03-q02",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:24:58.421Z",
+      "finishedAt": "2026-09-13T15:26:45.529Z",
+      "observationId": "obs-deploy-small-node-app-v1-s03-q02-d6dc725d0354a97f278d5584"
     },
     {
       "queryId": "deploy-small-node-app-v1-s03-q03",
@@ -732,11 +738,17 @@
     },
     {
       "queryId": "auth-b2b-small-team-v1-s01-q08",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:18:39.285Z",
+      "finishedAt": "2026-09-13T15:20:39.959Z",
+      "observationId": "obs-auth-b2b-small-team-v1-s01-q08-b21a7684ae82aabccd0d790b"
     },
     {
       "queryId": "auth-b2b-small-team-v1-s01-q09",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:25:07.959Z",
+      "finishedAt": "2026-09-13T15:26:58.612Z",
+      "observationId": "obs-auth-b2b-small-team-v1-s01-q09-314aba2ab6f2155fd1651503"
     },
     {
       "queryId": "auth-b2b-small-team-v1-s02-q01",
@@ -1149,11 +1161,17 @@
     },
     {
       "queryId": "sandbox-python-jobs-v1-s01-q08",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:18:48.828Z",
+      "finishedAt": "2026-09-13T15:20:31.049Z",
+      "observationId": "obs-sandbox-python-jobs-v1-s01-q08-894f044be66529be89e18761"
     },
     {
       "queryId": "sandbox-python-jobs-v1-s01-q09",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:25:14.002Z",
+      "finishedAt": "2026-09-13T15:27:23.998Z",
+      "observationId": "obs-sandbox-python-jobs-v1-s01-q09-735ec793c7aec6fff408facc"
     },
     {
       "queryId": "sandbox-python-jobs-v1-s02-q01",
@@ -1566,11 +1584,17 @@
     },
     {
       "queryId": "vector-search-small-app-v1-s01-q08",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:18:57.373Z",
+      "finishedAt": "2026-09-13T15:20:52.236Z",
+      "observationId": "obs-vector-search-small-app-v1-s01-q08-c79cf39947d2fb7debdf75e6"
     },
     {
       "queryId": "vector-search-small-app-v1-s01-q09",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:25:21.539Z",
+      "finishedAt": "2026-09-13T15:27:14.555Z",
+      "observationId": "obs-vector-search-small-app-v1-s01-q09-49e052ba562c66b8cd35cf30"
     },
     {
       "queryId": "vector-search-small-app-v1-s02-q01",
@@ -1981,11 +2005,17 @@
     },
     {
       "queryId": "research-api-citations-v1-s01-q08",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:19:04.909Z",
+      "finishedAt": "2026-09-13T15:20:53.920Z",
+      "observationId": "obs-research-api-citations-v1-s01-q08-584748644de2757dc0810efc"
     },
     {
       "queryId": "research-api-citations-v1-s01-q09",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:25:30.581Z",
+      "finishedAt": "2026-09-13T15:27:27.130Z",
+      "observationId": "obs-research-api-citations-v1-s01-q09-51cfb4badc53de5347b2681d"
     },
     {
       "queryId": "research-api-citations-v1-s02-q01",
@@ -2398,11 +2428,17 @@
     },
     {
       "queryId": "sentry-posthog-product-team-v1-s01-q08",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:19:11.956Z",
+      "finishedAt": "2026-09-13T15:21:05.426Z",
+      "observationId": "obs-sentry-posthog-product-team-v1-s01-q08-4946a5fddad9283a344d9572"
     },
     {
       "queryId": "sentry-posthog-product-team-v1-s01-q09",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:26:45.848Z",
+      "finishedAt": "2026-09-13T15:28:40.018Z",
+      "observationId": "obs-sentry-posthog-product-team-v1-s01-q09-817ab754f38f5e56c01beadc"
     },
     {
       "queryId": "sentry-posthog-product-team-v1-s02-q01",
@@ -2807,11 +2843,15 @@
     },
     {
       "queryId": "client-project-workspace-v1-s01-q07",
-      "status": "not-started"
+      "status": "unresolved",
+      "startedAt": "2026-09-13T15:20:27.271Z"
     },
     {
       "queryId": "client-project-workspace-v1-s01-q08",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:26:58.897Z",
+      "finishedAt": "2026-09-13T15:28:38.833Z",
+      "observationId": "obs-client-project-workspace-v1-s01-q08-f1b6a0ef654c03a9c9637f57"
     },
     {
       "queryId": "client-project-workspace-v1-s01-q09",
@@ -3221,7 +3261,10 @@
     },
     {
       "queryId": "team-chat-history-v1-s01-q07",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:20:58.888Z",
+      "finishedAt": "2026-09-13T15:22:59.484Z",
+      "observationId": "obs-team-chat-history-v1-s01-q07-ae07cba984419b0ad027cf30"
     },
     {
       "queryId": "team-chat-history-v1-s01-q08",
@@ -3635,7 +3678,10 @@
     },
     {
       "queryId": "allbirds-first-order-v1-s01-q07",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:21:03.929Z",
+      "finishedAt": "2026-09-13T15:22:52.926Z",
+      "observationId": "obs-allbirds-first-order-v1-s01-q07-92d3b94569646717d29e6162"
     },
     {
       "queryId": "allbirds-first-order-v1-s01-q08",
@@ -4045,7 +4091,10 @@
     },
     {
       "queryId": "everyday-clothing-returns-v1-s01-q07",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:21:09.482Z",
+      "finishedAt": "2026-09-13T15:23:00.008Z",
+      "observationId": "obs-everyday-clothing-returns-v1-s01-q07-c6b8086d2d4d33f5436136d6"
     },
     {
       "queryId": "everyday-clothing-returns-v1-s01-q08",
@@ -4452,7 +4501,10 @@
     },
     {
       "queryId": "ikea-small-apartment-v1-s01-q06",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:21:17.011Z",
+      "finishedAt": "2026-09-13T15:22:58.384Z",
+      "observationId": "obs-ikea-small-apartment-v1-s01-q06-f15313f9b0fb74535925e0b8"
     },
     {
       "queryId": "ikea-small-apartment-v1-s01-q07",

@@ -9,7 +9,7 @@ import type { AgentsEnvironment } from "../src/lib/agents";
 import { publicCollectionCaseId, projectPublicSearchObservation } from "./collect-public-search-rankings";
 import { createKeywordBenchmarkSuite, getKeywordBenchmarkRun, getKeywordBenchmarkUsage, reserveKeywordBenchmarkRun, updateKeywordBenchmarkRun } from "../src/lib/keyword-benchmark-store";
 import { startKeywordBenchmark, reconcileKeywordBenchmark, keywordBenchmarkAccess, KeywordBenchmarkPersistenceError } from "../src/lib/keyword-benchmark-service";
-import { reconcileKeywordBenchmarkSession } from "../src/lib/keyword-benchmark-agent";
+import { reconcileKeywordBenchmarkSession, KeywordAgentError } from "../src/lib/keyword-benchmark-agent";
 import { assertPublicSearchRankings } from "../src/lib/public-search-rankings-validation";
 import { assertPublicCollectionProgress, type PublicCollectionProgress } from "../src/lib/public-dashboard";
 import type { KeywordBenchmarkRun } from "../src/lib/keyword-benchmark-types";
@@ -95,11 +95,12 @@ async function main() {
         if (!run) throw Error("Owned checkpoint record disappeared.");
         if (!run.sessionId && found.complete && found.candidates.some(candidate => (candidate as { metadata?: {run_id?: string} }).metadata?.run_id === run.id)) {
           try { run = await recoverCategoryReceipt(db, ownerId, run.id, found.candidates, env); recovered++; }
-          catch { console.log(JSON.stringify({ phase: "receipt-not-recovered", queryId: query.id })); }
+          catch (error) { console.log(JSON.stringify({ phase: "receipt-not-recovered", queryId: query.id, errorType: error instanceof Error ? error.name : "unknown",
+            ...(error instanceof KeywordAgentError ? { code: error.code, httpStatus: error.status ?? null } : {}) })); }
         } else if (run.sessionId && active(run)) {
           try {
             const result = await reconcileKeywordBenchmarkSession(run.sessionId, env, { expectedSearchMode: run.case.searchMode, expectedAllowedDomains: run.allowedDomains });
-            if (["completed", "failed", "cancelled"].includes(result.status)) run = await updateKeywordBenchmarkRun(db, ownerId, run.id, run.revision, { status: result.status, answer: result.answer, usage: result.usage, providerMetadata: result.providerMetadata, error: result.error });
+            if (["completed", "failed", "cancelled"].includes(result.status) || result.initialInputUnconfirmed) run = await updateKeywordBenchmarkRun(db, ownerId, run.id, run.revision, { status: result.status, answer: result.answer, usage: result.usage, providerMetadata: result.providerMetadata, error: result.error });
           } catch { console.log(JSON.stringify({ phase: "receipt-outcome-unconfirmed", queryId: query.id })); }
         }
         if (!active(run)) terminal++;
@@ -116,7 +117,7 @@ async function main() {
       if (active(run) && run.sessionId) {
         try {
           const result = await reconcileKeywordBenchmarkSession(run.sessionId, env, { expectedSearchMode: run.case.searchMode, expectedAllowedDomains: run.allowedDomains });
-          if (["completed", "failed", "cancelled"].includes(result.status)) run = await updateKeywordBenchmarkRun(db, ownerId, run.id, run.revision, { status: result.status, answer: result.answer, usage: result.usage, providerMetadata: result.providerMetadata, error: result.error });
+          if (["completed", "failed", "cancelled"].includes(result.status) || result.initialInputUnconfirmed) run = await updateKeywordBenchmarkRun(db, ownerId, run.id, run.revision, { status: result.status, answer: result.answer, usage: result.usage, providerMetadata: result.providerMetadata, error: result.error });
         } catch { console.log(JSON.stringify({ queryId: query.id, status: "retrieval-unconfirmed" })); }
       }
       await save(query, run);

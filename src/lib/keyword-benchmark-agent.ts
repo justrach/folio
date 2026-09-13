@@ -35,6 +35,8 @@ export type KeywordAgentObservation = Omit<KeywordAgentReceipt, "status"> & {
   answer: KeywordBenchmarkAnswer | null;
   error: string | null;
   observedToolCalls: number;
+  /** Idle, with no turn/items/action: initial submission remains unresolved, not a task to cancel. */
+  initialInputUnconfirmed?: true;
 };
 export class KeywordAgentError extends Error {
   constructor(message: string, public readonly code: "INVALID_INPUT" | "NOT_CONFIGURED" | "UPSTREAM_ERROR" | "INVALID_RESPONSE",
@@ -270,6 +272,10 @@ export async function reconcileKeywordBenchmarkSession(sessionId: string, env: A
   if (result.status === "failed" || root?.status === "failed") return { ...observation, status: "failed", error: "OpenAI reported a failed research session or turn." };
   if (root?.status === "cancelled") return { ...observation, status: "cancelled" };
   if (result.status === "requires_action" || root?.status === "waiting") return { ...observation, status: "requires_action", error: "OpenAI requires an external action. No automatic tool submission or new task was made." };
+  if (result.status === "idle" && turns.length === 0 && items.length === 0 && record(sessionResponse.value)
+    && Array.isArray(sessionResponse.value.required_actions) && sessionResponse.value.required_actions.length === 0)
+    return { ...observation, status: "requires_action", initialInputUnconfirmed: true,
+      error: "The provider session is idle with no saved turn, items or requested action. The initial submission remains unresolved; do not resend it." };
   if (roots.length > 1) return { ...observation, status: "requires_action", error: "More than one root turn was observed; this one-query trial needs review." };
   if (root?.status !== "completed") return observation;
   const final = relevant.filter(item => item.type === "message" && item.role === "assistant" && item.phase === "final_answer" && item.status === "completed").at(-1);

@@ -86,6 +86,6 @@ export async function recoverCategoryReceipt(db: D1Database, ownerId: string, ru
   return updateKeywordBenchmarkRun(db, ownerId, run.id, run.revision, {
     sessionId, status: terminal ? observation.status : "requires_action", answer: observation.answer,
     usage: observation.usage, providerMetadata: observation.providerMetadata,
-    error: terminal ? observation.error : "The missing receipt was recovered; its final provider outcome is still unresolved.",
+    error: observation.error ?? (terminal ? null : "The missing receipt was recovered; its final provider outcome is still unresolved."),
   });
 }

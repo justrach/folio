@@ -160,6 +160,7 @@ test("real D1 service runs private baseline/fresh answers with one create, safe 
     let creates = 0, cancels = 0, reads = 0, providerState: "completed" | "in_progress" | "cancelled" = "completed";
     const payloads: string[] = [];
     let recoveredSession: Record<string, unknown> = {};
+    let emptyHistory = false;
     const fetcher: typeof fetch = async (url, init) => {
       const address = String(url);
       if (init?.method === "POST" && !address.endsWith("/events")) {
@@ -182,7 +183,7 @@ test("real D1 service runs private baseline/fresh answers with one create, safe 
       }
       reads++; assert.equal(init?.method, "GET");
       const turnId = `turn_${sessionId}`;
-      if (address.includes("/turns?")) return Response.json({ data: [{ id: turnId, session_id: sessionId, status: providerState, subagent_id: null }], has_more: false });
+      if (address.includes("/turns?")) return Response.json({ data: emptyHistory ? [] : [{ id: turnId, session_id: sessionId, status: providerState, subagent_id: null }], has_more: false });
       if (address.includes("/items?")) return Response.json({ data: providerState === "completed" ? [
         { id: "search_item", turn_id: turnId, type: "web_search_call", status: "completed" },
         { id: "command_item", turn_id: turnId, type: "command_execution", status: "completed", exit_code: 0, output: "FOLIO_KEYWORD_JSON_VALID" },
@@ -249,6 +250,14 @@ test("real D1 service runs private baseline/fresh answers with one create, safe 
     assert.equal(pendingReceipt.status, "requires_action"); assert.equal(pendingReceipt.sessionId, "session_4");
     assert.equal(pendingReceipt.answer, null); assert.equal(pendingReceipt.usage.costUsd, null);
     assert.equal((await getKeywordBenchmarkUsage(restored, "alice")).activeRuns, 1, "A recovered nonterminal receipt retains capacity.");
+    emptyHistory = true; recoveredSession = { ...candidate, status: "idle" };
+    const idleOptions = { ...options, now: new Date(Date.parse(pendingReceipt.deadlineAt!) + 1) };
+    await Promise.all([reconcileKeywordBenchmark(restored, "alice", ambiguous.id, env, idleOptions), reconcileKeywordBenchmark(restored, "alice", ambiguous.id, env, idleOptions)]);
+    const idle = (await getKeywordBenchmarkRun(restored, "alice", ambiguous.id))!;
+    assert.equal(idle.status, "requires_action"); assert.match(idle.error!, /initial submission remains unresolved/);
+    assert.equal(idle.cancelAttemptAt, null); assert.equal(cancels, 1, "An overdue idle session without a turn must not send cancellation, even during concurrent reconciliation.");
+    assert.equal((await getKeywordBenchmarkUsage(restored, "alice")).activeRuns, 1);
+    emptyHistory = false; recoveredSession = candidate;
     providerState = "completed";
     const recovered = await reconcileKeywordBenchmark(restored, "alice", ambiguous.id, env, options);
     assert.equal(recovered.status, "completed"); assert.equal(recovered.sessionId, "session_4");
