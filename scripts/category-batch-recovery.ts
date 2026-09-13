@@ -8,34 +8,35 @@ const object = (value: unknown): Record<string, unknown> => value !== null && ty
 /** Bounded, read-only discovery. Incomplete pagination cannot establish a unique receipt. */
 export async function findCategoryReceipts(runs: ReadonlyArray<Pick<KeywordBenchmarkRun, "id" | "caseId">>, env: AgentsEnvironment,
   options: KeywordAgentOptions & { maxPages?: number; timeoutMs?: number } = {}) {
-  const maxPages = options.maxPages ?? 40, timeoutMs = options.timeoutMs ?? 30_000;
-  if (!Number.isInteger(maxPages) || maxPages < 1 || maxPages > 40 || timeoutMs < 1 || timeoutMs > 30_000) throw Error("Invalid receipt discovery bound.");
+  const maxPages = options.maxPages ?? 40, timeoutMs = options.timeoutMs ?? 90_000;
+  if (!Number.isInteger(maxPages) || maxPages < 1 || maxPages > 40 || timeoutMs < 1 || timeoutMs > 90_000) throw Error("Invalid receipt discovery bound.");
   const wanted = new Map(runs.map(run => [run.id, run.caseId]));
   if (!wanted.size) return { complete: true, checked: 0, candidates: [] as unknown[] };
   const deadline = Date.now() + timeoutMs, candidates: unknown[] = [], seen = new Set<string>();
   let checked = 0, after: string | null = null;
+  let reason = "page-limit";
   try {
     for (let page = 0; page < maxPages; page++) {
       const remaining = deadline - Date.now();
-      if (remaining <= 0) break;
+      if (remaining <= 0) { reason = "timeout"; break; }
       const response = await (options.fetcher ?? fetch)(`https://api.openai.com/v1/agents/sessions?limit=100&order=desc${after ? `&after=${encodeURIComponent(after)}` : ""}`, {
         method: "GET", redirect: "error", cache: "no-store", signal: AbortSignal.timeout(remaining),
         headers: { Authorization: `Bearer ${env.OPENAI_API_KEY}`, "OpenAI-Beta": "agents=v1" },
       });
-      if (!response.ok) { await response.body?.cancel(); break; }
+      if (!response.ok) { reason = `http-${response.status}`; await response.body?.cancel(); break; }
       const body = object(await response.json());
-      if (!Array.isArray(body.data) || body.data.length > 100 || typeof body.has_more !== "boolean") break;
+      if (!Array.isArray(body.data) || body.data.length > 100 || typeof body.has_more !== "boolean") { reason = "invalid-page"; break; }
       checked += body.data.length;
       for (const candidate of body.data) {
         const metadata = object(object(candidate).metadata);
         if (typeof metadata.run_id === "string" && wanted.has(metadata.run_id) && wanted.get(metadata.run_id) === metadata.case_id) candidates.push(candidate);
       }
       if (!body.has_more) return { complete: true, checked, candidates };
-      if (typeof body.last_id !== "string" || !body.last_id || seen.has(body.last_id)) break;
+      if (typeof body.last_id !== "string" || !body.last_id || seen.has(body.last_id)) { reason = "invalid-cursor"; break; }
       seen.add(body.last_id); after = body.last_id;
     }
-  } catch { /* A failed read changes no receipt and grants no retry authority. */ }
-  return { complete: false, checked, candidates: [] as unknown[] };
+  } catch (error) { reason = error instanceof Error && ["AbortError", "TimeoutError"].includes(error.name) ? "timeout" : "retrieval-failed"; }
+  return { complete: false, checked, candidates: [] as unknown[], reason };
 }
 /** Metadata is checked against the frozen reservation, never question text or list order. */
 export function matchesCategoryReceipt(run: KeywordBenchmarkRun, candidate: unknown): boolean {

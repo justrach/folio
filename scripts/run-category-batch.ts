@@ -105,7 +105,7 @@ async function main() {
         if (!active(run)) terminal++;
         await save(query, run);
       }
-      console.log(JSON.stringify({ phase: "receipt-checkpoint", complete: found.complete, checked: found.checked, recovered, terminal }));
+      console.log(JSON.stringify({ phase: "receipt-checkpoint", complete: found.complete, checked: found.checked, ...(found.complete ? {} : { reason: found.reason }), recovered, terminal }));
     };
     // Resume from D1, never from a missing filesystem receipt. Reconcile pre-existing sessions with GETs only.
     const rows = await db.prepare("SELECT id,case_id FROM keyword_benchmark_runs WHERE user_id=? ORDER BY created_at DESC").bind(ownerId).all<{ id: string; case_id: string }>();
