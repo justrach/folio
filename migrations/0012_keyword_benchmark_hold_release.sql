@@ -10,9 +10,8 @@ BEGIN SELECT RAISE(ABORT, 'A hold release requires an existing unresolved creati
 
 CREATE TRIGGER keyword_benchmark_hold_release_immutable
 BEFORE UPDATE ON keyword_benchmark_runs
-WHEN NEW.hold_release_at IS NOT OLD.hold_release_at OR NEW.hold_release_reason IS NOT OLD.hold_release_reason
-BEGIN
-  SELECT CASE WHEN OLD.hold_release_at IS NOT NULL OR OLD.hold_release_reason IS NOT NULL
+WHEN (NEW.hold_release_at IS NOT OLD.hold_release_at OR NEW.hold_release_reason IS NOT OLD.hold_release_reason)
+  AND (OLD.hold_release_at IS NOT NULL OR OLD.hold_release_reason IS NOT NULL
     OR NEW.hold_release_at IS NULL OR NEW.hold_release_at < OLD.updated_at
     OR NEW.hold_release_reason IS NOT 'owner-acknowledged-unknown-creation-cost'
     OR OLD.status <> 'requires_action' OR OLD.session_id IS NOT NULL
@@ -21,5 +20,7 @@ BEGIN
     OR NEW.answer_json IS NOT OLD.answer_json OR NEW.usage_json IS NOT OLD.usage_json
     OR NEW.provider_metadata_json IS NOT OLD.provider_metadata_json OR NEW.error IS NOT OLD.error
     OR NEW.revision <> OLD.revision + 1 OR NEW.updated_at IS NOT NEW.hold_release_at
-    THEN RAISE(ABORT, 'Hold release acknowledgement is invalid or immutable') END;
+)
+BEGIN
+  SELECT RAISE(ABORT, 'Hold release acknowledgement is invalid or immutable');
 END;

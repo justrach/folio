@@ -1,6 +1,6 @@
 # Public Folio setup
 
-Preparation status checked on 13 September 2026. The intended public application is `https://usefolio.site`; public support/privacy contact is `support@usefolio.site`. Resource creation, application deployment, Google configuration, and end-to-end verification are separate steps.
+Production deployed and checked in Chrome on 13 September 2026. The intended public application is `https://usefolio.site`; public support/privacy contact is `support@usefolio.site`. Resource creation, application deployment, Google configuration, and end-to-end verification are separate steps.
 
 ## Verified resources
 
@@ -9,17 +9,17 @@ Preparation status checked on 13 September 2026. The intended public application
 | Cloudflare zone `usefolio.site` | Active in the authenticated Wrangler account; nameservers `dora.ns.cloudflare.com` and `jake.ns.cloudflare.com`. |
 | D1 database `folio-visibility` | Created in APAC; ID `1ac63021-5da1-45c8-839e-5ba35898bea5`; verified with Wrangler. |
 | Production configuration | [`wrangler.production.jsonc`](../wrangler.production.jsonc), with the real account/database IDs and intended custom domain. |
-| Application Worker `folio-visibility` | Not deployed at this preparation checkpoint. |
-| Custom domain / Worker routes | No existing `usefolio.site` Worker domain or zone route was found before deployment. Public DNS returned no apex A/AAAA record. |
-| Remote migrations | `0001` through `0008` were listed as pending; no application migrations applied at this checkpoint. Apply the final reviewed migration set once integration is ready. |
-| Google production project | Created separately as `Folio production` / `folio-production-508504`; OAuth setup is not yet complete. |
+| Application Worker `folio-visibility` | Deployed to `https://usefolio.site`; initial version `ae30071f-c720-4dc2-822a-2bc0c58f41c0` from validated commit `9ca27b3`. |
+| Custom domain / Worker routes | Apex custom domain attached; HTTPS homepage and saved public rankings verified in Chrome. |
+| Remote migrations | `0001`–`0012` applied. Migration 0012 uses equivalent `WHEN` trigger syntax compatible with remote Wrangler parsing; three actual D1 hold-release regressions passed. |
+| Google production project | Separate production Web client, hosted callback, homepage/privacy URLs, and requested test users configured. Google identity sign-in verified on the live domain. Audience remains Testing; broad public OAuth verification is not complete. |
 | Google development project | Existing `folio-508503` remains the local/testing project. |
 
 The Wrangler OAuth session has the required Worker/D1 capabilities for the inspected operations. A direct DNS-record API read returned permission denied; the zone is active, but a complete DNS-record inventory was not established through that token. Google domain ownership verification is separate and remains unverified here. The existing Crawlingsphere database was not reused or modified.
 
 ## Production commands
 
-Always select the production configuration explicitly. Default `wrangler.jsonc`, `.dev.vars`, and `.wrangler/state` remain local. Do not deploy the default configuration's emulator database ID or copy local users, Google tokens, reports, or provider allowlists to production.
+Always select the production configuration explicitly. Default `wrangler.jsonc`, `.dev.vars`, and `.wrangler/state` remain local. Do not deploy the default configuration's emulator database ID. An explicitly authorized initial copy of local accounts and saved records was performed for this launch. Future data transfers require deliberate reconciliation; do not overwrite either database by default.
 
 After the complete migration set is reviewed, apply and verify remote migrations:
 
@@ -65,3 +65,11 @@ Enable the Google Search Console API in this project. Configure the consent iden
 External Testing is limited to listed test users; moving to production does not itself mean branding or sensitive-scope verification passed. Review the current classification of the requested Search Console scope and finish any required verification. See [Search Console setup and verification requirements](SEARCH-CONSOLE.md) for authoritative Google references and implemented data boundaries.
 
 Before recording completion, verify HTTPS, the public privacy page, fresh Google sign-in, separate read-only consent, property retrieval, an owned report import/reopen, and disconnect/reconnect on the hosted application. Preserve private evidence outside Git. Local tests and local Google consent do not establish these production outcomes.
+
+## Initial data transfer and live checks
+
+The owner explicitly requested reusing local accounts, websites and saved results, without new sandbox work. A private local backup was taken first. Existing records were copied into the previously empty production database, retaining ownership IDs, completed evidence, quota history and unresolved holds. Table counts and foreign keys were checked, and the hold-insertion guard was restored and verified before deployment.
+
+The SQL-file import hit a statement-size limit on large evidence rows; its failed attempts rolled back. The successful transfer used parameterized D1 queries through the authenticated Wrangler account, preserving the stored evidence. Private transfer files and backups remain ignored. Browser sessions, temporary verification/rate-limit entries and job leases were not copied. Old Google-client tokens were omitted because production uses a separate client; saved Search Console reports remain available and new Google imports require reconnecting there. Local credentials, callbacks and data were unchanged.
+
+Production Google identity sign-in reopened the migrated owner account and its saved website, audit and SEO report in Chrome. Public rankings and HTTPS homepage were also verified. No sandbox or paid SEO lookup was started by deployment. The scheduler remains disabled. A successful deployment does not establish unrestricted external Google onboarding, new provider runs, or any unfinished MCP integration.
