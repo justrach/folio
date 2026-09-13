@@ -26,7 +26,7 @@ export class CategoryBatchRate {
     this.cooldownUntil = now + (status === 429 ? 60_000 : 30_000);
     this.lastRamp = this.cooldownUntil; this.healthyReceipts = 0;
     if (status === 401 || status === 403) this.stoppedReason = "provider-access-denied";
-    else if (status !== undefined && status >= 400 && status < 500 && status !== 429) this.stoppedReason = "provider-request-rejected";
+    else if (status !== undefined && status >= 400 && status < 500 && status !== 429 && status !== 409) this.stoppedReason = "provider-request-rejected";
     else if (this.failures.length >= 3) this.stoppedReason = "repeated-provider-failures";
   }
   canCreate(now: number, active: number) { this.ramp(now); return !this.stoppedReason && now >= this.cooldownUntil && active < this.desired; }

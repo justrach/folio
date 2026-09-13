@@ -15,3 +15,8 @@ test('upstream failures back off different-question scheduling; repeated failure
  assert.equal(rate.stoppedReason,'repeated-provider-failures');assert.equal(rate.canCreate(300_000,0),false);
  const denied=new CategoryBatchRate(20,0);denied.failure(403,0);assert.equal(denied.stoppedReason,'provider-access-denied');
 });
+
+test('a conflict backs off different questions without retrying or treating one conflict as permanent denial',()=>{
+ const rate=new CategoryBatchRate(20,0);rate.failure(409,1000);
+ assert.equal(rate.stoppedReason,null);assert.equal(rate.canCreate(2000,0),false);assert.equal(rate.canCreate(31000,0),true);
+});

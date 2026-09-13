@@ -35,10 +35,13 @@ export function interleaveCategories(queries: PublicSearchQuery[]) {
 }
 async function main() {
   const execute = process.argv.includes("--confirm-spend");
+  const maxNewOption = process.argv.find(arg => arg.startsWith("--max-new="));
+  const maxNew = maxNewOption ? Number(maxNewOption.slice(10)) : 3500;
+  if (!Number.isInteger(maxNew) || maxNew < 1 || maxNew > 3500) throw Error("Invalid process submission bound.");
   const workerOption = process.argv.find(arg => arg.startsWith("--workers="));
   const requestedWorkers = workerOption ? Number(workerOption.slice(10)) : 20;
   if (!Number.isInteger(requestedWorkers) || requestedWorkers < 1 || requestedWorkers > 20) throw Error("Workers must be between1 and20.");
-  if (process.argv.slice(2).some(arg => !["--confirm-spend", "--publish"].includes(arg) && arg !== workerOption) || !process.argv.includes("--publish")) throw Error("Use --publish for saved-result preparation, plus --confirm-spend to execute the authorized batch.");
+  if (process.argv.slice(2).some(arg => !["--confirm-spend", "--publish"].includes(arg) && arg !== workerOption && arg !== maxNewOption) || !process.argv.includes("--publish")) throw Error("Use --publish for saved-result preparation, plus --confirm-spend to execute the authorized batch.");
   await mkdir(directory, { recursive: true, mode: 0o700 });
   const lock = await open(`${directory}/runner.lock`, "wx", 0o600); await lock.writeFile(String(process.pid));
   let proxy: Awaited<ReturnType<typeof getPlatformProxy<AgentsEnvironment & { DB: D1Database }>>> | undefined;
@@ -115,7 +118,15 @@ async function main() {
       let run: KeywordBenchmarkRun | undefined;
       try {
         if (await db.prepare("SELECT id FROM keyword_benchmark_runs WHERE user_id=? AND case_id=?").bind(ownerId, publicCollectionCaseId(ownerId, query)).first()) { stopped = true; rate.stoppedReason = "concurrent-existing-attempt"; return; }
-        run = await startKeywordBenchmark(db, ownerId, { caseId: publicCollectionCaseId(ownerId, query), kind: "baseline" }, env, { reserve: async (input, limits) => ({ run: await reserveKeywordBenchmarkRun(db, ownerId, input, { maxRunsPerDay: limits.maxRunsPerDay, maxActiveRuns: scope.maxConcurrent }), created: true }) });
+        run = await startKeywordBenchmark(db, ownerId, { caseId: publicCollectionCaseId(ownerId, query), kind: "baseline" }, env, { fetcher: async (url, init) => {
+          const response = await fetch(url, init);
+          if (!response.ok) {
+            const reader = response.clone().body?.getReader(); let body = "";
+            if (reader) { const decoder = new TextDecoder(); let bytes=0; try { while(true) { const item=await reader.read(); if(item.done) break; bytes+=item.value.byteLength; if(bytes>65536) break; body+=decoder.decode(item.value,{stream:true}); } } finally { void reader.cancel().catch(()=>{}); } }
+            await atomic(`${directory}/${query.id}-provider-error.json`, { httpStatus: response.status, body, receivedAt: new Date().toISOString() });
+          }
+          return response;
+        }, reserve: async (input, limits) => ({ run: await reserveKeywordBenchmarkRun(db, ownerId, input, { maxRunsPerDay: limits.maxRunsPerDay, maxActiveRuns: scope.maxConcurrent }), created: true }) });
         submitted++;
         const httpStatus = run.providerMetadata.creationHttpStatus;
         if ((httpStatus ?? 0) >= 400 || run.status === "requires_action" && !run.sessionId) {
@@ -137,10 +148,10 @@ async function main() {
       }
     }
     try {
-      while ((!stopped && !draining && !rate.stoppedReason && next < pending.length) || jobs.size) {
+      while ((!stopped && !draining && !rate.stoppedReason && next < Math.min(pending.length, maxNew)) || jobs.size) {
         const available = Math.max(0, slots - heldThisProcess);
         if (!available && !jobs.size) rate.stoppedReason = "capacity-retained-by-unresolved-attempts";
-        if (!stopped && !draining && !rate.stoppedReason && next < pending.length && jobs.size < available && rate.canCreate(Date.now(), jobs.size) && Date.now() - lastCreateAt >= rate.spacingMs) {
+        if (!stopped && !draining && !rate.stoppedReason && next < Math.min(pending.length, maxNew) && jobs.size < available && rate.canCreate(Date.now(), jobs.size) && Date.now() - lastCreateAt >= rate.spacingMs) {
           const query = pending[next++]; lastCreateAt = Date.now();
           const work = executeQuestion(query); jobs.add(work); work.finally(() => jobs.delete(work));
         }
