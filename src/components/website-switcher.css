@@ -1,0 +1,16 @@
+.website-switcher { position: relative; margin-bottom: 29px; }
+.website-switcher .workspace-switch { margin-bottom: 0; }
+.website-switcher .workspace-switch > span:nth-child(2) { min-width: 0; overflow-wrap: anywhere; }
+.website-switcher .workspace-avatar, .website-switcher svg { flex-shrink: 0; }
+.website-switcher .workspace-switch[aria-expanded="true"] > svg { transform: rotate(180deg); }
+.website-picker { position: absolute; top: calc(100% + 8px); left: 0; width: 100%; z-index: 40; padding: 10px; border: 1px solid #55594d; border-radius: 10px; background: #363c31; color: #f5f1df; box-shadow: 0 12px 28px #0003; }
+.website-picker p { margin: 6px 4px 12px; font-size: 12px; line-height: 1.5; }
+.website-picker .website-picker-heading { font-size: 10px; letter-spacing: 1.4px; color: #c5c9b9; }
+.website-picker-list { max-height: min(320px, 45dvh); overflow-y: auto; }
+.website-picker button, .website-picker a { display: flex; align-items: center; gap: 9px; width: 100%; padding: 11px 8px; border: 0; border-radius: 5px; background: transparent; color: inherit; text-align: left; font-size: 12px; text-decoration: none; }
+.website-picker button:hover, .website-picker a:hover, .website-picker button[aria-pressed="true"] { background: #4b5342; }
+.website-picker button:focus-visible, .website-picker a:focus-visible { outline: 2px solid #d0d8b8; outline-offset: -2px; }
+.website-picker button:disabled { opacity: .65; cursor: wait; }
+.website-picker button > span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.website-picker small { display: block; font-size: 10px; color: #c5c9b9; margin-top: 4px; overflow-wrap: anywhere; }
+.website-picker .website-picker-add { border-top: 1px solid #55594d; border-radius: 0; margin-top: 6px; }

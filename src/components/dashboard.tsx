@@ -70,6 +70,7 @@ import "./index-page.css";
 import { EvaluationsPanel } from "./evaluations-panel";
 import { AgentRunsPanel, AgentRunDock } from "./agent-runs-panel";
 import { evaluationHref, readEvaluationIntent } from "@/lib/evaluation-navigation";
+import { WebsiteSwitcher } from "./website-switcher";
 
 type Modal = "scan" | "methodology" | "notifications" | "search" | null;
 const navigation = [
@@ -410,17 +411,22 @@ function WorkspaceDashboard({ section }: { section: string }) {
             folio<span className="wordmark-period">.</span>
           </span>
         </Link>
-        <button
-          className="workspace-switch"
-          onClick={() => router.push("/websites")}
-        >
-          <span className="workspace-avatar">{session?.user.name?.[0] ?? (privateOverview ? "—" : "A")}</span>
-          <span>
-            {session ? `${session.user.name || "Your"} workspace` : privateOverview ? "Your workspace" : "Acme workspace"}
-            <small>{session ? "Personal workspace" : privateOverview ? "Sign in" : "Demo workspace"}</small>
-          </span>
-          <ChevronDown size={14} />
-        </button>
+        <WebsiteSwitcher
+          key={isPending ? "pending" : ownerId ?? "signed-out"}
+          ownerId={isPending ? null : ownerId}
+          name={session?.user.name || "Your"}
+          activeUrl={activeScan?.url}
+          onSelect={(site, scan) => {
+            setMobileOpen(false);
+            if (scan) openScan(scan);
+            else {
+              setActiveScan(null);
+              if (ownerId) sessionStorage.removeItem(`folio-active-${ownerId}`);
+              router.push(evaluationHref({ targetUrl: site.url }).replace("/evaluations", "/search-data"));
+            }
+          }}
+          onAdd={() => { setMobileOpen(false); setModal("scan"); }}
+        />
         <span className="nav-caption">WORKSPACE</span>
         <nav aria-label="Main navigation">
           {navigation.map((item) => (
