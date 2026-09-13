@@ -39933,6 +39933,897 @@
         "No login, enrollment or checkout was performed. Personalized US pricing, trial eligibility, full-course free access, retry rules and access duration were not verified.",
         "Official pages contain inconsistencies: IBM’s module estimates total about 25 hours versus its roughly 20-hour headline, and its FAQ says four modules while its syllabus lists five."
       ]
+    },
+    {
+      "id": "obs-edx-course-fit-v1-s01-q02-bb5688f91233a1aa58b58a47",
+      "queryId": "edx-course-fit-v1-s01-q02",
+      "observedAt": "2026-09-13T14:41:27.427Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "MichiganX: Programming for Everybody (Getting Started with Python)",
+          "url": "https://www.edx.org/course/programming-for-everybody-getting-started-with-pyt?index=product&position=1&queryID=3890934a4a4fabc6f82b51eda00b675d",
+          "reason": "First shortlist choice for limited weekly time: published 2–4 hours per week over 7 weeks, no prerequisites and browser-based homework.",
+          "citationUrls": [
+            "https://www.edx.org/course/programming-for-everybody-getting-started-with-pyt?index=product&position=1&queryID=3890934a4a4fabc6f82b51eda00b675d"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "HarvardX: CS50’s Introduction to Programming with Python",
+          "url": "https://pll.harvard.edu/course/cs50s-introduction-programming-python",
+          "reason": "Beginner-compatible option with broader practice if the learner can accommodate the published 3–9 hours per week over 9 weeks.",
+          "citationUrls": [
+            "https://pll.harvard.edu/course/cs50s-introduction-programming-python"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "GTx: Computing in Python I: Fundamentals and Procedural Programming",
+          "url": "https://www.edx.org/learn/python/the-georgia-institute-of-technology-computing-in-python-i-fundamentals-and-procedural-programming/",
+          "reason": "Fundamentals-focused option for someone able to sustain the higher published commitment of 9–10 hours per week over 5 weeks.",
+          "citationUrls": [
+            "https://www.edx.org/learn/python/the-georgia-institute-of-technology-computing-in-python-i-fundamentals-and-procedural-programming/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.edx.org/course/programming-for-everybody-getting-started-with-pyt?index=product&position=1&queryID=3890934a4a4fabc6f82b51eda00b675d",
+          "title": "edX: Programming for Everybody (Getting Started with Python)"
+        },
+        {
+          "url": "https://pll.harvard.edu/course/cs50s-introduction-programming-python",
+          "title": "Harvard: CS50’s Introduction to Programming with Python"
+        },
+        {
+          "url": "https://www.edx.org/learn/python/the-georgia-institute-of-technology-computing-in-python-i-fundamentals-and-procedural-programming/",
+          "title": "edX: Computing in Python I: Fundamentals and Procedural Programming"
+        },
+        {
+          "url": "https://support.edx.org/hc/en-us/articles/360013426233-How-long-can-I-access-a-course-in-the-audit-track-before-it-expires",
+          "title": "edX: How long can I access a course in the audit track before it expires?"
+        },
+        {
+          "url": "https://support.edx.org/hc/en-us/articles/360013426573-What-are-the-differences-between-audit-free-and-verified-paid-courses",
+          "title": "edX: What are the differences between audit (free) and verified (paid) courses?"
+        },
+        {
+          "url": "https://support.edx.org/hc/en-us/articles/206503568-How-do-self-paced-courses-work",
+          "title": "edX: How do self-paced courses work?"
+        },
+        {
+          "url": "https://support.edx.org/hc/en-us/articles/15635475725591-How-does-the-suggested-schedule-work",
+          "title": "edX: How does the suggested schedule work?"
+        }
+      ],
+      "limitations": [
+        "Public-web research conducted September 13, 2026; this is a limited shortlist ordered by suitability for the query, not exhaustive coverage or a measured search-engine ranking.",
+        "Direct edX course-page reads returned navigation without course details; Michigan and Georgia Tech workload details rely on search-indexed official pages, which may lag changes. One attempted Michigan URL returned an internal error; the official search-result URL was then consulted.",
+        "Harvard’s official page was readable, but its linked edX page did not expose session details. Exact current enrollment availability, course-specific audit expiry, upgrade deadlines, prices and exercise access were not confirmed without enrollment.",
+        "No independently verified learner completion times, workload methodology or week-by-week workload distribution were available in the consulted evidence. Instructor response times, tutoring and course-specific deadline exceptions were not established. No accounts were created or enrollment transactions performed."
+      ]
+    },
+    {
+      "id": "obs-coursera-course-access-and-cost-v1-s01-q02-3aa3b0748ef78099a0aa3e7b",
+      "queryId": "coursera-course-access-and-cost-v1-s01-q02",
+      "observedAt": "2026-09-13T14:41:34.481Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Coursera free preview",
+          "url": "https://blog.coursera.org/introducing-courseras-new-course-preview-experience/",
+          "reason": "Test beginner suitability and workload using first-module access, including graded assignments where present.",
+          "citationUrls": [
+            "https://blog.coursera.org/introducing-courseras-new-course-preview-experience/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Full Course, No Certificate",
+          "url": "https://www.coursera.org/learn/attaining-higher-education",
+          "reason": "Potential assessment submissions and a final grade without a credential, but only if the enrollment actually offers it.",
+          "citationUrls": [
+            "https://www.coursera.org/learn/attaining-higher-education"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Coursera financial aid",
+          "url": "https://blog.coursera.org/introducing-courseras-new-course-preview-experience/",
+          "reason": "May reduce or eliminate the cost of full access; verify eligibility and the specific award terms.",
+          "citationUrls": [
+            "https://blog.coursera.org/introducing-courseras-new-course-preview-experience/",
+            "https://www.coursera.org/learn/attaining-higher-education"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Paid course/program or Coursera Plus",
+          "url": "https://www.coursera.org/courseraplus",
+          "reason": "Compare explicit paid assessment access, course inclusion and total cost at a sustainable study pace.",
+          "citationUrls": [
+            "https://www.coursera.org/learn/attaining-higher-education",
+            "https://www.coursera.org/courseraplus"
+          ]
+        },
+        {
+          "position": 5,
+          "name": "Coursera free trial and billing terms",
+          "url": "https://www.coursera.org/about/terms",
+          "reason": "Check assessment access separately from certificate restrictions, automatic renewal and refund conditions.",
+          "citationUrls": [
+            "https://www.coursera.org/courses?query=free",
+            "https://www.coursera.org/courseraplus",
+            "https://www.coursera.org/about/terms"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://blog.coursera.org/introducing-courseras-new-course-preview-experience/",
+          "title": "Introducing Coursera’s new course preview experience"
+        },
+        {
+          "url": "https://www.coursera.org/learn/attaining-higher-education",
+          "title": "Attaining Higher Education — enrollment and certificate FAQs"
+        },
+        {
+          "url": "https://www.coursera.org/courseraplus",
+          "title": "Coursera Plus — plans and frequently asked questions"
+        },
+        {
+          "url": "https://www.coursera.org/courses?query=free",
+          "title": "Best Free Courses & Certificates — free preview and trial FAQ"
+        },
+        {
+          "url": "https://www.coursera.org/about/terms",
+          "title": "Coursera Terms of Use — effective January 1, 2026; Refund and Cancellation Policy"
+        }
+      ],
+      "limitations": [
+        "Public web research only; no login, checkout, payment or graded-assignment submission was performed. Account-specific eligibility, taxes, promotions and exact course entitlements remain unverified.",
+        "The official financial-aid help URL https://learner.coursera.help/hc/en-us/articles/209819033-Apply-for-Financial-Aid returned an internal error. Current aid percentages, processing time, duration and trial interactions could not be confirmed.",
+        "No particular course was supplied. Full Course, No Certificate availability, assessment deadlines, retake rules, lab limits, billing pauses and post-expiry graded access were not established for a chosen course.",
+        "Official marketing and FAQ descriptions are evidence of advertised terms, not independently verified performance. Refund terms contain general rules and product-specific exceptions; the exact purchase requires checking.",
+        "This was a bounded search, not exhaustive market coverage or a measured search-engine ranking. Recommendations concern Coursera access choices, not a course endorsement."
+      ]
+    },
+    {
+      "id": "obs-research-api-citations-v1-s01-q05-111903a290da91516445d773",
+      "queryId": "research-api-citations-v1-s01-q05",
+      "observedAt": "2026-09-13T14:43:17.018Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Tavily",
+          "url": "https://docs.tavily.com/documentation/rate-limits",
+          "reason": "First trial for a straightforward source-backed search workflow, with a documented PAYGO route to Production rate limits; concurrency remains unconfirmed.",
+          "citationUrls": [
+            "https://docs.tavily.com/documentation/rate-limits",
+            "https://docs.tavily.com/documentation/api-reference/endpoint/search"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Exa",
+          "url": "https://exa.ai/pricing",
+          "reason": "Second trial for retrieval controls and cited Agent research; current plan options distinguish Search QPS from Agent concurrency, but account allocations need confirmation.",
+          "citationUrls": [
+            "https://exa.ai/pricing",
+            "https://exa.ai/docs/reference/rate-limits",
+            "https://exa.ai/docs/reference/search"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Firecrawl",
+          "url": "https://www.firecrawl.dev/pricing",
+          "reason": "Best fit when full-page acquisition is central, with explicit browser concurrency, queues, and endpoint rate limits; paid top-ups do not establish higher concurrency.",
+          "citationUrls": [
+            "https://docs.firecrawl.dev/rate-limits",
+            "https://www.firecrawl.dev/pricing",
+            "https://docs.firecrawl.dev/features/search"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://docs.tavily.com/documentation/rate-limits",
+          "title": "Tavily — Rate Limits"
+        },
+        {
+          "url": "https://docs.tavily.com/documentation/api-reference/endpoint/search",
+          "title": "Tavily Search — API Reference"
+        },
+        {
+          "url": "https://exa.ai/pricing",
+          "title": "Exa API Pricing"
+        },
+        {
+          "url": "https://exa.ai/docs/reference/rate-limits",
+          "title": "Exa — Rate Limits"
+        },
+        {
+          "url": "https://exa.ai/docs/reference/search",
+          "title": "Exa — Search API Reference"
+        },
+        {
+          "url": "https://docs.firecrawl.dev/rate-limits",
+          "title": "Firecrawl — Rate Limits"
+        },
+        {
+          "url": "https://www.firecrawl.dev/pricing",
+          "title": "Firecrawl — Pricing"
+        },
+        {
+          "url": "https://docs.firecrawl.dev/features/search",
+          "title": "Firecrawl — Search"
+        }
+      ],
+      "limitations": [
+        "Public-web documentation research only; no accounts, vendor API executions, load tests, or independently verified performance. This is not exhaustive market coverage or a search-engine ranking.",
+        "Exa's rate-limit page returned navigation without its substantive table when opened; default and legacy limits came from the official page's search-indexed content, crawled three months earlier.",
+        "Older indexed Firecrawl repository documentation showed different concurrency figures; the answer uses the directly opened current hosted rate-limit and pricing pages, which agree.",
+        "Tavily concurrency ceilings and higher-limit arrangements, Exa general Search concurrency and exact paid-account allocations, and several burst/counter-scope details were not established by consulted public evidence. Missing documentation does not mean unlimited capacity or unavailable features.",
+        "Commercial-use, content-reuse, retention, and contractual terms were not comprehensively reviewed; no blanket suitability for a paid product is asserted."
+      ]
+    },
+    {
+      "id": "obs-sandbox-python-jobs-v1-s01-q05-739365d1a1a9e622664b1911",
+      "queryId": "sandbox-python-jobs-v1-s01-q05",
+      "observedAt": "2026-09-13T14:43:18.266Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Modal",
+          "url": "https://modal.com/docs/guide/sandbox-networking",
+          "reason": "First evaluation for documented Python sandbox isolation plus GPU batch processing; credential-hiding sidecars are Alpha and require explicit network policy.",
+          "citationUrls": [
+            "https://modal.com/docs/guide/sandbox-networking",
+            "https://modal.com/docs/guide/batch-processing",
+            "https://modal.com/docs/guide/secrets",
+            "https://modal.com/docs/guide/sandbox-sidecars"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Daytona",
+          "url": "https://www.daytona.io/docs/sandboxes",
+          "reason": "Evaluate for proxy-based secret substitution outside sandbox code; GPU ephemerality, placement and sandbox-class differences need review.",
+          "citationUrls": [
+            "https://www.daytona.io/docs/en/secrets/",
+            "https://www.daytona.io/docs/sandboxes",
+            "https://www.daytona.io/docs/process-code-execution"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Runpod Serverless",
+          "url": "https://docs.runpod.io/serverless/overview",
+          "reason": "Evaluate as a separate GPU service for trusted worker code; documented runtime credentials are worker-readable and per-job hostile-code isolation was not established.",
+          "citationUrls": [
+            "https://docs.runpod.io/serverless/overview",
+            "https://docs.runpod.io/serverless/development/environment-variables"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://modal.com/docs/guide/sandbox-networking",
+          "title": "Modal — Networking and security"
+        },
+        {
+          "url": "https://modal.com/docs/guide/batch-processing",
+          "title": "Modal — Batch Processing"
+        },
+        {
+          "url": "https://modal.com/docs/guide/secrets",
+          "title": "Modal — Secrets"
+        },
+        {
+          "url": "https://modal.com/docs/guide/sandbox-sidecars",
+          "title": "Modal — Sandbox Sidecars"
+        },
+        {
+          "url": "https://www.daytona.io/docs/en/secrets/",
+          "title": "Daytona — Secrets"
+        },
+        {
+          "url": "https://www.daytona.io/docs/sandboxes",
+          "title": "Daytona — Sandboxes"
+        },
+        {
+          "url": "https://www.daytona.io/docs/process-code-execution",
+          "title": "Daytona — Process and Code Execution"
+        },
+        {
+          "url": "https://docs.runpod.io/serverless/overview",
+          "title": "Runpod — Serverless Overview"
+        },
+        {
+          "url": "https://docs.runpod.io/serverless/development/environment-variables",
+          "title": "Runpod — Environment variables"
+        }
+      ],
+      "limitations": [
+        "Public web research conducted on September 13, 2026, using official documentation found through unrestricted discovery and targeted follow-up searches; coverage is not exhaustive.",
+        "Recommendations are this answer's suitability order, not search-engine rankings or measured API performance. No provider workloads or security tests were executed.",
+        "Account-specific eligibility, live GPU capacity, exact pricing, hard spending caps and contractual service guarantees were not verified.",
+        "Daytona sources differ on GPU placement: a model-serving guide describes us-east-1, while the sandbox reference says requested regions are ignored by default. Confirm current placement before relying on residency.",
+        "Daytona's class-specific isolation implementation and Runpod's per-job hostile-code isolation or proxy-secret support were not established by consulted documentation. Missing evidence does not prove a feature is unavailable.",
+        "No page-access failures occurred. Some search metadata had implausible crawl dates; those dates were not treated as evidence of feature release timing."
+      ]
+    },
+    {
+      "id": "obs-auth-b2b-small-team-v1-s01-q05-f187691f783d49d595bd07b4",
+      "queryId": "auth-b2b-small-team-v1-s01-q05",
+      "observedAt": "2026-09-13T14:43:19.955Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Clerk",
+          "url": "https://clerk.com/docs/guides/secure/session-options",
+          "reason": "First managed option to evaluate for documented sign-out UI and targeted revocation; accept the short JWT window and paid production timeout customization.",
+          "citationUrls": [
+            "https://clerk.com/docs/guides/development/custom-flows/authentication/sign-out",
+            "https://clerk.com/docs/reference/backend/sessions/revoke-session",
+            "https://clerk.com/docs/guides/how-clerk-works/overview",
+            "https://clerk.com/docs/guides/secure/session-options"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Better Auth",
+          "url": "https://better-auth.com/docs/concepts/session-management",
+          "reason": "Prefer for direct stored-session control and explicit single, other, and all-session revocation, with caching disabled or bypassed when prompt denial matters.",
+          "citationUrls": [
+            "https://better-auth.com/docs/concepts/session-management"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "WorkOS",
+          "url": "https://workos.com/docs/authkit/sessions",
+          "reason": "Managed alternative with explicit application-plus-WorkOS logout, configurable token lifetimes, and list/revoke APIs; confirm bulk revocation and entitlement.",
+          "citationUrls": [
+            "https://workos.com/docs/authkit/sessions",
+            "https://workos.com/docs/reference/authkit/session"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Auth0",
+          "url": "https://auth0.com/docs/authenticate/login/logout",
+          "reason": "Conditional choice because Management API session controls require Enterprise and logout, session deletion, and session-plus-refresh-token revocation have different effects.",
+          "citationUrls": [
+            "https://auth0.com/docs/authenticate/login/logout",
+            "https://auth0.com/docs/manage-users/sessions/manage-user-sessions-with-auth0-management-api",
+            "https://auth0.com/docs/api/management/v2/sessions/revoke-session"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://clerk.com/docs/guides/development/custom-flows/authentication/sign-out",
+          "title": "Clerk: Build a custom sign-out flow"
+        },
+        {
+          "url": "https://clerk.com/docs/reference/backend/sessions/revoke-session",
+          "title": "Clerk: revokeSession()"
+        },
+        {
+          "url": "https://clerk.com/docs/guides/how-clerk-works/overview",
+          "title": "Clerk: How Clerk works"
+        },
+        {
+          "url": "https://clerk.com/docs/guides/secure/session-options",
+          "title": "Clerk: Session options"
+        },
+        {
+          "url": "https://better-auth.com/docs/concepts/session-management",
+          "title": "Better Auth: Session Management"
+        },
+        {
+          "url": "https://workos.com/docs/authkit/sessions",
+          "title": "WorkOS AuthKit: Sessions"
+        },
+        {
+          "url": "https://workos.com/docs/reference/authkit/session",
+          "title": "WorkOS AuthKit: Session API reference"
+        },
+        {
+          "url": "https://auth0.com/docs/authenticate/login/logout",
+          "title": "Auth0: How Logout Works"
+        },
+        {
+          "url": "https://auth0.com/docs/manage-users/sessions/manage-user-sessions-with-auth0-management-api",
+          "title": "Auth0: Manage User Sessions with Management API"
+        },
+        {
+          "url": "https://auth0.com/docs/api/management/v2/sessions/revoke-session",
+          "title": "Auth0: Revokes a session"
+        }
+      ],
+      "limitations": [
+        "Public official documentation consulted on 2026-09-13 through live web search; discovery was not restricted to a domain allowlist. This is not exhaustive market coverage.",
+        "No products were executed or independently benchmarked. Revocation-delay observations are documented behavior or explicitly labeled architectural inferences, not measured guarantees.",
+        "Exact prices, production entitlements beyond the cited Clerk and Auth0 restrictions, rate limits, and contract terms were not verified. No access failures occurred for the cited pages.",
+        "WorkOS atomic bulk revocation, immediate enforcement guarantees, and control-specific plan restrictions were not established. Upstream provider logout support was not verified for each integration.",
+        "Auth0's general session-management guide and newer revoke reference describe different operations; endpoint-specific tenant availability should be confirmed rather than inferred from generally available status."
+      ]
+    },
+    {
+      "id": "obs-vector-search-small-app-v1-s01-q05-66a3d56ec9517830a1e64006",
+      "queryId": "vector-search-small-app-v1-s01-q05",
+      "observedAt": "2026-09-13T14:43:21.835Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Qdrant",
+          "url": "https://qdrant.tech/documentation/cloud/backups/",
+          "reason": "First for documented managed backups plus portable Qdrant-native snapshots, subject to restore topology and version restrictions.",
+          "citationUrls": [
+            "https://qdrant.tech/documentation/cloud/backups/",
+            "https://qdrant.tech/documentation/operations/snapshots/",
+            "https://qdrant.tech/documentation/migration-recovery-options/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Chroma",
+          "url": "https://docs.trychroma.com/docs/cli/copy",
+          "reason": "Second for documented Cloud-to-local collection copying and API export building blocks; managed disaster-recovery guarantees remain unestablished.",
+          "citationUrls": [
+            "https://docs.trychroma.com/docs/cli/copy",
+            "https://docs.trychroma.com/docs/querying-collections/query-and-get",
+            "https://docs.trychroma.com/cloud/features/collection-forking"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Pinecone",
+          "url": "https://docs.pinecone.io/guides/manage-data/backups-overview",
+          "reason": "Third because managed backups have explicit plan, freshness, and index-schema restrictions; exit requires a separately tested export workflow.",
+          "citationUrls": [
+            "https://docs.pinecone.io/guides/manage-data/backups-overview",
+            "https://docs.pinecone.io/guides/manage-data/list-record-ids",
+            "https://docs.pinecone.io/guides/manage-data/fetch-data"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://qdrant.tech/documentation/cloud/backups/",
+          "title": "Qdrant: Backing up Cloud Clusters"
+        },
+        {
+          "url": "https://qdrant.tech/documentation/operations/snapshots/",
+          "title": "Qdrant: Snapshots"
+        },
+        {
+          "url": "https://qdrant.tech/documentation/migration-recovery-options/",
+          "title": "Qdrant: Migration and Recovery Options"
+        },
+        {
+          "url": "https://docs.trychroma.com/docs/cli/copy",
+          "title": "Chroma: Copy Collections"
+        },
+        {
+          "url": "https://docs.trychroma.com/docs/querying-collections/query-and-get",
+          "title": "Chroma: Query and Get"
+        },
+        {
+          "url": "https://docs.trychroma.com/cloud/features/collection-forking",
+          "title": "Chroma: Collection Forking"
+        },
+        {
+          "url": "https://docs.pinecone.io/guides/manage-data/backups-overview",
+          "title": "Pinecone: Backups overview"
+        },
+        {
+          "url": "https://docs.pinecone.io/guides/manage-data/list-record-ids",
+          "title": "Pinecone: List IDs"
+        },
+        {
+          "url": "https://docs.pinecone.io/guides/manage-data/fetch-data",
+          "title": "Pinecone: Fetch records"
+        }
+      ],
+      "limitations": [
+        "Public official documentation was consulted on September 13, 2026. Discovery was not confined to a preset domain list; this is a scoped comparison of the three requested products, not exhaustive market coverage or a measured search-engine rank.",
+        "No accounts, APIs, exports, backups, restores, or performance tests were executed. Product performance and recovery completeness were not independently verified.",
+        "Chroma managed backup schedules, retention, recovery guarantees, and supported self-hosted physical-backup procedure were not established from the official pages consulted. Qdrant plan-specific backup entitlement and a complete cost comparison were not established. Contractual cancellation and data-retention terms were not verified.",
+        "An initial Chroma get-and-query URL and two .md documentation URLs returned non-retryable web access errors; the correct HTML Copy Collections and Query and Get pages were subsequently read. Qdrant's opened snapshots URL returned no extracted body, so snapshot details rely on its official search-result content.",
+        "Pinecone's cached search excerpt restricted restores to the same region, while the directly opened current page documents cross-region restore using the unstable API; the answer follows the directly opened page. Full operational conditions of that unstable feature were not investigated."
+      ]
+    },
+    {
+      "id": "obs-client-project-workspace-v1-s01-q04-37d5b06d670fae772e36f69d",
+      "queryId": "client-project-workspace-v1-s01-q04",
+      "observedAt": "2026-09-13T14:43:26.491Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Basecamp",
+          "url": "https://basecamp.com/pricing",
+          "reason": "Trial first for documented overdue assignment reminders, recurring to-dos, and resurfacing items; weigh automatic subscriptions and the fixed client project-notification setting.",
+          "citationUrls": [
+            "https://5.basecamp-help.com/article/1177-notifications",
+            "https://5.basecamp-help.com/article/1077-to-dos",
+            "https://5.basecamp-help.com/article/1150-sidebar",
+            "https://5.basecamp-help.com/article/1082-what-clients-can-see-and-do"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Notion",
+          "url": "https://www.notion.com/help/updates-and-notifications",
+          "reason": "Consider for page/database-based client work with granular update scopes, provided you maintain follow-up explicitly and accept Person-property and reminder restrictions.",
+          "citationUrls": [
+            "https://www.notion.com/help/updates-and-notifications",
+            "https://www.notion.com/help/notification-settings",
+            "https://www.notion.com/help/reminders",
+            "https://www.notion.com/help/sharing-and-permissions"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://5.basecamp-help.com/article/1177-notifications",
+          "title": "Basecamp 5: Notification settings"
+        },
+        {
+          "url": "https://5.basecamp-help.com/article/1077-to-dos",
+          "title": "Basecamp 5: To-Dos"
+        },
+        {
+          "url": "https://5.basecamp-help.com/article/1150-sidebar",
+          "title": "Basecamp 5: Notifications Sidebar"
+        },
+        {
+          "url": "https://5.basecamp-help.com/article/1082-what-clients-can-see-and-do",
+          "title": "Basecamp 5: What Clients can see and do"
+        },
+        {
+          "url": "https://www.notion.com/help/updates-and-notifications",
+          "title": "Notion: Inbox & notifications"
+        },
+        {
+          "url": "https://www.notion.com/help/notification-settings",
+          "title": "Notion: Notification settings"
+        },
+        {
+          "url": "https://www.notion.com/help/reminders",
+          "title": "Notion: Reminders"
+        },
+        {
+          "url": "https://www.notion.com/help/sharing-and-permissions",
+          "title": "Notion: Sharing & permissions settings"
+        },
+        {
+          "url": "https://basecamp.com/pricing",
+          "title": "Basecamp: Pricing"
+        },
+        {
+          "url": "https://www.notion.com/help/whos-who-in-a-workspace",
+          "title": "Notion: Who’s who in a workspace"
+        }
+      ],
+      "limitations": [
+        "Public web research used official documentation for product claims; no accounts, delivery tests, transactions, or independent performance verification were performed. Coverage is not exhaustive.",
+        "Basecamp evidence concerns Basecamp 5. Confirm the version and plan actually offered to your account; older search results described different plans.",
+        "Notion's reminder and notification pages describe app-open delivery differently in places. Exact desktop/mobile behavior needs testing; recurring reminders are explicitly unavailable in the consulted FAQ, and recurring tasks or automation alternatives were not evaluated.",
+        "Notion notification snoozing, built-in working-hours scheduling, and automatic overdue escalation were not established by the consulted sources; absence from these pages is not proof of product-wide absence.",
+        "No source-page access failed. The Notion sharing page displayed an embedded-video playback warning; its text was accessible and the video was not reviewed. Exact Notion paid pricing and guest quotas were not verified."
+      ]
+    },
+    {
+      "id": "obs-sentry-posthog-product-team-v1-s01-q05-b35a7f15bad9d91d3d311297",
+      "queryId": "sentry-posthog-product-team-v1-s01-q05",
+      "observedAt": "2026-09-13T14:43:29.716Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Sentry",
+          "url": "https://sentry.io/pricing/",
+          "reason": "First evaluation choice for release-focused debugging, with documented Debug ID verification and release, commit, deploy, and health API surfaces; verify plan entitlements.",
+          "citationUrls": [
+            "https://www.sentry.help/en/articles/13965232-javascript-how-do-i-verify-debug-ids-for-source-maps",
+            "https://docs.sentry.io/api/releases/",
+            "https://github.com/getsentry/sentry-javascript/discussions/13328",
+            "https://sentry.io/pricing/",
+            "https://www.sentry.help/en/articles/13965037-can-i-set-up-an-on-demand-pay-as-you-go-budget-for-my-free-developer-plan",
+            "https://www.sentry.help/en/articles/13964320-how-can-i-filter-errors-based-on-their-release"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "PostHog",
+          "url": "https://posthog.com/pricing",
+          "reason": "Alternative when product analytics and replay matter alongside errors; documented source-map-linked releases and a 100,000-exception monthly free allowance.",
+          "citationUrls": [
+            "https://posthog.com/docs/error-tracking/upload-source-maps/cli",
+            "https://posthog.com/docs/error-tracking/releases",
+            "https://posthog.com/pricing",
+            "https://posthog.com/docs/error-tracking/pricing"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.sentry.help/en/articles/13965232-javascript-how-do-i-verify-debug-ids-for-source-maps",
+          "title": "Sentry: Verify Debug IDs for source maps"
+        },
+        {
+          "url": "https://docs.sentry.io/api/releases/",
+          "title": "Sentry Releases API"
+        },
+        {
+          "url": "https://github.com/getsentry/sentry-javascript/discussions/13328",
+          "title": "Sentry maintainer explanation of Debug IDs and releases"
+        },
+        {
+          "url": "https://sentry.io/pricing/",
+          "title": "Sentry pricing"
+        },
+        {
+          "url": "https://www.sentry.help/en/articles/13965037-can-i-set-up-an-on-demand-pay-as-you-go-budget-for-my-free-developer-plan",
+          "title": "Sentry Developer plan pay-as-you-go restriction"
+        },
+        {
+          "url": "https://www.sentry.help/en/articles/13964320-how-can-i-filter-errors-based-on-their-release",
+          "title": "Sentry release inbound filtering restrictions"
+        },
+        {
+          "url": "https://posthog.com/docs/error-tracking/upload-source-maps/cli",
+          "title": "PostHog source-map CLI"
+        },
+        {
+          "url": "https://posthog.com/docs/error-tracking/releases",
+          "title": "PostHog releases"
+        },
+        {
+          "url": "https://posthog.com/pricing",
+          "title": "PostHog pricing"
+        },
+        {
+          "url": "https://posthog.com/docs/error-tracking/pricing",
+          "title": "PostHog Error Tracking pricing"
+        }
+      ],
+      "limitations": [
+        "Public web research only; no accounts, SDK installations, deployments, or independent product-performance tests were performed. Coverage is not exhaustive.",
+        "Direct opens of https://docs.sentry.io/platforms/javascript/sourcemaps/ and https://docs.sentry.io/product/releases/ failed with unsupported text/markdown content-type errors. Official help, indexed API documentation, and a maintainer discussion supplied alternative evidence.",
+        "Sentry pricing feature checkmarks were not preserved in the extracted text; exact Release Health and suspect-commit plan entitlements remain unconfirmed.",
+        "Consulted PostHog sources establish release context and filtering, but not parity with Sentry release-health session statistics or suspect-commit analysis. Absence of evidence is not proof of unavailability.",
+        "Source-map retention/deletion guarantees, all source-map-specific quotas, PostHog error retention, and complete framework/version compatibility were not established. Verify these for the intended plan and deployment workflow."
+      ]
+    },
+    {
+      "id": "obs-team-chat-history-v1-s01-q04-9ac1fa7748556ecbe0fa0833",
+      "queryId": "team-chat-history-v1-s01-q04",
+      "observedAt": "2026-09-13T14:43:30.570Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Slack",
+          "url": "https://slack.com/features/huddles",
+          "reason": "Best initial trial for chat-centered two-person work, short huddles and five-minute asynchronous clips; Free duration and history limits require attention.",
+          "citationUrls": [
+            "https://slack.com/features/huddles",
+            "https://slack.com/help/articles/4402059015315-Use-huddles-in-Slack",
+            "https://slack.com/features/clips",
+            "https://slack.com/help/articles/115002422943-Usage-limits-for-free-workspaces"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Google Workspace: Chat + Meet",
+          "url": "https://workspace.google.com/pricing",
+          "reason": "Useful consolidated option for existing Gmail/document workflows, with long Business Starter meetings; recording requires a higher plan and persistent meeting chat has guest restrictions.",
+          "citationUrls": [
+            "https://workspace.google.com/pricing",
+            "https://support.google.com/meet/answer/9308979?hl=en"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Microsoft Teams",
+          "url": "https://learn.microsoft.com/en-us/microsoftteams/limits-specifications-teams",
+          "reason": "Useful for Microsoft-based workflows and longer business meetings, with short asynchronous clips; verify exact license and distinguish Free communities from business channels.",
+          "citationUrls": [
+            "https://learn.microsoft.com/en-us/microsoftteams/limits-specifications-teams",
+            "https://support.microsoft.com/en-us/teams/chat/record-a-video-or-audio-clip-in-microsoft-teams",
+            "https://support.microsoft.com/en-us/teams/free/get-started/learn-more-about-subscriptions-for-microsoft-teams-free"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://slack.com/features/huddles",
+          "title": "Slack Huddles: Conferencing & Video Call Platform"
+        },
+        {
+          "url": "https://slack.com/help/articles/4402059015315-Use-huddles-in-Slack",
+          "title": "Use huddles in Slack"
+        },
+        {
+          "url": "https://slack.com/features/clips",
+          "title": "Slack Clips: Audio, Video & Screen Recording"
+        },
+        {
+          "url": "https://slack.com/help/articles/115002422943-Usage-limits-for-free-workspaces",
+          "title": "Usage limits for free workspaces"
+        },
+        {
+          "url": "https://workspace.google.com/pricing",
+          "title": "Compare Flexible Pricing Plan Options — Google Workspace"
+        },
+        {
+          "url": "https://support.google.com/meet/answer/9308979?hl=en",
+          "title": "Learn how to use Chat with Google Meet"
+        },
+        {
+          "url": "https://learn.microsoft.com/en-us/microsoftteams/limits-specifications-teams",
+          "title": "Limits and specifications for Microsoft Teams"
+        },
+        {
+          "url": "https://support.microsoft.com/en-us/teams/chat/record-a-video-or-audio-clip-in-microsoft-teams",
+          "title": "Record a video or audio clip in Microsoft Teams"
+        },
+        {
+          "url": "https://support.microsoft.com/en-us/teams/free/get-started/learn-more-about-subscriptions-for-microsoft-teams-free",
+          "title": "Learn more about subscriptions for Microsoft Teams Free"
+        }
+      ],
+      "limitations": [
+        "Public web research conducted September 13, 2026, with unrestricted initial discovery and official sources supporting recommendations. This is a limited shortlist, not exhaustive market coverage or a search-engine ranking.",
+        "No products were tested and no performance, reliability, accessibility or transcript accuracy was independently verified. No logins, sign-ups or transactions were performed; no source access failures occurred.",
+        "Slack’s feature page states the Free 30-minute huddle limit, while its consulted help page omits duration. Exact enforcement was not tested.",
+        "Exact Teams clip entitlement by license, Google Chat video-message restrictions, native Slack full-meeting recording, and plan-specific export capabilities were not established; their availability is not assumed.",
+        "Final two-seat prices were not verified. The retrieved Google pricing content included promotional dates later than the research date, so promotional eligibility and effective pricing should be confirmed."
+      ]
+    },
+    {
+      "id": "obs-allbirds-first-order-v1-s01-q04-6e2e5d450f19465f13abf203",
+      "queryId": "allbirds-first-order-v1-s01-q04",
+      "observedAt": "2026-09-13T14:43:43.376Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Allbirds Wool Runner NZ Waterproof",
+          "url": "https://www.allbirds.com/products/mens-wool-runner-nz-waterproof-weathered-brown",
+          "reason": "A documented waterproof membrane and wool warmth make it a candidate for cool rain, subject to ambiguous stock and final-sale restrictions.",
+          "citationUrls": [
+            "https://www.allbirds.com/products/mens-wool-runner-nz-waterproof-weathered-brown",
+            "https://www.allbirds.com/blogs/news/waterproof-press-release"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "On Cloud 6 Waterproof",
+          "url": "https://www.on.com/en-us/products/cloud-6-wp-3mf1006/mens/black-black-shoes-3MF10061043",
+          "reason": "An explicitly all-day waterproof sneaker with rubber traction pods for rainy commutes; winter insulation was not established.",
+          "citationUrls": [
+            "https://www.on.com/en-us/products/cloud-6-wp-3mf1006/mens/black-black-shoes-3MF10061043"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Converse Chuck 70 Rugged Waterproof Boot",
+          "url": "https://www.converse.com/shop/p/chuck-70-rugged-waterproof-boot-unisex-high-top-shoe/A14190C.html?cgid=waterproof-shoes&dwvar_A14190C_color=black/black/egret&dwvar_A14190C_width=standard&styleNo=A14190C",
+          "reason": "Waterproof leather, fleece lining and a gusseted tongue suit consideration for colder wet everyday outings.",
+          "citationUrls": [
+            "https://www.converse.com/shop/p/chuck-70-rugged-waterproof-boot-unisex-high-top-shoe/A14190C.html?cgid=waterproof-shoes&dwvar_A14190C_color=black/black/egret&dwvar_A14190C_width=standard&styleNo=A14190C"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Allbirds Tree Runner Go",
+          "url": "https://www.allbirds.com/products/mens-tree-runner-go",
+          "reason": "A breathable option for warm, mostly dry days; no waterproof claim was found and stock is unclear.",
+          "citationUrls": [
+            "https://www.allbirds.com/products/mens-tree-runner-go"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.allbirds.com/products/mens-wool-runner-nz-waterproof-weathered-brown",
+          "title": "Allbirds Men's Wool Runner NZ Waterproof — Weathered Brown"
+        },
+        {
+          "url": "https://www.on.com/en-us/products/cloud-6-wp-3mf1006/mens/black-black-shoes-3MF10061043",
+          "title": "On Men's Cloud 6 Waterproof — Black | Black"
+        },
+        {
+          "url": "https://www.converse.com/shop/p/chuck-70-rugged-waterproof-boot-unisex-high-top-shoe/A14190C.html?cgid=waterproof-shoes&dwvar_A14190C_color=black/black/egret&dwvar_A14190C_width=standard&styleNo=A14190C",
+          "title": "Converse Chuck 70 Rugged Waterproof Boot — A14190C"
+        },
+        {
+          "url": "https://www.allbirds.com/products/mens-tree-runner-go",
+          "title": "Allbirds Men's Tree Runner Go"
+        },
+        {
+          "url": "https://www.allbirds.com/pages/help",
+          "title": "Allbirds US Help Page — Returns Policy FAQ"
+        },
+        {
+          "url": "https://www.allbirds.com/blogs/news/waterproof-press-release",
+          "title": "Allbirds Launches Its First-Ever 100% Waterproof Wool Sneakers"
+        },
+        {
+          "url": "https://www.converse.com/shop/waterproof-shoes",
+          "title": "Converse Waterproof Shoes & Sneakers"
+        }
+      ],
+      "limitations": [
+        "Public web discovery was open-ended, followed by official-source checks; this is a limited shortlist, not exhaustive market coverage or a search-engine ranking.",
+        "Manufacturer claims were not independently performance-tested. Comparable waterproofing, breathability, ice-grip and cold-temperature test results were not established.",
+        "Dynamic size-level inventory and checkout terms were not verified. Allbirds pages mix ordering controls with out-of-stock text; Converse reported that JavaScript is required for full site functionality.",
+        "On's full return policy and Converse's complete return exclusions were not researched. Allbirds return-coverage pricing was not established. No consulted page failed outright."
+      ]
     }
   ]
 }

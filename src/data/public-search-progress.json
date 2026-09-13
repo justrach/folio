@@ -1,6 +1,6 @@
 {
   "format": "folio-public-search-progress-v1",
-  "updatedAt": "2026-09-13T14:41:26.493Z",
+  "updatedAt": "2026-09-13T14:43:43.413Z",
   "queries": [
     {
       "queryId": "deploy-small-node-app-v1",
@@ -707,7 +707,10 @@
     },
     {
       "queryId": "auth-b2b-small-team-v1-s01-q05",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T14:41:24.159Z",
+      "finishedAt": "2026-09-13T14:43:19.972Z",
+      "observationId": "obs-auth-b2b-small-team-v1-s01-q05-f187691f783d49d595bd07b4"
     },
     {
       "queryId": "auth-b2b-small-team-v1-s01-q06",
@@ -1115,7 +1118,10 @@
     },
     {
       "queryId": "sandbox-python-jobs-v1-s01-q05",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T14:41:29.183Z",
+      "finishedAt": "2026-09-13T14:43:18.281Z",
+      "observationId": "obs-sandbox-python-jobs-v1-s01-q05-739365d1a1a9e622664b1911"
     },
     {
       "queryId": "sandbox-python-jobs-v1-s01-q06",
@@ -1523,7 +1529,10 @@
     },
     {
       "queryId": "vector-search-small-app-v1-s01-q05",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T14:41:34.221Z",
+      "finishedAt": "2026-09-13T14:43:21.853Z",
+      "observationId": "obs-vector-search-small-app-v1-s01-q05-66a3d56ec9517830a1e64006"
     },
     {
       "queryId": "vector-search-small-app-v1-s01-q06",
@@ -1929,7 +1938,10 @@
     },
     {
       "queryId": "research-api-citations-v1-s01-q05",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T14:41:38.245Z",
+      "finishedAt": "2026-09-13T14:43:17.032Z",
+      "observationId": "obs-research-api-citations-v1-s01-q05-111903a290da91516445d773"
     },
     {
       "queryId": "research-api-citations-v1-s01-q06",
@@ -2337,7 +2349,10 @@
     },
     {
       "queryId": "sentry-posthog-product-team-v1-s01-q05",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T14:41:42.272Z",
+      "finishedAt": "2026-09-13T14:43:29.732Z",
+      "observationId": "obs-sentry-posthog-product-team-v1-s01-q05-b35a7f15bad9d91d3d311297"
     },
     {
       "queryId": "sentry-posthog-product-team-v1-s01-q06",
@@ -2737,7 +2752,10 @@
     },
     {
       "queryId": "client-project-workspace-v1-s01-q04",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T14:41:46.303Z",
+      "finishedAt": "2026-09-13T14:43:26.508Z",
+      "observationId": "obs-client-project-workspace-v1-s01-q04-37d5b06d670fae772e36f69d"
     },
     {
       "queryId": "client-project-workspace-v1-s01-q05",
@@ -3142,7 +3160,10 @@
     },
     {
       "queryId": "team-chat-history-v1-s01-q04",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T14:41:50.340Z",
+      "finishedAt": "2026-09-13T14:43:30.593Z",
+      "observationId": "obs-team-chat-history-v1-s01-q04-9ac1fa7748556ecbe0fa0833"
     },
     {
       "queryId": "team-chat-history-v1-s01-q05",
@@ -3547,7 +3568,10 @@
     },
     {
       "queryId": "allbirds-first-order-v1-s01-q04",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T14:42:06.397Z",
+      "finishedAt": "2026-09-13T14:43:43.393Z",
+      "observationId": "obs-allbirds-first-order-v1-s01-q04-6e2e5d450f19465f13abf203"
     },
     {
       "queryId": "allbirds-first-order-v1-s01-q05",
@@ -3952,7 +3976,8 @@
     },
     {
       "queryId": "everyday-clothing-returns-v1-s01-q04",
-      "status": "not-started"
+      "status": "unresolved",
+      "startedAt": "2026-09-13T14:42:09.930Z"
     },
     {
       "queryId": "everyday-clothing-returns-v1-s01-q05",
@@ -13627,8 +13652,10 @@
     },
     {
       "queryId": "edx-course-fit-v1-s01-q02",
-      "status": "running",
-      "startedAt": "2026-09-13T14:39:47.823Z"
+      "status": "completed",
+      "startedAt": "2026-09-13T14:39:47.823Z",
+      "finishedAt": "2026-09-13T14:41:27.443Z",
+      "observationId": "obs-edx-course-fit-v1-s01-q02-bb5688f91233a1aa58b58a47"
     },
     {
       "queryId": "edx-course-fit-v1-s01-q03",
@@ -14027,8 +14054,10 @@
     },
     {
       "queryId": "coursera-course-access-and-cost-v1-s01-q02",
-      "status": "running",
-      "startedAt": "2026-09-13T14:39:50.318Z"
+      "status": "completed",
+      "startedAt": "2026-09-13T14:39:50.318Z",
+      "finishedAt": "2026-09-13T14:41:34.502Z",
+      "observationId": "obs-coursera-course-access-and-cost-v1-s01-q02-3aa3b0748ef78099a0aa3e7b"
     },
     {
       "queryId": "coursera-course-access-and-cost-v1-s01-q03",
