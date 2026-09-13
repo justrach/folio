@@ -1,0 +1,63 @@
+{
+  "name": "folio-visibility",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "bun@1.4.1",
+  "engines": { "node": ">=22.13.0", "bun": ">=1.4.1" },
+  "trustedDependencies": ["esbuild", "workerd"],
+  "scripts": {
+    "dev": "next dev --hostname 0.0.0.0",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "node --conditions=react-server --import tsx --test tests/*.test.ts",
+    "test:gui": "playwright test",
+    "db:migrate:local": "node scripts/local-db.mjs migrate",
+    "db:status:local": "node scripts/local-db.mjs status",
+    "db:backup:local": "node scripts/local-db.mjs backup",
+    "test:d1": "node --conditions=react-server --import tsx --test tests/d1-runtime.integration.ts",
+    "cf:build": "opennextjs-cloudflare build",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "cf:typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
+    "setup": "node scripts/setup-local.mjs",
+    "seo:approve": "node scripts/approve-seo-user.mjs",
+    "agents:approve": "node scripts/approve-agent-user.mjs",
+    "eval:verify": "tsx scripts/verify-evaluation.ts",
+    "scheduler:build": "wrangler deploy --config wrangler.scheduler.jsonc --dry-run",
+    "scheduler:deploy": "wrangler deploy --config wrangler.scheduler.jsonc"
+  },
+  "dependencies": {
+    "@better-auth/drizzle-adapter": "latest",
+    "@opennextjs/cloudflare": "^1.20.6",
+    "@radix-ui/react-slot": "^1.3.3",
+    "@tailwindcss/postcss": "^4.3.3",
+    "better-auth": "latest",
+    "clsx": "^2.1.1",
+    "drizzle-orm": "latest",
+    "jszip": "^3.10.1",
+    "lucide-react": "latest",
+    "motion": "latest",
+    "next": "15.5.25",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "recharts": "^3.0.0",
+    "server-only": "^0.0.1",
+    "tailwind-merge": "^3.0.0",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "latest",
+    "@playwright/test": "latest",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "miniflare": "5.20260911.0-alpha",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0",
+    "wrangler": "^4.125.0"
+  },
+  "overrides": {
+    "postcss": "^8.5.28"
+  }
+}

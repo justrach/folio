@@ -1,0 +1,60 @@
+# Managed Agents API integration
+
+Folio calls OpenAI's managed **Agents API** through `src/lib/agents.ts` and connects it to private, persisted website evaluations through `src/lib/agent-runs.ts`. It uses `/v1/agents/sessions` and `OpenAI-Beta: agents=v1`, rather than substituting the Agents SDK or Responses API. The API key is configured privately. Session/model access and one completed local live evaluation were verified on 13 September 2026, including offline reproduction of its exported checks. See [live validation](LIVE-VALIDATION.md) and the [official quickstart](https://developers.openai.com/api/docs/guides/agents-api/quickstart).
+
+## Server configuration and spending
+
+Configure `OPENAI_API_KEY` in gitignored `.dev.vars` or `.env.local` for development, or as a Cloudflare Worker secret. Never use a `NEXT_PUBLIC_*` variable. Configure `OPENAI_ALLOWED_USER_IDS` with a comma-separated list of approved Better Auth user IDs. Email addresses, client flags, and arbitrary successful signups do not grant spending access. `OPENAI_AGENTS_MODEL` defaults to `gpt-6-astra`; another model must be available to the provider project.
+
+`OPENAI_MAX_RUNS_PER_DAY` defaults to **1 managed run per approved user per rolling 24 hours**, with an application maximum of 20. The atomic D1 reservation precedes outbound work and counts failed or ambiguous attempts. An owner can have only one queued, running, or action-required evaluation at a time. This controls run count, not guaranteed dollar cost; configure provider project spending controls separately. No automatic retries submit billable tasks.
+
+`SCAN_ALLOWED_HOSTS` is an exact reviewed hostname list, defaulting to `example.com` and `www.example.com`. Captures require HTTPS, forbid credentials/custom ports/IP literals, recheck every redirect, enforce an 80 KB response limit and a timeout, and never execute scripts. A fresh evaluation captures one HTML page. A replay reuses previous captures, independent expected facts, and the frozen suite after verifying their content hashes.
+
+Status reports `disconnected` without a key and `configured` with one. Configuration does not prove provider access. Credentials, approved-user lists, prompts, and reasoning items are excluded from connection status and activity projections.
+
+## Persisted execution flow
+
+1. Authenticate and atomically reserve a private `evaluation_runs` row scoped to its owner.
+2. Capture the website, store its exact UTF-8 text and SHA-256 identity, and freeze the suite version.
+3. Persist the `session-create-attempt` event before contacting the session-creation endpoint. The `environment: {type: "none"}` contract requires initial input.
+4. Make exactly one `POST /v1/agents/sessions` containing both the session configuration and initial input with captured evidence and frozen questions. Independent expected facts stay in Folio, withheld from the model.
+5. Persist the returned session ID. Do not send a second initial `agent.session.input.message` event: the creation request already submitted the task, and OpenAI may have begun work before Folio receives or saves the ID.
+6. OpenAI runs the task remotely when the user leaves. Folio retrieves saved state on reconciliation when the user returns. A local request handler does not keep running after it returns.
+7. Retrieve the session, root turns, and saved items. Accept a **completed root turn** plus a saved `final_answer` item, validate the JSON schema, and apply Folio's deterministic verifier. Idle alone never establishes success. A completed turn whose final item is not yet visible remains recoverable.
+
+The UI uses active-only read reconciliation, not an SSE stream. Reconciliation performs provider GET requests only: no creation, resubmission, application tool execution, or model continuation. Preparation checkpoints prevent another tab from racing creation; their 120-second lease allows recovery if the request dies. A stale reservation that never reached the creation-attempt marker becomes failed. If creation was attempted but no usable or persisted session ID is available, the run needs action and its task and cost are unknown: a lost response does not prove that no session or billable work exists. Preserve that uncertain state and inspect provider records before a deliberate new attempt; never automatically retry the creation POST. Retrying only a local database write is safe and does not submit another provider task. If a returned ID cannot be persisted, the response preserves it for operator recovery. A run with a saved session ID retrieves that session's actual state. See [run and continue sessions](https://developers.openai.com/api/docs/guides/agents-api/sessions), [events and items](https://developers.openai.com/api/docs/guides/agents-api/sessions/events), and [manage sessions](https://developers.openai.com/api/docs/guides/agents-api/sessions/manage).
+
+## Application routes
+
+Every evaluation route authenticates Better Auth sessions, scopes access to the owner, and returns `Cache-Control: private, no-store`.
+
+| Route                                 | Behavior                                                                                                                                                                 |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `GET /api/evaluations`                | Private summaries, frozen suite, and non-secret connection/access status.                                                                                                |
+| `POST /api/evaluations`               | `{mode: "managed" or "demo", domain?, brand?, rerunOf?}` creates a private run. Managed replay uses frozen evidence. Demo uses a labeled fixture without calling OpenAI. |
+| `GET /api/evaluations/:id`            | Private detail, captures, observed activity, output, and verification.                                                                                                   |
+| `POST /api/evaluations/:id/reconcile` | JSON `{}` refreshes the existing provider session, turns, and items without submitting work.                                                                             |
+| `PATCH /api/evaluations/:id`          | `{action: "cancel"}` sends the documented `agent.session.input.cancel` event. A subsequently observed cancelled turn establishes terminal cancellation.                  |
+| `GET /api/evaluations/:id/export`     | Private JSON bundle containing frozen source, output, independent facts, rubric, and verifier replay recipe.                                                             |
+
+List/detail GET requests read stored state only. Provider retrieval is bounded to ten pages of 100 records per collection, with a 1 MB response cap and redirects disabled. Activity shows the latest 100 provider items and 1,500-character excerpts. Reasoning, user input, arbitrary tool arguments, and upstream error bodies are excluded. Full validated final output is stored separately. Usage shows observed token counts; unknown usage stays unknown and is not a calculated dollar charge.
+
+## Tools, evidence, and output
+
+This version uses the managed harness to **review supplied website evidence**. It has no attached browser, sandbox, web search, MCP connections, or enabled subagent workflow. When an owner selects a saved SEO report at launch, the single `read_saved_seo_report` function is available. It extracts facts when present, returns source citations, explains supported findings, and labels missing evidence. It does not manufacture visibility observations from other providers.
+
+DataForSEO lookups remain separately authenticated explicit paid actions. The managed function reads only the selected frozen saved report, with no arguments or new provider lookup. Its pending function action must match the saved session and sole active root turn. POST `/api/evaluations/:id/tools` requires owner approval, persists one tool reservation per run, returns the frozen content and hash, and never retries an ambiguous submission. Receiving a result may resume OpenAI inference. The [documented function mechanism](https://developers.openai.com/api/docs/guides/agents-api/tools/functions) uses `required_actions` and `agent.session.input.tool_result`; naming a tool in a UI does not execute it. Unexpected required actions currently stop at an explicit action-required state.
+
+The final JSON contains `summary`, `facts`, `citations`, `findings`, `missingEvidence`, and `publicationReady: false`. Folio validates allowed fields before display or scoring. Its independent verifier checks capture integrity, exact quote membership, fact coverage, available owner-confirmed truth, and deterministic readability. Quote membership verifies occurrence, not truth or entailment. Without independent truth, correctness stays **unmeasured**. Verification percentage is not website rank, search position, or AI recommendation rate.
+
+All runs and evidence remain private. No route publishes a run or changes the illustrative leaderboard. Public ranking still requires comparable observations, a defined cohort, sample counts, uncertainty, timestamps, and publication controls. See [evaluation strategy](../EVALUATION-STRATEGY.md).
+
+## Verification
+
+`tests/agents.test.ts` uses native-fetch fixtures for the actual API paths, reservation and attempt-marker persistence before a single create-with-input request, spending gates, ambiguous-creation handling without retry, pagination, completed-turn validation, delayed final-item recovery, cancellation, frozen replay, ownership, and bounded activity. `tests/agents-transport.test.ts` covers redirect/body/identifier handling. Evaluator and D1 tests cover independent verification, tampering, concurrent capacity reservation, owner isolation, and optimistic updates. These tests never call a paid provider.
+
+## Rare UI provenance
+
+The counter and notification bell use Rare UI source vendored at revision `d146c35264c5905b995903d2d96cd6d188af114a`. The MIT license and attribution are in `LICENSES/rare-ui.txt`. Source: [Rare UI](https://github.com/swamimalode07/rare-ui).
+
+Optional scheduled retrieval uses the same GET-only reconciler with a shared-secret endpoint, a D1 lease, and bounded batches. It never approves function results. See [background jobs](BACKGROUND-JOBS.md). Reference answers, comparisons, local evidence deletion, and the offline verifier are described in [evaluation strategy](../EVALUATION-STRATEGY.md).

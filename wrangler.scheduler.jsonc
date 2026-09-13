@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "folio-evaluation-scheduler",
+  "main": "workers/evaluation-scheduler.ts",
+  "compatibility_date": "2026-09-13",
+  "workers_dev": false,
+  "preview_urls": false,
+  // Disabled until the real application, D1 database, and shared secret exist.
+  "vars": { "EVALUATION_RECONCILE_ENABLED": "false" },
+  "triggers": { "crons": ["*/5 * * * *"] },
+  "services": [
+    // Must exactly match the deployed OpenNext application Worker name.
+    { "binding": "FOLIO_APP", "service": "folio-visibility" },
+  ],
+  "observability": { "enabled": true },
+}

@@ -1,0 +1,21 @@
+NEXTJS_ENV=development
+BETTER_AUTH_URL=http://localhost:3001
+# Generate a fresh local secret: node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
+BETTER_AUTH_SECRET=replace-with-a-random-secret-of-at-least-32-characters
+# Add the server-side provider key when available; never use a NEXT_PUBLIC_ variable.
+OPENAI_API_KEY=
+OPENAI_AGENTS_MODEL=gpt-6-astra
+# Exact app account IDs allowed to start paid managed agent sessions.
+OPENAI_ALLOWED_USER_IDS=
+# Rolling 24-hour live-run cap per approved account (1–20).
+OPENAI_MAX_RUNS_PER_DAY=1
+# Only scan operator-approved public domains, including any redirect hostnames.
+SCAN_ALLOWED_HOSTS=example.com,www.example.com
+DATAFORSEO_LOGIN=
+DATAFORSEO_PASSWORD=
+# Exact Better Auth user IDs approved to use your paid API balance.
+DATAFORSEO_ALLOWED_USER_IDS=
+
+# Optional scheduled retrieval of existing managed sessions; no task creation.
+EVALUATION_RECONCILE_ENABLED=false
+EVALUATION_RECONCILE_SECRET=

@@ -1,0 +1,28 @@
+name: Folio checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.1
+      - run: bun install --frozen-lockfile
+      - run: bun run setup
+      - run: bun run typecheck
+      - run: bun run test
+      - run: bun run test:d1
+      - run: bunx playwright install --with-deps chromium
+      - run: bun run test:gui
+      - run: bun run cf:build
+      - run: bun run scheduler:build

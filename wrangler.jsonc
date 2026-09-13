@@ -1,0 +1,24 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "folio-visibility",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-09-13",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS",
+  },
+  "services": [
+    { "binding": "WORKER_SELF_REFERENCE", "service": "folio-visibility" },
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "folio-visibility",
+      // Local emulator placeholder. Replace with `wrangler d1 create folio-visibility`'s ID before deploying.
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations",
+    },
+  ],
+  "observability": { "enabled": true },
+}
