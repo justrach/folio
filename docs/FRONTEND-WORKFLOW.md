@@ -1,5 +1,21 @@
 # Frontend evaluation workflow
 
+## Workspace presentation
+
+The application shell uses `src/app/workspace-theme.css` for the warm plaster,
+charcoal, and muted foliage palette inspired by the owner's reference photo.
+The photo itself is not included in the application. The shared navigation,
+controls, and overview use this theme; route-specific forms retain their existing
+behavior. Overview metrics share a divided strip that becomes two columns on
+smaller screens. Sample labels remain visible alongside the report controls.
+
+DM Sans is self-hosted through `next/font/local` for site typography, including
+headings, navigation, landing, pricing, and login. Regular and italic variable
+fonts and their OFL license live in `src/app/fonts`. Source/code inspection keeps
+monospace formatting. The workspace uses a quiet text navigation rail, omits
+promotional sidebar artwork and redundant heading eyebrows, and keeps essential
+evidence, account, and spending states visible.
+
 Folio connects saved technical audits, private SEO reports, and managed website evaluations through prepared forms and owned records. Moving between pages does not start a paid lookup or model task. The owner reviews the inputs and chooses the action that creates work.
 
 This guide describes the current UI. The [evaluation loop](EVALUATION-LOOP.md) explains execution and recovery; the [evaluation strategy](../EVALUATION-STRATEGY.md) defines what the checks establish.

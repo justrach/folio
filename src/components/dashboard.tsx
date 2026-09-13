@@ -368,9 +368,6 @@ export function Dashboard({ section }: { section: string }) {
             >
               <item.icon size={17} />
               <span>{item.label}</span>
-              {item.section === "patches" && (
-                <span className="nav-count">{actual?.patches.length ?? (mode === "sample" ? 3 : 0)}</span>
-              )}
             </Link>
           ))}
         </nav>
@@ -382,7 +379,6 @@ export function Dashboard({ section }: { section: string }) {
           >
             <Trophy size={17} />
             <span>The Folio Index</span>
-            <ArrowUpRight size={13} />
           </Link>
           <Link
             href="/agents"
@@ -396,21 +392,7 @@ export function Dashboard({ section }: { section: string }) {
           <Link href="/pricing" className="nav-link">
             <BookOpen size={17} />
             <span>Plans & usage</span>
-            <ArrowUpRight size={13} />
           </Link>
-          <div className="sidebar-note">
-            <span className="edition">A NOTE FROM FOLIO</span>
-            <h3>
-              The next search
-              <br />
-              is an answer.
-            </h3>
-            <p>Make sure you’re part of it.</p>
-            <Link href="/leaderboard">
-              Explore the index <ArrowUpRight size={14} />
-            </Link>
-            <div className="note-lines" aria-hidden="true" />
-          </div>
           <Link
             href="/settings"
             className={`nav-link ${section === "settings" ? "active" : ""}`}
@@ -488,7 +470,6 @@ export function Dashboard({ section }: { section: string }) {
         <main className="page-content">
           <div className="page-heading">
             <div>
-              <div className="eyebrow">{title.eyebrow}</div>
               <h1>{title.title}</h1>
               <p>{title.description}</p>
             </div>

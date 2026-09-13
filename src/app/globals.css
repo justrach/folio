@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Folio Sans", Arial, Helvetica, sans-serif;
+  --font-sans: var(--font-dm-sans), Arial, sans-serif;
 }
 :root {
   --paper: #f7f7f0;
@@ -12,8 +12,8 @@
   --muted: #7c8378;
   --line: #e2e5d9;
   --lime: #d4df9c;
-  --serif: Georgia, "Times New Roman", serif;
-  --sans: Arial, Helvetica, sans-serif;
+  --serif: var(--font-dm-sans), Arial, sans-serif;
+  --sans: var(--font-dm-sans), Arial, sans-serif;
 }
 * {
   box-sizing: border-box;
