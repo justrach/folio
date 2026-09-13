@@ -1,6 +1,6 @@
 {
   "format": "folio-public-search-progress-v1",
-  "updatedAt": "2026-09-13T15:28:40.041Z",
+  "updatedAt": "2026-09-13T15:51:25.685Z",
   "queries": [
     {
       "queryId": "deploy-small-node-app-v1",
@@ -373,7 +373,10 @@
     },
     {
       "queryId": "deploy-small-node-app-v1-s03-q03",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:40:43.595Z",
+      "finishedAt": "2026-09-13T15:42:28.528Z",
+      "observationId": "obs-deploy-small-node-app-v1-s03-q03-362bb7f7c2797f18424cbec6"
     },
     {
       "queryId": "deploy-small-node-app-v1-s03-q04",
@@ -752,7 +755,10 @@
     },
     {
       "queryId": "auth-b2b-small-team-v1-s02-q01",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:40:49.130Z",
+      "finishedAt": "2026-09-13T15:42:48.653Z",
+      "observationId": "obs-auth-b2b-small-team-v1-s02-q01-0963b3277853368289064506"
     },
     {
       "queryId": "auth-b2b-small-team-v1-s02-q02",
@@ -1175,7 +1181,10 @@
     },
     {
       "queryId": "sandbox-python-jobs-v1-s02-q01",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:40:58.163Z",
+      "finishedAt": "2026-09-13T15:42:55.562Z",
+      "observationId": "obs-sandbox-python-jobs-v1-s02-q01-b2569166b5c8526365cb3718"
     },
     {
       "queryId": "sandbox-python-jobs-v1-s02-q02",
@@ -1598,7 +1607,10 @@
     },
     {
       "queryId": "vector-search-small-app-v1-s02-q01",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:41:06.717Z",
+      "finishedAt": "2026-09-13T15:42:58.522Z",
+      "observationId": "obs-vector-search-small-app-v1-s02-q01-1c8813524308d5d4a0f96b23"
     },
     {
       "queryId": "vector-search-small-app-v1-s02-q02",
@@ -2019,7 +2031,10 @@
     },
     {
       "queryId": "research-api-citations-v1-s02-q01",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:41:14.756Z",
+      "finishedAt": "2026-09-13T15:43:11.077Z",
+      "observationId": "obs-research-api-citations-v1-s02-q01-dc7f320d3e8bac593cc38e27"
     },
     {
       "queryId": "research-api-citations-v1-s02-q02",
@@ -2442,7 +2457,10 @@
     },
     {
       "queryId": "sentry-posthog-product-team-v1-s02-q01",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:42:29.014Z",
+      "finishedAt": "2026-09-13T15:44:16.546Z",
+      "observationId": "obs-sentry-posthog-product-team-v1-s02-q01-f1efadcd95422f88fe39b1ca"
     },
     {
       "queryId": "sentry-posthog-product-team-v1-s02-q02",
@@ -2855,7 +2873,10 @@
     },
     {
       "queryId": "client-project-workspace-v1-s01-q09",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:42:49.100Z",
+      "finishedAt": "2026-09-13T15:44:32.187Z",
+      "observationId": "obs-client-project-workspace-v1-s01-q09-f662f4b49744cfc61c7b7fe1"
     },
     {
       "queryId": "client-project-workspace-v1-s02-q01",
@@ -3268,7 +3289,10 @@
     },
     {
       "queryId": "team-chat-history-v1-s01-q08",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:42:57.152Z",
+      "finishedAt": "2026-09-13T15:44:40.791Z",
+      "observationId": "obs-team-chat-history-v1-s01-q08-66ab2d009238614c07d40ebe"
     },
     {
       "queryId": "team-chat-history-v1-s01-q09",
@@ -3685,7 +3709,10 @@
     },
     {
       "queryId": "allbirds-first-order-v1-s01-q08",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:43:02.661Z",
+      "finishedAt": "2026-09-13T15:44:30.390Z",
+      "observationId": "obs-allbirds-first-order-v1-s01-q08-e4be0833d4dc815ddf9a1a4e"
     },
     {
       "queryId": "allbirds-first-order-v1-s01-q09",
@@ -4098,7 +4125,10 @@
     },
     {
       "queryId": "everyday-clothing-returns-v1-s01-q08",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:43:11.194Z",
+      "finishedAt": "2026-09-13T15:44:54.716Z",
+      "observationId": "obs-everyday-clothing-returns-v1-s01-q08-6130a61b44f7cc051b2e5c27"
     },
     {
       "queryId": "everyday-clothing-returns-v1-s01-q09",
@@ -4508,7 +4538,10 @@
     },
     {
       "queryId": "ikea-small-apartment-v1-s01-q07",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:44:16.930Z",
+      "finishedAt": "2026-09-13T15:46:08.286Z",
+      "observationId": "obs-ikea-small-apartment-v1-s01-q07-f299299e13dc03b2e3f0a853"
     },
     {
       "queryId": "ikea-small-apartment-v1-s01-q08",
@@ -4915,7 +4948,10 @@
     },
     {
       "queryId": "taskrabbit-assembly-booking-v1-s01-q06",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:44:30.470Z",
+      "finishedAt": "2026-09-13T15:46:34.962Z",
+      "observationId": "obs-taskrabbit-assembly-booking-v1-s01-q06-c0b55fa6cc9cc3719cd495e3"
     },
     {
       "queryId": "taskrabbit-assembly-booking-v1-s01-q07",
@@ -5324,7 +5360,10 @@
     },
     {
       "queryId": "japan-small-group-comparison-v1-s01-q06",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:44:37.996Z",
+      "finishedAt": "2026-09-13T15:46:48.329Z",
+      "observationId": "obs-japan-small-group-comparison-v1-s01-q06-5b25137608efdf07645968e2"
     },
     {
       "queryId": "japan-small-group-comparison-v1-s01-q07",
@@ -5735,7 +5774,10 @@
     },
     {
       "queryId": "python-course-fit-v1-s01-q06",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:44:47.036Z",
+      "finishedAt": "2026-09-13T15:46:35.774Z",
+      "observationId": "obs-python-course-fit-v1-s01-q06-63981c2d1177e64deb2d998a"
     },
     {
       "queryId": "python-course-fit-v1-s01-q07",
@@ -6146,7 +6188,10 @@
     },
     {
       "queryId": "duolingo-spanish-fit-v1-s01-q06",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:44:57.072Z",
+      "finishedAt": "2026-09-13T15:46:58.789Z",
+      "observationId": "obs-duolingo-spanish-fit-v1-s01-q06-827cac6cf826b6235085f445"
     },
     {
       "queryId": "duolingo-spanish-fit-v1-s01-q07",
@@ -6557,7 +6602,10 @@
     },
     {
       "queryId": "browserbase-browser-workflow-v1-s01-q06",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:48:06.511Z",
+      "finishedAt": "2026-09-13T15:49:37.554Z",
+      "observationId": "obs-browserbase-browser-workflow-v1-s01-q06-9896f7dc3c25ca09baedf579"
     },
     {
       "queryId": "browserbase-browser-workflow-v1-s01-q07",
@@ -6968,7 +7016,10 @@
     },
     {
       "queryId": "resend-email-setup-v1-s01-q06",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:48:14.045Z",
+      "finishedAt": "2026-09-13T15:49:52.939Z",
+      "observationId": "obs-resend-email-setup-v1-s01-q06-198e0f219ae84f9144148be1"
     },
     {
       "queryId": "resend-email-setup-v1-s01-q07",
@@ -7377,7 +7428,10 @@
     },
     {
       "queryId": "stripe-payment-setup-v1-s01-q06",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:48:21.569Z",
+      "finishedAt": "2026-09-13T15:50:27.493Z",
+      "observationId": "obs-stripe-payment-setup-v1-s01-q06-4654e7f51ac525d9321752af"
     },
     {
       "queryId": "stripe-payment-setup-v1-s01-q07",
@@ -7788,7 +7842,8 @@
     },
     {
       "queryId": "temporal-workflow-fit-v1-s01-q06",
-      "status": "not-started"
+      "status": "unresolved",
+      "startedAt": "2026-09-13T15:48:28.097Z"
     },
     {
       "queryId": "temporal-workflow-fit-v1-s01-q07",
@@ -8199,7 +8254,10 @@
     },
     {
       "queryId": "notion-client-project-fit-v1-s01-q06",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:49:02.164Z",
+      "finishedAt": "2026-09-13T15:50:41.892Z",
+      "observationId": "obs-notion-client-project-fit-v1-s01-q06-282b8dd0dec428c1e9047ddb"
     },
     {
       "queryId": "notion-client-project-fit-v1-s01-q07",
@@ -8603,7 +8661,10 @@
     },
     {
       "queryId": "slack-history-and-guests-v1-s01-q05",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T15:49:37.739Z",
+      "finishedAt": "2026-09-13T15:51:25.662Z",
+      "observationId": "obs-slack-history-and-guests-v1-s01-q05-59457d30117497e5babad0fa"
     },
     {
       "queryId": "slack-history-and-guests-v1-s01-q06",
@@ -9011,7 +9072,8 @@
     },
     {
       "queryId": "basecamp-client-project-fit-v1-s01-q05",
-      "status": "not-started"
+      "status": "running",
+      "startedAt": "2026-09-13T15:49:53.293Z"
     },
     {
       "queryId": "basecamp-client-project-fit-v1-s01-q06",
@@ -9419,7 +9481,8 @@
     },
     {
       "queryId": "notion-knowledge-portability-v1-s01-q05",
-      "status": "not-started"
+      "status": "unresolved",
+      "startedAt": "2026-09-13T15:50:27.891Z"
     },
     {
       "queryId": "notion-knowledge-portability-v1-s01-q06",
@@ -9825,7 +9888,8 @@
     },
     {
       "queryId": "ikea-product-and-delivery-v1-s01-q05",
-      "status": "not-started"
+      "status": "running",
+      "startedAt": "2026-09-13T15:51:02.482Z"
     },
     {
       "queryId": "ikea-product-and-delivery-v1-s01-q06",

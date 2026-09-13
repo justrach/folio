@@ -46875,6 +46875,1790 @@
         "Exact stack compatibility, alert-channel entitlements, all overage rates, and longer-retention package terms were not verified. Some pricing-table feature indicators and interactive calculator states were unavailable in extracted text.",
         "No automatic incident-to-lost-revenue calculation or equivalent PostHog distributed-tracing workflow was established by the consulted evidence. Business-impact conclusions require your instrumentation and validation."
       ]
+    },
+    {
+      "id": "obs-deploy-small-node-app-v1-s03-q03-362bb7f7c2797f18424cbec6",
+      "queryId": "deploy-small-node-app-v1-s03-q03",
+      "observedAt": "2026-09-13T15:42:28.508Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Render",
+          "url": "https://render.com/docs/preview-environments",
+          "reason": "First evaluation choice for Blueprint-defined disposable services and databases, with explicit no-data-copy behavior and a Pro workspace requirement.",
+          "citationUrls": [
+            "https://render.com/docs/preview-environments"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Railway",
+          "url": "https://docs.railway.com/environments",
+          "reason": "Isolated PR service environments suit application-plus-database testing, but unmanaged PostgreSQL and Enterprise-only environment RBAC require operational review.",
+          "citationUrls": [
+            "https://docs.railway.com/environments",
+            "https://docs.railway.com/databases/postgresql"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Vercel",
+          "url": "https://vercel.com/docs/postgres",
+          "reason": "Suitable when the service fits Functions and a separately configured PostgreSQL integration supplies preview database branches.",
+          "citationUrls": [
+            "https://vercel.com/docs/postgres",
+            "https://neon.com/blog/neon-vercel-native-integration",
+            "https://vercel.com/docs/functions/limitations"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Cloudflare Workers",
+          "url": "https://developers.cloudflare.com/workers/versions-and-deployments/preview-urls/",
+          "reason": "Preview URLs are available, but Node.js compatibility and explicit database bindings need validation before migrating an existing service.",
+          "citationUrls": [
+            "https://developers.cloudflare.com/workers/versions-and-deployments/preview-urls/",
+            "https://developers.cloudflare.com/workers/static-assets/migration-guides/migrate-from-pages/",
+            "https://developers.cloudflare.com/workers/runtime-apis/nodejs/",
+            "https://developers.cloudflare.com/workers/tutorials/postgres/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://render.com/docs/preview-environments",
+          "title": "Render: Preview Environments"
+        },
+        {
+          "url": "https://docs.railway.com/environments",
+          "title": "Railway: Environments"
+        },
+        {
+          "url": "https://docs.railway.com/databases/postgresql",
+          "title": "Railway: PostgreSQL"
+        },
+        {
+          "url": "https://vercel.com/docs/postgres",
+          "title": "Postgres on Vercel"
+        },
+        {
+          "url": "https://neon.com/blog/neon-vercel-native-integration",
+          "title": "Neon: Vercel Native Integration—Create a Branch Per Preview"
+        },
+        {
+          "url": "https://vercel.com/docs/functions/limitations",
+          "title": "Vercel Functions Limits"
+        },
+        {
+          "url": "https://developers.cloudflare.com/workers/versions-and-deployments/preview-urls/",
+          "title": "Cloudflare Workers: Preview URLs"
+        },
+        {
+          "url": "https://developers.cloudflare.com/workers/static-assets/migration-guides/migrate-from-pages/",
+          "title": "Cloudflare: Migrate from Pages to Workers"
+        },
+        {
+          "url": "https://developers.cloudflare.com/workers/runtime-apis/nodejs/",
+          "title": "Cloudflare Workers: Node.js compatibility"
+        },
+        {
+          "url": "https://developers.cloudflare.com/workers/tutorials/postgres/",
+          "title": "Cloudflare Workers: Connect to PostgreSQL"
+        }
+      ],
+      "limitations": [
+        "Public official documentation research only; no deployments, account access, benchmarks, or independent product-performance verification. Discovery was not domain-restricted, but conclusions use official sources; coverage is not exhaustive.",
+        "The current Neon integration guide at https://neon.com/docs/guides/vercel could not be read because the search tool rejected its text/markdown content type. The official 2025 integration announcement supports availability; current branch lifecycle, quotas, and cleanup details remain unverified.",
+        "Exact five-seat pricing, plan eligibility across all providers, database backup guarantees, and workload-specific compatibility were not established.",
+        "Search excerpts for Vercel limits were older than the directly opened page; the answer uses the opened page's August 24, 2026 limits. Cloudflare preview-default wording varies across consulted documentation, so explicitly configure and verify preview_urls rather than relying on defaults.",
+        "No native automatic per-PR PostgreSQL cloning mechanism for Workers was established by the consulted sources; do not infer one from Preview URLs or Hyperdrive."
+      ]
+    },
+    {
+      "id": "obs-auth-b2b-small-team-v1-s02-q01-0963b3277853368289064506",
+      "queryId": "auth-b2b-small-team-v1-s02-q01",
+      "observedAt": "2026-09-13T15:42:48.633Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Clerk",
+          "url": "https://clerk.com/pricing",
+          "reason": "Best initial evaluation for a small team wanting prebuilt UI: the free plan accommodates two founders and both social providers, with explicit production credential requirements.",
+          "citationUrls": [
+            "https://clerk.com/pricing",
+            "https://clerk.com/docs/nextjs/guides/configure/auth-strategies/social-connections/overview"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Better Auth",
+          "url": "https://better-auth.com/pricing",
+          "reason": "Best conditional choice for code and data control when the founders can own operations; its free framework is distinct from optional paid infrastructure.",
+          "citationUrls": [
+            "https://better-auth.com/pricing",
+            "https://better-auth.com/docs/authentication/google",
+            "https://better-auth.com/docs/authentication/github"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "WorkOS AuthKit",
+          "url": "https://workos.com/pricing",
+          "reason": "Generous free hosted social authentication, provided the startup can accept the default domain and avoid separately priced enterprise features.",
+          "citationUrls": [
+            "https://workos.com/pricing",
+            "https://workos.com/docs/integrations/google-oauth",
+            "https://workos.com/docs/integrations/github-oauth"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Auth0",
+          "url": "https://auth0.com/pricing",
+          "reason": "Both providers fit the advertised free social-connection offering, but account linking and paid user allowances require careful budget review.",
+          "citationUrls": [
+            "https://auth0.com/pricing",
+            "https://auth0.com/blog/adding-google-login-to-react-app-with-auth0/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://clerk.com/pricing",
+          "title": "Clerk pricing"
+        },
+        {
+          "url": "https://clerk.com/docs/nextjs/guides/configure/auth-strategies/social-connections/overview",
+          "title": "Clerk: Social connections (OAuth) — Next.js"
+        },
+        {
+          "url": "https://better-auth.com/pricing",
+          "title": "Better Auth pricing"
+        },
+        {
+          "url": "https://better-auth.com/docs/authentication/google",
+          "title": "Better Auth: Google"
+        },
+        {
+          "url": "https://better-auth.com/docs/authentication/github",
+          "title": "Better Auth: GitHub"
+        },
+        {
+          "url": "https://workos.com/pricing",
+          "title": "WorkOS pricing"
+        },
+        {
+          "url": "https://workos.com/docs/integrations/google-oauth",
+          "title": "WorkOS: Google OAuth"
+        },
+        {
+          "url": "https://workos.com/docs/integrations/github-oauth",
+          "title": "WorkOS: GitHub OAuth"
+        },
+        {
+          "url": "https://auth0.com/pricing",
+          "title": "Auth0 pricing"
+        },
+        {
+          "url": "https://auth0.com/blog/adding-google-login-to-react-app-with-auth0/",
+          "title": "Adding Google Login to a React App with Auth0"
+        }
+      ],
+      "limitations": [
+        "Public web research only; no login flows, SDK integrations, security properties or product performance were independently tested. Coverage is not exhaustive.",
+        "Your TypeScript framework, expected user count, organization model and remaining infrastructure costs were not specified; the order assumes basic social authentication and values founder time.",
+        "Dynamic pricing selectors may differ by B2B/B2C use case, user count and billing term. Auth0's exact applicable paid quote and numerical system limitations were not established.",
+        "WorkOS dashboard-seat limits, spending-cap availability, complete export coverage and Google verification requirements for your particular app were not established. No startup-program eligibility is assumed.",
+        "No source access failure blocked this comparison. Clerk's generic documentation page rendered an SDK selector, so its Next.js-specific page was also consulted."
+      ]
+    },
+    {
+      "id": "obs-sandbox-python-jobs-v1-s02-q01-b2569166b5c8526365cb3718",
+      "queryId": "sandbox-python-jobs-v1-s02-q01",
+      "observedAt": "2026-09-13T15:42:55.545Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Modal",
+          "url": "https://modal.com/pricing",
+          "reason": "First evaluation choice: three-seat Starter plan, recurring credits, documented sandbox egress controls and GPU options; beta/alpha controls and preemption require checking.",
+          "citationUrls": [
+            "https://modal.com/pricing",
+            "https://modal.com/docs/guide/sandbox-networking",
+            "https://modal.com/docs/guide/sandbox-resources"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "E2B",
+          "url": "https://e2b.dev/pricing",
+          "reason": "Budget-compatible CPU sandbox candidate for short sessions; official SDK exposes network controls, but Python release and Hobby entitlement need verification and GPU availability was not established.",
+          "citationUrls": [
+            "https://e2b.dev/pricing",
+            "https://github.com/e2b-dev/E2B/blob/main/packages/js-sdk/src/sandbox/sandboxApi.ts"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Daytona",
+          "url": "https://www.daytona.io/docs/sandboxes",
+          "reason": "Conditional sandbox/GPU alternative: custom outbound policy requires Tier 3/4, with Tier 3's documented $500 top-up exceeding a $100 first-month cash budget.",
+          "citationUrls": [
+            "https://www.daytona.io/docs/en/network-limits/",
+            "https://www.daytona.io/docs/limits",
+            "https://www.daytona.io/docs/sandboxes"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://modal.com/pricing",
+          "title": "Modal pricing"
+        },
+        {
+          "url": "https://modal.com/docs/guide/sandbox-networking",
+          "title": "Modal: Networking and security"
+        },
+        {
+          "url": "https://modal.com/docs/guide/sandbox-resources",
+          "title": "Modal: Sandbox resources and pricing"
+        },
+        {
+          "url": "https://e2b.dev/pricing",
+          "title": "E2B pricing"
+        },
+        {
+          "url": "https://github.com/e2b-dev/E2B/blob/main/packages/js-sdk/src/sandbox/sandboxApi.ts",
+          "title": "E2B official JavaScript SDK: sandboxApi.ts"
+        },
+        {
+          "url": "https://www.daytona.io/docs/en/network-limits/",
+          "title": "Daytona: Network Limits (Firewall)"
+        },
+        {
+          "url": "https://www.daytona.io/docs/limits",
+          "title": "Daytona: Limits and tier requirements"
+        },
+        {
+          "url": "https://www.daytona.io/docs/sandboxes",
+          "title": "Daytona: Sandboxes"
+        },
+        {
+          "url": "https://modal.com/docs/guide/network-egress-billing",
+          "title": "Modal: Network egress billing"
+        },
+        {
+          "url": "https://modal.com/docs/guide/budgets",
+          "title": "Modal: Budgets"
+        }
+      ],
+      "limitations": [
+        "Public web research only, with unrestricted discovery and official sources supporting the recommendations; this is not exhaustive market coverage, a search-engine ranking, or an API execution benchmark.",
+        "E2B's internet-access documentation URL returned an internal retrieval error twice. Official repository source was consulted instead; main-branch code does not establish released Python SDK support or plan entitlement.",
+        "No accounts or workloads were created. Isolation, firewall enforcement, GPU capacity, runtime, reliability and actual invoices were not independently verified.",
+        "E2B self-service GPU availability, E2B/Daytona egress transfer charges, proxy pricing and relevant plan entitlements were not established. Missing terms must not be interpreted as free or supported.",
+        "Prices and documentation reflect the pages retrieved on September 13, 2026. Future effective dates are identified; GPU fit, workload duration, regional premiums and taxes remain workload/account dependent."
+      ]
+    },
+    {
+      "id": "obs-vector-search-small-app-v1-s02-q01-1c8813524308d5d4a0f96b23",
+      "queryId": "vector-search-small-app-v1-s02-q01",
+      "observedAt": "2026-09-13T15:42:58.492Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Qdrant",
+          "url": "https://qdrant.tech/pricing/",
+          "reason": "First to evaluate for correlated nested-object filters and richer typed predicates; Cloud indexing restrictions and resource sizing need checking.",
+          "citationUrls": [
+            "https://qdrant.tech/documentation/search/filtering/",
+            "https://qdrant.tech/documentation/guides/",
+            "https://qdrant.tech/pricing/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Chroma",
+          "url": "https://www.trychroma.com/pricing",
+          "reason": "Suitable for flat metadata and homogeneous typed arrays with a usage-priced Starter plan; scalar metadata patterns and nested-object semantics are limitations.",
+          "citationUrls": [
+            "https://docs.trychroma.com/reference/where-filter",
+            "https://docs.trychroma.com/docs/querying-collections/metadata-filtering",
+            "https://docs.trychroma.com/cloud/search-api/filtering",
+            "https://www.trychroma.com/pricing"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Pinecone",
+          "url": "https://docs.pinecone.io/guides/manage-cost/understanding-cost",
+          "reason": "Suitable for flat metadata and explicit existence checks, with a $20 flat Builder option; quotas block excess usage and nested metadata is restricted.",
+          "citationUrls": [
+            "https://docs.pinecone.io/guides/search/filter-by-metadata",
+            "https://docs.pinecone.io/guides/index-data/data-modeling",
+            "https://docs.pinecone.io/guides/manage-cost/understanding-cost"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://qdrant.tech/documentation/search/filtering/",
+          "title": "Qdrant: Filtering"
+        },
+        {
+          "url": "https://qdrant.tech/documentation/guides/",
+          "title": "Qdrant: Overview and strict-mode defaults"
+        },
+        {
+          "url": "https://qdrant.tech/pricing/",
+          "title": "Qdrant Cloud pricing"
+        },
+        {
+          "url": "https://docs.trychroma.com/reference/where-filter",
+          "title": "Chroma: Where Filters"
+        },
+        {
+          "url": "https://docs.trychroma.com/docs/querying-collections/metadata-filtering",
+          "title": "Chroma: Metadata Filtering"
+        },
+        {
+          "url": "https://docs.trychroma.com/cloud/search-api/filtering",
+          "title": "Chroma: Filtering with Where"
+        },
+        {
+          "url": "https://www.trychroma.com/pricing",
+          "title": "Chroma pricing"
+        },
+        {
+          "url": "https://docs.pinecone.io/guides/search/filter-by-metadata",
+          "title": "Pinecone: Filter by metadata"
+        },
+        {
+          "url": "https://docs.pinecone.io/guides/index-data/data-modeling",
+          "title": "Pinecone: Data modeling"
+        },
+        {
+          "url": "https://docs.pinecone.io/guides/manage-cost/understanding-cost",
+          "title": "Pinecone: Understanding cost"
+        }
+      ],
+      "limitations": [
+        "Public official documentation researched on 2026-09-13; discovery included an unrestricted web query. This is a bounded comparison of the three requested products, not exhaustive market coverage.",
+        "No product APIs were executed and no performance, reliability or workload cost was independently verified. No page access failures occurred; one Qdrant legacy URL redirected to its current filtering page.",
+        "Exact paid Qdrant sizing cost, Pinecone plan-specific capacity quotas, and Chroma hard spending-cap availability were not established. No corpus size or traffic estimate was provided.",
+        "Documentation and SDK/API generations can differ. Chroma missing-key behavior must be checked on the chosen API; Pinecone's filter page mixes top-level logical-operator wording with field-only examples, so validate composed syntax rather than inferring a universal grammar.",
+        "Unlisted operators are treated as unestablished, not as proof that no other API or future release supports them."
+      ]
+    },
+    {
+      "id": "obs-research-api-citations-v1-s02-q01-dc7f320d3e8bac593cc38e27",
+      "queryId": "research-api-citations-v1-s02-q01",
+      "observedAt": "2026-09-13T15:43:11.056Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Exa",
+          "url": "https://exa.ai/pricing",
+          "reason": "First trial for search-led research: bundled text/highlights, commitment-free pricing and explicit content freshness controls.",
+          "citationUrls": [
+            "https://exa.ai/pricing",
+            "https://exa.ai/docs/reference/get-contents"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Tavily",
+          "url": "https://docs.tavily.com/documentation/api-credits",
+          "reason": "Second trial for configurable search depth and separately priced extraction, with free and $30 monthly options.",
+          "citationUrls": [
+            "https://docs.tavily.com/documentation/api-credits",
+            "https://docs.tavily.com/documentation/api-reference/endpoint/search",
+            "https://docs.tavily.com/documentation/api-reference/endpoint/extract"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Firecrawl",
+          "url": "https://www.firecrawl.dev/pricing",
+          "reason": "Prioritize for extraction-heavy workloads; search and scraping are separately metered and Hobby fits a modest budget.",
+          "citationUrls": [
+            "https://www.firecrawl.dev/pricing",
+            "https://docs.firecrawl.dev/features/search",
+            "https://docs.firecrawl.dev/billing"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://exa.ai/pricing",
+          "title": "Exa API Pricing"
+        },
+        {
+          "url": "https://exa.ai/docs/reference/get-contents",
+          "title": "Exa Contents API reference"
+        },
+        {
+          "url": "https://docs.tavily.com/documentation/api-credits",
+          "title": "Tavily Credits & Pricing"
+        },
+        {
+          "url": "https://docs.tavily.com/documentation/api-reference/endpoint/search",
+          "title": "Tavily Search API reference"
+        },
+        {
+          "url": "https://docs.tavily.com/documentation/api-reference/endpoint/extract",
+          "title": "Tavily Extract API reference"
+        },
+        {
+          "url": "https://docs.firecrawl.dev/features/search",
+          "title": "Firecrawl Search documentation"
+        },
+        {
+          "url": "https://www.firecrawl.dev/pricing",
+          "title": "Firecrawl Pricing"
+        },
+        {
+          "url": "https://docs.firecrawl.dev/billing",
+          "title": "Firecrawl Billing"
+        }
+      ],
+      "limitations": [
+        "Public-web research using OpenAI live search only; no vendor API execution, accounts, transactions or independently verified performance. Discovery was not domain-restricted, but recommendations rely on official sources and cover the three requested services rather than the entire market.",
+        "No page-access failures occurred. Older search results differed from current pricing pages; current canonical pages were prioritized.",
+        "Two-person seat entitlements, Tavily rate limits, Exa/Tavily hard spending caps, credit-expiry details and contractual storage/reuse rights were not fully established from consulted sources.",
+        "Firecrawl's sources conflict on Map billing: pricing says per page, billing documentation says per call. Map is excluded from the cost examples; confirm before budgeting for it.",
+        "Cost examples exclude taxes, hosting, storage, model inference, retries and premium options, and do not assume free credits stack with paid plans. Usage volume and required source coverage were not supplied."
+      ]
+    },
+    {
+      "id": "obs-sentry-posthog-product-team-v1-s02-q01-f1efadcd95422f88fe39b1ca",
+      "queryId": "sentry-posthog-product-team-v1-s02-q01",
+      "observedAt": "2026-09-13T15:44:16.525Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "PostHog",
+          "url": "https://posthog.com/",
+          "reason": "First evaluation for budget fit: free two-person access, 100,000 monthly exceptions, 5,000 recordings, and documented custom grouping with integrated issue context.",
+          "citationUrls": [
+            "https://posthog.com/pricing",
+            "https://posthog.com/docs/error-tracking/grouping-issues",
+            "https://posthog.com/docs/error-tracking/issues-and-exceptions",
+            "https://posthog.com/docs/error-tracking/stack-traces",
+            "https://posthog.com/docs/error-tracking/pricing"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Sentry",
+          "url": "https://sentry.io/",
+          "reason": "Conditional paid choice for explicit grouping diagnostics and issue-to-trace debugging; Team supports both founders, while Developer is limited to one user.",
+          "citationUrls": [
+            "https://sentry.io/pricing/",
+            "https://www.sentry.help/en/articles/13964350-why-are-my-events-grouped-or-separated-incorrectly-in-sentry",
+            "https://www.sentry.help/en/articles/13964207-how-can-i-use-server-side-fingerprint-rules-together-with-sdk-fingerprinting",
+            "https://docs.sentry.io/product/issues/issue-details/?promo_name=hp-banner",
+            "https://www.sentry.help/en/articles/13964873-how-do-i-disable-on-demand-spend"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://posthog.com/pricing",
+          "title": "PostHog pricing"
+        },
+        {
+          "url": "https://posthog.com/docs/error-tracking/grouping-issues",
+          "title": "PostHog: Grouping exceptions into issues"
+        },
+        {
+          "url": "https://posthog.com/docs/error-tracking/issues-and-exceptions",
+          "title": "PostHog: Issues and exceptions"
+        },
+        {
+          "url": "https://posthog.com/docs/error-tracking/stack-traces",
+          "title": "PostHog: Stack traces"
+        },
+        {
+          "url": "https://posthog.com/docs/error-tracking/pricing",
+          "title": "PostHog: Error Tracking pricing"
+        },
+        {
+          "url": "https://sentry.io/pricing/",
+          "title": "Sentry pricing"
+        },
+        {
+          "url": "https://www.sentry.help/en/articles/13964350-why-are-my-events-grouped-or-separated-incorrectly-in-sentry",
+          "title": "Sentry: Incorrect event grouping"
+        },
+        {
+          "url": "https://www.sentry.help/en/articles/13964207-how-can-i-use-server-side-fingerprint-rules-together-with-sdk-fingerprinting",
+          "title": "Sentry: Server-side rules and SDK fingerprinting"
+        },
+        {
+          "url": "https://docs.sentry.io/product/issues/issue-details/?promo_name=hp-banner",
+          "title": "Sentry: Issue Details"
+        },
+        {
+          "url": "https://www.sentry.help/en/articles/13964873-how-do-i-disable-on-demand-spend",
+          "title": "Sentry: Disable on-demand spend"
+        }
+      ],
+      "limitations": [
+        "Public official-source research on September 13, 2026; no account access, SDK execution, or independent verification of grouping accuracy, reliability, or debugging speed. Coverage is not exhaustive.",
+        "Sentry grouping documentation at both attempted docs.sentry.io paths and the linked maximum-spend documentation returned Internal Error. Official Help Center pages supplied grouping and spend-control evidence instead.",
+        "The retrieved Sentry pricing calculator exposed annual pricing; the current month-to-month checkout price and some feature-table entitlement indicators were not reliably available. Do not infer entitlement from a feature name alone.",
+        "A supported reversal/splitting workflow for incorrect PostHog merges was not established. Exact SDK compatibility, product-specific retention, and post-trial feature access require confirmation for your stack.",
+        "Your traffic, error volume, stack and other infrastructure costs were not provided. Cost examples exclude other telemetry, add-ons and taxes; no startup discounts or AI debugging benefits are assumed."
+      ]
+    },
+    {
+      "id": "obs-allbirds-first-order-v1-s01-q08-e4be0833d4dc815ddf9a1a4e",
+      "queryId": "allbirds-first-order-v1-s01-q08",
+      "observedAt": "2026-09-13T15:44:30.369Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "New Balance",
+          "url": "https://www.newbalance.com/pd/fresh-foam-x-more-v6/MMORLA6-D-07.html",
+          "reason": "First comparison for explicit half-size and width options; exact size–width–color stock still requires confirmation.",
+          "citationUrls": [
+            "https://www.newbalance.com/pd/fresh-foam-x-more-v6/MMORLA6-D-07.html"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Allbirds",
+          "url": "https://www.allbirds.com/collections/mens-sneakers",
+          "reason": "Relevant everyday styles, but the inspected Tree Skipper has ambiguous stock controls and final-sale restrictions.",
+          "citationUrls": [
+            "https://www.allbirds.com/collections/mens-sneakers",
+            "https://www.allbirds.com/products/mens-tree-skippers-natural-black"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Skechers",
+          "url": "https://www.skechers.com/sneaker/",
+          "reason": "Useful size, width and color filters for discovering alternatives; catalog options are not variant-level inventory.",
+          "citationUrls": [
+            "https://www.skechers.com/sneaker/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.newbalance.com/pd/fresh-foam-x-more-v6/MMORLA6-D-07.html",
+          "title": "New Balance — Fresh Foam X More v6"
+        },
+        {
+          "url": "https://www.allbirds.com/collections/mens-sneakers",
+          "title": "Allbirds — Men's Sneakers"
+        },
+        {
+          "url": "https://www.allbirds.com/products/mens-tree-skippers-natural-black",
+          "title": "Allbirds — Men's Tree Skipper, Natural Black"
+        },
+        {
+          "url": "https://www.skechers.com/sneaker/",
+          "title": "Skechers — Sneaker Shoes"
+        }
+      ],
+      "limitations": [
+        "No personal size, width, preferred color or budget was supplied; men's product examples do not establish women's availability.",
+        "Public search and official-page extracts can be cached and can expose multiple interface states. No exact variant inventory, checkout, delivery promise or product performance was independently verified.",
+        "Allbirds return-coverage pricing and its effect on final-sale items were not established; do not assume coverage overrides the final-sale exclusion. Alternative brands' detailed return policies were not verified.",
+        "An adidas page text lookup returned an internal error/no matching text; adidas was not included in the recommendations.",
+        "Discovery was not restricted to a predefined vendor list. This is a limited shortlist in recommendation order, not exhaustive market coverage, a search-engine rank or an API performance benchmark."
+      ]
+    },
+    {
+      "id": "obs-client-project-workspace-v1-s01-q09-f662f4b49744cfc61c7b7fe1",
+      "queryId": "client-project-workspace-v1-s01-q09",
+      "observedAt": "2026-09-13T15:44:32.170Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Basecamp",
+          "url": "https://basecamp.com/pricing",
+          "reason": "First pilot for email-heavy client coordination: documented project email forwarding and client visibility controls, with explicit project and user caps.",
+          "citationUrls": [
+            "https://basecamp.com/pricing",
+            "https://5.basecamp-help.com/article/1100-email-forwards",
+            "https://5.basecamp-help.com/article/1079-docs-and-files",
+            "https://5.basecamp-help.com/article/1082-what-clients-can-see-and-do"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Notion",
+          "url": "https://www.notion.com/pricing",
+          "reason": "Second pilot for converting shared documents into a configurable workspace; import fidelity, permissions, and the imminent Mail inbox shutdown need scrutiny.",
+          "citationUrls": [
+            "https://www.notion.com/pricing",
+            "https://www.notion.com/help/import-data-into-notion",
+            "https://www.notion.com/help/sharing-and-permissions",
+            "https://www.notion.com/help/notion-mail-inbox-is-going-away-what-to-do-next"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://basecamp.com/pricing",
+          "title": "Basecamp pricing"
+        },
+        {
+          "url": "https://5.basecamp-help.com/article/1100-email-forwards",
+          "title": "Basecamp 5: Email Forwards"
+        },
+        {
+          "url": "https://5.basecamp-help.com/article/1079-docs-and-files",
+          "title": "Basecamp 5: Docs & Files"
+        },
+        {
+          "url": "https://5.basecamp-help.com/article/1082-what-clients-can-see-and-do",
+          "title": "Basecamp 5: What clients can see and do"
+        },
+        {
+          "url": "https://www.notion.com/pricing",
+          "title": "Notion pricing"
+        },
+        {
+          "url": "https://www.notion.com/help/import-data-into-notion",
+          "title": "Import data into Notion"
+        },
+        {
+          "url": "https://www.notion.com/help/sharing-and-permissions",
+          "title": "Notion sharing and permissions"
+        },
+        {
+          "url": "https://www.notion.com/help/notion-mail-inbox-is-going-away-what-to-do-next",
+          "title": "Notion Mail inbox is going away: what to do next"
+        },
+        {
+          "url": "https://5.basecamp-help.com/article/1139-export-your-basecamp-data",
+          "title": "Export your Basecamp data"
+        },
+        {
+          "url": "https://www.notion.com/help/export-your-content",
+          "title": "Export your Notion content"
+        }
+      ],
+      "limitations": [
+        "Public-web research only; no accounts, migrations, client access, exports, or product performance were independently tested. This is not exhaustive market coverage or a search-engine ranking.",
+        "Notion’s canonical pricing page rendered GBP, while search results showed USD variants; a definitive current US-dollar price and billing cadence were not established.",
+        "The consulted sources do not establish complete mailbox migration, preserved document history, or a lossless round-trip migration for either product.",
+        "Notion’s shutdown notice confirms surviving email workflows but does not fully establish their post-shutdown setup, provider eligibility, or plan restrictions for this business.",
+        "No source access failures occurred. Budget, email provider, document formats, project count, and client count were not supplied; the recommendation is conditional on those needs."
+      ]
+    },
+    {
+      "id": "obs-team-chat-history-v1-s01-q08-66ab2d009238614c07d40ebe",
+      "queryId": "team-chat-history-v1-s01-q08",
+      "observedAt": "2026-09-13T15:44:40.771Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Slack",
+          "url": "https://slack.com/help/articles/201330256-Invite-new-members-to-your-workspace",
+          "reason": "First standalone option to evaluate: documented invitations and all-plan deactivation, with explicit guest, ownership, history, and export restrictions.",
+          "citationUrls": [
+            "https://slack.com/help/articles/201330256-Invite-new-members-to-your-workspace",
+            "https://slack.com/help/articles/202518103-Understand-guest-roles-in-Slack",
+            "https://slack.com/intl/en-gb/help/articles/204475027-Deactivate-a-members-account",
+            "https://slack.com/help/articles/27204752526611-Feature-limitations-on-the-free-version-of-Slack",
+            "https://slack.com/help/articles/204897248-Guide-to-Slack-import-and-export-tools"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Microsoft Teams",
+          "url": "https://learn.microsoft.com/en-us/microsoftteams/deploy-small-business",
+          "reason": "Strong conditional fit for an existing Microsoft 365 business because account setup and organization-wide offboarding have documented administrative procedures.",
+          "citationUrls": [
+            "https://learn.microsoft.com/en-us/microsoftteams/deploy-small-business",
+            "https://learn.microsoft.com/en-us/microsoft-365/admin/add-users/remove-former-employee?view=o365-worldwide"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Google Chat through Google Workspace",
+          "url": "https://knowledge.workspace.google.com/admin/users/add-an-account-for-a-new-user",
+          "reason": "Conditional fit for an existing managed Google environment, with documented account creation and data handover but material suspension-session and billing restrictions.",
+          "citationUrls": [
+            "https://knowledge.workspace.google.com/admin/users/add-an-account-for-a-new-user",
+            "https://knowledge.workspace.google.com/admin/users/suspend-a-user-temporarily",
+            "https://knowledge.workspace.google.com/admin/users/delete-or-remove-a-user-from-your-organization"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://slack.com/help/articles/201330256-Invite-new-members-to-your-workspace",
+          "title": "Slack: Invite new members to your workspace"
+        },
+        {
+          "url": "https://slack.com/help/articles/202518103-Understand-guest-roles-in-Slack",
+          "title": "Slack: Understand guest roles"
+        },
+        {
+          "url": "https://slack.com/intl/en-gb/help/articles/204475027-Deactivate-a-members-account",
+          "title": "Slack: Deactivate a member’s account"
+        },
+        {
+          "url": "https://slack.com/help/articles/27204752526611-Feature-limitations-on-the-free-version-of-Slack",
+          "title": "Slack: Feature limitations on the free version"
+        },
+        {
+          "url": "https://slack.com/help/articles/204897248-Guide-to-Slack-import-and-export-tools",
+          "title": "Slack: Guide to import and export tools"
+        },
+        {
+          "url": "https://learn.microsoft.com/en-us/microsoftteams/deploy-small-business",
+          "title": "Microsoft: Set up Teams in your small or medium business"
+        },
+        {
+          "url": "https://learn.microsoft.com/en-us/microsoft-365/admin/add-users/remove-former-employee?view=o365-worldwide",
+          "title": "Microsoft: Remove a former employee and secure data"
+        },
+        {
+          "url": "https://knowledge.workspace.google.com/admin/users/add-an-account-for-a-new-user",
+          "title": "Google Workspace: Add an account for a new user"
+        },
+        {
+          "url": "https://knowledge.workspace.google.com/admin/users/suspend-a-user-temporarily",
+          "title": "Google Workspace: Suspend a user temporarily"
+        },
+        {
+          "url": "https://knowledge.workspace.google.com/admin/users/delete-or-remove-a-user-from-your-organization",
+          "title": "Google Workspace: Delete or remove a user"
+        }
+      ],
+      "limitations": [
+        "Public web research as of September 13, 2026. Discovery included an unrestricted query; the shortlist is selective, not exhaustive market coverage or a measured search-engine ranking.",
+        "Official documentation describes available behavior; no accounts, exports, session revocation, usability, or product performance were independently tested.",
+        "Exact two-seat prices, minimum commitments, cancellation/refund terms, and plan-specific SSO/SCIM or archival entitlements were not verified. Treat them as unresolved purchase checks.",
+        "Complete Teams and Google Chat private-message retention/export coverage, Google archival-license eligibility, and immediate session-cutoff procedures were not established by the consulted sources.",
+        "Microsoft Learn displayed authorization notices, but the relevant article bodies were publicly readable. No login was attempted; no other source access failure affected the cited evidence."
+      ]
+    },
+    {
+      "id": "obs-everyday-clothing-returns-v1-s01-q08-6130a61b44f7cc051b2e5c27",
+      "queryId": "everyday-clothing-returns-v1-s01-q08",
+      "observedAt": "2026-09-13T15:44:54.702Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Everlane",
+          "url": "https://www.everlane.com/products/womens-organic-cotton-slim-crew-tee-white",
+          "reason": "Detailed cotton and fit disclosures, with distinct waitlist and paid-preorder guidance; final-sale and return costs require attention.",
+          "citationUrls": [
+            "https://www.everlane.com/products/womens-organic-cotton-slim-crew-tee-white",
+            "https://www.everlane.com/products/mens-organic-cotton-straight-leg-jean-coffee-bean",
+            "https://support.everlane.com/en_gb/can-i-add-myself-to-a-waitlist-if-my-item-isn%27t-available-now-rJTZnr60j",
+            "https://support.everlane.com/en_us/what-is-a-preorder-or-backorder-and-when-will-my-order-ship-Syv72r60j",
+            "https://www.everlane.com/policies/refund-policy"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "UNIQLO US",
+          "url": "https://faq-us.uniqlo.com/articles/en_US/FAQ/How-can-I-find-out-when-an-item-will-be-back-in-stock-us/%3Fl%3Den_US%26fs%3DRelatedArticle",
+          "reason": "Explicit US stock labels and alert restrictions make it a useful comparison for evaluating availability and uncertain restocks.",
+          "citationUrls": [
+            "https://faq-us.uniqlo.com/articles/en_US/FAQ/How-can-I-find-out-when-an-item-will-be-back-in-stock-us/%3Fl%3Den_US%26fs%3DRelatedArticle",
+            "https://faq-us.uniqlo.com/articles/en_US/Knowledge/How-can-I-find-out-if-a-particular-item-is-available-in-store"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.everlane.com/products/womens-organic-cotton-slim-crew-tee-white",
+          "title": "Everlane — The Slim Crew in Essential Cotton | White"
+        },
+        {
+          "url": "https://www.everlane.com/products/mens-organic-cotton-straight-leg-jean-coffee-bean",
+          "title": "Everlane — The Organic Cotton Straight-Leg Jean | Coffee Bean"
+        },
+        {
+          "url": "https://support.everlane.com/en_gb/can-i-add-myself-to-a-waitlist-if-my-item-isn%27t-available-now-rJTZnr60j",
+          "title": "Everlane — Can I add myself to a waitlist if my item isn't available now?"
+        },
+        {
+          "url": "https://support.everlane.com/en_us/what-is-a-preorder-or-backorder-and-when-will-my-order-ship-Syv72r60j",
+          "title": "Everlane — What is a preorder or backorder, and when will my order ship?"
+        },
+        {
+          "url": "https://www.everlane.com/policies/refund-policy",
+          "title": "Everlane — Refund policy"
+        },
+        {
+          "url": "https://faq-us.uniqlo.com/articles/en_US/FAQ/How-can-I-find-out-when-an-item-will-be-back-in-stock-us/%3Fl%3Den_US%26fs%3DRelatedArticle",
+          "title": "UNIQLO US — Online stock availability and back-in-stock"
+        },
+        {
+          "url": "https://faq-us.uniqlo.com/articles/en_US/Knowledge/How-can-I-find-out-if-a-particular-item-is-available-in-store",
+          "title": "UNIQLO US — Store stock availability"
+        }
+      ],
+      "limitations": [
+        "Public web research conducted September 13, 2026; search-index content and stock displays can lag changes. Discovery included unrestricted searches; this is not exhaustive market coverage.",
+        "Everlane waitlist and preorder direct opens returned no readable body. Policy details rely on official search-index text; readable waitlist evidence used the en_gb page, leaving current US implementation unconfirmed.",
+        "No exact size/color inventory, checkout eligibility, delivery date, restock schedule or notification delivery was independently verified. No accounts, forms or transactions were used.",
+        "Everlane waitlist reservation/priority and separate backorder terms were not established. Specific UNIQLO garment composition, fit and return terms were not checked.",
+        "Product composition and policy statements are retailer claims; fabric performance, durability, fit and sustainability were not independently tested."
+      ]
+    },
+    {
+      "id": "obs-ikea-small-apartment-v1-s01-q07-f299299e13dc03b2e3f0a853",
+      "queryId": "ikea-small-apartment-v1-s01-q07",
+      "observedAt": "2026-09-13T15:46:08.265Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "IKEA MICKE desk, white, 28¾ × 19⅝ inches",
+          "url": "https://www.ikea.com/us/en/p/micke-desk-white-30213076/",
+          "reason": "Compact permanent workspace with drawer storage and explicit distributed, concentrated and drawer load limits.",
+          "citationUrls": [
+            "https://www.ikea.com/us/en/p/micke-desk-white-30213076/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Edenbrook Barnes Wood and Metal Folding Desk",
+          "url": "https://www.edenbrookhome.com/products/barnes-wood-and-metal-folding-desk",
+          "reason": "Freestanding folding alternative with specified MDF/melamine top, steel frame and 110 lb capacity; folded dimensions and concentrated-load limits need confirmation.",
+          "citationUrls": [
+            "https://www.edenbrookhome.com/products/barnes-wood-and-metal-folding-desk"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "IKEA LAGKAPTEN/ALEX desk, white/black-brown, 47¼ × 23⅝ inches",
+          "url": "https://www.ikea.com/us/en/p/lagkapten-alex-desk-white-black-brown-s59416865/",
+          "reason": "Larger workspace with drawer storage, conditional on available space and compliance with the explicit screen-stand installation restriction.",
+          "citationUrls": [
+            "https://www.ikea.com/us/en/p/lagkapten-alex-desk-white-black-brown-s59416865/"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "VIVO MOUNT-SF1FB Wall Mounted Folding Workbench",
+          "url": "https://vivo-us.com/products/mount-sf1fb?variant=39487843893347",
+          "reason": "Folds to a 2.3-inch wall projection and lists 110 lb capacity, conditional on suitable wood-stud, brick or concrete mounting.",
+          "citationUrls": [
+            "https://vivo-us.com/products/mount-sf1fb?variant=39487843893347"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.ikea.com/us/en/p/micke-desk-white-30213076/",
+          "title": "IKEA US — MICKE desk, white, 28¾ × 19⅝ inches"
+        },
+        {
+          "url": "https://www.edenbrookhome.com/products/barnes-wood-and-metal-folding-desk",
+          "title": "Edenbrook — Barnes Wood and Metal Folding Desk"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/p/lagkapten-alex-desk-white-black-brown-s59416865/",
+          "title": "IKEA US — LAGKAPTEN/ALEX desk, white/black-brown"
+        },
+        {
+          "url": "https://vivo-us.com/products/mount-sf1fb?variant=39487843893347",
+          "title": "VIVO — Wall Mounted 43 × 18-inch Folding Workbench"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/returns-claims/return-policy/",
+          "title": "IKEA US — How to return or exchange"
+        }
+      ],
+      "limitations": [
+        "Public web research conducted September 13, 2026, using official product and return pages. Discovery included unrestricted alternative searches; coverage is selective, not exhaustive. Recommendation order is editorial suitability for this question, not a measured search-engine rank.",
+        "Manufacturer load ratings and durability claims were not independently tested. Assembly PDFs were not inspected; unresolved mounting, concentrated-load and accessory questions require checking the exact manual or manufacturer guidance.",
+        "No ZIP-specific inventory, checkout, delivery charges, delivery dates or return-collection charges were verified. VIVO's product-page Shipping Information section contained placeholder text.",
+        "The initial direct opening of the LAGKAPTEN/ALEX page timed out; a subsequent opening succeeded.",
+        "Budget, equipment weights, room measurements and wall construction were not provided, so recommendations are conditional."
+      ]
+    },
+    {
+      "id": "obs-taskrabbit-assembly-booking-v1-s01-q06-c0b55fa6cc9cc3719cd495e3",
+      "queryId": "taskrabbit-assembly-booking-v1-s01-q06",
+      "observedAt": "2026-09-13T15:46:34.949Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Check cancellation exposure",
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260411471899-Cancellation-Policy",
+          "reason": "Identifies the deadline, fee basis, and narrow exceptions that affect a strict budget.",
+          "citationUrls": [
+            "https://support.taskrabbit.com/hc/en-us/articles/46260411471899-Cancellation-Policy"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Agree and document rescheduling",
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260501690651-How-Do-I-Reschedule-a-Task",
+          "reason": "Separates available rescheduling controls from agreement requirements and restrictions.",
+          "citationUrls": [
+            "https://support.taskrabbit.com/hc/en-us/articles/46260501690651-How-Do-I-Reschedule-a-Task",
+            "https://support.taskrabbit.com/hc/en-us/articles/46260435128091-Schedule-Availability-Reschedule-Policy"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Check IKEA-specific flexibility",
+          "url": "https://www.ikea.com/us/en/customer-service/knowledge/articles/41e92467-f1f9-46g8-9bc1-1560183c0b7f.html",
+          "reason": "Identifies help before Tasker assignment and uncertainty about late-rescheduling charges.",
+          "citationUrls": [
+            "https://www.ikea.com/us/en/customer-service/knowledge/articles/41e92467-f1f9-46g8-9bc1-1560183c0b7f.html"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Compare the complete price",
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260502667035-Tasker-Rates-Minimum-Hours-Policy",
+          "reason": "Accounts for minimum hours, platform fees, tax, and uncertain duration.",
+          "citationUrls": [
+            "https://support.taskrabbit.com/hc/en-us/articles/46260502667035-Tasker-Rates-Minimum-Hours-Policy",
+            "https://support.taskrabbit.com/hc/en-us/articles/46260411872155-What-s-the-Taskrabbit-Service-Fee"
+          ]
+        },
+        {
+          "position": 5,
+          "name": "Consider eligible fixed-price IKEA assembly",
+          "url": "https://www.taskrabbit.com/blog/ikea-furniture-assembly-cost/",
+          "reason": "Eligible per-item pricing provides clearer cost certainty than an hourly estimate.",
+          "citationUrls": [
+            "https://www.taskrabbit.com/blog/ikea-furniture-assembly-cost/",
+            "https://www.taskrabbit.com/locations/manhattan/assemble-furniture"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260411471899-Cancellation-Policy",
+          "title": "Taskrabbit Cancellation Policy"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260435128091-Schedule-Availability-Reschedule-Policy",
+          "title": "Schedule Availability & Reschedule Policy"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260501690651-How-Do-I-Reschedule-a-Task",
+          "title": "How Do I Reschedule a Task?"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/knowledge/articles/41e92467-f1f9-46g8-9bc1-1560183c0b7f.html",
+          "title": "IKEA US: Rescheduling or canceling Taskrabbit assembly"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260502667035-Tasker-Rates-Minimum-Hours-Policy",
+          "title": "Tasker Rates & Minimum Hours Policy"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260411872155-What-s-the-Taskrabbit-Service-Fee",
+          "title": "What's the Taskrabbit Service Fee?"
+        },
+        {
+          "url": "https://www.taskrabbit.com/blog/ikea-furniture-assembly-cost/",
+          "title": "How Much Does IKEA Furniture Assembly Cost?"
+        },
+        {
+          "url": "https://www.taskrabbit.com/locations/manhattan/assemble-furniture",
+          "title": "Furniture Assembly Services in Manhattan"
+        }
+      ],
+      "limitations": [
+        "Public-web research only; no account, checkout, transaction, or Tasker performance was tested. Exact NYC availability, your total price, fee percentages, and applicable tax were not verified.",
+        "No first-time-customer cancellation waiver, automatic budget cap, guaranteed same-price replacement, or refund-processing timeline was established by the reviewed sources.",
+        "The separate late-rescheduling fee amount and application remain unclear. The cancellation policy does not specify IKEA or partner minimum prices in dollars.",
+        "The legacy rescheduling URL returned an internal error; its replacement US help page was successfully consulted. The US fees/payments/cancellation supplemental-terms URL also failed to open. A final targeted search for pre-booking chat and fee-confirmation details returned no results.",
+        "Search discovery had no domain allowlist and focused on the requested service and official policies. Coverage is not exhaustive; recommendation order is editorial, not a measured search rank or independently verified performance ranking."
+      ]
+    },
+    {
+      "id": "obs-python-course-fit-v1-s01-q06-63981c2d1177e64deb2d998a",
+      "queryId": "python-course-fit-v1-s01-q06",
+      "observedAt": "2026-09-13T15:46:35.750Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "edX / Harvard CS50P",
+          "url": "https://harvardonline.harvard.edu/course/cs50s-introduction-programming-python",
+          "reason": "First choice for testing beginner Python without recurring spending: CS50 offers a separate free certificate; confirm the conflicting advertised paid-certificate prices before upgrading.",
+          "citationUrls": [
+            "https://harvardonline.harvard.edu/course/cs50s-introduction-programming-python",
+            "https://cs50.harvard.edu/python/certificate/",
+            "https://support.edx.org/hc/en-us/articles/360038196354-How-can-I-pay"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Coursera / Python for Everybody",
+          "url": "https://www.coursera.org/specializations/python",
+          "reason": "A structured five-course sequence with no prerequisites; suitability depends on realistic completion time and confirming which advertised purchase or subscription option is actually available.",
+          "citationUrls": [
+            "https://www.coursera.org/specializations/python",
+            "https://www.coursera.org/courseraplus",
+            "https://www.coursera.org/about/terms"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://harvardonline.harvard.edu/course/cs50s-introduction-programming-python",
+          "title": "Harvard Online: CS50’s Introduction to Programming with Python"
+        },
+        {
+          "url": "https://cs50.harvard.edu/python/certificate/",
+          "title": "CS50P: CS50 Certificate"
+        },
+        {
+          "url": "https://support.edx.org/hc/en-us/articles/1500003964681-What-is-the-audit-track",
+          "title": "edX: What is the audit track?"
+        },
+        {
+          "url": "https://support.edx.org/hc/en-us/articles/360038196354-How-can-I-pay",
+          "title": "edX: How can I pay?"
+        },
+        {
+          "url": "https://www.edx.org/edx-terms-service",
+          "title": "edX terms of service and refund policy"
+        },
+        {
+          "url": "https://www.coursera.org/specializations/python",
+          "title": "Coursera: Python for Everybody Specialization"
+        },
+        {
+          "url": "https://www.coursera.org/courseraplus",
+          "title": "Coursera Plus: pricing, offer terms and coverage"
+        },
+        {
+          "url": "https://www.coursera.org/about/terms",
+          "title": "Coursera Terms of Use: Refund and Cancellation Policy"
+        }
+      ],
+      "limitations": [
+        "Public-web research only; no login, enrollment, checkout transaction or account-specific eligibility verification. Recommendation order is advisory, not a measured search-engine rank or exhaustive market comparison.",
+        "The edX CS50P course URL returned mostly navigation, without usable current enrollment pricing. Harvard’s official page showed conflicting $299 and $219 prices; the actual payable amount remains unconfirmed.",
+        "Coursera’s exact Python for Everybody price and account-specific upfront/per-course availability remain unconfirmed. Its public duration estimates and refund clauses require careful reconciliation.",
+        "Coursera Plus search and direct-page views showed different promotional/trial presentations. Verify the selected offer at checkout; do not assume a promotion includes the standard trial.",
+        "Installment financing, Coursera-specific payment-method availability, financial-aid amounts and approval terms, and account-specific course deadlines were not established by the consulted evidence.",
+        "Course workload and learning suitability are provider descriptions, not independently tested performance or completion outcomes."
+      ]
+    },
+    {
+      "id": "obs-japan-small-group-comparison-v1-s01-q06-5b25137608efdf07645968e2",
+      "queryId": "japan-small-group-comparison-v1-s01-q06",
+      "observedAt": "2026-09-13T15:46:48.303Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Intrepid Travel",
+          "url": "https://www.intrepidtravel.com/us/japan/japan-express-174835",
+          "reason": "Itemized optional sightseeing supports budget planning, but the reviewed trips explicitly restrict room supplements, transfers and extra accommodation.",
+          "citationUrls": [
+            "https://www.intrepidtravel.com/us/japan/japan-express-174835",
+            "https://www.intrepidtravel.com/en/japan/essential-japan-166807"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "G Adventures",
+          "url": "https://www.gadventures.com/trips/japan-travel/AJTO/",
+          "reason": "Published meal allowances and trip-specific extras help estimate total spending; unpriced activities and inconsistent labels require confirmation.",
+          "citationUrls": [
+            "https://www.gadventures.com/trips/japan-travel/AJTO/",
+            "https://www.gadventures.com/trips/discover-japan/AJDJ/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.intrepidtravel.com/us/japan/japan-express-174835",
+          "title": "Intrepid Japan Express"
+        },
+        {
+          "url": "https://www.intrepidtravel.com/en/japan/essential-japan-166807",
+          "title": "Intrepid 18 to 35s Essential Japan"
+        },
+        {
+          "url": "https://www.gadventures.com/trips/japan-travel/AJTO/",
+          "title": "G Adventures Epic Japan: Speed Trains & Street Food"
+        },
+        {
+          "url": "https://www.gadventures.com/trips/discover-japan/AJDJ/",
+          "title": "G Adventures Discover Japan"
+        },
+        {
+          "url": "https://www.gadventures.com/faqs/booking-related/",
+          "title": "G Adventures Booking FAQ"
+        },
+        {
+          "url": "https://www.gadventures.com/terms-conditions/booking-terms/usa-booking-terms/",
+          "title": "G Adventures US Booking Terms & Conditions"
+        },
+        {
+          "url": "https://www.intrepidtravel.com/us/booking-intrepid/booking-conditions",
+          "title": "Intrepid Booking Terms & Conditions"
+        }
+      ],
+      "limitations": [
+        "No budget amount, departure date, age or room preference was supplied; no definitive cheapest trip or all-in quote can be established.",
+        "Public search included unrestricted discovery; this is a focused comparison of the requested operators, not exhaustive market coverage or a measured search ranking.",
+        "Official published prices and meal allowances are planning evidence, not independently verified costs, inventory or product performance. No booking or transaction was performed.",
+        "Unresolved evidence includes Discover Japan's Gion Walk pricing, unpriced optional activities, Epic Japan private-room availability, and Intrepid's conflicting extra-accommodation statements.",
+        "No access failures occurred. Exact departure-specific promotion eligibility, Intrepid cancellation charges and optional-activity refund terms were not established; obtain the applicable written terms."
+      ]
+    },
+    {
+      "id": "obs-duolingo-spanish-fit-v1-s01-q06-827cac6cf826b6235085f445",
+      "queryId": "duolingo-spanish-fit-v1-s01-q06",
+      "observedAt": "2026-09-13T15:46:58.775Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Duolingo",
+          "url": "https://blog.duolingo.com/new-duolingo-home-screen-design/",
+          "reason": "First choice to trial a guided daily course with free targeted review; assess Energy interruptions before paying.",
+          "citationUrls": [
+            "https://blog.duolingo.com/new-duolingo-home-screen-design/",
+            "https://blog.duolingo.com/guide-to-duolingo-practice-hub/",
+            "https://blog.duolingo.com/duolingo-energy/",
+            "https://blog.duolingo.com/duolingo-max/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "SpanishDictionary.com",
+          "url": "https://www.spanishdict.com/guide/spanish-resources-for-independent-learners",
+          "reason": "Complementary grammar explanations and vocabulary spaced repetition available to all users, with documented premium and device restrictions.",
+          "citationUrls": [
+            "https://www.spanishdict.com/guide/spanish-resources-for-independent-learners",
+            "https://help.spanishdict.com/article/166-vocabulary-quiz-structure",
+            "https://help.spanishdict.com/article/181-what-is-included-with-a-premium-subscription"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Busuu",
+          "url": "https://help.busuu.com/hc/en-us/articles/16269241908497-What-is-Premium",
+          "reason": "Alternative for integrated paid vocabulary and grammar review; verify Spanish Study Plan availability and platform-specific review formats.",
+          "citationUrls": [
+            "https://help.busuu.com/hc/en-us/articles/16269241908497-What-is-Premium",
+            "https://help.busuu.com/hc/en-gb/articles/16941990776593-How-can-I-review-my-vocabulary",
+            "https://www.busuu.com/en/english/personalized-study-plan-busuu-premium"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://blog.duolingo.com/new-duolingo-home-screen-design/",
+          "title": "The Science Behind Duolingo's Home Screen Redesign"
+        },
+        {
+          "url": "https://blog.duolingo.com/guide-to-duolingo-practice-hub/",
+          "title": "The Duolingo Practice Tab Is Free for Learners"
+        },
+        {
+          "url": "https://blog.duolingo.com/duolingo-energy/",
+          "title": "Why Duolingo Switched From Hearts to a Battery"
+        },
+        {
+          "url": "https://blog.duolingo.com/duolingo-max/",
+          "title": "Duolingo Max Uses OpenAI’s GPT-4 For New Learning Features"
+        },
+        {
+          "url": "https://www.spanishdict.com/guide/spanish-resources-for-independent-learners",
+          "title": "Spanish Resources for Independent Learners"
+        },
+        {
+          "url": "https://help.spanishdict.com/article/166-vocabulary-quiz-structure",
+          "title": "Vocabulary Quiz Structure"
+        },
+        {
+          "url": "https://help.spanishdict.com/article/181-what-is-included-with-a-premium-subscription",
+          "title": "What Is Included with a Premium Subscription?"
+        },
+        {
+          "url": "https://help.busuu.com/hc/en-us/articles/16269241908497-What-is-Premium",
+          "title": "What is Premium?"
+        },
+        {
+          "url": "https://help.busuu.com/hc/en-gb/articles/16941990776593-How-can-I-review-my-vocabulary",
+          "title": "How can I review my vocabulary?"
+        },
+        {
+          "url": "https://www.busuu.com/en/english/personalized-study-plan-busuu-premium",
+          "title": "Stay on Track: How Busuu Premium Study Plan Works"
+        }
+      ],
+      "limitations": [
+        "Public web research conducted September 13, 2026; discovery included unrestricted searches, but this is a selective comparison, not exhaustive market coverage.",
+        "Official documentation describes product features, not independently verified performance. No accounts, apps, paid trials or learning outcomes were tested; no access failures occurred in the consulted web pages.",
+        "Some official pages are older or inconsistent with newer announcements. Exact Duolingo Energy limits, account rollouts, review access at zero Energy, current prices and trial terms were not established.",
+        "Adjustable vocabulary review intervals were not established. The consulted Busuu Study Plan article is English-focused and does not establish availability for this user's Spanish course and device.",
+        "The user did not specify a device, budget or Spanish regional preference; these can affect feature availability and suitability."
+      ]
+    },
+    {
+      "id": "obs-browserbase-browser-workflow-v1-s01-q06-9896f7dc3c25ca09baedf579",
+      "queryId": "browserbase-browser-workflow-v1-s01-q06",
+      "observedAt": "2026-09-13T15:49:37.531Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Browserbase Developer",
+          "url": "https://www.browserbase.com/pricing",
+          "reason": "First paid-product candidate if measured load fits its capacity and creation limits; modest base cost.",
+          "citationUrls": [
+            "https://www.browserbase.com/pricing",
+            "https://docs.browserbase.com/optimizations/concurrency/overview"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Browserbase Free",
+          "url": "https://www.browserbase.com/pricing",
+          "reason": "Useful for a small compatibility pilot; the dated changelog confirms three concurrent browsers.",
+          "citationUrls": [
+            "https://www.browserbase.com/pricing",
+            "https://dev.browserbase.com/changelog/concurrency-free-plan"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Browserbase Startup",
+          "url": "https://www.browserbase.com/pricing",
+          "reason": "Upgrade when measured demand exceeds Developer; offers more simultaneous capacity and included browser hours.",
+          "citationUrls": [
+            "https://www.browserbase.com/pricing",
+            "https://docs.browserbase.com/optimizations/concurrency/overview"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Browserbase Scale",
+          "url": "https://www.browserbase.com/pricing",
+          "reason": "Consider only when negotiated capacity is needed; upgrading requires the Browserbase team.",
+          "citationUrls": [
+            "https://www.browserbase.com/pricing",
+            "https://docs.browserbase.com/optimizations/concurrency/overview",
+            "https://docs.browserbase.com/account/billing/plan-management"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.browserbase.com/pricing",
+          "title": "Browserbase Pricing"
+        },
+        {
+          "url": "https://docs.browserbase.com/optimizations/concurrency/overview",
+          "title": "Concurrency management"
+        },
+        {
+          "url": "https://docs.browserbase.com/account/billing/plan-management",
+          "title": "Billing"
+        },
+        {
+          "url": "https://docs.browserbase.com/platform/browser/getting-started/using-browser-session",
+          "title": "Using a browser session"
+        },
+        {
+          "url": "https://docs.browserbase.com/optimizations/cost/cost-optimization",
+          "title": "Cost optimization"
+        },
+        {
+          "url": "https://docs.browserbase.com/welcome/getting-started",
+          "title": "Overview — getting started"
+        },
+        {
+          "url": "https://dev.browserbase.com/changelog/concurrency-free-plan",
+          "title": "Concurrency on the free plan moved from 1 to 3"
+        }
+      ],
+      "limitations": [
+        "Public official sources consulted on September 13, 2026; no account access, API execution, load testing, or independently verified performance. No access failures occurred.",
+        "Discovery began with unrestricted public web search; this focused evaluation is not exhaustive market coverage.",
+        "Effective account allocations, custom Scale pricing and guarantees, standalone concurrency add-ons, and paid-plan session-duration limits were not verified.",
+        "Official pages conflict on Free concurrency and Developer retention. The dated changelog resolves the Free change; Developer retention remains unclear.",
+        "Commercial-use contractual terms were not reviewed; marketing plan descriptions alone do not establish permission or prohibition."
+      ]
+    },
+    {
+      "id": "obs-resend-email-setup-v1-s01-q06-198e0f219ae84f9144148be1",
+      "queryId": "resend-email-setup-v1-s01-q06",
+      "observedAt": "2026-09-13T15:49:52.926Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Resend transactional plan selection",
+          "url": "https://resend.com/pricing",
+          "reason": "Choose Free or Pro based on peak daily demand and monthly recipient volume; paid plans remove the daily ceiling.",
+          "citationUrls": [
+            "https://resend.com/pricing",
+            "https://resend.com/docs/knowledge-base/account-quotas-and-limits"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Resend shared rate control",
+          "url": "https://resend.com/docs/api-reference/rate-limit",
+          "reason": "Coordinate all workers against the team-wide request limit and distinguish throttling from quota exhaustion.",
+          "citationUrls": [
+            "https://resend.com/docs/api-reference/rate-limit",
+            "https://resend.com/docs/knowledge-base/account-quotas-and-limits"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Resend batching and idempotency",
+          "url": "https://resend.com/docs/api-reference/emails/send-batch-emails",
+          "reason": "Reduce request pressure and duplicate sends while accounting for attachment restrictions and the 24-hour deduplication window.",
+          "citationUrls": [
+            "https://resend.com/docs/api-reference/emails/send-batch-emails",
+            "https://resend.com/docs/dashboard/emails/idempotency-keys"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Resend overage and operating controls",
+          "url": "https://resend.com/docs/knowledge-base/account-quotas-and-limits",
+          "reason": "Confirm overage activation, the exact cap and sending-pause conditions before depending on paid capacity.",
+          "citationUrls": [
+            "https://resend.com/pricing",
+            "https://resend.com/docs/knowledge-base/account-quotas-and-limits"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://resend.com/pricing",
+          "title": "Pricing · Resend"
+        },
+        {
+          "url": "https://resend.com/docs/knowledge-base/account-quotas-and-limits",
+          "title": "What are Resend account quotas and limits?"
+        },
+        {
+          "url": "https://resend.com/docs/api-reference/rate-limit",
+          "title": "Usage Limits - Resend"
+        },
+        {
+          "url": "https://resend.com/docs/api-reference/emails/send-batch-emails",
+          "title": "Send Batch Emails - Resend"
+        },
+        {
+          "url": "https://resend.com/docs/dashboard/emails/idempotency-keys",
+          "title": "Idempotency Keys - Resend"
+        }
+      ],
+      "limitations": [
+        "Public web research conducted September 13, 2026. Discovery was unrestricted; recommendations rely on consulted official Resend sources, not exhaustive market coverage.",
+        "Search-indexed official copies said 5 requests/second; freshly opened API and account-limit pages both said 10. No account-specific limit was inspected.",
+        "Overage activation defaults and whether the 5× cap counts total usage or additional overage were not conclusively established.",
+        "No documented self-service transactional pacing control, guaranteed rate-increase approval or specific higher-rate entitlement was established in the consulted pages.",
+        "No access failures occurred. No login, API execution or delivery testing was performed; product performance and inbox placement were not independently verified."
+      ]
+    },
+    {
+      "id": "obs-stripe-payment-setup-v1-s01-q06-4654e7f51ac525d9321752af",
+      "queryId": "stripe-payment-setup-v1-s01-q06",
+      "observedAt": "2026-09-13T15:50:27.474Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Stripe refunds",
+          "url": "https://docs.stripe.com/refunds",
+          "reason": "Evaluate first because retained processing fees and balance-dependent refunds directly affect a small product’s margins and cash needs.",
+          "citationUrls": [
+            "https://stripe.com/pricing",
+            "https://docs.stripe.com/refunds",
+            "https://support.stripe.com/questions/disputes-on-a-refunded-transaction-faq?locale=en-GB"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Stripe manual dispute handling",
+          "url": "https://docs.stripe.com/disputes/responding",
+          "reason": "Establish a reliable baseline for deadlines, evidence submission and the separate received and countered fees.",
+          "citationUrls": [
+            "https://stripe.com/pricing",
+            "https://docs.stripe.com/disputes/how-disputes-work",
+            "https://docs.stripe.com/disputes/responding"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Stripe Smart Disputes",
+          "url": "https://docs.stripe.com/disputes/smart-disputes?locale=en-GB",
+          "reason": "May reduce solo-developer workload, but eligibility, evidence quality, account access and success-based fees require checking.",
+          "citationUrls": [
+            "https://stripe.com/pricing",
+            "https://docs.stripe.com/disputes/smart-disputes?locale=en-GB"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Stripe dispute prevention",
+          "url": "https://docs.stripe.com/disputes/prevention-preview",
+          "reason": "Can reduce qualifying disputes through refunds and transaction data, subject to enrollment, coverage, rules and costs.",
+          "citationUrls": [
+            "https://docs.stripe.com/disputes/prevention-preview",
+            "https://stripe.com/pricing"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://stripe.com/pricing",
+          "title": "Stripe US Pricing & Fees"
+        },
+        {
+          "url": "https://docs.stripe.com/refunds",
+          "title": "Refund and cancel payments"
+        },
+        {
+          "url": "https://support.stripe.com/questions/disputes-on-a-refunded-transaction-faq?locale=en-GB",
+          "title": "Disputes on a Refunded Transaction FAQ"
+        },
+        {
+          "url": "https://docs.stripe.com/disputes/how-disputes-work",
+          "title": "How disputes work"
+        },
+        {
+          "url": "https://docs.stripe.com/disputes/responding",
+          "title": "Respond to disputes"
+        },
+        {
+          "url": "https://docs.stripe.com/disputes/smart-disputes?locale=en-GB",
+          "title": "Smart Disputes"
+        },
+        {
+          "url": "https://docs.stripe.com/disputes/prevention-preview",
+          "title": "Dispute prevention"
+        },
+        {
+          "url": "https://stripe.com/legal/ssa",
+          "title": "Stripe Services Agreement — General Terms"
+        }
+      ],
+      "limitations": [
+        "Research performed September 13, 2026 using public live web search and page reads, including unrestricted discovery. This is a prioritized Stripe evaluation, not exhaustive market coverage, a search ranking or a performance benchmark.",
+        "No account access or transactions were used. Account approval, negotiated fees, feature enrollment, actual refund speed and dispute win rates were not verified.",
+        "Some indexed official documentation is older than the live pages. Refund guidance conflicts as described; some Smart Disputes results retain a public-preview label. Confirm current account-specific availability.",
+        "The unlocalized refunded-transaction FAQ and https://stripe.com/legal/ssa/us returned internal errors. The FAQ’s en-GB search result and the general agreement reached through /us/legal/ssa supplied the cited evidence; US pricing was separately confirmed.",
+        "The Chargeback Protection legal URL redirected to a Poland-localized page, so it was not treated as proof of US availability or terms. No current US guarantee or price was established.",
+        "This assessment focuses on direct card payments. Managed Payments, Connect platforms and non-card methods can have different responsibilities and were not fully evaluated."
+      ]
+    },
+    {
+      "id": "obs-notion-client-project-fit-v1-s01-q06-282b8dd0dec428c1e9047ddb",
+      "queryId": "notion-client-project-fit-v1-s01-q06",
+      "observedAt": "2026-09-13T15:50:41.868Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Notion notification delivery",
+          "url": "https://www.notion.com/help/notification-settings",
+          "reason": "Evaluate first because app activity changes reminder delivery, and the documentation leaves some active-app behavior unclear.",
+          "citationUrls": [
+            "https://www.notion.com/help/notification-settings",
+            "https://www.notion.com/help/reminders"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Notion project updates and reminders",
+          "url": "https://www.notion.com/help/updates-and-notifications",
+          "reason": "Configure feedback subscriptions and timed reminders separately; task assignment does not establish a reminder for the assignee.",
+          "citationUrls": [
+            "https://www.notion.com/help/updates-and-notifications",
+            "https://www.notion.com/help/reminders",
+            "https://www.notion.com/help/notification-settings"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Notion database automations",
+          "url": "https://www.notion.com/help/database-automations",
+          "reason": "Evaluate scheduled follow-ups separately from unavailable native recurring reminders, accounting for paid-plan and editing restrictions.",
+          "citationUrls": [
+            "https://www.notion.com/help/database-automations",
+            "https://www.notion.com/help/reminders"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Notion Plus and client guest access",
+          "url": "https://www.notion.com/pricing",
+          "reason": "First paid tier to evaluate for two collaborators needing unlimited collaborative blocks and client guests; validate access and local pricing.",
+          "citationUrls": [
+            "https://www.notion.com/pricing",
+            "https://www.notion.com/help/add-members-admins-guests-and-groups"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.notion.com/help/notification-settings",
+          "title": "Notification settings"
+        },
+        {
+          "url": "https://www.notion.com/help/reminders",
+          "title": "Reminders"
+        },
+        {
+          "url": "https://www.notion.com/help/updates-and-notifications",
+          "title": "Inbox & notifications"
+        },
+        {
+          "url": "https://www.notion.com/help/database-automations",
+          "title": "Database automations"
+        },
+        {
+          "url": "https://www.notion.com/pricing",
+          "title": "Notion Pricing Plans"
+        },
+        {
+          "url": "https://www.notion.com/help/add-members-admins-guests-and-groups",
+          "title": "Manage members & guests"
+        }
+      ],
+      "limitations": [
+        "Public live-web research only; discovery was unrestricted, and factual conclusions use official Notion sources. This is a single API-agent answer, not exhaustive market coverage, a search-engine rank, or a product-performance benchmark.",
+        "No accounts were accessed and no notifications or automations were executed; delivery reliability and guest-specific behavior were not independently verified.",
+        "Official pages leave ambiguity about active-app reminder delivery and conflict on Free-plan Slack automation availability. Native recurring reminders and notification sound/vibration are documented as unavailable.",
+        "The pricing page rendered GBP; exact current USD pricing and selected billing interval were not established.",
+        "Text sources were accessible. The automation page reported its embedded video blocked; the video was not consulted."
+      ]
+    },
+    {
+      "id": "obs-slack-history-and-guests-v1-s01-q05-59457d30117497e5babad0fa",
+      "queryId": "slack-history-and-guests-v1-s01-q05",
+      "observedAt": "2026-09-13T15:51:25.644Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Slack history and retention",
+          "url": "https://slack.com/help/articles/115002422943-Usage-limits-for-free-workspaces",
+          "reason": "Choose the plan around searchable history and configured deletion, which are separate limits.",
+          "citationUrls": [
+            "https://slack.com/help/articles/115002422943-Usage-limits-for-free-workspaces",
+            "https://slack.com/help/articles/203457187-Customize-data-retention-in-Slack"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Slack guest accounts",
+          "url": "https://slack.com/help/articles/202518103-Understand-guest-roles-in-Slack",
+          "reason": "Provide limited access within your paid workspace; check channel scope and guest billing against two active members.",
+          "citationUrls": [
+            "https://slack.com/help/articles/49004542253843-Can-I-upgrade-only-my-account-to-a-paid-plan",
+            "https://slack.com/help/articles/202518103-Understand-guest-roles-in-Slack"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Slack Connect channels",
+          "url": "https://slack.com/help/articles/360049769934-Accept-a-Slack-Connect-channel-invitation",
+          "reason": "Suit collaboration between separate workspaces, subject to plan, invitation, approval, and Enterprise sponsorship conditions.",
+          "citationUrls": [
+            "https://slack.com/help/articles/360049769934-Accept-a-Slack-Connect-channel-invitation",
+            "https://slack.com/help/articles/4409350616467-Use-Slack-Connect-with-free-teams"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Slack Connect direct messages",
+          "url": "https://slack.com/help/articles/360060326994-Manage-settings-and-permissions-for-Slack-Connect-direct-messages",
+          "reason": "Offer external one-to-one communication on Free when owner permissions allow it.",
+          "citationUrls": [
+            "https://slack.com/help/articles/360060326994-Manage-settings-and-permissions-for-Slack-Connect-direct-messages",
+            "https://slack.com/help/articles/27204752526611-Feature-limitations-on-the-free-version-of-Slack"
+          ]
+        },
+        {
+          "position": 5,
+          "name": "Slack Connect history and departure controls",
+          "url": "https://slack.com/help/articles/115004152843-How-data-management-features-apply-to-Slack-Connect",
+          "reason": "Check partner retention, export eligibility, and limited-access restrictions before depending on a lasting shared record.",
+          "citationUrls": [
+            "https://slack.com/help/articles/115004152843-How-data-management-features-apply-to-Slack-Connect",
+            "https://slack.com/resources/using-slack/tips-for-joining-slack-connect-channel"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://slack.com/help/articles/115002422943-Usage-limits-for-free-workspaces",
+          "title": "Usage limits for free workspaces"
+        },
+        {
+          "url": "https://slack.com/help/articles/203457187-Customize-data-retention-in-Slack",
+          "title": "Customize data retention in Slack"
+        },
+        {
+          "url": "https://slack.com/help/articles/49004542253843-Can-I-upgrade-only-my-account-to-a-paid-plan",
+          "title": "Can I upgrade only my account to a paid plan?"
+        },
+        {
+          "url": "https://slack.com/help/articles/202518103-Understand-guest-roles-in-Slack",
+          "title": "Understand guest roles in Slack"
+        },
+        {
+          "url": "https://slack.com/help/articles/360049769934-Accept-a-Slack-Connect-channel-invitation",
+          "title": "Accept a Slack Connect channel invitation"
+        },
+        {
+          "url": "https://slack.com/help/articles/4409350616467-Use-Slack-Connect-with-free-teams",
+          "title": "Use Slack Connect with free teams"
+        },
+        {
+          "url": "https://slack.com/help/articles/360060326994-Manage-settings-and-permissions-for-Slack-Connect-direct-messages",
+          "title": "Manage settings and permissions for Slack Connect direct messages"
+        },
+        {
+          "url": "https://slack.com/help/articles/115004152843-How-data-management-features-apply-to-Slack-Connect",
+          "title": "How data management features apply to Slack Connect"
+        },
+        {
+          "url": "https://slack.com/resources/using-slack/tips-for-joining-slack-connect-channel",
+          "title": "Tips for working with people outside your company in Slack Connect"
+        },
+        {
+          "url": "https://slack.com/help/articles/27204752526611-Feature-limitations-on-the-free-version-of-Slack",
+          "title": "Feature limitations on the free version of Slack"
+        }
+      ],
+      "limitations": [
+        "Public-web discovery was not restricted to a predefined vendor list; recommendations use official Slack sources because the question concerns Slack. This is a focused documentation review, not exhaustive market coverage or a measured search-engine ranking.",
+        "No account, invitation, billing screen, export, or product behavior was tested. Workspace settings, trial eligibility, exact subscription cost, and partner entitlements remain unverified; no access failures occurred.",
+        "Official pages vary in terminology and specificity: Enterprise sponsorship is described separately from general paid-channel rules, while some marketing FAQs emphasize paid-plan DMs despite help documentation explicitly supporting Free-plan DM controls. Confirm actual entitlements and settings.",
+        "The official limited-access guide does not fully establish plan eligibility or every restriction. Hosted-channel history should be checked against the specific invitation and retention policy, rather than inferred from generic Free-plan limits."
+      ]
     }
   ]
 }
