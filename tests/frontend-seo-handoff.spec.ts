@@ -70,7 +70,7 @@ test("a saved SEO report hands its exact ID and website to the composer without 
   await expect(page.getByLabel("Website domain", { exact: true })).toHaveValue("example.com");
   await expect(page.getByRole("link", { name: "Use in evaluation", exact: true })).toHaveCount(0);
   expect(state.reportReads).toEqual([]);
-  await page.getByRole("button", { name: /Open saved SEO report for example\.com/ }).click();
+  await page.getByRole("button", { name: /Open saved website report for example\.com/ }).click();
   const handoff = page.getByRole("link", { name: "Use in evaluation", exact: true });
   await expect(handoff).toBeVisible();
   const href = new URL((await handoff.getAttribute("href"))!, "http://localhost:3001");
@@ -86,7 +86,7 @@ test("a saved SEO report hands its exact ID and website to the composer without 
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(await page.evaluate(() => innerWidth + 1));
 
   await navigate(page, "/search-data");
-  await page.getByRole("button", { name: /Open saved SEO report for example\.com/ }).click();
+  await page.getByRole("button", { name: /Open saved website report for example\.com/ }).click();
   await expect(page.getByRole("link", { name: "Use in evaluation", exact: true })).toBeVisible();
   await navigate(page, "/settings");
   await page.getByRole("button", { name: "Sign out", exact: true }).click();
@@ -102,9 +102,9 @@ test("a saved SEO report hands its exact ID and website to the composer without 
 test("pending reports never offer an evaluation attachment or trigger another lookup", async ({ page }) => {
   const state = await fixture(page);
   await page.goto("/search-data");
-  await page.getByRole("button", { name: /Open saved SEO report for example\.com/ }).click();
+  await page.getByRole("button", { name: /Open saved website report for example\.com/ }).click();
   await expect(page.getByRole("link", { name: "Use in evaluation", exact: true })).toBeVisible();
-  await page.getByRole("button", { name: /Open saved SEO report for pending\.example\.com/ }).click();
+  await page.getByRole("button", { name: /Open saved website report for pending\.example\.com/ }).click();
   await expect(page.locator(".seo-data-history").getByRole("alert")).toContainText("completion and cost are unconfirmed");
   await expect(page.getByRole("link", { name: "Use in evaluation", exact: true })).toHaveCount(0);
   await expect(page.locator(".seo-data-results")).toHaveCount(0);
@@ -117,7 +117,7 @@ test("an unsaved lookup remains downloadable and cannot be attached by its reser
   await page.goto("/search-data?target=example.com");
   await expect(page.getByLabel("Website domain", { exact: true })).toHaveValue("example.com");
   expect(state.seoLookups).toBe(0);
-  await page.getByRole("button", { name: "Fetch SEO data", exact: true }).click();
+  await page.getByRole("button", { name: "Update website data", exact: true }).click();
   await expect(page.locator(".seo-data-results").getByRole("alert")).toContainText("was not saved");
   await expect(page.getByRole("button", { name: "Download private report", exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Use in evaluation", exact: true })).toHaveCount(0);
@@ -128,7 +128,7 @@ test("an unsaved lookup remains downloadable and cannot be attached by its reser
 test("unsafe target hints and a report ID in the URL do not authorize private evidence reads", async ({ page }) => {
   const state = await fixture(page, { signedIn: false });
   await page.goto(`/search-data?target=javascript%3Aalert%281%29&seoReport=${savedReport.id}`);
-  await expect(page.getByLabel("Website domain", { exact: true })).toHaveValue("rachit.ai");
+  await expect(page.getByLabel("Website domain", { exact: true })).toHaveValue("");
   await expect(page.getByRole("link", { name: "Sign in to continue", exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Use in evaluation", exact: true })).toHaveCount(0);
   expect(state.reportReads).toEqual([]);

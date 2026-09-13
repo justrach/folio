@@ -1,6 +1,7 @@
 import "server-only";
 import type { D1Database } from "@cloudflare/workers-types";
 import { EVAL_SUITE, type EvaluationRun } from "./evals";
+import type { AgentReservationGuard } from "./agent-observation-types";
 
 export class EvalStoreError extends Error {
   constructor(message: string, public readonly status = 409) {
@@ -19,36 +20,45 @@ function validateRun(run: EvaluationRun) {
 }
 
 /** One SQL statement reserves capacity before any potentially billable session POST. */
-export async function createEvaluationRun(
+export function prepareEvaluationRunReservation(
   db: D1Database,
   ownerId: string,
   run: EvaluationRun,
-  options: { maxLivePerDay?: number } = {},
-): Promise<EvaluationRun> {
+  options: { maxLivePerDay?: number | null; guard?: AgentReservationGuard } = {},
+) {
   validateRun(run);
   if (!ownerId) throw new EvalStoreError("A signed-in owner is required.", 401);
-  const limit = options.maxLivePerDay ?? 1;
-  if (!Number.isInteger(limit) || limit < 1 || limit > 100)
+  const limit = options.maxLivePerDay === undefined ? 1 : options.maxLivePerDay;
+  if (limit !== null && (!Number.isInteger(limit) || limit < 1 || limit > 100))
     throw new EvalStoreError("Invalid deployment evaluation limit.", 500);
   const saved = { ...run, revision: 0 };
-  try {
-    const inserted = await db.prepare(`
+  const guard = options.guard;
+  if (guard && (guard.ownerId !== ownerId || guard.runId !== run.id)) throw new EvalStoreError("Invalid API reservation owner or run.", 400);
+  return db.prepare(`
       INSERT INTO evaluation_runs
         (id, user_id, target_url, suite_version, mode, status, session_id, created_at, updated_at, revision, result_json)
       SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?
       WHERE NOT EXISTS (
         SELECT 1 FROM evaluation_runs WHERE user_id = ? AND status IN ('queued', 'running', 'requires_action')
-      ) AND (? = 'demo' OR (
+      ) AND (? = 'demo' OR ? IS NULL OR (
         SELECT COUNT(*) FROM evaluation_runs WHERE user_id = ? AND mode = 'live' AND created_at >= ?
       ) < ?)
+      ${guard ? "AND EXISTS(SELECT 1 FROM agent_api_requests WHERE id=? AND user_id=? AND run_id=? AND disposition='started')" : ""}
+      RETURNING id
     `).bind(
       saved.id, ownerId, saved.targetUrl, saved.suiteVersion, saved.mode, saved.status,
       saved.sessionId, Date.parse(saved.createdAt), Date.parse(saved.updatedAt), JSON.stringify(saved),
-      ownerId, saved.mode, ownerId, Date.now() - 86_400_000, limit,
-    ).run();
-    if (inserted.meta.changes !== 1)
+      ownerId, saved.mode, limit, ownerId, Date.now() - 86_400_000, limit,
+      ...(guard ? [guard.requestId, guard.ownerId, guard.runId] : []),
+    );
+}
+export async function createEvaluationRun(db: D1Database, ownerId: string, run: EvaluationRun,
+  options: { maxLivePerDay?: number | null } = {}): Promise<EvaluationRun> {
+  try {
+    const inserted = await prepareEvaluationRunReservation(db, ownerId, run, options).first<{ id: string }>();
+    if (!inserted)
       throw new EvalStoreError("An evaluation is already active, or this account has reached its managed evaluation limit for the last 24 hours.", 429);
-    return saved;
+    return { ...run, revision: 0 };
   } catch (error) {
     if (error instanceof EvalStoreError) throw error;
     if (error instanceof Error && /UNIQUE constraint/i.test(error.message))
@@ -72,7 +82,7 @@ export async function listEvaluationRuns(db: D1Database, ownerId: string): Promi
 
 export type EvaluationUsage = {
   liveAttemptsLast24Hours: number;
-  remainingLiveRuns: number;
+  remainingLiveRuns: number | null;
   activeRunId: string | null;
   activeRunStatus: EvaluationRun["status"] | null;
 };
@@ -84,10 +94,10 @@ export type EvaluationUsage = {
 export async function getEvaluationUsage(
   db: D1Database,
   ownerId: string,
-  maxLivePerDay = 1,
+  maxLivePerDay: number | null = 1,
 ): Promise<EvaluationUsage> {
   if (!ownerId) throw new EvalStoreError("A signed-in owner is required.", 401);
-  if (!Number.isInteger(maxLivePerDay) || maxLivePerDay < 1 || maxLivePerDay > 100)
+  if (maxLivePerDay !== null && (!Number.isInteger(maxLivePerDay) || maxLivePerDay < 1 || maxLivePerDay > 100))
     throw new EvalStoreError("Invalid deployment evaluation limit.", 500);
   // One statement keeps the count and active-run identity in the same snapshot.
   // Intentionally omit deleted_at: tombstones retain their paid-run reservation.
@@ -110,7 +120,7 @@ export async function getEvaluationUsage(
   if (!row) throw new EvalStoreError("Evaluation usage is unavailable.", 503);
   return {
     liveAttemptsLast24Hours: row.live_attempts,
-    remainingLiveRuns: Math.max(0, maxLivePerDay - row.live_attempts),
+    remainingLiveRuns: maxLivePerDay === null ? null : Math.max(0, maxLivePerDay - row.live_attempts),
     activeRunId: row.active_run_id,
     activeRunStatus: row.active_run_status,
   };

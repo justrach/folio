@@ -3,11 +3,11 @@ import test from "node:test";
 import type { D1Database } from "@cloudflare/workers-types";
 import {
   AgentsIntegrationError, createWebsiteEvaluationSession, getAgentSessionTurns,
-  cancelAgentSessionTurn,
+  cancelAgentSessionTurn, serializeWebsiteEvaluationInput,
 } from "../src/lib/agents";
 import {
   managedRunAccess, projectAgentItems, startEvaluationRun,
-  reconcileEvaluationRun, cancelEvaluationRun,
+  reconcileEvaluationRun, cancelEvaluationRun, captureEvaluationWebsite,
 } from "../src/lib/agent-runs";
 import { createDemoEvaluationRun, DEMO_AGENT_OUTPUT, DEMO_WEBSITE_HTML } from "../src/lib/eval-verifier";
 import type { EvaluationRun } from "../src/lib/evals";
@@ -45,6 +45,11 @@ function memoryDb(options: { failSessionSaves?: number; loseSessionSaveResponse?
               throw new Error("Unexpected SQL");
             },
             async first() {
+              if (sql.includes("INSERT INTO evaluation_runs")) {
+                const run = JSON.parse(values[9] as string) as EvaluationRun;
+                rows.set(run.id, { owner: values[1] as string, run });
+                return { id: run.id };
+              }
               const row = rows.get(values[1] as string);
               return row && row.owner === values[0] ? { result_json: JSON.stringify(row.run) } : null;
             },
@@ -66,6 +71,11 @@ test("paid-run access uses exact server-approved user IDs and leaks no key", () 
   assert.equal(managedRunAccess(env, "").canRun, false);
   assert.equal(managedRunAccess({ ...env, OPENAI_API_KEY: "" }, "approved-user").configured, false);
   assert.ok(!JSON.stringify(managedRunAccess(env, "approved-user")).includes(env.OPENAI_API_KEY));
+  const exempt = { ...env, OPENAI_UNMETERED_USER_IDS: "approved-user" };
+  assert.equal(managedRunAccess(exempt, "approved-user").maxRunsPerDay, null);
+  assert.equal(managedRunAccess({ ...exempt, OPENAI_UNMETERED_USER_IDS: "prefix-approved-user" }, "approved-user").maxRunsPerDay, 1);
+  assert.equal(managedRunAccess({ ...exempt, OPENAI_ALLOWED_USER_IDS: "other-user" }, "approved-user").canRun, false);
+  assert.equal(managedRunAccess({ ...exempt, OPENAI_ALLOWED_USER_IDS: "approved-user,other-user" }, "other-user").maxRunsPerDay, 1);
 });
 
 test("missing credentials and unapproved accounts never make a provider request", async (t) => {
@@ -107,6 +117,36 @@ test("managed create reserves its attempt before one POST containing the initial
   assert.equal(calls.filter(call => call.method === "POST").length, 1);
   assert.equal(run.publication, "private");
   assert.equal(run.captures[0].content, DEMO_WEBSITE_HTML);
+});
+
+test("website captures retain a complete 182KB page, enforce 190KB bytes and preflight escaped input before a create attempt", async t => {
+  const prefix = "<!doctype html><html><head><title>Fixture</title></head><body><main>";
+  const suffix = "</main></body></html>";
+  const pageOfSize = (bytes: number, fill = "x") => prefix + fill.repeat(bytes - prefix.length - suffix.length) + suffix;
+  let html = pageOfSize(182_000), posts = 0;
+  t.mock.method(globalThis, "fetch", async (input: RequestInfo | URL, init?: RequestInit) => {
+    if (String(input) === "https://example.com/") return new Response(html, { headers: { "Content-Type": "text/html" } });
+    posts++;
+    const body = JSON.parse(String(init?.body));
+    assert.equal(JSON.parse(body.input).evidence[0].content, html, "Submitted evidence must not be truncated.");
+    return Response.json(session);
+  });
+  const capture = await captureEvaluationWebsite("https://example.com/", env);
+  assert.equal(capture.content, html); assert.equal(new TextEncoder().encode(capture.content).byteLength, 182_000);
+  const largeRun = await startEvaluationRun(memoryDb().db, "approved-user", { mode: "managed", domain: "example.com" }, env);
+  assert.equal(largeRun.status, "running"); assert.equal(largeRun.captures[0].content, html); assert.equal(posts, 1);
+  html = pageOfSize(190_000);
+  assert.equal((await captureEvaluationWebsite("https://example.com/", env)).content, html, "The exact capture boundary is accepted.");
+  html = pageOfSize(190_001);
+  await assert.rejects(captureEvaluationWebsite("https://example.com/", env), /size limit/);
+  // JSON quotes double during serialization: a page can fit its byte bound but
+  // still exceed the unchanged 200K-character provider input ceiling.
+  html = pageOfSize(120_000, '"');
+  const tooLarge = await startEvaluationRun(memoryDb().db, "approved-user", { mode: "managed", domain: "example.com" }, env);
+  assert.equal(tooLarge.status, "failed"); assert.equal(tooLarge.sessionId, null); assert.equal(tooLarge.captures[0].content, html);
+  assert.equal(tooLarge.events.some(value => value.id === "session-create-attempt"), false);
+  assert.match(tooLarge.error!, /200,000 character/); assert.equal(posts, 1);
+  assert.throws(() => serializeWebsiteEvaluationInput({ ...evaluationInput, evidence: [{ ...evaluationInput.evidence[0], content: '"'.repeat(110_000) }] }), /200,000 character/);
 });
 
 test("ambiguous create remains unconfirmed and reconciliation never retries it", async (t) => {
@@ -369,6 +409,19 @@ test("an accepted provider-queued turn can still be cancelled", async (t) => {
   t.mock.method(globalThis, "fetch", async () => { calls++; return new Response(null, { status: 204 }); });
   await cancelEvaluationRun(db, "approved-user", run.id, env);
   assert.equal(calls, 1);
+});
+
+test("cancellation reserves one attempt before the POST and never retries an ambiguous response", async t => {
+  const { db, rows, run } = await savedLiveRun(); let calls = 0;
+  t.mock.method(globalThis, "fetch", async () => {
+    calls++; assert.ok(rows.get(run.id)!.run.events.some(value => value.id === "cancel-attempt"));
+    throw new Error("Fixture cancellation acknowledgement lost");
+  });
+  const raced = await Promise.allSettled([cancelEvaluationRun(db, "approved-user", run.id, env), cancelEvaluationRun(db, "approved-user", run.id, env)]);
+  assert.ok(raced.some(value => value.status === "fulfilled")); assert.equal(calls, 1);
+  const retry = await cancelEvaluationRun(db, "approved-user", run.id, env);
+  assert.equal(retry.status, "requires_action"); assert.equal(calls, 1);
+  assert.equal(retry.events.some(value => value.id === "cancel-acknowledged"), false);
 });
 
 test("saved-item UI projection excludes reasoning and private input", () => {

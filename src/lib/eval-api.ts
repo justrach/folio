@@ -22,6 +22,7 @@ export async function evaluationRequestContext(request: Request) {
       OPENAI_AGENTS_MODEL: values.OPENAI_AGENTS_MODEL || process.env.OPENAI_AGENTS_MODEL,
       OPENAI_ALLOWED_USER_IDS: values.OPENAI_ALLOWED_USER_IDS || process.env.OPENAI_ALLOWED_USER_IDS,
       OPENAI_MAX_RUNS_PER_DAY: values.OPENAI_MAX_RUNS_PER_DAY || process.env.OPENAI_MAX_RUNS_PER_DAY,
+      OPENAI_UNMETERED_USER_IDS: values.OPENAI_UNMETERED_USER_IDS || process.env.OPENAI_UNMETERED_USER_IDS,
       SCAN_ALLOWED_HOSTS: values.SCAN_ALLOWED_HOSTS || process.env.SCAN_ALLOWED_HOSTS,
     } satisfies AgentRunEnvironment,
   };

@@ -63,114 +63,9 @@
     grid-row: 1 / 3;
   }
 }
-.seo-data-connection-top,
-.seo-data-provider,
-.seo-data-access-actions,
-.seo-data-inline {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.seo-data-connection-top {
-  padding: 21px 23px;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--line);
-  flex-wrap: wrap;
-}
-.seo-data-provider-icon {
-  display: grid;
-  place-items: center;
-  width: 43px;
-  height: 43px;
-  background: #eaf0df;
-  border: 1px solid #dbe4ce;
-  border-radius: 8px;
-  color: var(--green);
-}
-.seo-data-provider h2 {
-  font-size: 14px;
-  font-weight: 600;
-}
-.seo-data-provider p {
-  font-size: 11px;
-  color: #75816d;
-  margin-top: 6px;
-}
-.seo-data-badge {
-  padding: 5px 8px;
-  border: 1px solid #dfe5d3;
-  border-radius: 4px;
-  font-size: 10px;
-  color: #69765e;
-  background: #f1f4e9;
-  white-space: nowrap;
-}
-.seo-data-badge.ready {
-  background: #e9f0dd;
-  color: #315a3c;
-  border-color: #cfdcbc;
-}
-.seo-data-connection-body {
-  padding: 19px 23px;
-}
-.seo-data-connection-body > p {
-  font-size: 12px;
-  line-height: 1.8;
-  color: #65735b;
-}
-.seo-data-access-actions {
-  margin-top: 16px;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
-.seo-data-account {
-  min-width: 0;
-  flex: 1;
-}
-.seo-data-account > span:first-child {
-  font-size: 10px;
-  display: block;
-  color: #6c795f;
-  margin-bottom: 5px;
-}
-.seo-data-account > div {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: max-content;
-  max-width: 100%;
-  background: #f0f2e7;
-  padding: 5px 8px;
-  border: 1px solid var(--line);
-  border-radius: 4px;
-}
-.seo-data-account code {
-  font-size: 11px;
-  overflow-wrap: anywhere;
-  user-select: all;
-  line-height: 1.6;
-}
-.seo-data-copy {
-  display: grid;
-  place-items: center;
-  padding: 6px;
-  color: var(--green);
-}
-.seo-data-account small {
-  display: block;
-  font-size: 10px;
-  line-height: 1.7;
-  color: #76816e;
-  margin-top: 7px;
-  max-width: 550px;
-}
-.seo-data-copy-notice {
-  font-size: 10px;
-  color: var(--green);
-  display: block;
-  margin-top: 3px;
-  min-height: 12px;
-}
+.seo-data-availability { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 18px; }
+.seo-data-availability p { flex: 1; min-width: 220px; font-size: 12px; line-height: 1.8; color: #637158; }
+.seo-data-badge { padding: 5px 8px; border: 1px solid #dfe5d3; border-radius: 4px; font-size: 10px; color: #69765e; background: #f1f4e9; white-space: nowrap; }
 .seo-data-section-heading {
   display: flex;
   align-items: center;
@@ -293,7 +188,7 @@
   flex-direction: column;
   text-align: center;
   padding: 50px 25px;
-  background: linear-gradient(135deg, #f3f5e9, #f8f9f1);
+  background: #f5f6ed;
 }
 .seo-data-empty-icon {
   color: #7b9367;
@@ -397,27 +292,6 @@
   color: #7c8772;
   font-size: 10px;
   line-height: 1.8;
-}
-.seo-data-cost {
-  text-align: right;
-  flex-shrink: 0;
-}
-.seo-data-cost > span {
-  color: #7c876f;
-  font-size: 10px;
-  display: block;
-}
-.seo-data-cost strong {
-  display: block;
-  font-family: var(--serif);
-  font-size: 24px;
-  font-weight: 400;
-  margin: 6px 0;
-}
-.seo-data-cost small {
-  display: block;
-  font-size: 10px;
-  color: #8c704d;
 }
 .seo-data-partial {
   display: flex;
@@ -668,14 +542,6 @@
   }
 }
 @media (max-width: 600px) {
-  .seo-data-connection-top,
-  .seo-data-connection-body {
-    padding: 19px;
-  }
-  .seo-data-provider p {
-    font-size: 10px;
-    line-height: 1.6;
-  }
   .seo-data-section-heading {
     padding: 20px 19px 0;
     align-items: flex-start;
@@ -739,20 +605,6 @@
   .seo-data-result-heading h2 {
     font-size: 29px;
   }
-  .seo-data-cost {
-    text-align: left;
-    display: flex;
-    align-items: baseline;
-    gap: 9px;
-    flex-wrap: wrap;
-  }
-  .seo-data-cost strong {
-    font-size: 22px;
-    margin: 0;
-  }
-  .seo-data-cost small {
-    width: 100%;
-  }
   .seo-data-distribution {
     padding: 0 19px 22px;
   }
@@ -789,22 +641,13 @@
   .seo-data-source-state p {
     font-size: 11px;
   }
-  .seo-data-account small {
-    max-width: 290px;
-  }
   .seo-data-alert {
     margin-inline: 19px;
   }
   .seo-data-disclosure {
     font-size: 9px;
   }
-  .seo-data-connection-top {
-    gap: 16px;
-  }
   .seo-data-section-heading h2 {
     font-size: 13px;
-  }
-  .seo-data-access-actions {
-    gap: 12px;
   }
 }

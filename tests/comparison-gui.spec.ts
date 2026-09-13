@@ -57,7 +57,8 @@ test("private run comparison shows check changes and changed evidence without pr
   after.expectedFacts!.productName = "Owner's revised reference product";
   after.result = await verifyEvaluationResult(after, after.agentOutput);
   const mocks = await mockComparison(page, [before, after]);
-  await page.goto("/evaluations");
+  await page.goto("/evaluations?view=page");
+  await page.getByText("Compare saved evaluations", { exact: true }).click();
   const comparison = page.getByRole("region", { name: "Compare completed runs", exact: true });
   await expect(comparison).toBeVisible();
   expect(mocks.detailReads).toEqual([]);
@@ -73,6 +74,9 @@ test("private run comparison shows check changes and changed evidence without pr
   await expect(row).toContainText("Passed");
   await expect(row).toContainText("Failed");
   await expect(row).toContainText("regressed");
+  const viewport = await page.evaluate(() => ({ client: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth, inner: innerWidth }));
+  expect(viewport.scroll).toBeLessThanOrEqual(viewport.client + 1);
+  expect(viewport.inner).toBeLessThanOrEqual(viewport.client + 1);
   await row.getByText("Inspect observations", { exact: true }).click();
   await expect(row).toContainText("Owner's revised reference product");
   await comparison.getByText("Inspect source hashes and reference answers", { exact: true }).click();
@@ -92,7 +96,8 @@ test("run selection separates local fixtures from live and unfinished evaluation
   const live = await liveFixture("live-only");
   const unfinished = { ...live, id: "unfinished", status: "failed" as const, result: null };
   const mocks = await mockComparison(page, [first, second, live, unfinished]);
-  await page.goto("/evaluations");
+  await page.goto("/evaluations?view=page");
+  await page.getByText("Compare saved evaluations", { exact: true }).click();
   const comparison = page.getByRole("region", { name: "Compare completed runs", exact: true });
   const baseline = comparison.getByLabel("Baseline evaluation", { exact: true });
   const candidate = comparison.getByLabel("Comparison evaluation", { exact: true });
@@ -115,7 +120,8 @@ test("detail provenance is rechecked before rendering a comparison", async ({ pa
   const after = await liveFixture("after");
   const inconsistent = { ...after, mode: "demo" as const };
   const mocks = await mockComparison(page, [before, after], [before, inconsistent]);
-  await page.goto("/evaluations");
+  await page.goto("/evaluations?view=page");
+  await page.getByText("Compare saved evaluations", { exact: true }).click();
   const comparison = page.getByRole("region", { name: "Compare completed runs", exact: true });
   await comparison.getByLabel("Baseline evaluation", { exact: true }).selectOption(before.id);
   await comparison.getByLabel("Comparison evaluation", { exact: true }).selectOption(after.id);

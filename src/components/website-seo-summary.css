@@ -1,0 +1,29 @@
+.website-seo-summary { padding: 23px; color: var(--ink); min-width: 0; }
+.website-seo-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+.website-seo-heading h2 { font-family: var(--serif); font-size: 26px; font-weight: 400; letter-spacing: -.4px; }
+.website-seo-heading p { margin-top: 6px; overflow-wrap: anywhere; }
+.website-seo-summary p { color: #637158; font-size: 12px; line-height: 1.8; }
+.website-seo-summary > p { margin-top: 16px; }
+.website-seo-summary p a { text-decoration: underline; text-underline-offset: 3px; }
+.website-seo-metrics { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); margin: 24px 0 18px; border-block: 1px solid var(--line); }
+.website-seo-metrics > div { padding: 19px 16px; min-width: 0; border-right: 1px solid var(--line); }
+.website-seo-metrics > div:first-child { padding-left: 0; }
+.website-seo-metrics > div:last-child { border: 0; }
+.website-seo-metrics dt { font-size: 11px; color: #637158; line-height: 1.6; }
+.website-seo-metrics dd { margin: 10px 0 0; font-size: 27px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.website-seo-captured { font-size: 11px !important; }
+.website-seo-note { font-size: 11px !important; margin-top: 6px !important; }
+.website-seo-notice { background: #f6f0e6; border: 1px solid #e3d7c2; padding: 12px 15px; }
+.website-seo-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 20px; padding-top: 21px; }
+.website-seo-actions .button { min-height: 42px; }
+.website-seo-actions p { max-width: 430px; font-size: 11px; }
+@media(max-width:700px) {
+  .website-seo-summary { padding: 19px; }
+  .website-seo-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .website-seo-metrics > div { padding: 16px 12px; }
+  .website-seo-metrics > div:nth-child(odd) { padding-left: 0; }
+  .website-seo-metrics > div:nth-child(even) { border-right: 0; }
+  .website-seo-metrics > div:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+  .website-seo-metrics dd { font-size: 24px; }
+  .website-seo-actions { align-items: stretch; flex-direction: column; }
+}

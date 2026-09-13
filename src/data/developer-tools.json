@@ -1,0 +1,484 @@
+[
+  {
+    "id": "cloudflare-workers",
+    "name": "Cloudflare Workers",
+    "category": "Deployment",
+    "description": "Run web applications, APIs, and background jobs on Cloudflare's serverless runtime.",
+    "websiteUrl": "https://www.cloudflare.com/products/workers/",
+    "docsUrl": "https://developers.cloudflare.com/workers/",
+    "sourceUrls": [
+      "https://developers.cloudflare.com/workers/",
+      "https://www.cloudflare.com/products/workers/"
+    ],
+    "observedAt": "2026-09-13",
+    "audience": "Developer tools"
+  },
+  {
+    "id": "vercel",
+    "name": "Vercel",
+    "category": "Deployment",
+    "description": "Deploy web applications with managed builds, previews, and server functions.",
+    "websiteUrl": "https://vercel.com/",
+    "docsUrl": "https://vercel.com/docs",
+    "sourceUrls": [
+      "https://vercel.com/docs"
+    ],
+    "observedAt": "2026-09-13",
+    "audience": "Developer tools"
+  },
+  {
+    "id": "render",
+    "name": "Render",
+    "category": "Deployment",
+    "description": "Host application services and datastores with repository-based deployment.",
+    "websiteUrl": "https://render.com/",
+    "docsUrl": "https://render.com/docs",
+    "sourceUrls": [
+      "https://render.com/docs"
+    ],
+    "observedAt": "2026-09-13",
+    "audience": "Developer tools"
+  },
+  {
+    "id": "railway",
+    "name": "Railway",
+    "category": "Deployment",
+    "description": "Provision services and databases, then deploy applications from a repository or CLI.",
+    "websiteUrl": "https://railway.com/",
+    "docsUrl": "https://docs.railway.com/",
+    "sourceUrls": [
+      "https://docs.railway.com/"
+    ],
+    "observedAt": "2026-09-13",
+    "audience": "Developer tools"
+  },
+  {
+    "id": "e2b",
+    "name": "E2B",
+    "category": "Compute and sandboxes",
+    "description": "Create isolated Linux sandboxes for agents to execute code and use tools.",
+    "websiteUrl": "https://e2b.dev/",
+    "docsUrl": "https://docs.e2b.dev/",
+    "sourceUrls": [
+      "https://docs.e2b.dev/"
+    ],
+    "observedAt": "2026-09-13",
+    "audience": "Developer tools"
+  },
+  {
+    "id": "daytona",
+    "name": "Daytona",
+    "category": "Compute and sandboxes",
+    "description": "Create programmable sandboxes for running code through language SDKs.",
+    "websiteUrl": "https://www.daytona.io/",
+    "docsUrl": "https://www.daytona.io/docs/",
+    "sourceUrls": [
+      "https://www.daytona.io/docs/"
+    ],
+    "observedAt": "2026-09-13",
+    "audience": "Developer tools"
+  },
+  {
+    "id": "modal",
+    "name": "Modal",
+    "category": "Compute and sandboxes",
+    "description": "Run compute-intensive applications and batch jobs on serverless infrastructure.",
+    "websiteUrl": "https://modal.com/",
+    "docsUrl": "https://modal.com/docs",
+    "sourceUrls": [
+      "https://modal.com/docs"
+    ],
+    "observedAt": "2026-09-13",
+    "audience": "Developer tools"
+  },
+  {
+    "id": "browserbase",
+    "name": "Browserbase",
+    "category": "Browser automation",
+    "description": "Create and control cloud browser sessions for automated web interactions.",
+    "websiteUrl": "https://www.browserbase.com/",
+    "docsUrl": "https://docs.browserbase.com/welcome/introduction",
+    "sourceUrls": [
+      "https://docs.browserbase.com/welcome/introduction"
+    ],
+    "observedAt": "2026-09-13",
+    "audience": "Developer tools"
+  },
+  {
+    "id": "better-auth",
+    "name": "Better Auth",
+    "category": "Authentication",
+    "description": "Add authentication, sessions, and extensible account flows to TypeScript applications.",
+    "websiteUrl": "https://better-auth.com/",
+    "docsUrl": "https://better-auth.com/docs/introduction",
+    "sourceUrls": [
+      "https://better-auth.com/docs/introduction"
+    ],
+    "observedAt": "2026-09-13",
+    "audience": "Developer tools"
+  },
+  {
+    "id": "clerk",
+    "name": "Clerk",
+    "category": "Authentication",
+    "description": "Add sign-in interfaces, session management, and organizations to applications.",
+    "websiteUrl": "https://clerk.com/",
+    "docsUrl": "https://clerk.com/docs",
+    "sourceUrls": [
+      "https://clerk.com/docs"
+    ],
+    "observedAt": "2026-09-13",
+    "audience": "Developer tools"
+  },
+  {
+    "id": "workos",
+    "name": "WorkOS",
+    "category": "Authentication",
+    "description": "Build user authentication and enterprise single sign-on into applications.",
+    "websiteUrl": "https://workos.com/",
+    "docsUrl": "https://workos.com/docs",
+    "sourceUrls": [
+      "https://workos.com/docs"
+    ],
+    "observedAt": "2026-09-13",
+    "audience": "Developer tools"
+  },
+  {
+    "id": "auth0",
+    "name": "Auth0",
+    "category": "Authentication",
+    "description": "Integrate application authentication and fine-grained authorization using APIs and SDKs.",
+    "websiteUrl": "https://auth0.com/",
+    "docsUrl": "https://auth0.com/docs",
+    "sourceUrls": [
+      "https://auth0.com/docs"
+    ],
+    "observedAt": "2026-09-13",
+    "audience": "Developer tools"
+  },
+  {
+    "id": "chroma",
+    "name": "Chroma",
+    "category": "Search and databases",
+    "description": "Store embeddings and documents, then retrieve them with vector search and metadata filters.",
+    "websiteUrl": "https://www.trychroma.com/",
+    "docsUrl": "https://docs.trychroma.com/docs/overview/introduction",
+    "sourceUrls": [
+      "https://docs.trychroma.com/docs/overview/introduction"
+    ],
+    "observedAt": "2026-09-13",
+    "audience": "Developer tools"
+  },
+  {
+    "id": "qdrant",
+    "name": "Qdrant",
+    "category": "Search and databases",
+    "description": "Search vector data with payload filters and hybrid queries.",
+    "websiteUrl": "https://qdrant.tech/",
+    "docsUrl": "https://qdrant.tech/documentation/",
+    "sourceUrls": [
+      "https://qdrant.tech/documentation/"
+    ],
+    "observedAt": "2026-09-13",
+    "audience": "Developer tools"
+  },
+  {
+    "id": "pinecone",
+    "name": "Pinecone",
+    "category": "Search and databases",
+    "description": "Use a vector database for semantic search and application knowledge retrieval.",
+    "websiteUrl": "https://www.pinecone.io/",
+    "docsUrl": "https://docs.pinecone.io/guides/get-started/overview",
+    "sourceUrls": [
+      "https://docs.pinecone.io/guides/get-started/overview"
+    ],
+    "observedAt": "2026-09-13",
+    "audience": "Developer tools"
+  },
+  {
+    "id": "resend",
+    "name": "Resend",
+    "category": "Email",
+    "description": "Send transactional email and campaigns through an API with delivery event webhooks.",
+    "websiteUrl": "https://resend.com/",
+    "docsUrl": "https://resend.com/docs/introduction",
+    "sourceUrls": [
+      "https://resend.com/docs/introduction"
+    ],
+    "observedAt": "2026-09-13",
+    "audience": "Developer tools"
+  },
+  {
+    "id": "firecrawl",
+    "name": "Firecrawl",
+    "category": "Web retrieval",
+    "description": "Search the web, extract page content, and automate page interactions through APIs.",
+    "websiteUrl": "https://www.firecrawl.dev/",
+    "docsUrl": "https://docs.firecrawl.dev/introduction",
+    "sourceUrls": [
+      "https://docs.firecrawl.dev/introduction"
+    ],
+    "observedAt": "2026-09-13",
+    "audience": "Developer tools"
+  },
+  {
+    "id": "exa",
+    "name": "Exa",
+    "category": "Web retrieval",
+    "description": "Search the web and retrieve page text, highlights, or structured results.",
+    "websiteUrl": "https://exa.ai/",
+    "docsUrl": "https://exa.ai/docs/reference/search-api-guide",
+    "sourceUrls": [
+      "https://exa.ai/docs/reference/search-api-guide"
+    ],
+    "observedAt": "2026-09-13",
+    "audience": "Developer tools"
+  },
+  {
+    "id": "tavily",
+    "name": "Tavily",
+    "category": "Web retrieval",
+    "description": "Search, extract, crawl, and map web content through application APIs.",
+    "websiteUrl": "https://www.tavily.com/",
+    "docsUrl": "https://docs.tavily.com/",
+    "sourceUrls": [
+      "https://docs.tavily.com/"
+    ],
+    "observedAt": "2026-09-13",
+    "audience": "Developer tools"
+  },
+  {
+    "id": "stripe",
+    "name": "Stripe",
+    "category": "Payments",
+    "description": "Integrate payments, invoices, and subscription billing into applications.",
+    "websiteUrl": "https://stripe.com/",
+    "docsUrl": "https://docs.stripe.com/",
+    "sourceUrls": [
+      "https://docs.stripe.com/"
+    ],
+    "observedAt": "2026-09-13",
+    "audience": "Developer tools"
+  },
+  {
+    "id": "temporal",
+    "name": "Temporal",
+    "category": "Workflows",
+    "description": "Persist workflow execution so application processes can resume after failures.",
+    "websiteUrl": "https://temporal.io/",
+    "docsUrl": "https://docs.temporal.io/",
+    "sourceUrls": [
+      "https://docs.temporal.io/"
+    ],
+    "observedAt": "2026-09-13",
+    "audience": "Developer tools"
+  },
+  {
+    "id": "box",
+    "name": "Box",
+    "category": "Content",
+    "description": "Manage files, document metadata, and collaboration through APIs and webhooks.",
+    "websiteUrl": "https://www.box.com/",
+    "docsUrl": "https://developer.box.com/",
+    "sourceUrls": [
+      "https://developer.box.com/"
+    ],
+    "observedAt": "2026-09-13",
+    "audience": "Developer tools"
+  },
+  {
+    "id": "sentry",
+    "name": "Sentry",
+    "category": "Observability",
+    "description": "Inspect application errors, traces, logs, and session replays to diagnose failures.",
+    "websiteUrl": "https://sentry.io/welcome/",
+    "docsUrl": "https://docs.sentry.io/",
+    "sourceUrls": [
+      "https://sentry.io/welcome/"
+    ],
+    "observedAt": "2026-09-13",
+    "audience": "Developer tools"
+  },
+  {
+    "id": "posthog",
+    "name": "PostHog",
+    "category": "Analytics",
+    "description": "Analyze product events with trends, funnels, retention reports, and dashboards.",
+    "websiteUrl": "https://posthog.com/",
+    "docsUrl": "https://posthog.com/docs/product-analytics",
+    "sourceUrls": [
+      "https://posthog.com/docs/product-analytics"
+    ],
+    "observedAt": "2026-09-13",
+    "audience": "Developer tools"
+  },
+  {
+    "id": "notion",
+    "name": "Notion",
+    "audience": "Software & work",
+    "category": "Workspace and knowledge",
+    "description": "Organize documents, knowledge, projects, and team workflows in a shared workspace.",
+    "websiteUrl": "https://www.notion.com/",
+    "docsUrl": "https://www.notion.com/help",
+    "sourceUrls": [
+      "https://www.notion.com/",
+      "https://www.notion.com/help"
+    ],
+    "observedAt": "2026-09-13"
+  },
+  {
+    "id": "slack",
+    "name": "Slack",
+    "audience": "Software & work",
+    "category": "Team communication",
+    "description": "Bring team conversations, channels, meetings, and workflow automation into one work platform.",
+    "websiteUrl": "https://slack.com/intl/en-sg/",
+    "docsUrl": "https://slack.com/help",
+    "sourceUrls": [
+      "https://slack.com/",
+      "https://slack.com/intl/en-sg/",
+      "https://slack.com/help"
+    ],
+    "observedAt": "2026-09-13"
+  },
+  {
+    "id": "basecamp",
+    "name": "Basecamp",
+    "audience": "Software & work",
+    "category": "Project management",
+    "description": "Manage projects with to-dos, message boards, schedules, and shared documents.",
+    "websiteUrl": "https://basecamp.com/",
+    "docsUrl": "https://basecamp.com/features",
+    "sourceUrls": [
+      "https://basecamp.com/",
+      "https://basecamp.com/features"
+    ],
+    "observedAt": "2026-09-13"
+  },
+  {
+    "id": "ikea",
+    "name": "IKEA",
+    "audience": "Shops & brands",
+    "category": "Furniture and home",
+    "description": "Browse furniture, home furnishings, planning services, and product support for the US market.",
+    "websiteUrl": "https://www.ikea.com/us/en/",
+    "docsUrl": "https://www.ikea.com/us/en/customer-service/",
+    "sourceUrls": [
+      "https://www.ikea.com/us/en/",
+      "https://www.ikea.com/us/en/customer-service/"
+    ],
+    "observedAt": "2026-09-13"
+  },
+  {
+    "id": "allbirds",
+    "name": "Allbirds",
+    "audience": "Shops & brands",
+    "category": "Footwear and apparel",
+    "description": "Browse shoes and apparel, product details, and shopping support.",
+    "websiteUrl": "https://www.allbirds.com/",
+    "docsUrl": "https://www.allbirds.com/pages/help",
+    "sourceUrls": [
+      "https://www.allbirds.com/",
+      "https://www.allbirds.com/pages/help"
+    ],
+    "observedAt": "2026-09-13"
+  },
+  {
+    "id": "everlane",
+    "name": "Everlane",
+    "audience": "Shops & brands",
+    "category": "Clothing and accessories",
+    "description": "Shop clothing and accessories with product, material, and sizing information.",
+    "websiteUrl": "https://www.everlane.com/",
+    "docsUrl": "https://www.everlane.com/pages/about",
+    "sourceUrls": [
+      "https://www.everlane.com/",
+      "https://www.everlane.com/pages/about"
+    ],
+    "observedAt": "2026-09-13"
+  },
+  {
+    "id": "taskrabbit",
+    "name": "Taskrabbit",
+    "audience": "Services & travel",
+    "category": "Home services",
+    "description": "Find local help for furniture assembly, moving, cleaning, and home repairs.",
+    "websiteUrl": "https://www.taskrabbit.com/",
+    "docsUrl": "https://www.taskrabbit.com/services",
+    "sourceUrls": [
+      "https://www.taskrabbit.com/",
+      "https://www.taskrabbit.com/services"
+    ],
+    "observedAt": "2026-09-13"
+  },
+  {
+    "id": "intrepid-travel",
+    "name": "Intrepid Travel",
+    "audience": "Services & travel",
+    "category": "Small-group travel",
+    "description": "Explore guided small-group trips, destinations, itineraries, and travel styles.",
+    "websiteUrl": "https://www.intrepidtravel.com/en",
+    "docsUrl": "https://www.intrepidtravel.com/en/about",
+    "sourceUrls": [
+      "https://www.intrepidtravel.com/en",
+      "https://www.intrepidtravel.com/en/about"
+    ],
+    "observedAt": "2026-09-13"
+  },
+  {
+    "id": "g-adventures",
+    "name": "G Adventures",
+    "audience": "Services & travel",
+    "category": "Adventure travel",
+    "description": "Explore small-group tours with destination guides, itineraries, and travel styles.",
+    "websiteUrl": "https://www.gadventures.com/",
+    "docsUrl": "https://www.gadventures.com/about-us/",
+    "sourceUrls": [
+      "https://www.gadventures.com/",
+      "https://www.gadventures.com/about-us/"
+    ],
+    "observedAt": "2026-09-13"
+  },
+  {
+    "id": "coursera",
+    "name": "Coursera",
+    "audience": "Learning",
+    "category": "Courses and qualifications",
+    "description": "Explore online courses, professional certificates, and degree programs from learning partners.",
+    "websiteUrl": "https://www.coursera.org/",
+    "docsUrl": "https://www.coursera.org/about",
+    "sourceUrls": [
+      "https://www.coursera.org/",
+      "https://www.coursera.org/about"
+    ],
+    "observedAt": "2026-09-13"
+  },
+  {
+    "id": "duolingo",
+    "name": "Duolingo",
+    "audience": "Learning",
+    "category": "Language and skills learning",
+    "description": "Practice languages, math, and music through interactive lessons.",
+    "websiteUrl": "https://www.duolingo.com/",
+    "docsUrl": "https://blog.duolingo.com/new-subjects/",
+    "sourceUrls": [
+      "https://www.duolingo.com/",
+      "https://blog.duolingo.com/new-subjects/"
+    ],
+    "observedAt": "2026-09-13"
+  },
+  {
+    "id": "edx",
+    "name": "edX",
+    "audience": "Learning",
+    "category": "Courses and qualifications",
+    "description": "Explore online courses, professional certificates, and degree programs from education partners.",
+    "websiteUrl": "https://www.edx.org/",
+    "docsUrl": "https://www.edx.org/about-us",
+    "sourceUrls": [
+      "https://www.edx.org/",
+      "https://www.edx.org/about-us"
+    ],
+    "observedAt": "2026-09-13"
+  }
+]

@@ -1,6 +1,6 @@
 # Evaluation products and Folio positioning
 
-Research date: 13 September 2026. Scope: two website-readiness products. Sources are the products’ own public pages. Product descriptions below are published claims or directly observed page content, not independently validated vendor performance. No competitor accounts were created or paid tests run.
+Research date: 13 September 2026. Scope: two adjacent website-readiness products. Sources are the products’ own public pages. Product descriptions below are published claims or directly observed page content, not independently validated vendor performance. No competitor accounts were created or paid tests run. Folio's own evaluation results require separately recorded inputs, execution, and verification.
 
 ## Finding
 

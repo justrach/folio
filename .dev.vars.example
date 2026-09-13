@@ -2,6 +2,10 @@ NEXTJS_ENV=development
 BETTER_AUTH_URL=http://localhost:3001
 # Generate a fresh local secret: node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
 BETTER_AUTH_SECRET=replace-with-a-random-secret-of-at-least-32-characters
+# Google web OAuth client; local callback: http://localhost:3001/api/auth/callback/google
+# Enable the Search Console API. Read-only consent is requested explicitly in the app.
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
 # Add the server-side provider key when available; never use a NEXT_PUBLIC_ variable.
 OPENAI_API_KEY=
 OPENAI_AGENTS_MODEL=gpt-6-astra
@@ -9,6 +13,8 @@ OPENAI_AGENTS_MODEL=gpt-6-astra
 OPENAI_ALLOWED_USER_IDS=
 # Rolling 24-hour live-run cap per approved account (1–20).
 OPENAI_MAX_RUNS_PER_DAY=1
+# Exact already-approved Better Auth IDs exempt from daily caps only; active-run limits still apply.
+OPENAI_UNMETERED_USER_IDS=
 # Only scan operator-approved public domains, including any redirect hostnames.
 SCAN_ALLOWED_HOSTS=example.com,www.example.com
 DATAFORSEO_LOGIN=

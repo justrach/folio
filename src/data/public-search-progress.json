@@ -1,0 +1,78 @@
+{
+  "format": "folio-public-search-progress-v1",
+  "updatedAt": "2026-09-13T06:25:43.867Z",
+  "queries": [
+    {
+      "queryId": "deploy-small-node-app-v1",
+      "status": "completed",
+      "startedAt": "2026-09-13T06:18:21.050Z",
+      "finishedAt": "2026-09-13T06:20:21.848Z",
+      "observationId": "obs-deploy-small-node-app-v1-7a9709ee10ed14704ac4cc36"
+    },
+    {
+      "queryId": "auth-b2b-small-team-v1",
+      "status": "completed",
+      "startedAt": "2026-09-13T06:20:21.908Z",
+      "finishedAt": "2026-09-13T06:22:01.379Z",
+      "observationId": "obs-auth-b2b-small-team-v1-4e6bdebb0b8181007991607a"
+    },
+    {
+      "queryId": "sandbox-python-jobs-v1",
+      "status": "completed",
+      "startedAt": "2026-09-13T06:22:01.427Z",
+      "finishedAt": "2026-09-13T06:23:40.884Z",
+      "observationId": "obs-sandbox-python-jobs-v1-588b89ec4a0513233176fe74"
+    },
+    {
+      "queryId": "vector-search-small-app-v1",
+      "status": "completed",
+      "startedAt": "2026-09-13T06:23:40.927Z",
+      "finishedAt": "2026-09-13T06:25:28.632Z"
+    },
+    {
+      "queryId": "research-api-citations-v1",
+      "status": "running",
+      "startedAt": "2026-09-13T06:25:28.693Z"
+    },
+    {
+      "queryId": "sentry-posthog-product-team-v1",
+      "status": "not-started"
+    },
+    {
+      "queryId": "client-project-workspace-v1",
+      "status": "not-started"
+    },
+    {
+      "queryId": "team-chat-history-v1",
+      "status": "not-started"
+    },
+    {
+      "queryId": "allbirds-first-order-v1",
+      "status": "not-started"
+    },
+    {
+      "queryId": "everyday-clothing-returns-v1",
+      "status": "not-started"
+    },
+    {
+      "queryId": "ikea-small-apartment-v1",
+      "status": "not-started"
+    },
+    {
+      "queryId": "taskrabbit-assembly-booking-v1",
+      "status": "not-started"
+    },
+    {
+      "queryId": "japan-small-group-comparison-v1",
+      "status": "not-started"
+    },
+    {
+      "queryId": "python-course-fit-v1",
+      "status": "not-started"
+    },
+    {
+      "queryId": "duolingo-spanish-fit-v1",
+      "status": "not-started"
+    }
+  ]
+}

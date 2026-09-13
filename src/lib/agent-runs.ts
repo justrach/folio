@@ -2,7 +2,7 @@ import "server-only";
 
 import type { D1Database } from "@cloudflare/workers-types";
 import {
-  AgentsIntegrationError, cancelAgentSessionTurn, createWebsiteEvaluationSession,
+  AgentsIntegrationError, cancelAgentSessionTurn, createWebsiteEvaluationSession, serializeWebsiteEvaluationInput, isAgentDailyLimitExempt,
   getAgentsConnectionStatus, getAgentSession, getAgentSessionItems,
   getAgentSessionTurns,
   type AgentsEnvironment, type AgentTurn, type WebsiteEvaluationInput,
@@ -29,7 +29,7 @@ export function managedRunAccess(env: AgentRunEnvironment, ownerId: string) {
     ...connection,
     authorized: approved,
     canRun: connection.configured && approved,
-    maxRunsPerDay: Number.isInteger(configuredLimit) && configuredLimit >= 1
+    maxRunsPerDay: approved && isAgentDailyLimitExempt(env, ownerId) ? null : Number.isInteger(configuredLimit) && configuredLimit >= 1
       ? Math.min(configuredLimit, 20) : 1,
     allowedTargets: [...configuredScanHosts(env.SCAN_ALLOWED_HOSTS)],
     message: !connection.configured ? connection.message : !approved
@@ -47,7 +47,7 @@ export async function captureEvaluationWebsite(target: string, env: AgentRunEnvi
   const allowedHosts = configuredScanHosts(env.SCAN_ALLOWED_HOSTS);
   const url = normalizeScanUrl(target);
   assertAllowedUrl(url, allowedHosts);
-  const page = await boundedFetch(url, { allowedHosts, maxBytes: 80_000 });
+  const page = await boundedFetch(url, { allowedHosts, maxBytes: 190_000 });
   const checks = evaluateHtml(page.body, page.url, page.headers);
   return {
     id: "page-1", url: page.url, capturedAt: new Date().toISOString(),
@@ -75,6 +75,7 @@ export async function startEvaluationRun(
   ownerId: string,
   input: { domain?: string; brand?: string; mode: "managed" | "demo"; rerunOf?: string; expectedFacts?: ExpectedFacts; seoReportId?: string },
   env: AgentRunEnvironment,
+  options: { reserve?: (run: EvaluationRun, maxLivePerDay: number | null) => Promise<{ run: EvaluationRun; created: boolean }> } = {},
 ): Promise<EvaluationRun> {
   let previous: EvaluationRun | null = null;
   if (input.rerunOf) {
@@ -125,7 +126,11 @@ export async function startEvaluationRun(
   };
   // Atomic D1 reservation precedes all outbound work. Failed or ambiguous runs
   // still count toward the daily cap and are never automatically resubmitted.
-  await createEvaluationRun(db, ownerId, run, { maxLivePerDay: access.maxRunsPerDay });
+  if (options.reserve) {
+    const reservation = await options.reserve(run, access.maxRunsPerDay);
+    if (!reservation.created) return reservation.run;
+    run = reservation.run;
+  } else await createEvaluationRun(db, ownerId, run, { maxLivePerDay: access.maxRunsPerDay });
   const save = async (patch: Partial<EvaluationRun>) => {
     const next = { ...run, ...patch, updatedAt: new Date().toISOString() };
     run = await updateEvaluationRun(db, ownerId, next);
@@ -168,6 +173,9 @@ export async function startEvaluationRun(
       ? `Reused the exact captures and independent expected facts from ${previous.id}. No website recapture was performed.`
       : `Saved ${captures[0].content.length.toLocaleString()} characters with a SHA-256 content hash.`)] });
     providerInput = inputForRun(run);
+    // The full captured text remains intact. JSON escaping or combined captures
+    // may exceed the transport ceiling even when the page itself fits.
+    serializeWebsiteEvaluationInput(providerInput);
     // This durable marker precedes the only creation POST. The initial input is
     // required for environment:none and can start billable work immediately.
     await save({ events: [...run.events, { ...event("status", "Creating session with captured evidence",
@@ -362,17 +370,31 @@ function pickUsage(input: unknown): Record<string, unknown> | null {
 }
 
 export async function cancelEvaluationRun(db: D1Database, ownerId: string, id: string, env: AgentRunEnvironment): Promise<EvaluationRun> {
-  const run = await getEvaluationRun(db, ownerId, id);
+  let run = await getEvaluationRun(db, ownerId, id);
   if (!run) throw new ScanError("Evaluation not found.", 404);
   if (run.mode === "demo" || ["completed", "failed", "cancelled"].includes(run.status)) return run;
   if (isPreparing(run))
     throw new ScanError("The session is being prepared or queued. Refresh its status before cancelling.", 409);
   if (!run.sessionId) throw new ScanError("No managed session is available to cancel.", 409);
-  await cancelAgentSessionTurn(run.sessionId, env);
-  const saved = await updateEvaluationRun(db, ownerId, { ...run,
+  if (run.events.some(value => value.id === "cancel-attempt")) return run;
+  const sessionId = run.sessionId;
+  // Claim cancellation before the remote POST; a lost response is never retried.
+  run = await updateEvaluationRun(db, ownerId, { ...run,
     updatedAt: new Date().toISOString(),
-    events: [...run.events, event("status", "Cancellation requested", "OpenAI accepted the cancellation event. Refresh to observe the terminal turn status.")],
+    events: [...run.events, { ...event("status", "Submitting cancellation", "One cancellation request is reserved. Retrieve the same task to confirm its final outcome."), id: "cancel-attempt" }],
   });
-  // Cancellation acknowledgement is not proof of terminal cancellation.
-  return saved;
+  try {
+    await cancelAgentSessionTurn(sessionId, env);
+    // Cancellation acknowledgement is not proof of terminal cancellation.
+    return await updateEvaluationRun(db, ownerId, { ...run, updatedAt: new Date().toISOString(),
+      events: [...run.events, { ...event("status", "Cancellation requested", "OpenAI accepted the cancellation event. Refresh to observe the terminal turn status."), id: "cancel-acknowledged" }],
+    });
+  } catch {
+    const latest = await getEvaluationRun(db, ownerId, id);
+    if (!latest) throw new ScanError("Evaluation not found.", 404);
+    if (["completed", "failed", "cancelled"].includes(latest.status)) return latest;
+    return updateEvaluationRun(db, ownerId, { ...latest, status: "requires_action", updatedAt: new Date().toISOString(),
+      error: "Cancellation could not be confirmed. Retrieve this saved session; the cancellation request will not be repeated.",
+    });
+  }
 }

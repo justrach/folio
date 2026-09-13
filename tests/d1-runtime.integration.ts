@@ -131,6 +131,23 @@ function seoFixture(): SeoOverviewResult {
   };
 }
 
+test("real D1 nullable website daily cap retains reservations and the atomic active-run guard", { timeout: 90_000 }, async () => {
+  await withIsolatedDatabase(async db => {
+    const alice = await signUp(db, "unmetered-fixture");
+    const bob = await signUp(db, "metered-fixture");
+    for (let i = 0; i < 7; i++) await createEvaluationRun(db, alice.id, await liveRun("failed"), { maxLivePerDay: null });
+    const usage = await getEvaluationUsage(db, alice.id, null);
+    assert.equal(usage.liveAttemptsLast24Hours, 7); assert.equal(usage.remainingLiveRuns, null);
+    const raced = await Promise.allSettled(Array.from({ length: 5 }, async () => createEvaluationRun(db, alice.id, await liveRun(), { maxLivePerDay: null })));
+    assert.equal(raced.filter(value => value.status === "fulfilled").length, 1);
+    assert.equal((await getEvaluationUsage(db, alice.id, null)).remainingLiveRuns, null);
+    assert.ok((await getEvaluationUsage(db, alice.id, null)).activeRunId);
+    await createEvaluationRun(db, bob.id, await liveRun("failed"));
+    await assert.rejects(createEvaluationRun(db, bob.id, await liveRun()), error => error instanceof EvalStoreError && error.status === 429);
+    assert.equal((await getEvaluationUsage(db, bob.id)).remainingLiveRuns, 0);
+  });
+});
+
 test("real D1 applies every migration and supports Better Auth, private repositories, foreign keys and batch rollback", { timeout: 90_000 }, async () => {
   await withIsolatedDatabase(async db => {
     assert.equal((await db.prepare("PRAGMA foreign_keys").first<{ foreign_keys: number }>())?.foreign_keys, 1);

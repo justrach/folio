@@ -1,0 +1,3505 @@
+{
+  "schemaVersion": "developer-tool-readiness-v1",
+  "suiteVersion": "readiness-v1",
+  "generatedAt": "2026-09-13T04:44:56.180Z",
+  "batchId": "2026-09-13T04-44-48-052Z-429a6072",
+  "scope": "Homepage HTML only; no JavaScript or API tasks",
+  "runtime": "workerd",
+  "evaluatorSourceHash": "658b3254f3c6a56128e6a259224a398321ac5c06c7ce7abf9b137dab3012aade",
+  "captureLimitBytes": 5000000,
+  "timeoutMs": 8000,
+  "results": [
+    {
+      "toolId": "cloudflare-workers",
+      "name": "Cloudflare Workers",
+      "category": "Deployment",
+      "audience": "Developer tools",
+      "submittedUrl": "https://www.cloudflare.com/products/workers/",
+      "finalUrl": "https://www.cloudflare.com/products/workers/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:49.225Z",
+      "contentHash": "defb5a3d61145130299d29a7831fe76f71982e91d84d02e8d6646d8bcbd9c6c1",
+      "bytesFetched": 738130,
+      "score": 90,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 57 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "1 description(s); 180 characters. Recommended heuristic: 50–170 characters.",
+          "status": "warning"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "2 nonempty H1 heading(s) found.",
+          "status": "warning"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1116 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "3 of 3 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "89 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "3 JSON-LD block(s), 3 parseable, 3 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "vercel",
+      "name": "Vercel",
+      "category": "Deployment",
+      "audience": "Developer tools",
+      "submittedUrl": "https://vercel.com/",
+      "finalUrl": "https://vercel.com/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:48.539Z",
+      "contentHash": "ce0cd8a472f9425aef4cbc6b45e2e476939624ece974e7106f9feba6f3bb3449",
+      "bytesFetched": 528221,
+      "score": 95,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 31 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "1 description(s); 45 characters. Recommended heuristic: 50–170 characters.",
+          "status": "warning"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "296 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "19 of 19 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "147 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "3 JSON-LD block(s), 3 parseable, 3 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "render",
+      "name": "Render",
+      "category": "Deployment",
+      "audience": "Developer tools",
+      "submittedUrl": "https://render.com/",
+      "finalUrl": "https://render.com/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:48.803Z",
+      "contentHash": "2e4669066dd483ff7c8cdfa99a06d54ec3c7fbb85feeaf8c3a26d3b9e1842e76",
+      "bytesFetched": 401429,
+      "score": 100,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 31 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 140 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "527 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "54 of 54 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "74 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "3 JSON-LD block(s), 3 parseable, 3 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "railway",
+      "name": "Railway",
+      "category": "Deployment",
+      "audience": "Developer tools",
+      "submittedUrl": "https://railway.com/",
+      "finalUrl": "https://railway.com/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:49.899Z",
+      "contentHash": "0743b75f94ac98c6a6f62c740de3268216fd0408853fb27b023cf53223a747cf",
+      "bytesFetched": 360184,
+      "score": 100,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 51 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 132 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1009 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "60 of 60 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "34 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "4 JSON-LD block(s), 4 parseable, 4 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "e2b",
+      "name": "E2B",
+      "category": "Compute and sandboxes",
+      "audience": "Developer tools",
+      "submittedUrl": "https://e2b.dev/",
+      "finalUrl": "https://e2b.dev/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:49.447Z",
+      "contentHash": "b7bc5d3a7660e4a9b7489a17b800f1b6627ba1e48b3714991e39b65b0f5eb87e",
+      "bytesFetched": 709350,
+      "score": 88,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 8,
+          "maxPoints": 15,
+          "detail": "10 title element(s); 35 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "warning"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "1 description(s); 178 characters. Recommended heuristic: 50–170 characters.",
+          "status": "warning"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "2307 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "56 of 56 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "51 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "4 JSON-LD block(s), 4 parseable, 4 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "daytona",
+      "name": "Daytona",
+      "category": "Compute and sandboxes",
+      "audience": "Developer tools",
+      "submittedUrl": "https://www.daytona.io/",
+      "finalUrl": "https://www.daytona.io/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:49.588Z",
+      "contentHash": "e58512752789dd417614f2746785fda5d137fb678632fb2aefd37c2b0b815982",
+      "bytesFetched": 1807067,
+      "score": 85,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 61 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 156 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "3 nonempty H1 heading(s) found.",
+          "status": "warning"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "6169 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "241 of 241 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "114 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 0,
+          "maxPoints": 10,
+          "detail": "0 JSON-LD block(s), 0 parseable, 0 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "fail"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "modal",
+      "name": "Modal",
+      "category": "Compute and sandboxes",
+      "audience": "Developer tools",
+      "submittedUrl": "https://modal.com/",
+      "finalUrl": "https://modal.com/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:51.246Z",
+      "contentHash": "1fc6f8ae1e2509fc9a0993ca3ff1d17937934cda3d39bc45d5fb71c2e873eb16",
+      "bytesFetched": 413548,
+      "score": 90,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 41 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 122 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 0,
+          "maxPoints": 10,
+          "detail": "No valid HTTP(S) canonical link was found.",
+          "status": "fail"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "785 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "6 of 6 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "54 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 JSON-LD block(s), 1 parseable, 1 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "browserbase",
+      "name": "Browserbase",
+      "category": "Browser automation",
+      "audience": "Developer tools",
+      "submittedUrl": "https://www.browserbase.com/",
+      "finalUrl": "https://www.browserbase.com/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:50.562Z",
+      "contentHash": "d187d1506fd67a198aa7ac61e5e902f16763bf238b37eeb4216a5f3ffaf3a1d4",
+      "bytesFetched": 398740,
+      "score": 78,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 8,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 11 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "warning"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "1 description(s); 41 characters. Recommended heuristic: 50–170 characters.",
+          "status": "warning"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "2 nonempty H1 heading(s) found.",
+          "status": "warning"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); points to a different URL; this may be intentional.",
+          "status": "warning"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1631 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "49 of 49 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "144 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "2 JSON-LD block(s), 2 parseable, 2 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "better-auth",
+      "name": "Better Auth",
+      "category": "Authentication",
+      "audience": "Developer tools",
+      "submittedUrl": "https://better-auth.com/",
+      "finalUrl": "https://better-auth.com/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:50.071Z",
+      "contentHash": "6089a13193801796a762e8c6ad745adf46de48b2efb8e3056c369fb9318dad44",
+      "bytesFetched": 904831,
+      "score": 63,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 8,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 11 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "warning"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "1 description(s); 47 characters. Recommended heuristic: 50–170 characters.",
+          "status": "warning"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "2 nonempty H1 heading(s) found.",
+          "status": "warning"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 0,
+          "maxPoints": 10,
+          "detail": "No valid HTTP(S) canonical link was found.",
+          "status": "fail"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1614 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "950 of 950 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "19 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 0,
+          "maxPoints": 10,
+          "detail": "0 JSON-LD block(s), 0 parseable, 0 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "fail"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "clerk",
+      "name": "Clerk",
+      "category": "Authentication",
+      "audience": "Developer tools",
+      "submittedUrl": "https://clerk.com/",
+      "finalUrl": "https://clerk.com/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:50.363Z",
+      "contentHash": "425d6d587bb8fc8d88f2a5858d3f395256ef3d511ecc92f39eac58d90db37447",
+      "bytesFetched": 1192607,
+      "score": 95,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 42 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 141 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "6 nonempty H1 heading(s) found.",
+          "status": "warning"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1795 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "102 of 102 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "43 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "2 JSON-LD block(s), 2 parseable, 2 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "workos",
+      "name": "WorkOS",
+      "category": "Authentication",
+      "audience": "Developer tools",
+      "submittedUrl": "https://workos.com/",
+      "finalUrl": "https://workos.com/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:50.575Z",
+      "contentHash": "7ee01f660185bb55d69f756056f465f7b692509bec9ba356a7e5b70ed54d3404",
+      "bytesFetched": 263949,
+      "score": 100,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 36 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 133 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1531 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "123 of 123 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "112 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 JSON-LD block(s), 1 parseable, 1 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "auth0",
+      "name": "Auth0",
+      "category": "Authentication",
+      "audience": "Developer tools",
+      "submittedUrl": "https://auth0.com/",
+      "finalUrl": "https://auth0.com/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:50.803Z",
+      "contentHash": "e5c97b2c0e02939388f069c2e9f41cd87e8b0e1b0ce50fdc7214a957cf41c772",
+      "bytesFetched": 449054,
+      "score": 100,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 45 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 134 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1842 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "121 of 121 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "199 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 JSON-LD block(s), 1 parseable, 1 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "chroma",
+      "name": "Chroma",
+      "category": "Search and databases",
+      "audience": "Developer tools",
+      "submittedUrl": "https://www.trychroma.com/",
+      "finalUrl": "https://www.trychroma.com/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:50.744Z",
+      "contentHash": "e9a3cbdeb212604dae7f79eb6211b97caebe120de49f2f369e3634ae402a5bca",
+      "bytesFetched": 314648,
+      "score": 75,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 49 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "1 description(s); 40 characters. Recommended heuristic: 50–170 characters.",
+          "status": "warning"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 0,
+          "maxPoints": 10,
+          "detail": "No valid HTTP(S) canonical link was found.",
+          "status": "fail"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1163 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "28 of 28 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "50 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 0,
+          "maxPoints": 10,
+          "detail": "0 JSON-LD block(s), 0 parseable, 0 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "fail"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "qdrant",
+      "name": "Qdrant",
+      "category": "Search and databases",
+      "audience": "Developer tools",
+      "submittedUrl": "https://qdrant.tech/",
+      "finalUrl": "https://qdrant.tech/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:50.989Z",
+      "contentHash": "a7fb6fc94a41252a45fe07f8408a734968829efe8684175da89b969ed482824b",
+      "bytesFetched": 782479,
+      "score": 95,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 29 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 146 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1112 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "45 of 81 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "warning"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "137 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 JSON-LD block(s), 1 parseable, 1 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "pinecone",
+      "name": "Pinecone",
+      "category": "Search and databases",
+      "audience": "Developer tools",
+      "submittedUrl": "https://www.pinecone.io/",
+      "finalUrl": "https://www.pinecone.io/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:51.496Z",
+      "contentHash": "f768acaecbb83f1c867f64a5add86835677db8a8ca3d5739db6324732e2aa77f",
+      "bytesFetched": 269505,
+      "score": 90,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 56 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 138 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 0,
+          "maxPoints": 10,
+          "detail": "No valid HTTP(S) canonical link was found.",
+          "status": "fail"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "687 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No image elements found; this check passes vacuously.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "32 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 JSON-LD block(s), 1 parseable, 1 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "resend",
+      "name": "Resend",
+      "category": "Email",
+      "audience": "Developer tools",
+      "submittedUrl": "https://resend.com/",
+      "finalUrl": "https://resend.com/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:51.551Z",
+      "contentHash": "724efeaa57b4d198035a3394f3e70ac8b23156f1857b2310a1f8788600ac6448",
+      "bytesFetched": 410249,
+      "score": 100,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 29 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 106 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "2091 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "12 of 12 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "48 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 JSON-LD block(s), 1 parseable, 1 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "firecrawl",
+      "name": "Firecrawl",
+      "category": "Web retrieval",
+      "audience": "Developer tools",
+      "submittedUrl": "https://www.firecrawl.dev/",
+      "finalUrl": "https://www.firecrawl.dev/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:52.858Z",
+      "contentHash": "367cbb1047d2d2623e41756281fbd853b968bdc893f2997cd6c5c7950f384f3e",
+      "bytesFetched": 1206023,
+      "score": 73,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 8,
+          "maxPoints": 15,
+          "detail": "6 title element(s); 85 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "warning"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 165 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 0,
+          "maxPoints": 10,
+          "detail": "No valid HTTP(S) canonical link was found.",
+          "status": "fail"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "3192 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "79 of 79 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "62 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 0,
+          "maxPoints": 10,
+          "detail": "0 JSON-LD block(s), 0 parseable, 0 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "fail"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "exa",
+      "name": "Exa",
+      "category": "Web retrieval",
+      "audience": "Developer tools",
+      "submittedUrl": "https://exa.ai/",
+      "finalUrl": "https://exa.ai/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:51.682Z",
+      "contentHash": "66ccc8379eec3c013456a53d065c4d1614a131c4b6bcc8869d9575eacc0d1e69",
+      "bytesFetched": 205991,
+      "score": 100,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 51 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 133 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "754 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "27 of 27 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "61 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "2 JSON-LD block(s), 2 parseable, 2 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "tavily",
+      "name": "Tavily",
+      "category": "Web retrieval",
+      "audience": "Developer tools",
+      "submittedUrl": "https://www.tavily.com/",
+      "finalUrl": "https://www.tavily.com/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:51.701Z",
+      "contentHash": "fd283804ff83ac7bf56e05f43beee2f2e11c3a8d829f0d7678d4e40bccf0be16",
+      "bytesFetched": 156755,
+      "score": 88,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 8,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 6 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "warning"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 131 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); points to a different URL; this may be intentional.",
+          "status": "warning"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "423 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "41 of 41 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "40 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "2 JSON-LD block(s), 2 parseable, 2 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "stripe",
+      "name": "Stripe",
+      "category": "Payments",
+      "audience": "Developer tools",
+      "submittedUrl": "https://stripe.com/",
+      "finalUrl": "https://stripe.com/en-sg",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:52.272Z",
+      "contentHash": "36c1825d6dc708a3b5553925ec08e17902ee7b48dfed930254a1ac90c42b5d9f",
+      "bytesFetched": 754312,
+      "score": 95,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 54 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 148 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "2 nonempty H1 heading(s) found.",
+          "status": "warning"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1722 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "31 of 31 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "157 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 JSON-LD block(s), 1 parseable, 1 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "temporal",
+      "name": "Temporal",
+      "category": "Workflows",
+      "audience": "Developer tools",
+      "submittedUrl": "https://temporal.io/",
+      "finalUrl": "https://temporal.io/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:52.949Z",
+      "contentHash": "cafdc15edf09328d7b5550ebdb7681d7bc39c9753ff488ce8970b38b853219aa",
+      "bytesFetched": 213982,
+      "score": 100,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 38 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 149 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "796 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "69 of 69 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "47 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "2 JSON-LD block(s), 2 parseable, 2 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "box",
+      "name": "Box",
+      "category": "Content",
+      "audience": "Developer tools",
+      "submittedUrl": "https://www.box.com/",
+      "finalUrl": "https://www.box.com/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:52.507Z",
+      "contentHash": "8ee9553d27873589e42268aa06d8db6780111249889009acacdd77cc7e694096",
+      "bytesFetched": 502861,
+      "score": 88,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 8,
+          "maxPoints": 15,
+          "detail": "16 title element(s); 61 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "warning"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 160 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); points to a different URL; this may be intentional.",
+          "status": "warning"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "778 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "97 of 97 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "136 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 JSON-LD block(s), 1 parseable, 1 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "sentry",
+      "name": "Sentry",
+      "category": "Observability",
+      "audience": "Developer tools",
+      "submittedUrl": "https://sentry.io/welcome/",
+      "finalUrl": "https://sentry.io/welcome/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:53.523Z",
+      "contentHash": "d31cac7b03e5005cd2fd857bb30092f8984ae5c7c596d12d16d87ac12f036c24",
+      "bytesFetched": 630595,
+      "score": 93,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 8,
+          "maxPoints": 15,
+          "detail": "5 title element(s); 69 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "warning"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 169 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "2281 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "44 of 44 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "162 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "2 JSON-LD block(s), 2 parseable, 2 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "posthog",
+      "name": "PostHog",
+      "category": "Analytics",
+      "audience": "Developer tools",
+      "submittedUrl": "https://posthog.com/",
+      "finalUrl": "https://posthog.com/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:53.154Z",
+      "contentHash": "c01b337ba37acecd319dcb135407533a6530fb4e8b0cb6bef6b853a2a270cf74",
+      "bytesFetched": 1585410,
+      "score": 88,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 8,
+          "maxPoints": 15,
+          "detail": "3 title element(s); 43 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "warning"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 120 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1118 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "17 of 23 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "warning"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "127 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "2 JSON-LD block(s), 2 parseable, 2 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "notion",
+      "name": "Notion",
+      "category": "Workspace and knowledge",
+      "audience": "Software & work",
+      "submittedUrl": "https://www.notion.com/",
+      "finalUrl": "https://www.notion.com/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:53.829Z",
+      "contentHash": "ab735e6d96de2bfaf9491682f06cff90a50dc50452485c7cd3c3392877b87306",
+      "bytesFetched": 240969,
+      "score": 85,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 45 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 124 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "173 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "warning"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "58 of 58 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "99 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 0,
+          "maxPoints": 10,
+          "detail": "0 JSON-LD block(s), 0 parseable, 0 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "fail"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "slack",
+      "name": "Slack",
+      "category": "Team communication",
+      "audience": "Software & work",
+      "submittedUrl": "https://slack.com/intl/en-sg/",
+      "finalUrl": "https://slack.com/intl/en-sg/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:53.790Z",
+      "contentHash": "9cca51897abe715ed8cdc1dccaebf82cd41226f4131686f6e3a46ac125806f1e",
+      "bytesFetched": 260134,
+      "score": 78,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 8,
+          "maxPoints": 15,
+          "detail": "3 title element(s); 47 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "warning"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "1 description(s); 172 characters. Recommended heuristic: 50–170 characters.",
+          "status": "warning"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1242 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "91 of 91 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "255 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 0,
+          "maxPoints": 10,
+          "detail": "0 JSON-LD block(s), 0 parseable, 0 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "fail"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "basecamp",
+      "name": "Basecamp",
+      "category": "Project management",
+      "audience": "Software & work",
+      "submittedUrl": "https://basecamp.com/",
+      "finalUrl": "https://basecamp.com/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:53.872Z",
+      "contentHash": "bf1981f3825e3bad033d7451fe17b8fd92c7a6d14d3c1f57550557c5accb2dcc",
+      "bytesFetched": 53421,
+      "score": 88,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 8,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 8 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "warning"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "1 description(s); 183 characters. Recommended heuristic: 50–170 characters.",
+          "status": "warning"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "747 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "20 of 20 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "59 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "3 JSON-LD block(s), 3 parseable, 3 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "ikea",
+      "name": "IKEA",
+      "category": "Furniture and home",
+      "audience": "Shops & brands",
+      "submittedUrl": "https://www.ikea.com/us/en/",
+      "finalUrl": "https://www.ikea.com/us/en/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:55.759Z",
+      "contentHash": "e0c3ed1885a2f73c31ace84712130c99d41734d1c6a1d2523ae6201bc0683832",
+      "bytesFetched": 1774207,
+      "score": 95,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 52 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 144 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1440 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "109 of 110 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "warning"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "167 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 JSON-LD block(s), 1 parseable, 1 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "allbirds",
+      "name": "Allbirds",
+      "category": "Footwear and apparel",
+      "audience": "Shops & brands",
+      "submittedUrl": "https://www.allbirds.com/",
+      "finalUrl": "https://www.allbirds.com/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:54.033Z",
+      "contentHash": "f5129921fb34b5b075895e4e23657e97a8291cbd16ece6d776f93ec26e0161a9",
+      "bytesFetched": 667898,
+      "score": 85,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 50 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 151 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1048 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "39 of 41 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "warning"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "112 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 0,
+          "maxPoints": 10,
+          "detail": "0 JSON-LD block(s), 0 parseable, 0 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "fail"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "everlane",
+      "name": "Everlane",
+      "category": "Clothing and accessories",
+      "audience": "Shops & brands",
+      "submittedUrl": "https://www.everlane.com/",
+      "finalUrl": "https://www.everlane.com/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:54.386Z",
+      "contentHash": "2f2d2ee620fe7e3fc1358c5465d903aa5ea49df187ce1385fb28a69e58d77623",
+      "bytesFetched": 867442,
+      "score": 88,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 8,
+          "maxPoints": 15,
+          "detail": "2 title element(s); 8 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "warning"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 131 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "467 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "22 of 44 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "warning"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "292 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "2 JSON-LD block(s), 2 parseable, 2 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "taskrabbit",
+      "name": "Taskrabbit",
+      "category": "Home services",
+      "audience": "Services & travel",
+      "submittedUrl": "https://www.taskrabbit.com/",
+      "finalUrl": "https://www.taskrabbit.com/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:55.339Z",
+      "contentHash": "b30c5a97ea126e530bc53abd452dba2704c368a61cc74eab89c8283a9c078a4d",
+      "bytesFetched": 364966,
+      "score": 88,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 8,
+          "maxPoints": 15,
+          "detail": "4 title element(s); 57 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "warning"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 156 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "3 nonempty H1 heading(s) found.",
+          "status": "warning"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "602 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "29 of 29 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "72 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "2 JSON-LD block(s), 2 parseable, 2 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "intrepid-travel",
+      "name": "Intrepid Travel",
+      "category": "Small-group travel",
+      "audience": "Services & travel",
+      "submittedUrl": "https://www.intrepidtravel.com/en",
+      "finalUrl": "https://www.intrepidtravel.com/en",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:54.548Z",
+      "contentHash": "2d5b1f93199f762265adbdb8a9a861c50217952012f446239e9ce3f57e9208d5",
+      "bytesFetched": 518549,
+      "score": 90,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 62 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 150 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "852 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "47 of 47 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "276 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 0,
+          "maxPoints": 10,
+          "detail": "0 JSON-LD block(s), 0 parseable, 0 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "fail"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "g-adventures",
+      "name": "G Adventures",
+      "category": "Adventure travel",
+      "audience": "Services & travel",
+      "submittedUrl": "https://www.gadventures.com/",
+      "finalUrl": "https://www.gadventures.com/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:55.031Z",
+      "contentHash": "d1cf0e730c15a5fb45ef13975bb1e7cd46e6de6113c26a4db4282038f3fe7eb2",
+      "bytesFetched": 735104,
+      "score": 90,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 27 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 148 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "317 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "18 of 18 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "354 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 0,
+          "maxPoints": 10,
+          "detail": "0 JSON-LD block(s), 0 parseable, 0 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "fail"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "coursera",
+      "name": "Coursera",
+      "category": "Courses and qualifications",
+      "audience": "Learning",
+      "submittedUrl": "https://www.coursera.org/",
+      "finalUrl": "https://www.coursera.org/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:55.650Z",
+      "contentHash": "f3ed89e35ff451e55c0fcbbefe4eb47d0251210fe2d4bb4cf1ce9fa38c11f0c9",
+      "bytesFetched": 795498,
+      "score": 95,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 50 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "1 description(s); 188 characters. Recommended heuristic: 50–170 characters.",
+          "status": "warning"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1160 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "35 of 35 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "141 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "2 JSON-LD block(s), 2 parseable, 2 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "duolingo",
+      "name": "Duolingo",
+      "category": "Language and skills learning",
+      "audience": "Learning",
+      "submittedUrl": "https://www.duolingo.com/",
+      "finalUrl": "https://www.duolingo.com/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:56.178Z",
+      "contentHash": "c40d102a1b6362a30571a8243d63508adab84902ab32e41b427928d14a8cc4c5",
+      "bytesFetched": 11291,
+      "score": 58,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 8,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 8 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "warning"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 148 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 0,
+          "maxPoints": 10,
+          "detail": "0 nonempty H1 heading(s) found.",
+          "status": "fail"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 0,
+          "maxPoints": 10,
+          "detail": "0 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "fail"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No image elements found; this check passes vacuously.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 0,
+          "maxPoints": 5,
+          "detail": "0 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "fail"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 0,
+          "maxPoints": 10,
+          "detail": "0 JSON-LD block(s), 0 parseable, 0 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "fail"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "edx",
+      "name": "edX",
+      "category": "Courses and qualifications",
+      "audience": "Learning",
+      "submittedUrl": "https://www.edx.org/",
+      "finalUrl": "https://www.edx.org/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-09-13T04:44:55.918Z",
+      "contentHash": "2edb7d9cbeabcff7653b59ceaebf0462e7a854310f7231fa3061e2c34e06a8e5",
+      "bytesFetched": 2527043,
+      "score": 83,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 8,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 70 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "warning"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 116 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 0,
+          "maxPoints": 10,
+          "detail": "0 nonempty H1 heading(s) found.",
+          "status": "fail"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "624 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "52 of 52 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "80 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 JSON-LD block(s), 1 parseable, 1 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    }
+  ]
+}

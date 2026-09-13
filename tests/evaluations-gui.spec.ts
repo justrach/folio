@@ -37,6 +37,9 @@ async function mockAccount(page: Page, signedIn = true) {
   });
   await page.route("**/api/seo-reports", (route) => route.fulfill({ json: { reports: [] } }));
   await page.route("**/api/scans", (route) => route.fulfill({ json: { scans: [] } }));
+  await page.route("**/api/benchmarks/runs**", (route) => route.fulfill({ json: { runs: [] } }));
+  await page.route("**/api/benchmarks", route => route.fulfill({ json: { suites: [], templates: [], access: { configured: false, canRun: false }, usage: {} } }));
+  await page.route("**/api/sites", route => route.fulfill({ json: { sites: [] } }));
   await page.route("**/api/agents/status", (route) => route.fulfill({ json: connection }));
 }
 
@@ -60,6 +63,7 @@ async function navigate(page: Page, path: string) {
   if (await opener.isVisible()) await opener.click();
   await page.locator(`.nav-link[href="${path}"]`).click();
   await expect(page).toHaveURL(new RegExp(`${path}$`));
+  if (path === "/evaluations") await page.getByRole("button", { name: "Page evidence", exact: true }).click();
 }
 
 test("evaluation demo is explicit, verifiable, keyboard navigable, and exportable without a provider", async ({ page }, testInfo) => {
@@ -69,14 +73,15 @@ test("evaluation demo is explicit, verifiable, keyboard navigable, and exportabl
     apiCalls.push(`${route.request().method()} ${new URL(route.request().url()).pathname}`);
     await route.fulfill({ status: 401, json: { error: "Sign in to view private evaluations." } });
   });
-  await page.goto("/evaluations");
-  await expect(page.getByRole("button", { name: "Run with Agents API", exact: true })).toBeDisabled();
+  await page.goto("/evaluations?view=page");
+  await expect(page.getByRole("button", { name: "Run evaluation", exact: true })).toBeDisabled();
   await expect(page.getByRole("link", { name: /Sign in to connect your workspace/ })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Sign in to connect your workspace/ })).toHaveAttribute("href", "/login?next=%2Fevaluations%3Fview%3Dpage");
   await expect(page.locator(".eval-report")).toHaveCount(0);
   await page.getByRole("button", { name: "Try reproducible demo", exact: true }).click();
   const report = page.locator(".eval-report");
   await expect(report.getByRole("heading", { name: "Sable Analytics · fictional fixture", exact: true })).toBeVisible();
-  await expect(page.locator(".eval-notice[role=status]")).toContainText("No OpenAI request was made");
+  await expect(page.locator(".eval-notice[role=status]")).toContainText("No agent run was started");
   await expect(report).toContainText("Local verifier · no model call");
 
   const product = report.locator(".eval-check").filter({ hasText: "Product name accuracy" });
@@ -91,8 +96,11 @@ test("evaluation demo is explicit, verifiable, keyboard navigable, and exportabl
   const sourceTab = report.getByRole("tab", { name: /^Source evidence/ });
   await sourceTab.focus();
   await page.keyboard.press("ArrowRight");
+  await expect(report.getByRole("tab", { name: "Findings", exact: true })).toBeFocused();
+  await expect(report.getByRole("heading", { name: "Agent summary", exact: true })).toBeVisible();
+  await page.keyboard.press("ArrowRight");
   await expect(report.getByRole("tab", { name: "Agent returns", exact: true })).toBeFocused();
-  await expect(report.getByRole("tabpanel")).toContainText("This fixture did not start an OpenAI session");
+  await expect(report.getByRole("tabpanel")).toContainText("This fixture did not start a remote agent session");
   await page.keyboard.press("End");
   await expect(report.getByRole("tab", { name: "Methodology", exact: true })).toBeFocused();
   await expect(report.getByRole("tabpanel")).toContainText("not search rank");
@@ -121,15 +129,35 @@ test("signed-in evaluation page requires configured access and never launches au
     if (route.request().method() === "POST") creates += 1;
     return route.fulfill({ json: { runs: [], connection, suite: EVAL_SUITE } });
   });
-  await page.goto("/evaluations");
-  await expect(page.getByText(connection.message, { exact: true })).toBeVisible();
+  await page.goto("/evaluations?view=page");
+  await expect(page.getByText("New evaluations are currently unavailable for this workspace. You can still inspect saved evidence or try the local demo.", { exact: true })).toBeVisible();
   await page.getByLabel("Website to evaluate", { exact: true }).fill("example.com");
-  await expect(page.getByRole("button", { name: "Run with Agents API", exact: true })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Run evaluation", exact: true })).toBeDisabled();
   await page.getByRole("button", { name: "Refresh agent connection", exact: true }).click();
   await navigate(page, "/agents");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await navigate(page, "/evaluations");
-  await expect(page.getByRole("button", { name: "Run with Agents API", exact: true })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Run evaluation", exact: true })).toBeDisabled();
+  expect(creates).toBe(0);
+});
+
+test("the activity dock distinguishes proven preparation failure from attempted creation", async ({ page }) => {
+  await mockAccount(page);
+  const value: EvaluationRun = { ...await createDemoEvaluationRun(), id: "preparation-fixture", mode: "live", status: "failed",
+    sessionId: null, result: null, events: [], error: "Fixture source capture failed.", siteName: "Private preparation fixture" };
+  await page.route("**/api/evaluations/preparation-fixture", route => route.fulfill({ json: { run: value } }));
+  let creates = 0;
+  await page.route("**/api/evaluations", route => {
+    if (route.request().method() === "POST") creates++;
+    return route.fulfill({ json: { runs: [evaluationSummary(value)], connection, suite: EVAL_SUITE } });
+  });
+  await page.goto("/visibility");
+  const dock = page.getByRole("complementary", { name: "Background agent activity", exact: true });
+  await expect(dock).toContainText("Preparation failed · inspect details");
+  value.events.push({ id: "session-create-attempt", at: value.createdAt, type: "session", title: "Fixture creation attempted" });
+  await page.reload();
+  await expect(dock).toContainText("Run failed · inspect returns");
+  await expect(dock).not.toContainText("Preparation failed");
   expect(creates).toBe(0);
 });
 
@@ -173,18 +201,18 @@ test("managed session starts once, follows navigation, exposes private returns, 
     }
   });
 
-  await page.goto("/evaluations");
-  const launch = page.getByRole("button", { name: "Run with Agents API", exact: true });
-  await expect(launch).toBeEnabled();
+  await page.goto("/evaluations?view=page");
+  const launch = page.getByRole("button", { name: "Run evaluation", exact: true });
   expect(creates).toEqual([]);
   await page.getByLabel("Website to evaluate", { exact: true }).fill("example.com");
+  await expect(launch).toBeEnabled();
   await launch.click();
   await expect(page.locator(".eval-report .eval-status").first()).toContainText("Queued");
   await expect(page.locator(".eval-report .eval-verification-score")).toHaveCount(0);
-  await expect(page.getByRole("heading", { name: "The session is working in the background.", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Evaluation queued", exact: true })).toBeVisible();
   expect(creates).toEqual([{ domain: "example.com", mode: "managed" }]);
 
-  await navigate(page, "/overview");
+  await navigate(page, "/visibility");
   const dock = page.getByRole("complementary", { name: "Background agent activity", exact: true });
   await expect(dock).toContainText("Private GUI source");
   await expect(dock).toContainText("Waiting to start");

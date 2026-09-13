@@ -1,0 +1,40 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Deliberate production target. Local development continues to use wrangler.jsonc.
+  "name": "folio-visibility",
+  "account_id": "d87222df6f3f663e802014f8eb5a274e",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-09-13",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "usefolio.site", "custom_domain": true }],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    { "binding": "WORKER_SELF_REFERENCE", "service": "folio-visibility" }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "folio-visibility",
+      "database_id": "1ac63021-5da1-45c8-839e-5ba35898bea5",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "vars": {
+    "BETTER_AUTH_URL": "https://usefolio.site",
+    "EVALUATION_RECONCILE_ENABLED": "false"
+  },
+  // Supply BETTER_AUTH_SECRET and Google production OAuth credentials as Worker secrets.
+  // Paid provider credentials/allowlists are separate from public Google sign-in.
+  "observability": {
+    "enabled": true,
+    // OAuth callback codes and state travel in the query string.
+    "redact_query_string": true,
+    "logs": { "invocation_logs": false },
+    "traces": { "enabled": false }
+  }
+}

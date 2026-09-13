@@ -8,14 +8,18 @@ import type { EvaluationRun } from "@/lib/evals";
 import { evaluationHref } from "@/lib/evaluation-navigation";
 import "./workspace-evaluation-summary.css";
 
-type RecentEvaluation = Pick<EvaluationRun, "id" | "siteName" | "targetUrl" | "status" | "mode" | "createdAt" | "result">;
-type Snapshot = { ownerId: string | null; status: "loading" | "ready" | "error"; runs: RecentEvaluation[]; error: string };
+type RecentEvaluation = Pick<EvaluationRun, "id" | "siteName" | "targetUrl" | "status" | "mode" | "createdAt" | "result"> & { preparationFailed?: boolean };
+type Snapshot = { ownerId: string | null; target: string | null; status: "loading" | "ready" | "error"; runs: RecentEvaluation[]; error: string };
 const statusLabels: Record<EvaluationRun["status"], string> = {
   queued: "Queued", running: "Running", requires_action: "Needs attention",
   completed: "Completed", failed: "Failed", cancelled: "Cancelled",
 };
 
-function readRecentRuns(value: unknown): RecentEvaluation[] {
+function normalizedTarget(value: string | undefined): string | null {
+  try { const url = new URL(value ?? ""); return ["http:", "https:"].includes(url.protocol) && !url.username && !url.password ? url.href : null; } catch { return null; }
+}
+
+function readRecentRuns(value: unknown, target: string | null): RecentEvaluation[] {
   if (!value || typeof value !== "object" || !Array.isArray((value as { runs?: unknown }).runs))
     throw new Error("Your saved evaluations could not be read.");
   const runs = (value as { runs: unknown[] }).runs;
@@ -33,16 +37,17 @@ function readRecentRuns(value: unknown): RecentEvaluation[] {
     }
     return true;
   })) throw new Error("Your saved evaluations could not be read.");
-  return (runs as RecentEvaluation[]).slice().sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)).slice(0, 3);
+  return (runs as RecentEvaluation[]).filter(run => !target || normalizedTarget(run.targetUrl) === target).sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)).slice(0, 3);
 }
 
 /** A saved-state preview only. The separate agent dock reconciles provider sessions. */
-export function WorkspaceEvaluationSummary({ initialTargetUrl }: { initialTargetUrl?: string }) {
+export function WorkspaceEvaluationSummary({ initialTargetUrl, filterTargetUrl }: { initialTargetUrl?: string; filterTargetUrl?: string }) {
   const { data: session, isPending } = useSession();
   const ownerId = session?.user.id ?? null;
+  const target = normalizedTarget(filterTargetUrl);
   const currentOwner = useRef(ownerId);
   currentOwner.current = ownerId;
-  const [snapshot, setSnapshot] = useState<Snapshot>({ ownerId: null, status: "loading", runs: [], error: "" });
+  const [snapshot, setSnapshot] = useState<Snapshot>({ ownerId: null, target: null, status: "loading", runs: [], error: "" });
   const [retry, setRetry] = useState(0);
 
   useEffect(() => {
@@ -53,16 +58,16 @@ export function WorkspaceEvaluationSummary({ initialTargetUrl }: { initialTarget
       request?.abort();
       const controller = new AbortController();
       request = controller;
-      setSnapshot(previous => ({ ownerId, status: "loading", error: "", runs: previous.ownerId === ownerId ? previous.runs : [] }));
+      setSnapshot(previous => ({ ownerId, target, status: "loading", error: "", runs: previous.ownerId === ownerId && previous.target === target ? previous.runs : [] }));
       try {
         const response = await fetch("/api/evaluations", { method: "GET", cache: "no-store", signal: controller.signal });
         if (!response.ok) throw new Error("Your saved evaluations are unavailable. Try refreshing the notebook.");
-        const runs = readRecentRuns(await response.json());
+        const runs = readRecentRuns(await response.json(), target);
         if (!disposed && !controller.signal.aborted && currentOwner.current === ownerId)
-          setSnapshot({ ownerId, status: "ready", runs, error: "" });
+          setSnapshot({ ownerId, target, status: "ready", runs, error: "" });
       } catch (error) {
         if (!disposed && !controller.signal.aborted && currentOwner.current === ownerId)
-          setSnapshot({ ownerId, status: "error", runs: [], error: error instanceof Error ? error.message : "Your saved evaluations are unavailable." });
+          setSnapshot({ ownerId, target, status: "error", runs: [], error: error instanceof Error ? error.message : "Your saved evaluations are unavailable." });
       }
     }
     const refresh = () => { void load(); };
@@ -73,12 +78,12 @@ export function WorkspaceEvaluationSummary({ initialTargetUrl }: { initialTarget
       request?.abort();
       window.removeEventListener("folio-evaluations-changed", refresh);
     };
-  }, [ownerId, isPending, retry]);
+  }, [ownerId, isPending, retry, target]);
 
   // The account guard hides old private rows during the owner-changing render,
   // before the effect cleanup or a replacement request has a chance to run.
   if (isPending || !ownerId) return null;
-  const owned = snapshot.ownerId === ownerId;
+  const owned = snapshot.ownerId === ownerId && snapshot.target === target;
   const runs = owned ? snapshot.runs : [];
   const loading = !owned || snapshot.status === "loading";
   const error = owned && snapshot.status === "error" ? snapshot.error : "";
@@ -96,8 +101,8 @@ export function WorkspaceEvaluationSummary({ initialTargetUrl }: { initialTarget
         const agentHref = `/agents${reportHref.slice("/evaluations".length)}`;
         return <li key={run.id} className="wes-run">
           <span className="wes-run-icon"><FileCheck2 size={18} aria-hidden="true" /></span>
-          <div className="wes-run-copy"><h3>{name}</h3><p className="wes-target">{run.targetUrl}</p><span className="wes-meta">{run.mode === "demo" ? "Local fixture" : "Agents API"} · {new Date(run.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span></div>
-          <div className="wes-result"><span className={`wes-status wes-status-${run.status}`}>{statusLabels[run.status]}</span>{run.status === "completed" && run.result ? <><p className="wes-counts"><span>{run.result.passed} passed</span><span>{run.result.failed} failed</span><span>{run.result.unmeasured} unmeasured</span></p><small>{run.result.measured} measured checks</small></> : <p className="wes-pending">{run.status === "queued" || run.status === "running" ? "Waiting for a verified return" : run.status === "requires_action" ? "Review the session’s next step" : "No verified result saved"}</p>}</div>
+          <div className="wes-run-copy"><h3>{name}</h3><p className="wes-target">{run.targetUrl}</p><span className="wes-meta">{run.mode === "demo" ? "Local fixture" : "Website evaluation"} · {new Date(run.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span></div>
+          <div className="wes-result"><span className={`wes-status wes-status-${run.status}`}>{run.preparationFailed === true ? "Capture preparation failed" : statusLabels[run.status]}</span>{run.status === "completed" && run.result ? <><p className="wes-counts"><span>{run.result.passed} passed</span><span>{run.result.failed} failed</span><span>{run.result.unmeasured} unmeasured</span></p><small>{run.result.measured} measured checks</small></> : <p className="wes-pending">{run.status === "queued" || run.status === "running" ? "Waiting for a verified return" : run.status === "requires_action" ? "Review the session’s next step" : run.preparationFailed === true ? "The page could not be prepared; no agent session was created." : "No verified result saved"}</p>}</div>
           <div className="wes-run-links"><Link href={reportHref} aria-label={`Open report for ${name}`}>Report <ArrowUpRight size={12} aria-hidden="true" /></Link><Link href={agentHref} aria-label={`Open returns for ${name}`}>Agent returns <ArrowUpRight size={12} aria-hidden="true" /></Link></div>
         </li>;
       })}</ol> : !loading && <div className="wes-empty"><span><FileCheck2 size={23} aria-hidden="true" /></span><div><h3>Your first evaluation starts here.</h3><p>Prepare a website review, then return here to inspect its saved findings and source evidence.</p></div></div>}

@@ -7,10 +7,13 @@ declare global {
     WORKER_SELF_REFERENCE: Fetcher;
     BETTER_AUTH_SECRET: string;
     BETTER_AUTH_URL: string;
+    GOOGLE_CLIENT_ID?: string;
+    GOOGLE_CLIENT_SECRET?: string;
     OPENAI_API_KEY?: string;
     OPENAI_AGENTS_MODEL?: string;
     OPENAI_ALLOWED_USER_IDS?: string;
     OPENAI_MAX_RUNS_PER_DAY?: string;
+    OPENAI_UNMETERED_USER_IDS?: string;
     DATAFORSEO_LOGIN?: string;
     DATAFORSEO_PASSWORD?: string;
     DATAFORSEO_ALLOWED_USER_IDS?: string;

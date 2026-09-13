@@ -13,10 +13,10 @@ export type EvaluationConnection = {
   message: string;
   canRun?: boolean;
   authorized?: boolean;
-  maxRunsPerDay?: number;
+  maxRunsPerDay?: number | null;
   usage?: {
     liveAttemptsLast24Hours: number;
-    remainingLiveRuns: number;
+    remainingLiveRuns: number | null;
     activeRunId: string | null;
     activeRunStatus: string | null;
     nextAvailableAt?: string | null;

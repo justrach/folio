@@ -51,10 +51,10 @@ export function EvaluationComparison({ runs, ownerId, initialBaselineId }: {
   const comparison = pair ? compareEvaluationRuns(pair.before, pair.after) : null;
   const eligibleAfter = completed.filter(run => run.id !== beforeId && (!beforeSummary || run.mode === beforeSummary.mode));
   const loading = Boolean(beforeSummary && afterSummary && !pair && !error);
-  const optionLabel = (run: EvaluationRun) => `${run.siteName || run.targetUrl} · ${evaluationDate(run.createdAt)} · ${run.mode === "demo" ? "Local fixture" : "Agents API"} · ${run.id.slice(-6)}`;
+  const optionLabel = (run: EvaluationRun) => `${run.siteName || run.targetUrl} · ${evaluationDate(run.createdAt)} · ${run.mode === "demo" ? "Local fixture" : "Website evaluation"} · ${run.id.slice(-6)}`;
 
   return <section className="panel eval-comparison" aria-labelledby="eval-comparison-title">
-    <div className="eval-section-top"><div><span className="eval-eyebrow">KEEP THE INPUTS IN VIEW</span><h2 id="eval-comparison-title"><GitCompareArrows size={19} /> Compare completed runs</h2><p>Inspect each check side by side, including changes in source evidence and reference answers.</p></div><span className="eval-version"><LockKeyhole size={12} />Private</span></div>
+    <div className="eval-section-top"><div><h2 id="eval-comparison-title"><GitCompareArrows size={19} /> Compare completed runs</h2><p>Choose two completed runs to compare their checks and source evidence.</p></div><span className="eval-version"><LockKeyhole size={12} />Private</span></div>
     {baselineIntent && beforeId === baselineIntent && <p className="eval-comparison-intent" role="status">{beforeSummary ? <>Baseline selected: <strong>{beforeSummary.siteName || beforeSummary.targetUrl}</strong>. Choose another completed {beforeSummary.mode === "demo" ? "local fixture" : "live run"} to compare.</> : "The requested baseline is not available among this account’s completed evaluations. Choose a saved baseline below."}</p>}
     {completed.length < 2 ? <p className="eval-comparison-empty">Complete two saved evaluations to compare their results here. Local fixtures and live agent runs stay in separate comparisons.</p> : <>
       <div className="eval-comparison-selects">

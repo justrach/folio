@@ -8,7 +8,6 @@ import {
   ArrowRight,
   BarChart3,
   Check,
-  Copy,
   Download,
   Globe2,
   Info,
@@ -28,7 +27,7 @@ import type { SeoReportSummary } from "@/lib/seo-store";
 import { evaluationHref, readEvaluationIntent } from "@/lib/evaluation-navigation";
 import "./seo-data-panel.css";
 
-type Connection = { configured: boolean; authorized: boolean; reason: string };
+type Connection = { configured: boolean; authorized: boolean };
 type Owned<T> = { ownerId: string | null; value: T };
 type JsonRecord = Record<string, unknown>;
 
@@ -130,7 +129,7 @@ function parseResult(value: unknown): SeoOverviewResult {
     !validObservation(result.backlinks, validBacklinks)
   ) {
     throw new Error(
-      "The response could not be displayed. This lookup may have been billed; check DataForSEO task history before trying again.",
+      "This update could not be displayed. Its outcome and charge are unconfirmed; review saved reports before trying again.",
     );
   }
   return result as SeoOverviewResult;
@@ -160,20 +159,11 @@ const currencyFormat = new Intl.NumberFormat("en-US", {
   currency: "USD",
   maximumFractionDigits: 2,
 });
-const costFormat = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 6,
-});
 function count(value: number | null) {
   return value === null ? "—" : numberFormat.format(value);
 }
 function money(value: number | null) {
   return value === null ? "—" : currencyFormat.format(value);
-}
-function cost(value: number | null) {
-  return value === null ? "Unknown" : costFormat.format(value);
 }
 function date(value: string) {
   return new Date(value).toLocaleString(undefined, {
@@ -187,7 +177,7 @@ export function SeoDataPanel() {
   const incomingTarget = readEvaluationIntent(searchParams).targetUrl;
   const { data: session, isPending } = useSession();
   const ownerId = session?.user.id ?? null;
-  const [domain, setDomain] = useState(() => incomingTarget ? new URL(incomingTarget).hostname : "rachit.ai");
+  const [domain, setDomain] = useState(() => incomingTarget ? new URL(incomingTarget).hostname : "");
   const [connectionState, setConnectionState] =
     useState<Owned<Connection> | null>(null);
   const [statusError, setStatusError] = useState<Owned<string> | null>(null);
@@ -196,7 +186,6 @@ export function SeoDataPanel() {
     useState<Owned<SeoOverviewResult> | null>(null);
   const [requestError, setRequestError] = useState<Owned<string> | null>(null);
   const [busyOwner, setBusyOwner] = useState<string | null>(null);
-  const [copyNotice, setCopyNotice] = useState("");
   const [historyState, setHistoryState] = useState<Owned<SeoReportSummary[]> | null>(null);
   const [historyError, setHistoryError] = useState<Owned<string> | null>(null);
   const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
@@ -204,19 +193,29 @@ export function SeoDataPanel() {
   const [selectedReport, setSelectedReport] = useState<Owned<string> | null>(null);
   const [storageNotice, setStorageNotice] = useState<Owned<string> | null>(null);
   const activeRequest = useRef<AbortController | null>(null);
+  const activeReportRead = useRef<AbortController | null>(null);
   const account = useRef(ownerId);
   account.current = ownerId;
 
   useEffect(() => {
     // Navigation can prefill a domain; it never submits a paid lookup.
-    setDomain(incomingTarget ? new URL(incomingTarget).hostname : "rachit.ai");
+    activeRequest.current?.abort();
+    activeReportRead.current?.abort();
+    activeRequest.current = null;
+    activeReportRead.current = null;
+    setResultState(null);
+    setSelectedReport(null);
+    setRequestError(null);
+    setStorageNotice(null);
+    setBusyOwner(null);
+    setOpeningState(null);
+    setDomain(incomingTarget ? new URL(incomingTarget).hostname : "");
   }, [incomingTarget, ownerId]);
 
   useEffect(() => {
     setResultState(null);
     setRequestError(null);
     setBusyOwner(null);
-    setCopyNotice("");
     setHistoryState(null);
     setHistoryError(null);
     setSelectedReport(null);
@@ -224,7 +223,9 @@ export function SeoDataPanel() {
     setStorageNotice(null);
     return () => {
       activeRequest.current?.abort();
+      activeReportRead.current?.abort();
       activeRequest.current = null;
+      activeReportRead.current = null;
     };
   }, [ownerId]);
 
@@ -260,16 +261,11 @@ export function SeoDataPanel() {
         const payload: unknown = await response.json();
         const data = record(payload);
         if (!response.ok)
-          throw new Error(
-            data && text(data.error)
-              ? data.error
-              : "Connection status is unavailable.",
-          );
+          throw new Error("Website data availability could not be checked.");
         if (
           !data ||
           typeof data.configured !== "boolean" ||
-          typeof data.authorized !== "boolean" ||
-          !text(data.reason)
+          typeof data.authorized !== "boolean"
         )
           throw new Error("Connection status could not be read.");
         if (!cancelled)
@@ -278,7 +274,6 @@ export function SeoDataPanel() {
             value: {
               configured: data.configured,
               authorized: data.authorized,
-              reason: data.reason,
             },
           });
       })
@@ -319,7 +314,7 @@ export function SeoDataPanel() {
 
   async function fetchData(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!ready || !ownerId || activeRequest.current || !domain.trim()) return;
+    if (!ready || !ownerId || activeRequest.current || activeReportRead.current || !domain.trim()) return;
     const requestedBy = ownerId;
     const controller = new AbortController();
     activeRequest.current = controller;
@@ -338,20 +333,21 @@ export function SeoDataPanel() {
       const payload: unknown = await response.json();
       if (account.current !== requestedBy || controller.signal.aborted) return;
       if (!response.ok) {
-        const data = record(payload);
         if (response.status === 401 || response.status === 403)
           setRefreshKey((key) => key + 1);
         throw new Error(
-          data && text(data.error)
-            ? data.error
-            : "The lookup did not complete. Check provider task history before retrying; cost may be unknown.",
+          response.status === 429 ? "You’ve reached the update limit. Try again later."
+            : response.status === 401 ? "Sign in to update website data."
+            : response.status === 403 ? "Website data updates are not available for this account."
+            : response.status === 400 ? "Enter a valid public website domain."
+            : "The update could not be confirmed. Its outcome and charge are unknown; review saved reports before trying again.",
         );
       }
       setResultState({ ownerId: requestedBy, value: parseResult(payload) });
       const data = record(payload);
       setSelectedReport(data?.saved === true && text(data.reportId) ? { ownerId: requestedBy, value: data.reportId } : null);
       if (data?.saved === false)
-        setStorageNotice({ ownerId: requestedBy, value: text(data.storageWarning) ? data.storageWarning : "This result was not saved. Download it before leaving; another lookup can charge again." });
+        setStorageNotice({ ownerId: requestedBy, value: "This result was not saved. Download it before leaving; another update can charge again." });
     } catch (error: unknown) {
       if (account.current === requestedBy && !controller.signal.aborted)
         setRequestError({
@@ -361,32 +357,34 @@ export function SeoDataPanel() {
             error.name !== "TypeError" &&
             error.name !== "SyntaxError"
               ? error.message
-              : "The lookup could not be confirmed. It may have been billed; check DataForSEO task history before trying again.",
+              : "The update could not be confirmed. Its outcome and charge are unknown; review saved reports before trying again.",
         });
     } finally {
       if (activeRequest.current === controller) activeRequest.current = null;
-      if (account.current === requestedBy) setBusyOwner(null);
-      if (account.current === requestedBy) setHistoryRefreshKey((key) => key + 1);
+      if (account.current === requestedBy && !controller.signal.aborted) setBusyOwner(null);
+      if (account.current === requestedBy && !controller.signal.aborted) setHistoryRefreshKey((key) => key + 1);
     }
   }
 
   async function openReport(id: string) {
-    if (!ownerId || busy || opening) return;
+    if (!ownerId || busy || activeReportRead.current) return;
     const requestedBy = ownerId;
+    const controller = new AbortController();
+    activeReportRead.current = controller;
     setOpeningState({ ownerId: requestedBy, value: id });
     setHistoryError(null);
     setResultState(null);
     setSelectedReport(null);
     setStorageNotice(null);
     try {
-      const response = await fetch(`/api/seo-reports/${encodeURIComponent(id)}`, { cache: "no-store" });
+      const response = await fetch(`/api/seo-reports/${encodeURIComponent(id)}`, { cache: "no-store", signal: controller.signal });
       const payload: unknown = await response.json();
-      if (account.current !== requestedBy) return;
+      if (account.current !== requestedBy || controller.signal.aborted) return;
       const report = record(record(payload)?.report);
       if (!response.ok || !report || report.id !== id || report.publication !== "private")
         throw new Error("This saved SEO report is unavailable.");
       if (report.state !== "complete" || report.result === null)
-        throw new Error("This lookup has no saved result. Its completion and cost are unconfirmed; check DataForSEO task history before starting another paid lookup.");
+        throw new Error("This update has no saved result. Its completion and cost are unconfirmed; review it before starting another update.");
       const result = parseResult(report.result);
       if (report.domain !== result.domain)
         throw new Error("This saved SEO report could not be matched to its website.");
@@ -395,10 +393,11 @@ export function SeoDataPanel() {
       setStorageNotice(null);
       setRequestError(null);
     } catch (error: unknown) {
-      if (account.current === requestedBy)
+      if (account.current === requestedBy && !controller.signal.aborted)
         setHistoryError({ ownerId: requestedBy, value: error instanceof Error ? error.message : "The saved report could not be opened." });
     } finally {
-      if (account.current === requestedBy) setOpeningState(null);
+      if (activeReportRead.current === controller) activeReportRead.current = null;
+      if (account.current === requestedBy && !controller.signal.aborted) setOpeningState(null);
     }
   }
 
@@ -413,95 +412,18 @@ export function SeoDataPanel() {
     URL.revokeObjectURL(url);
   }
 
-  async function copyAccountId() {
-    if (!ownerId) return;
-    try {
-      await navigator.clipboard.writeText(ownerId);
-      setCopyNotice("Account ID copied.");
-    } catch {
-      setCopyNotice("Select and copy the account ID above.");
-    }
-  }
-
   return (
     <div className="seo-data-panel">
-      <section
-        className="panel seo-data-connection"
-        aria-labelledby="seo-data-connection-title"
-      >
-        <div className="seo-data-connection-top">
-          <div className="seo-data-provider">
-            <span className="seo-data-provider-icon">
-              <Globe2 size={22} />
-            </span>
-            <div>
-              <h2 id="seo-data-connection-title">DataForSEO</h2>
-              <p>Google search estimates & backlink intelligence</p>
-            </div>
-          </div>
-          <span className={`seo-data-badge ${ready ? "ready" : ""}`}>
-            {isPending || (!connection && !connectionError)
-              ? "Checking access"
-              : ready
-                ? "Ready to query"
-                : connection?.configured
-                  ? "Account access required"
-                  : connection
-                    ? "Setup required"
-                    : "Status unavailable"}
-          </span>
-        </div>
-        <div className="seo-data-connection-body">
-          {connectionError ? (
-            <p role="alert">{connectionError}</p>
-          ) : connection ? (
-            <p>{connection.reason}</p>
-          ) : (
-            <p className="seo-data-inline">
-              <Loader2 className="spin" size={14} />
-              Checking the connection and your account access…
-            </p>
-          )}
-          <div className="seo-data-access-actions">
-            {!isPending && !ownerId && (
-              <Link className="button primary" href="/login">
-                Sign in to continue <ArrowUpRight size={14} />
-              </Link>
-            )}
-            {!isPending && ownerId && !ready && (
-              <div className="seo-data-account">
-                <span>Your account ID</span>
-                <div>
-                  <code>{ownerId}</code>
-                  <button
-                    type="button"
-                    className="seo-data-copy"
-                    aria-label="Copy account ID"
-                    onClick={copyAccountId}
-                  >
-                    <Copy size={14} />
-                  </button>
-                </div>
-                <small>
-                  An administrator can enable this account for paid lookups.
-                  Credentials stay on the server.
-                </small>
-                <span role="status" className="seo-data-copy-notice">
-                  {copyNotice}
-                </span>
-              </div>
-            )}
-            <button
-              type="button"
-              className="button secondary"
-              disabled={isPending || busy}
-              onClick={() => setRefreshKey((key) => key + 1)}
-            >
-              <RefreshCw size={13} />
-              Check access
-            </button>
-          </div>
-        </div>
+      <section className="seo-data-availability" aria-label="Website data availability">
+        <p role={connectionError ? "alert" : "status"}>
+          {isPending || (!connection && !connectionError) ? "Checking website data availability…"
+            : connectionError ? "Website data availability could not be checked. Saved reports may still be available."
+            : !ownerId ? "Sign in to save and update private website reports."
+            : ready ? "Website data updates are available. Your saved reports stay private."
+            : "Website data updates are unavailable right now. You can still open saved reports."}
+        </p>
+        {!isPending && !ownerId && <Link className="button primary" href="/login">Sign in to continue <ArrowUpRight size={14} /></Link>}
+        {!isPending && !ready && <button type="button" className="button secondary" disabled={busy} onClick={() => setRefreshKey(key => key + 1)}><RefreshCw size={13} /> Check availability</button>}
       </section>
 
       <section
@@ -510,13 +432,11 @@ export function SeoDataPanel() {
       >
         <div className="seo-data-section-heading">
           <div>
-            <span className="eyebrow">ONE DOMAIN. TWO PERSPECTIVES.</span>
             <h2 id="seo-data-query-title">
-              A little context for your next move.
+              Search and backlinks
             </h2>
             <p>
-              Request current observations from the provider’s search and
-              backlink indexes.
+              See a website’s search reach, ranking keywords, and referring domains.
             </p>
           </div>
         </div>
@@ -544,21 +464,20 @@ export function SeoDataPanel() {
             <button
               type="submit"
               className="button primary"
-              disabled={!ready || busy || !domain.trim()}
+              disabled={!ready || busy || Boolean(opening) || !domain.trim()}
             >
               {busy ? (
                 <Loader2 className="spin" size={15} />
               ) : (
                 <BarChart3 size={15} />
               )}{" "}
-              {busy ? "Fetching SEO data…" : "Fetch SEO data"}
+              {busy ? "Updating website data…" : "Update website data"}
             </button>
           </div>
           <p id="seo-data-billing-note" className="seo-data-query-note">
             <Info size={14} />
             <span>
-              Each lookup requests up to two paid DataForSEO tasks. No automatic
-              queries or retries. Reported API cost appears with your results.
+              Updating runs a new lookup and may incur a charge. Saved reports open without a new lookup. Updates are never automatic.
             </span>
           </p>
           <div className="seo-data-market">
@@ -584,9 +503,8 @@ export function SeoDataPanel() {
         <section className="panel seo-data-history" aria-labelledby="seo-history-title">
           <div className="seo-data-section-heading">
             <div>
-              <span className="eyebrow">YOUR PRIVATE ARCHIVE</span>
-              <h2 id="seo-history-title">Saved SEO reports</h2>
-              <p>Reopen your latest 50 lookups. Reading a saved report makes no paid request.</p>
+              <h2 id="seo-history-title">Saved website reports</h2>
+              <p>Reopen your latest 50 reports without running another update.</p>
             </div>
             <button type="button" className="button secondary" disabled={busy || Boolean(opening)} onClick={() => setHistoryRefreshKey((key) => key + 1)}>
               <RefreshCw size={13} /> Refresh history
@@ -594,14 +512,14 @@ export function SeoDataPanel() {
           </div>
           {savedError && <p role="alert" className="seo-data-alert">{savedError}</p>}
           {!history && !savedError && <p role="status">Loading saved reports…</p>}
-          {history?.length === 0 && <p className="seo-data-history-empty">Your next lookup will be saved here, including incomplete results and any reported cost.</p>}
+          {history?.length === 0 && <p className="seo-data-history-empty">Your next update will be saved here. Incomplete results remain visible.</p>}
           {history && history.length > 0 && (
             <ul className="seo-data-history-list">
               {history.map((report) => (
                 <li key={report.id} className={activeReportId === report.id ? "selected" : ""}>
                   <div><strong>{report.domain}</strong><small>{date(report.retrievedAt ?? report.createdAt)}</small></div>
-                  <span className="seo-data-history-status">{report.status === "unconfirmed" ? "Outcome unconfirmed" : report.status === "partial" ? "Partial result" : report.status === "error" ? "Sources unavailable" : "Completed"}<small>{report.costIsComplete ? cost(report.totalCostUsd) : report.knownCostUsd === null ? "Cost unknown" : `${cost(report.knownCostUsd)} known · remainder unknown`}</small></span>
-                  <button type="button" className="button secondary" aria-label={`Open saved SEO report for ${report.domain} from ${date(report.createdAt)}`} disabled={busy || Boolean(opening)} onClick={() => openReport(report.id)}>
+                  <span className="seo-data-history-status">{report.status === "unconfirmed" ? "Outcome unconfirmed" : report.status === "partial" ? "Partial result" : report.status === "error" ? "Sources unavailable" : "Completed"}</span>
+                  <button type="button" className="button secondary" aria-label={`Open saved website report for ${report.domain} from ${date(report.createdAt)}`} disabled={busy || Boolean(opening)} onClick={() => openReport(report.id)}>
                     {opening === report.id ? <Loader2 className="spin" size={13} /> : <ArrowUpRight size={13} />} Open report
                   </button>
                 </li>
@@ -616,10 +534,9 @@ export function SeoDataPanel() {
           <span className="seo-data-empty-icon">
             <BarChart3 size={29} />
           </span>
-          <h2>Your search story starts with a lookup.</h2>
+          <h2>See how your website is found.</h2>
           <p>
-            Enter a domain and fetch SEO data to see its organic search
-            estimates and backlink profile. Results will appear here.
+            Enter a domain to update its search estimates and backlink profile, or open a saved report above.
           </p>
           <span>
             <ShieldCheck size={13} />
@@ -633,7 +550,6 @@ export function SeoDataPanel() {
         >
           <div className="seo-data-result-heading">
             <div>
-              <span className="eyebrow">PROVIDER OBSERVATION</span>
               <h2>{result.domain}</h2>
               <p>
                 Retrieved {date(result.fetchedAt)} · source update time
@@ -641,25 +557,11 @@ export function SeoDataPanel() {
               </p>
             </div>
             <button type="button" className="button secondary" onClick={downloadResult}><Download size={14} /> Download private report</button>
-            <div className="seo-data-cost">
-              <span>
-                {result.costIsComplete ? "Reported API cost" : "Known API cost"}
-              </span>
-              <strong>
-                {cost(
-                  result.costIsComplete
-                    ? result.totalCostUsd
-                    : result.knownCostUsd,
-                )}
-              </strong>
-              {!result.costIsComplete && <small>Additional cost unknown</small>}
-            </div>
           </div>
           {activeReportId && !busy && !opening && (
             <section className="seo-data-handoff" aria-label="Evaluate this website">
               <div>
-                <span className="eyebrow">YOUR NEXT STEP</span>
-                <h3>Put this report to work.</h3>
+                <h3>Evaluate with this report</h3>
                 <p>Review {result.domain} with your saved search and backlink evidence. You’ll choose when to start.</p>
               </div>
               <Link className="button primary" href={evaluationHref({ targetUrl: `https://${result.domain}/`, seoReportId: activeReportId })}>
@@ -729,14 +631,9 @@ function ObservationState({
         </h3>
         <p>
           {observation.status === "error"
-            ? observation.error?.message
-            : `DataForSEO returned no ${kind === "organic" ? "organic search" : "backlink"} record. Missing data is not a zero score.`}
+            ? "This part of the report is unavailable. Missing data is not a zero score."
+            : `No ${kind === "organic" ? "organic search" : "backlink"} record was returned. Missing data is not a zero score.`}
         </p>
-        {kind === "backlinks" && observation.status === "error" && (
-          <small>
-            Backlinks API access may require an active subscription.
-          </small>
-        )}
       </div>
     </div>
   );
@@ -756,7 +653,6 @@ function SourceFooter({
         )}
         Retrieved {date(observation.fetchedAt)}
       </span>
-      <span>Task cost: {cost(observation.costUsd)}</span>
     </div>
   );
 }
@@ -782,7 +678,7 @@ function OrganicSection({
           </h2>
           <p>Google · United States · English</p>
         </div>
-        <span className="seo-data-badge">Provider estimates</span>
+        <span className="seo-data-badge">Search estimates</span>
       </div>
       <ObservationState kind="organic" observation={observation} />
       {observation.status === "success" && data && (
@@ -791,7 +687,7 @@ function OrganicSection({
             <DataMetric
               label="Ranking keywords"
               value={count(data.organicKeywords)}
-              hint="Keywords in the provider index"
+              hint="Keywords in the search index"
               primary
             />
             <DataMetric
@@ -839,7 +735,7 @@ function OrganicSection({
               </div>
             ))}
           </div>
-          <p className="seo-data-source-note">{data.note}</p>
+          <p className="seo-data-source-note">Search estimates are modeled observations, not your site analytics or a complete record of search activity.</p>
         </>
       )}
       <SourceFooter observation={observation} />
@@ -865,7 +761,7 @@ function BacklinksSection({
           </h2>
           <p>Live links · includes subdomains</p>
         </div>
-        <span className="seo-data-badge">DataForSEO index</span>
+        <span className="seo-data-badge">Live backlink index</span>
       </div>
       <ObservationState kind="backlinks" observation={observation} />
       {observation.status === "success" && data && (
@@ -874,7 +770,7 @@ function BacklinksSection({
             <DataMetric
               label="Backlinks"
               value={count(data.backlinks)}
-              hint="Live links in the provider index"
+              hint="Live links found in the index"
             />
             <DataMetric
               label="Referring domains"
@@ -887,13 +783,13 @@ function BacklinksSection({
               hint="Root-domain grouping"
             />
             <DataMetric
-              label="DataForSEO domain rank"
+              label="Link authority"
               value={
                 data.authorityRank === null
                   ? "—"
                   : `${count(data.authorityRank)} / 100`
               }
-              hint="Provider link metric, not search rank"
+              hint="Indexed link metric · not a search position"
               primary
             />
           </div>
@@ -913,7 +809,7 @@ function BacklinksSection({
               </div>
             ))}
           </dl>
-          <p className="seo-data-source-note">{data.note}</p>
+          <p className="seo-data-source-note">Counts reflect links found in the backlink index and may differ from other sources. A dash means the value is unavailable.</p>
         </>
       )}
       <SourceFooter observation={observation} />

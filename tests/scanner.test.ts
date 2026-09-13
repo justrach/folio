@@ -66,10 +66,50 @@ test("header noindex lowers score and optional files never earn or lose points",
   assert.equal(result.seoScore, 90);
   assert.equal(
     result.checks.filter((check) => check.status === "optional").length,
-    2,
+    4,
   );
   assert.equal(result.contentHash.length, 64);
   assert.equal(result.source, "live");
+});
+
+test("discovery scan inspects four bounded documents without following listed URLs or changing the HTML score", async () => {
+  const requests: string[] = [];
+  const documents: Record<string, [string, string]> = {
+    "/robots.txt": ["User-agent: *\nDisallow: /account\nSitemap: https://example.com/elsewhere.xml", "text/plain"],
+    "/llms.txt": ["# Example\n\n> Product documentation.\n\n## Guides\n- [Start](/docs/start.md)", "text/markdown"],
+    "/llms-full.txt": ["<!doctype html><html><title>Not found</title></html>", "text/html"],
+    "/sitemap.xml": ['<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://example.com/docs</loc></url></urlset>', "application/xml"],
+  };
+  const result = await scanWebsite("example.com", { fetcher: async input => {
+    const url = new URL(String(input)); requests.push(url.href);
+    const [body, type] = url.pathname === "/" ? [completeHtml, "text/html"] : documents[url.pathname];
+    return new Response(body, { headers: { "content-type": type } });
+  } });
+  assert.equal(result.seoScore, evaluateHtml(completeHtml, "https://example.com/").seoScore);
+  assert.equal(requests.length, 5);
+  const get = (id: string) => JSON.parse(result.checks.find(check => check.id === id)!.evidence!);
+  assert.equal(get("llms-file").details.linkCount, 1);
+  assert.equal(get("robots-file").details.policyEvaluated, false);
+  assert.equal(get("sitemap-file").details.entryCount, 1);
+  assert.equal(get("llms-full-file").status, "malformed");
+  assert.ok(result.checks.filter(check => check.status === "optional").every(check => check.points === 0 && check.maxPoints === 0));
+  assert.ok(!requests.some(url => url.includes("elsewhere") || url.includes("/docs")));
+});
+
+test("discovery failures retain upstream missing, blocked and size-limited outcomes", async () => {
+  const result = await scanWebsite("example.com", { fetcher: async input => {
+    const path = new URL(String(input)).pathname;
+    if (path === "/") return new Response(completeHtml, { headers: { "content-type": "text/html" } });
+    if (path === "/robots.txt") return new Response("Missing", { status: 404 });
+    if (path === "/llms.txt") return new Response("Forbidden", { status: 403 });
+    return new Response("large", { headers: { "content-type": "text/plain", "content-length": "2000001" } });
+  } });
+  const get = (id: string) => JSON.parse(result.checks.find(check => check.id === id)!.evidence!);
+  assert.equal(get("robots-file").status, "missing"); assert.equal(get("robots-file").httpStatus, 404);
+  assert.equal(get("llms-file").status, "blocked"); assert.equal(get("llms-file").httpStatus, 403);
+  assert.equal(get("llms-full-file").status, "limited");
+  assert.equal(get("sitemap-file").status, "limited");
+  assert.equal(result.seoScore, 100);
 });
 
 test("malformed JSON-LD fails and unrelated JSON does not earn full structured-data credit", () => {

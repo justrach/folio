@@ -1,4 +1,6 @@
 import { evaluateHtml, type EvaluationCheck } from "./evaluation";
+import { analyzeDiscoveryDocument, DISCOVERY_DOCUMENT_KINDS, DISCOVERY_DOCUMENT_LIMITS,
+  type DiscoveryDocumentAnalysis, type DiscoveryDocumentInput } from "./discovery-documents";
 
 const MAX_BYTES = 750_000;
 const MAX_REDIRECTS = 3;
@@ -9,6 +11,7 @@ export class ScanError extends Error {
   constructor(
     message: string,
     public readonly status = 400,
+    public readonly observation?: { httpStatus?: number; failure?: DiscoveryDocumentInput["failure"] },
   ) {
     super(message);
     this.name = "ScanError";
@@ -81,7 +84,7 @@ export type BoundedFetchOptions = {
   fetcher?: typeof fetch;
   maxBytes?: number;
   timeoutMs?: number;
-  contentType?: "html" | "text";
+  contentType?: "html" | "text" | "discovery";
 };
 
 export async function boundedFetch(input: URL, options: BoundedFetchOptions) {
@@ -102,7 +105,9 @@ export async function boundedFetch(input: URL, options: BoundedFetchOptions) {
         headers: {
           "User-Agent": "FolioReadinessBot/1.0",
           Accept:
-            options.contentType === "text"
+            options.contentType === "discovery"
+              ? "text/plain,text/markdown,application/xml,text/xml,text/html;q=0.5"
+              : options.contentType === "text"
               ? "text/plain"
               : "text/html,application/xhtml+xml",
         },
@@ -132,6 +137,7 @@ export async function boundedFetch(input: URL, options: BoundedFetchOptions) {
         throw new ScanError(
           `The website returned HTTP ${response.status}.`,
           422,
+          { httpStatus: response.status },
         );
       }
       const contentType =
@@ -141,7 +147,9 @@ export async function boundedFetch(input: URL, options: BoundedFetchOptions) {
           .trim()
           .toLowerCase() ?? "";
       const accepted =
-        options.contentType === "text"
+        options.contentType === "discovery"
+          ? ["text/plain", "text/markdown", "application/xml", "text/xml", "text/html", "application/xhtml+xml"]
+          : options.contentType === "text"
           ? ["text/plain", "text/markdown"]
           : ["text/html", "application/xhtml+xml"];
       if (!accepted.includes(contentType)) {
@@ -155,7 +163,7 @@ export async function boundedFetch(input: URL, options: BoundedFetchOptions) {
       const declaredLength = Number(response.headers.get("content-length"));
       if (declaredLength > maxBytes) {
         await response.body?.cancel();
-        throw new ScanError("The response exceeds the scan size limit.", 422);
+        throw new ScanError("The response exceeds the scan size limit.", 422, { httpStatus: response.status, failure: "too-large" });
       }
       const reader = response.body?.getReader();
       if (!reader)
@@ -173,6 +181,7 @@ export async function boundedFetch(input: URL, options: BoundedFetchOptions) {
             throw new ScanError(
               "The response exceeds the scan size limit.",
               422,
+              { httpStatus: response.status, failure: "too-large" },
             );
           }
           body += decoder.decode(value, { stream: true });
@@ -181,7 +190,7 @@ export async function boundedFetch(input: URL, options: BoundedFetchOptions) {
       } finally {
         reader.releaseLock();
       }
-      return { body, url: url.href, headers: response.headers, bytes };
+      return { body, url: url.href, headers: response.headers, bytes, httpStatus: response.status };
     }
     throw new ScanError("Too many website redirects.", 422);
   } catch (error) {
@@ -190,10 +199,12 @@ export async function boundedFetch(input: URL, options: BoundedFetchOptions) {
       throw new ScanError(
         "The website took too long to respond. Try again later.",
         504,
+        { failure: "timeout" },
       );
     throw new ScanError(
       "The website could not be fetched. Check that it is publicly reachable.",
       422,
+      { failure: "network" },
     );
   } finally {
     clearTimeout(timeout);
@@ -214,40 +225,37 @@ export async function scanWebsite(
   const result = evaluateHtml(page.body, page.url, page.headers);
   const origin = new URL(page.url).origin;
   const optionalChecks = await Promise.all(
-    ["robots.txt", "llms.txt"].map(async (file): Promise<EvaluationCheck> => {
-      const sourceUrl = `${origin}/${file}`;
+    DISCOVERY_DOCUMENT_KINDS.map(async (kind): Promise<EvaluationCheck> => {
+      const sourceUrl = `${origin}/${kind}`;
+      let analysis: DiscoveryDocumentAnalysis;
       try {
         const response = await boundedFetch(new URL(sourceUrl), {
-          allowedHosts,
-          fetcher: options.fetcher,
-          maxBytes: 100_000,
-          timeoutMs: 4_000,
-          contentType: "text",
+          allowedHosts, fetcher: options.fetcher,
+          maxBytes: DISCOVERY_DOCUMENT_LIMITS[kind], timeoutMs: 4_000, contentType: "discovery",
         });
-        return {
-          id: file === "robots.txt" ? "robots-file" : "llms-file",
-          label: file,
-          status: "optional",
-          points: 0,
-          maxPoints: 0,
-          sourceUrl: response.url,
-          detail:
-            file === "robots.txt"
-              ? "Public robots.txt was retrieved. Its presence alone does not establish crawl permission; rules were not evaluated."
-              : "Optional llms.txt was retrieved. No ranking or model-consumption benefit is assumed.",
-          evidence: response.body.slice(0, 500),
-        };
+        analysis = analyzeDiscoveryDocument({ kind, url: response.url, body: response.body,
+          httpStatus: response.httpStatus, contentType: response.headers.get("content-type") });
       } catch (error) {
-        return {
-          id: file === "robots.txt" ? "robots-file" : "llms-file",
-          label: file,
-          status: "optional",
-          points: 0,
-          maxPoints: 0,
-          sourceUrl,
-          detail: `${file === "llms.txt" ? "Optional file" : "Robots observation"} unavailable. ${error instanceof ScanError ? error.message : "Fetch did not complete."} This does not lower the score.`,
-        };
+        const observation = error instanceof ScanError ? error.observation : undefined;
+        analysis = analyzeDiscoveryDocument({ kind, url: sourceUrl,
+          httpStatus: observation?.httpStatus,
+          failure: observation?.failure ?? (observation?.httpStatus ? undefined : "network") });
       }
+      // Persist a bounded diagnostic through the existing scan/check storage contract.
+      // Optional-file observations do not change readiness-v1 weights or page hashes.
+      const details = analysis.details;
+      const evidence = details?.format === "markdown"
+        ? { title: details.title, summary: details.summary, sections: details.sectionTitles.slice(0, 10), linkCount: details.linkCount, sampleLinks: details.links.slice(0, 5) }
+        : details?.format === "robots"
+          ? { ...details, userAgents: details.userAgents.slice(0, 10), sitemapUrls: details.sitemapUrls.slice(0, 5) }
+          : details ? { ...details, urls: details.urls.slice(0, 5) } : null;
+      return {
+        id: ({ "robots.txt": "robots-file", "llms.txt": "llms-file", "llms-full.txt": "llms-full-file", "sitemap.xml": "sitemap-file" })[kind],
+        label: kind, status: "optional", points: 0, maxPoints: 0, sourceUrl: analysis.url,
+        detail: `${analysis.status}: ${analysis.summary} ${analysis.warnings.join(" ")} ${analysis.limitations.join(" ")} This does not change the HTML score.`,
+        evidence: JSON.stringify({ version: analysis.version, status: analysis.status,
+          httpStatus: analysis.httpStatus, bytes: analysis.bytes, limitBytes: analysis.limitBytes, details: evidence }),
+      };
     }),
   );
   const digest = await crypto.subtle.digest(

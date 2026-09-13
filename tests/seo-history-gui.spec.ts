@@ -70,15 +70,19 @@ test("private SEO history reopens and exports partial observations without payin
   });
 
   await page.goto("/search-data");
-  await expect(page.getByRole("heading", { name: "Saved SEO reports", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Fetch SEO data", exact: true })).toBeDisabled();
-  await expect(page.locator(".seo-data-history-list")).toContainText("$0.01 known · remainder unknown");
-  await page.getByRole("button", { name: /Open saved SEO report for private-seo/ }).click();
-  await expect(page.locator(".seo-data-results")).toContainText("Additional cost unknown");
+  await expect(page.getByRole("heading", { name: "Saved website reports", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Update website data", exact: true })).toBeDisabled();
+  await expect(page.locator(".seo-data-history-list")).toContainText("Partial result");
+  await expect(page.locator(".seo-data-panel")).not.toContainText("DataForSEO");
+  await expect(page.locator(".seo-data-panel")).not.toContainText("seo-history-owner");
+  await expect(page.getByRole("button", {name: "Copy account ID"})).toHaveCount(0);
+  await page.getByRole("button", { name: /Open saved website report for private-seo/ }).click();
+  await expect(page.locator(".seo-data-results")).not.toContainText("API cost");
   await expect(page.locator(".seo-data-results")).toContainText("Missing data is not a zero score.");
-  await expect(page.locator(".seo-data-results")).toContainText("Fixture: backlink response is unconfirmed.");
+  await expect(page.locator(".seo-data-results")).toContainText("This part of the report is unavailable.");
+  await expect(page.locator(".seo-data-results")).not.toContainText("Fixture: backlink response");
   await page.getByRole("button", { name: "Refresh history", exact: true }).click();
-  await page.getByRole("button", { name: /Open saved SEO report for private-seo/ }).click();
+  await page.getByRole("button", { name: /Open saved website report for private-seo/ }).click();
   expect(reportReads).toBe(2);
   expect(paidRequests).toBe(0);
 
@@ -90,7 +94,7 @@ test("private SEO history reopens and exports partial observations without payin
   expect(bundle.reportId).toBe(savedReport.id);
   expect(bundle.result).toEqual(partialResult);
 
-  await page.getByRole("button", { name: /Open saved SEO report for interrupted/ }).click();
+  await page.getByRole("button", { name: /Open saved website report for interrupted/ }).click();
   await expect(page.locator(".seo-data-history").getByRole("alert")).toContainText("completion and cost are unconfirmed");
   expect(paidRequests).toBe(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(await page.evaluate(() => innerWidth + 1));
