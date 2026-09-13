@@ -47,6 +47,8 @@ Implementation research inspected OpenSEO's [transport](https://github.com/every
 
 The test suite uses injected provider fixtures exclusively. It verifies unauthorized-account blocking before any network request, exact request payloads, separate response shapes, missing versus zero metrics, charged failures, unknown costs, timeout behavior, redirect refusal, body-size bounds and rejection of account overrides. No paid provider call is required to run tests.
 
+On 13 September 2026, the operator configured the supplied credentials in the ignored local environment and validated them using the free `appendix/user_data` endpoint. HTTP and provider/task status indicated success; the provider reported zero cost. Only these status fields were inspected in output. The credential owner's signed-in local account was approved through the existing operator command, and the built Wrangler preview displayed "Ready to query" after restart. This establishes credential access and local configuration, not a successful organic/backlink lookup, a backlinks subscription, production configuration, or access for every Folio account. Existing per-user approval and lookup limits still apply.
+
 Run `node --conditions=react-server --import tsx --test tests/dataforseo.test.ts` to test the server-only adapter directly. A real provider smoke test should be initiated deliberately for the intended domain after the owner's account is approved.
 
 ## Saved reports and agent access

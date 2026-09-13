@@ -46,7 +46,7 @@ test("incoming website and SEO intent prepares a fresh evaluation without starti
   const target = page.getByLabel("Website to evaluate", { exact: true });
   await expect(target).toHaveValue("https://example.com/");
   await expect(page.locator("#eval-seo-report")).toHaveValue("loop-seo-report");
-  await expect(page.getByRole("region", { name: "Evaluation preflight" })).toContainText("Ready for your explicit start");
+  await expect(page.getByRole("region", { name: "Evaluation preflight" })).toContainText("Ready to evaluate");
   expect(creates).toEqual([]);
   await page.getByText("Optional reference answers", { exact: true }).click();
   await page.getByLabel("Expected product name", { exact: true }).fill("Private draft reference");
@@ -59,7 +59,7 @@ test("incoming website and SEO intent prepares a fresh evaluation without starti
   await expect(page.locator("#eval-seo-report")).toHaveValue("");
   await expect(page.locator(".eval-notice")).toContainText("Reference answers and saved SEO evidence were cleared");
   expect(creates).toEqual([]);
-  await page.getByRole("button", { name: "Run with Agents API", exact: true }).click();
+  await page.getByRole("button", { name: "Run evaluation", exact: true }).click();
   await expect(page).toHaveURL(/run=loop-failed/);
   await expect(page.locator(".eval-notice")).toContainText("saved as failed");
   await expect(page.locator(".eval-notice")).not.toContainText("can continue");
@@ -101,6 +101,7 @@ test("same-page run navigation hides stale details and supports browser history 
   await page.getByRole("button", { name: "Compare this run", exact: true }).click();
   await expect(page).toHaveURL(/baseline=loop-b/);
   await expect(page.getByLabel("Baseline evaluation", { exact: true })).toHaveValue(b.id);
+  await page.locator(".eval-more-actions > summary").click();
   await expect(page.getByRole("link", { name: "Open agent activity", exact: false })).toHaveAttribute("href", `/agents?run=${b.id}`);
   expect(creates).toBe(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
@@ -119,9 +120,9 @@ test("preflight exposes the active session and prevents another paid launch", as
     }
     return route.fulfill({ json: { run } });
   });
-  await page.goto("/evaluations");
+  await page.goto("/evaluations?view=page");
   await expect(page.getByRole("region", { name: "Evaluation preflight" })).toContainText("Finish your saved session first");
-  await expect(page.getByRole("button", { name: "Run with Agents API", exact: true })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Run evaluation", exact: true })).toBeDisabled();
   await page.getByRole("link", { name: "saved session", exact: true }).click();
   await expect(page).toHaveURL(/run=loop-blocked/);
   await expect(page.getByRole("button", { name: "Cancel run", exact: true })).toBeEnabled();
@@ -139,7 +140,7 @@ test("preflight keeps exhausted allowances and unsafe website inputs from launch
   });
   await page.goto("/evaluations?target=example.com");
   const preflight = page.getByRole("region", { name: "Evaluation preflight" });
-  const launch = page.getByRole("button", { name: "Run with Agents API", exact: true });
+  const launch = page.getByRole("button", { name: "Run evaluation", exact: true });
   await expect(preflight).toContainText("rolling 24-hour run allowance is used");
   await expect(preflight).toContainText("0 live attempts remaining");
   await expect(launch).toBeDisabled();
@@ -155,5 +156,27 @@ test("preflight keeps exhausted allowances and unsafe website inputs from launch
   }
   await target.fill("https://example.com/");
   await expect(launch).toBeEnabled();
+  expect(creates).toBe(0);
+});
+
+test("no daily limit retains explicit website evaluation starts and the active-session guard", async ({ page }) => {
+  await mockAccount(page);
+  let activeRunId: string | null = null;
+  let creates = 0;
+  await page.route("**/api/evaluations", route => {
+    if (route.request().method() === "POST") creates++;
+    return route.fulfill({ json: { runs: [], connection: { ...ready, maxRunsPerDay: null,
+      usage: { ...ready.usage, remainingLiveRuns: null, activeRunId, activeRunStatus: activeRunId ? "running" : null } }, suite: EVAL_SUITE } });
+  });
+  await page.goto("/evaluations?target=example.com");
+  const preflight = page.getByRole("region", { name: "Evaluation preflight", exact: true });
+  const launch = page.getByRole("button", { name: "Run evaluation", exact: true });
+  await expect(preflight).toContainText("No daily limit");
+  await expect(launch).toBeEnabled();
+  expect(creates).toBe(0);
+  activeRunId = "existing-active-fixture";
+  await page.getByRole("button", { name: "Refresh agent connection", exact: true }).click();
+  await expect(preflight).toContainText("Finish your saved session first");
+  await expect(launch).toBeDisabled();
   expect(creates).toBe(0);
 });

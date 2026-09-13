@@ -143,15 +143,17 @@ export function Sparkline({
 export function RankChart({
   metric,
   category,
+  query = "",
   onSelect,
 }: {
   metric: string;
   category: string;
+  query?: string;
   onSelect: (name: string) => void;
 }) {
   const [selected, setSelected] = useState<string>();
   const list = brands
-    .filter((b) => category === "All industries" || b.category === category)
+    .filter((b) => (category === "All industries" || b.category === category) && `${b.name} ${b.domain}`.toLowerCase().includes(query.toLowerCase()))
     .map((b) => ({
       ...b,
       value:

@@ -1,0 +1,30 @@
+{
+  "format": "folio-public-search-rankings-v1",
+  "queries": [
+    {
+      "id": "clothing-basics-us",
+      "audience": "Shops & brands",
+      "category": "Everyday clothing",
+      "query": "What are good online brands for everyday basics and casual clothing in the United States?",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "small-team-projects",
+      "audience": "Software & work",
+      "category": "Project management",
+      "query": "Which project management tools work well for a small team planning tasks and sharing documents?",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "beginner-python",
+      "audience": "Learning",
+      "category": "Online courses",
+      "query": "Where can a beginner learn Python online with structured courses?",
+      "language": "en",
+      "locale": "en-US"
+    }
+  ],
+  "observations": []
+}

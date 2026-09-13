@@ -6,6 +6,7 @@ import { drizzle } from "drizzle-orm/d1";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/lib/db";
 import * as schema from "@/lib/auth-schema";
+import { googleAuthOptions } from "@/lib/google-auth";
 
 export async function getAuth() {
   const { env } = await getCloudflareContext({ async: true });
@@ -22,6 +23,10 @@ export async function getAuth() {
     appName: "Folio",
     baseURL,
     secret,
+    ...googleAuthOptions({
+      GOOGLE_CLIENT_ID: env.GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID,
+      GOOGLE_CLIENT_SECRET: env.GOOGLE_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET,
+    }),
     database: drizzleAdapter(database, { provider: "sqlite", schema }),
     emailAndPassword: {
       enabled: true,

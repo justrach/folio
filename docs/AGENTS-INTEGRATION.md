@@ -8,7 +8,7 @@ Configure `OPENAI_API_KEY` in gitignored `.dev.vars` or `.env.local` for develop
 
 `OPENAI_MAX_RUNS_PER_DAY` defaults to **1 managed run per approved user per rolling 24 hours**, with an application maximum of 20. The atomic D1 reservation precedes outbound work and counts failed or ambiguous attempts. An owner can have only one queued, running, or action-required evaluation at a time. This controls run count, not guaranteed dollar cost; configure provider project spending controls separately. No automatic retries submit billable tasks.
 
-`SCAN_ALLOWED_HOSTS` is an exact reviewed hostname list, defaulting to `example.com` and `www.example.com`. Captures require HTTPS, forbid credentials/custom ports/IP literals, recheck every redirect, enforce an 80 KB response limit and a timeout, and never execute scripts. A fresh evaluation captures one HTML page. A replay reuses previous captures, independent expected facts, and the frozen suite after verifying their content hashes.
+`SCAN_ALLOWED_HOSTS` is an exact reviewed hostname list, defaulting to `example.com` and `www.example.com`. Captures require HTTPS, forbid credentials/custom ports/IP literals, recheck every redirect, enforce a 190,000-byte response limit and a timeout, and never execute scripts. A fresh evaluation captures one HTML page. A replay reuses previous captures, independent expected facts, and the frozen suite after verifying their content hashes.
 
 Status reports `disconnected` without a key and `configured` with one. Configuration does not prove provider access. Credentials, approved-user lists, prompts, and reasoning items are excluded from connection status and activity projections.
 
@@ -41,13 +41,23 @@ List/detail GET requests read stored state only. Provider retrieval is bounded t
 
 ## Tools, evidence, and output
 
-This version uses the managed harness to **review supplied website evidence**. It has no attached browser, sandbox, web search, MCP connections, or enabled subagent workflow. When an owner selects a saved SEO report at launch, the single `read_saved_seo_report` function is available. It extracts facts when present, returns source citations, explains supported findings, and labels missing evidence. It does not manufacture visibility observations from other providers.
+Website-evidence runs use the managed harness to **review supplied website evidence**. It has no attached browser, sandbox, web search, MCP connections, or enabled subagent workflow. When an owner selects a saved SEO report at launch, the single `read_saved_seo_report` function is available. It extracts facts when present, returns source citations, explains supported findings, and labels missing evidence. It does not manufacture visibility observations from other providers.
 
 DataForSEO lookups remain separately authenticated explicit paid actions. The managed function reads only the selected frozen saved report, with no arguments or new provider lookup. Its pending function action must match the saved session and sole active root turn. POST `/api/evaluations/:id/tools` requires owner approval, persists one tool reservation per run, returns the frozen content and hash, and never retries an ambiguous submission. Receiving a result may resume OpenAI inference. The [documented function mechanism](https://developers.openai.com/api/docs/guides/agents-api/tools/functions) uses `required_actions` and `agent.session.input.tool_result`; naming a tool in a UI does not execute it. Unexpected required actions currently stop at an explicit action-required state.
 
 The final JSON contains `summary`, `facts`, `citations`, `findings`, `missingEvidence`, and `publicationReady: false`. Folio validates allowed fields before display or scoring. Its independent verifier checks capture integrity, exact quote membership, fact coverage, available owner-confirmed truth, and deterministic readability. Quote membership verifies occurrence, not truth or entailment. Without independent truth, correctness stays **unmeasured**. Verification percentage is not website rank, search position, or AI recommendation rate.
 
-All runs and evidence remain private. No route publishes a run or changes the illustrative leaderboard. Public ranking still requires comparable observations, a defined cohort, sample counts, uncertainty, timestamps, and publication controls. See [evaluation strategy](../EVALUATION-STRATEGY.md).
+Website reports and private keyword runs remain private. The public search table reads a separately reviewed, sanitized artifact of completed open-web observations, not a browser run export or a technical-publication flag. Its positions are original recommendation order for an exact query, with timestamps and scope; sample views retain their illustrative labels. Broad product-quality comparisons still require comparable tasks, a defined cohort, repeated samples and uncertainty. See [evaluation strategy](../EVALUATION-STRATEGY.md).
+
+## Keyword search and external agents
+
+Keyword observations have a separate service and hosted environment. New `open-web` cases use `gpt-6-astra` with OpenAI live `web_search` and no domain filter. The hosted sandbox has outbound network disabled and serves local JSON validation. Legacy `reviewed-domains` cases retain their restricted live-search/network corpus and saved model/harness identity; omitted mode is legacy. Neither uses another inference provider or measures a consumer chat website.
+
+Completion requires a completed root turn, bounded final-answer JSON, a completed search item and the recorded sandbox-validation marker. Root search items and validation evidence remain in the private record. Returned citations are not independently verified source captures. Recommendation positions describe one answer; exact target-host matching and target citation presence remain separate. Mode/configuration changes suppress direct baseline/fresh changes. See [keyword operations and limits](KEYWORD-BENCHMARKS.md).
+
+The public `/docs/api` reference includes owner-only Folio key management. `/api/v1` accepts these scoped, expiring bearer keys; it never exposes or accepts the underlying OpenAI credential as a Folio login. GET reads saved state. An evaluate-enabled `POST /observations/ensure` with an idempotency key may reserve one new task when no fresh matching completion or matching active task is available. The default age window is 24 hours. Reconcile/cancel operate on existing owned runs and never approve pending tool answers. See [Agent API](AGENT-API.md) for response projections and recovery.
+
+`OPENAI_UNMETERED_USER_IDS` can exempt exact, already-approved owners from daily start caps. Nullable remaining-run fields mean no daily cap, not free provider usage. Active reservations, explicit starts, key request limits and keyword deadline handling remain enforced.
 
 ## Verification
 

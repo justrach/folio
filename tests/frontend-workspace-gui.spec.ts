@@ -36,7 +36,7 @@ async function fixture(page: Page, options: { signedIn?: boolean; failFirstAudit
       return route.fulfill({ status: 503, json: { error: "Fixture: audit history unavailable." } });
     return route.fulfill({ json: { scans: state.signedIn ? [latestAudit, olderAudit] : [] } });
   });
-  await page.route("**/api/sites", route => route.fulfill({ json: { sites: [] } }));
+  await page.route("**/api/sites", route => route.fulfill({ json: { sites: [{ id: "owned-latest", name: "Latest fixture", url: latestUrl }, { id: "owned-older", name: "Older fixture", url: olderUrl }] } }));
   await page.route("**/api/evaluations", route => {
     if (route.request().method() === "POST") {
       state.evalStarts++;
@@ -56,6 +56,9 @@ async function fixture(page: Page, options: { signedIn?: boolean; failFirstAudit
     return route.fulfill({ json: { configured: true, authorized: true, reason: "Browser fixture: explicit lookups are available." } });
   });
   await page.route("**/api/seo-reports", route => route.fulfill({ json: { reports: [] } }));
+  await page.route("**/api/benchmarks", route => route.fulfill({ json: { suites: [] } }));
+  await page.route("**/api/benchmarks/runs", route => route.fulfill({ json: { runs: [] } }));
+  await page.route("**/api/search-console/reports", route => route.fulfill({ json: { reports: [] } }));
   return state;
 }
 
@@ -79,14 +82,12 @@ test("a signed-in workspace opens its latest saved audit and preserves the websi
   await page.goto("/overview");
   // A fresh browser has no remembered audit; history supplies the default.
   expect(await page.evaluate(id => sessionStorage.getItem(`folio-active-${id}`), ownerId)).toBeNull();
-  await expect(page.getByRole("button", { name: /^My audit results/ })).toHaveClass(/selected/);
+  await expect(page.getByRole("button", { name: "My website results", exact: true })).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator(".workspace-switch")).toContainText("Morgan workspace");
   await expect(page.locator(".workspace-switch")).not.toContainText("Acme workspace");
-  const metric = page.locator(".metric-card").filter({ has: page.locator(".metric-label").filter({ hasText: /^SEO health/ }) });
-  await expect(metric.locator(".metric-value")).toContainText(String(latestAudit.seoScore));
-  await expect(metric.locator(".change")).toHaveCount(0);
-  await expect(metric.locator(".sparkline")).toHaveCount(0);
-  const bridge = page.getByRole("region", { name: "Continue this website evaluation", exact: true });
+  const bridge = page.getByRole("region", { name: "Separate website evidence", exact: true });
+  await expect(bridge).toContainText(`Latest readiness: ${latestAudit.seoScore}/100`);
+  await expect(page.locator(".sparkline")).toHaveCount(0);
   await expect(bridge).toBeVisible();
   const link = bridge.getByRole("link", { name: "Evaluate this website", exact: true });
   const href = new URL((await link.getAttribute("href"))!, "http://localhost:3001");

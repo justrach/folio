@@ -29,6 +29,7 @@ async function privateRun(page: Page, run: EvaluationRun, rejectDeletion = false
   });
   await page.goto(`/evaluations?run=${encodeURIComponent(run.id)}`);
   await expect(page.locator(".eval-report")).toBeVisible();
+  await page.locator(".eval-more-actions > summary").click();
   return deletions;
 }
 

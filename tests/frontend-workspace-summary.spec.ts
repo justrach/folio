@@ -14,11 +14,11 @@ async function makeRuns() {
     createdAt: timestamp, updatedAt: timestamp, expectedFacts: { source: "owner-confirmed" },
     result: { ...demo.result!, passed: 4, failed: 1, unmeasured: 3, measured: 5, verificationScore: 80,
       checks: demo.result!.checks.map((check, index) => ({ ...check, status: index < 4 ? "pass" : index === 4 ? "fail" : "unmeasured" })) } };
-  const failed: EvaluationRun = { ...completed, id: "summary-failed", siteName: "Beta private review", targetUrl: "https://beta.example.com/",
+  const failed: EvaluationRun = { ...completed, id: "summary-failed", siteName: "Beta private review", targetUrl: "https://example.com/pricing",
     createdAt: "2026-09-12T08:00:00.000Z", status: "failed", result: null };
-  const attention: EvaluationRun = { ...completed, id: "summary-attention", siteName: "Gamma private review", targetUrl: "https://gamma.example.com/",
+  const attention: EvaluationRun = { ...completed, id: "summary-attention", siteName: "Gamma private review", targetUrl: "https://example.com/pricing",
     createdAt: "2026-09-11T08:00:00.000Z", status: "requires_action", result: null };
-  const older: EvaluationRun = { ...completed, id: "summary-older", siteName: "Older private review", targetUrl: "https://older.example.com/",
+  const older: EvaluationRun = { ...completed, id: "summary-older", siteName: "Older private review", targetUrl: "https://example.com/pricing",
     createdAt: "2026-09-10T08:00:00.000Z", status: "cancelled", result: null };
   return { completed, failed, attention, older };
 }
@@ -60,6 +60,10 @@ async function fixture(page: Page, initialRuns: EvaluationRun[]) {
       return route.fulfill(run ? { json: { run } } : { status: 404, json: { error: "Evaluation not found." } });
     }
     if (method !== "GET") state.otherApiWrites.push(`${method} ${pathname}`);
+    if (pathname === "/api/sites") return route.fulfill({ json: { sites: [{ id: `site-${state.owner}`, name: "Selected fixture", url: state.owner === "bob" ? "https://bob.example.com/" : "https://example.com/pricing" }] } });
+    if (pathname === "/api/benchmarks") return route.fulfill({ json: { suites: [] } });
+    if (pathname === "/api/benchmarks/runs") return route.fulfill({ json: { runs: [] } });
+    if (pathname === "/api/search-console/reports") return route.fulfill({ json: { reports: [] } });
     if (pathname === "/api/scans") return route.fulfill({ json: { scans: [] } });
     if (pathname === "/api/agents/status") return route.fulfill({ json: connection });
     if (pathname === "/api/seo-reports") return route.fulfill({ json: { reports: [] } });

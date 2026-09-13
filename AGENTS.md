@@ -61,6 +61,7 @@ Restart the dev server after intended `.dev.vars` changes. Obtain D1 through the
 | Run storage and comparison | `src/lib/eval-store.ts`, `eval-comparison.ts`, `eval-deletion.ts` |
 | Technical scans and repairs | `src/lib/scanner.ts`, `evaluation.ts`, `src/app/api/scans/` |
 | SEO provider and saved reports | `src/lib/dataforseo.ts`, `seo-store.ts`, `src/components/seo-data-panel.tsx` |
+| Google identity and Search Console | `src/lib/google-auth.ts`, `search-console.ts`, `search-console-store.ts`, `src/app/api/search-console/`, `src/components/search-console-panel.tsx` |
 | Selected-report agent tool | `src/lib/managed-seo-tool.ts`, `src/app/api/evaluations/[id]/tools/` |
 | Auth and database | `src/lib/auth.ts`, `auth-client.ts`, `auth-schema.ts`, `db.ts`, `migrations/` |
 | Background retrieval | `src/lib/eval-reconciliation-job.ts`, `src/app/api/internal/evaluations/reconcile/`, `wrangler.scheduler.jsonc` |
@@ -78,6 +79,7 @@ Component-only filenames in the map are relative to `src/components/`; adjacent 
 | `/websites` | Private saved sites, audit history, technical publication controls |
 | `/seo` and `/patches` | Technical checks and reviewable repair downloads |
 | `/search-data` | Explicit DataForSEO lookup and saved SEO reports |
+| `/search-console` | Google consent, explicit performance imports, and private saved snapshots |
 | `/evaluations` | Launch, inspect, compare, export, or delete private evaluations |
 | `/agents` | Managed run status, recorded returns, and required owner actions |
 | `/visibility` | Illustrative AI visibility experience until real collectors exist |
@@ -91,7 +93,9 @@ Read existing owned records through authenticated GET routes before using their 
 
 Evaluation/session query selections use native `history.pushState`/`replaceState`, integrated with Next's `useSearchParams`. They are client state and need no server-page fetch. Keep normal links/router navigation for changing pages; do not reintroduce competing server navigations when a prepared form immediately starts a run.
 
-Follow [FRONTEND-WORKFLOW.md](docs/FRONTEND-WORKFLOW.md) for current handoffs and launch preflight. `Evaluate current website` clears reference answers and saved SEO selection before preparing the same target; `Replay frozen evidence` is a new paid run using original inputs. Login return hints allow only local `/evaluations` or `/agents` routes with validated context.
+Follow [FRONTEND-WORKFLOW.md](docs/FRONTEND-WORKFLOW.md) for current handoffs and launch preflight. `Evaluate current website` clears reference answers and saved SEO selection before preparing the same target; `Replay frozen evidence` is a new paid run using original inputs. Login return hints allow only local `/evaluations`, `/agents`, or `/search-console` routes with validated context; arbitrary external redirects are not allowed.
+
+Google sign-in requests identity scopes only; Search Console uses an explicit same-email link with the read-only scope and offline consent. Keep provider tokens server-only, token-returning HTTP endpoints disabled, and property/import actions explicit. Saved snapshots reopen without Google requests. Disconnect removes local Google tokens/scope while preserving identity and reports; it does not revoke Google access or erase downloads. Search Console observations do not enter agent inputs or alter technical scores. See [Search Console](docs/SEARCH-CONSOLE.md).
 
 ## Managed OpenAI contract
 
@@ -154,8 +158,9 @@ Retain meaningful test failures and report the exact scope passed. Do not update
 - [README.md](README.md): setup and routes. [ARCHITECTURE.md](ARCHITECTURE.md): boundaries and storage.
 - [Evaluation loop](docs/EVALUATION-LOOP.md), [strategy](EVALUATION-STRATEGY.md), and [offline verification](docs/VERIFY-EVIDENCE.md): operations and scoring limits.
 - [Agents integration](docs/AGENTS-INTEGRATION.md), [DataForSEO](docs/DATAFORSEO.md), and [background jobs](docs/BACKGROUND-JOBS.md): provider contracts and configuration.
+- [Search Console](docs/SEARCH-CONSOLE.md): Google consent, private snapshots, disconnect limits, and external-user production checklist for `usefolio.site`; domain checks and OAuth review remain distinct from local setup.
 - [Live validation](docs/LIVE-VALIDATION.md) records the bounded live smoke test; do not extrapolate it to tool continuation, production deployment, or broad benchmarks.
 - [Monetization](docs/MONETIZATION.md) is proposed packaging. Pricing currently records interest; no active checkout, subscriptions, credit wallet, or team entitlement is implied.
-- Keep `justrach/folio-01` private. Inspect staged changes before an authorized commit/push; exclude secrets, `.local`, Wrangler state, private evidence, and generated test reports. Do not change repository visibility.
+- The user-confirmed publication destination is the existing public repository `justrach/folio` (`origin`). Inspect staged changes before an authorized commit/push; exclude secrets, `.local`, Wrangler state, private evidence, and generated test reports. Do not change repository visibility.
 - Consult [TODO.md](TODO.md) for current launch blockers. Production Cloudflare provisioning, hosted CI account limits, and actual billing are separate dependencies; local success does not complete them.
 - Saved change-to-retest records, recurring fresh monitoring, independent public agent benchmarks, consumer-AI collectors, verified domain ownership, team roles, and automatic repair publishing require explicit implementation and validation before product claims.

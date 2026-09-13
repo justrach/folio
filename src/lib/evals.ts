@@ -121,6 +121,8 @@ export function evaluationSummary(run: EvaluationRun) {
     suiteVersion: run.suiteVersion, mode: run.mode, status: run.status,
     createdAt: run.createdAt, updatedAt: run.updatedAt, model: run.model,
     sessionId: run.sessionId, providerStatus: run.providerStatus ?? null,
+    preparationFailed: run.mode === "live" && run.status === "failed" && run.sessionId === null &&
+      !run.events.some(event => event.id === "session-create-attempt" || event.id === "input-uncertain"),
     result: run.result, error: run.error, publication: run.publication,
     revision: run.revision,
   };

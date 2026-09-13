@@ -43,8 +43,9 @@ test("reference answers require confirmation, stay explicit, and are omitted fro
     }
     return route.fulfill({ json: { run: saved } });
   });
-  await page.goto("/evaluations");
-  const launch = page.getByRole("button", { name: "Run with Agents API", exact: true });
+  await page.goto("/evaluations?view=page");
+  const launch = page.getByRole("button", { name: "Run evaluation", exact: true });
+  await page.getByLabel("Website to evaluate", { exact: true }).fill("example.com");
   await expect(launch).toBeEnabled();
   await page.getByText("Optional reference answers", { exact: true }).click();
   await page.getByLabel("Expected product name", { exact: true }).fill("Sable Analytics");
@@ -62,16 +63,22 @@ test("reference answers require confirmation, stay explicit, and are omitted fro
   await confirmation.check();
   const seo = page.getByLabel("Saved SEO evidence Optional", { exact: true });
   await expect(seo.locator("option")).toHaveCount(2);
+  await page.locator(".eval-options > summary").filter({ hasText: "Saved SEO evidence" }).click();
   await seo.selectOption("matching-report");
   expect(created).toHaveLength(0);
   await launch.click();
   await expect(page.locator(".eval-report")).toBeVisible();
   expect(created).toEqual([{ domain: "https://example.com/", mode: "managed", expectedFacts: { productName: "Sable Analytics", pricing: { amount: 29, currency: "USD", interval: "month" } }, confirmExpectedFacts: true, seoReportId: "matching-report" }]);
+  await page.getByRole("tab", { name: "Methodology", exact: true }).click();
   await page.locator(".eval-reference-report summary").click();
   await expect(page.locator(".eval-reference-report")).toContainText("not independently established by Folio");
   await expect(page.locator(".eval-reference-report dd")).toHaveText(["Sable Analytics", "29 USD / month"]);
+  await page.getByRole("button", { name: "Evaluate current website", exact: true }).click();
+  await page.getByText("Optional reference answers", { exact: true }).click();
   await page.getByLabel("Expected product name", { exact: true }).fill("Changed draft answer");
   await expect(confirmation).not.toBeChecked();
+  await page.locator(".eval-history-list button").filter({ hasText: "example.com" }).click();
+  await page.locator(".eval-more-actions > summary").click();
   await page.getByRole("button", { name: "Replay frozen evidence", exact: true }).click();
   await expect.poll(() => created.length).toBe(2);
   expect(created[1]).toEqual({ domain: "https://example.com/", mode: "managed", rerunOf: "reference-run-1" });
@@ -101,8 +108,8 @@ test("saved SEO tool evidence resumes only after the explicit action", async ({ 
   const returnEvidence = page.getByRole("button", { name: "Return saved SEO evidence", exact: true });
   await expect(returnEvidence).toBeVisible();
   await expect(page.getByRole("button", { name: "Cancel run", exact: true })).toBeEnabled();
-  await expect(page.locator(".eval-tool-approval")).toContainText("can use OpenAI credits");
-  await expect(page.locator(".eval-tool-approval")).toContainText("no new DataForSEO lookup");
+  await expect(page.locator(".eval-tool-approval")).toContainText("can incur usage charges");
+  await expect(page.locator(".eval-tool-approval")).toContainText("no new search-data lookup");
   expect(toolRequests).toEqual([]);
   await returnEvidence.click();
   await expect(returnEvidence).toHaveCount(0);

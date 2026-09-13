@@ -30,7 +30,7 @@ export const evaluationMethodology = {
   summary:
     "A deterministic, source-backed audit of one public HTML page. The score measures the checks below, not search position or AI recommendations.",
   scope:
-    "One submitted page, with optional robots.txt and llms.txt observations. JavaScript is not executed; links are not crawled.",
+    "One submitted page, with optional robots.txt, llms.txt, llms-full.txt and sitemap.xml diagnostics. JavaScript is not executed; links are not crawled.",
   formula:
     "Sum of earned points, from 0 to 100. Optional files contribute zero points. Equal scores share a rank.",
   weights: [

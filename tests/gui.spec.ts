@@ -8,7 +8,7 @@ const routes = [
   {
     path: "/overview",
     label: /^Overview$/,
-    heading: "Your visibility, in perspective.",
+    heading: "Overview",
   },
   {
     path: "/websites",
@@ -33,7 +33,7 @@ const routes = [
   {
     path: "/leaderboard",
     label: /^The Folio Index$/,
-    heading: "Some brands get found. Others get cited.",
+    heading: "Search rankings, with the evidence.",
   },
   {
     path: "/agents",
@@ -156,7 +156,7 @@ test("audit, methodology, and search dialogs support keyboard dismissal and navi
   await expect(page.getByRole("dialog")).toHaveCount(0);
 
   await page
-    .getByRole("button", { name: /Made with evidence\. Read our methodology/ })
+    .getByRole("button", { name: "Methodology", exact: true })
     .click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await expect(
@@ -181,6 +181,7 @@ test("leaderboard filters, metric sorting, search, and evaluation drill-down wor
   page,
 }, testInfo) => {
   await page.goto("/leaderboard");
+  await page.getByRole("button", {name:"Explore sample rankings",exact:true}).click();
   const rows = page.locator(".ranking-table tbody tr");
   await expect(rows).toHaveCount(12);
   await page.getByLabel("Filter by industry").selectOption("Developer tools");
@@ -223,6 +224,7 @@ test("leaderboard filters, metric sorting, search, and evaluation drill-down wor
   await page.getByLabel("Search websites", { exact: true }).fill("notion");
   await expect(rows).toHaveCount(1);
   await expect(rows.first().locator(".score-cell")).toContainText("96");
+  await expect(page.locator(".rank-column")).toHaveCount(1);
   await page.getByLabel("Search websites", { exact: true }).clear();
   await noPageOverflow(page);
   await screenshot(page, testInfo, "leaderboard");
@@ -295,6 +297,7 @@ test("published audits stay separate from sample rankings through filtering and 
     });
   });
   await page.goto("/leaderboard");
+  await page.getByRole("button", { name: "Explore sample rankings", exact: true }).click();
   await expect(page.locator(".ranking-table tbody tr")).toHaveCount(12);
   await page
     .getByRole("button", { name: "Published page audits", exact: true })
@@ -347,7 +350,7 @@ test("published audits stay separate from sample rankings through filtering and 
 test("overview chart controls and report export remain usable", async ({
   page,
 }) => {
-  await page.goto("/overview");
+  await page.goto("/overview?view=demo");
   await page.getByRole("button", { name: "7d", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "7d", exact: true }),
@@ -403,35 +406,35 @@ test("search data connection states never start an automatic paid lookup", async
   await page.goto("/search-data");
   await expect(
     page.getByRole("heading", {
-      name: "A little context for your next move.",
+      name: "Search and backlinks",
       exact: true,
     }),
   ).toBeVisible();
-  await expect(page.getByText("Setup required", { exact: true })).toBeVisible();
+  await expect(page.getByText("Sign in to save and update private website reports.", { exact: true })).toBeVisible();
   await expect(
     page.getByRole("link", { name: "Sign in to continue", exact: true }),
   ).toBeVisible();
   await page.getByLabel("Website domain", { exact: true }).fill("example.com");
   await expect(
-    page.getByRole("button", { name: "Fetch SEO data", exact: true }),
+    page.getByRole("button", { name: "Update website data", exact: true }),
   ).toBeDisabled();
   statusMode = "restricted";
-  await page.getByRole("button", { name: "Check access", exact: true }).click();
+  await page.getByRole("button", { name: "Check availability", exact: true }).click();
   await expect(
-    page.getByText("Account access required", { exact: true }),
+    page.getByText("Sign in to save and update private website reports.", { exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "Fetch SEO data", exact: true }),
+    page.getByRole("button", { name: "Update website data", exact: true }),
   ).toBeDisabled();
   await screenshot(page, testInfo, "search-data");
   statusMode = "error";
-  await page.getByRole("button", { name: "Check access", exact: true }).click();
-  await expect(page.locator(".seo-data-connection").getByRole("alert")).toHaveText(
-    "GUI fixture: access status unavailable.",
+  await page.getByRole("button", { name: "Check availability", exact: true }).click();
+  await expect(page.getByRole("region", {name:"Website data availability"}).getByRole("alert")).toHaveText(
+    "Website data availability could not be checked. Saved reports may still be available.",
   );
   await expect(
     page.getByRole("heading", {
-      name: "Your search story starts with a lookup.",
+      name: "See how your website is found.",
       exact: true,
     }),
   ).toBeVisible();

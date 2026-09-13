@@ -56,10 +56,16 @@ import {
 import { RankChart, Sparkline, VisibilityChart } from "./charts";
 import { PublishedIndex, PublicationControls } from "./published-index";
 import { SeoDataPanel } from "./seo-data-panel";
+import { SearchConsolePanel } from "./search-console-panel";
+import { OwnedWebsites } from "./owned-websites";
+import { RealOverview } from "./real-overview";
+import { KeywordActivitySummary } from "./keyword-activity-summary";
+import "./evaluation-page-shell.css";
+import { KeywordBenchmarksPanel } from "./keyword-benchmarks-panel";
+import { DeveloperToolsIndex } from "./developer-tools-index";
 import { EvaluationsPanel } from "./evaluations-panel";
 import { AgentRunsPanel, AgentRunDock } from "./agent-runs-panel";
 import { evaluationHref, readEvaluationIntent } from "@/lib/evaluation-navigation";
-import { WorkspaceEvaluationSummary } from "./workspace-evaluation-summary";
 
 type Modal = "scan" | "methodology" | "notifications" | "search" | null;
 const navigation = [
@@ -94,6 +100,8 @@ const navigation = [
     section: "evaluations",
     icon: FlaskConical,
   },
+  { label: "Keyword evaluations", href: "/benchmarks", section: "benchmarks", icon: FlaskConical },
+  { label: "Search Console", href: "/search-console", section: "search-console", icon: Search },
   {
     label: "Patch studio",
     href: "/patches",
@@ -107,8 +115,8 @@ const titles: Record<
 > = {
   overview: {
     eyebrow: "THE BIG PICTURE",
-    title: "Your visibility, in perspective.",
-    description: "See how the world finds you. And where to go next.",
+    title: "Overview",
+    description: "Saved results for your website.",
   },
   websites: {
     eyebrow: "YOUR DIGITAL FOOTPRINT",
@@ -134,27 +142,33 @@ const titles: Record<
   },
   leaderboard: {
     eyebrow: "THE FOLIO INDEX · VOL. 001",
-    title: "Some brands get found. Others get cited.",
+    title: "Search rankings, with the evidence.",
     description:
-      "A public benchmark for the next era of discovery. See where you stand.",
+      "Compare the websites Astra recommended for each question, then inspect their sources and page checks.",
   },
   evaluations: {
     eyebrow: "THE EVIDENCE BEHIND THE ANSWER",
-    title: "A good answer should hold up.",
+    title: "Evaluations",
     description:
-      "Run a website evaluation. Inspect the capture, the answer, and the checks that verify it.",
+      "Review what the agent found and the evidence behind it.",
   },
+  benchmarks: { eyebrow: "YOUR RESEARCH QUESTIONS", title: "Search rankings", description: "See where your website appears in Astra’s answers and which sites appear alongside it." },
   agents: {
     eyebrow: "MEET YOUR RESEARCH TEAM",
     title: "A little intelligence. A lot of clarity.",
     description:
-      "Follow managed OpenAI agent sessions, their progress, and the evidence they return.",
+      "Follow your evaluations, their progress, and the evidence they return.",
   },
   "search-data": {
     eyebrow: "THE SEARCH LANDSCAPE",
     title: "The bigger picture behind your search.",
     description:
       "Explore organic coverage and the links that lead to your website.",
+  },
+  "search-console": {
+    eyebrow: "GOOGLE SEARCH CONSOLE",
+    title: "How people find your website.",
+    description: "Import clicks, impressions, search queries, and pages from your Google account.",
   },
   settings: {
     eyebrow: "MAKE YOURSELF AT HOME",
@@ -229,6 +243,7 @@ export function Dashboard({ section }: { section: string }) {
   const router = useRouter();
   const query = useSearchParams();
   const demoRequested = query.get("view") === "demo";
+  const privateOverview = section === "overview" && !demoRequested;
   const { data: session, isPending } = authClient.useSession();
   const [modal, setModal] = useState<Modal>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -329,6 +344,7 @@ export function Dashboard({ section }: { section: string }) {
     router.push("/seo");
   }
   if (section === "login") return <Login onNotify={notify} />;
+  if (isPending) return <main className="workspace-loading" role="status">Loading your workspace…</main>;
   const title = titles[section] ?? titles.overview;
   return (
     <div className="app-shell">
@@ -350,10 +366,10 @@ export function Dashboard({ section }: { section: string }) {
           className="workspace-switch"
           onClick={() => router.push("/websites")}
         >
-          <span className="workspace-avatar">{session?.user.name?.[0] ?? "A"}</span>
+          <span className="workspace-avatar">{session?.user.name?.[0] ?? (privateOverview ? "—" : "A")}</span>
           <span>
-            {session ? `${session.user.name || "Your"} workspace` : "Acme workspace"}
-            <small>{session ? "Personal workspace" : "Demo workspace"}</small>
+            {session ? `${session.user.name || "Your"} workspace` : privateOverview ? "Your workspace" : "Acme workspace"}
+            <small>{session ? "Personal workspace" : privateOverview ? "Sign in" : "Demo workspace"}</small>
           </span>
           <ChevronDown size={14} />
         </button>
@@ -368,8 +384,8 @@ export function Dashboard({ section }: { section: string }) {
             >
               <item.icon size={17} />
               <span>{item.label}</span>
-              {item.section === "patches" && (
-                <span className="nav-count">{actual?.patches.length ?? (mode === "sample" ? 3 : 0)}</span>
+              {item.section === "patches" && !(privateOverview && !session) && (
+                <span className="nav-count">{actual?.patches.length ?? (mode === "sample" && !privateOverview ? 3 : 0)}</span>
               )}
             </Link>
           ))}
@@ -390,6 +406,10 @@ export function Dashboard({ section }: { section: string }) {
           >
             <Bot size={17} />
             <span>Your agents</span>
+          </Link>
+          <Link href="/docs/api" className="nav-link" onClick={() => setMobileOpen(false)}>
+            <Code2 size={17} />
+            <span>API reference</span>
           </Link>
         </nav>
         <div className="sidebar-bottom">
@@ -427,11 +447,11 @@ export function Dashboard({ section }: { section: string }) {
           </button>
           <Link href={session ? "/settings" : "/login"} className="profile">
             <span className="avatar">
-              {session?.user.name?.slice(0, 1) ?? "A"}
+              {session?.user.name?.slice(0, 1) ?? (privateOverview ? "—" : "A")}
             </span>
             <span>
-              {session?.user.name ?? "Alex Morgan"}
-              <small>{session?.user.email ?? "Exploring the demo"}</small>
+              {session?.user.name ?? (privateOverview ? "Sign in" : "Alex Morgan")}
+              <small>{session?.user.email ?? (privateOverview ? "Your private workspace" : "Exploring the demo")}</small>
             </span>
             <MoreHorizontal size={17} />
           </Link>
@@ -449,7 +469,7 @@ export function Dashboard({ section }: { section: string }) {
             </button>
             <Globe2 size={15} />
             <button onClick={() => router.push("/websites")}>
-              {actual ? new URL(actual.url).hostname : session ? "Your workspace" : "acme.com"}
+              {privateOverview ? "Your workspace" : actual ? new URL(actual.url).hostname : session ? "Your workspace" : "acme.com"}
             </button>
             <ChevronRight size={13} />
             <span>
@@ -470,7 +490,7 @@ export function Dashboard({ section }: { section: string }) {
             </button>
             <span className="topbar-divider" />
             <NotificationBell
-              count={actual?.patches.length ?? (mode === "sample" ? 3 : 0)}
+              count={actual?.patches.length ?? (mode === "sample" && !privateOverview ? 3 : 0)}
               size={30}
               color="green"
               onClick={() => setModal("notifications")}
@@ -481,23 +501,27 @@ export function Dashboard({ section }: { section: string }) {
               className="avatar top-avatar"
               aria-label="Account"
             >
-              {session?.user.name?.[0] ?? "A"}
+              {session?.user.name?.[0] ?? (privateOverview ? "—" : "A")}
             </Link>
           </div>
         </header>
-        <main className="page-content">
+        <main className={`page-content${["evaluations", "benchmarks", "overview"].includes(section) ? " evaluation-page" : ""}${section === "overview" ? " overview-page" : ""}`}>
           <div className="page-heading">
             <div>
-              <div className="eyebrow">{title.eyebrow}</div>
+              {!["evaluations", "benchmarks", "overview"].includes(section) && <div className="eyebrow">{title.eyebrow}</div>}
               <h1>{title.title}</h1>
               <p>{title.description}</p>
             </div>
             <div className="heading-actions">
-              {["agents", "evaluations"].includes(section) ? (
+              {section === "evaluations" ? null : section === "benchmarks" ? (
+                <Link href="/docs/api" className="button secondary">API reference <ArrowRight size={14} /></Link>
+              ) : section === "overview" && !demoRequested ? (
+                <><Link href="/websites" className="button secondary">My websites <ArrowRight size={14} /></Link><Button onClick={() => setModal("scan")}><Plus size={16} />Run an audit</Button></>
+              ) : section === "agents" ? (
                 <Link href="/pricing" className="button secondary">
                   Plans & usage <ArrowUpRight size={14} />
                 </Link>
-              ) : section === "search-data" ? (
+              ) : section === "search-data" || section === "search-console" ? (
                 <Link href="/settings" className="button secondary">
                   Manage access <Settings2 size={14} />
                 </Link>
@@ -519,11 +543,13 @@ export function Dashboard({ section }: { section: string }) {
               )}
             </div>
           </div>
-          {session && section === "overview" && <WorkspaceEvaluationSummary initialTargetUrl={activeScan?.url} />}
+          {section === "overview" && <div className="real-overview-tabs" aria-label="Overview view"><button type="button" aria-pressed={!demoRequested} onClick={() => window.history.pushState(null, "", "/overview")}>My website results</button><button type="button" aria-pressed={demoRequested} onClick={() => { setMode("sample"); window.history.pushState(null, "", "/overview?view=demo"); }}>Demo report</button></div>}
+          {section === "overview" && !demoRequested ? <RealOverview ownerId={ownerId} scans={scans} scansLoading={loadingScans} scansError={scanOwnerId === ownerId ? scanError : ""} onRetryScans={() => setScanRefresh(value => value + 1)} onOpenScan={openScan} /> : <>
+
           {scanOwnerId === ownerId && scanError && ["overview", "websites", "seo", "patches"].includes(section) && (
             <div className="workspace-read-error" role="alert">{scanError}<Button kind="secondary" onClick={() => setScanRefresh(n => n + 1)}>Retry audits</Button></div>
           )}
-          {["overview", "visibility", "seo", "patches"].includes(section) && (
+          {["visibility", "seo", "patches"].includes(section) && (
             <div className="report-context">
               <div className="report-tabs">
                 <button
@@ -966,11 +992,13 @@ export function Dashboard({ section }: { section: string }) {
                   onNotify={notify}
                 />
               )}
-              {section === "agents" && <AgentRunsPanel />}
+              {section === "agents" && <><KeywordActivitySummary /><AgentRunsPanel /></>}
               {section === "evaluations" && (
                 <EvaluationsPanel initialTargetUrl={actual?.url} />
               )}
               {section === "search-data" && <SeoDataPanel />}
+              {section === "search-console" && <SearchConsolePanel />}
+              {section === "benchmarks" && <KeywordBenchmarksPanel websiteId={query.get("website") ?? undefined} />}
               {section === "settings" && (
                 <Settings
                   session={session}
@@ -981,12 +1009,13 @@ export function Dashboard({ section }: { section: string }) {
               )}
             </>
           )}
+          </>}
           <footer className="page-footer">
             <span>
-              <FolioMark small /> A little clarity goes a long way.
+              <FolioMark small />
             </span>
             <button onClick={() => setModal("methodology")}>
-              Made with evidence. Read our methodology{" "}
+              Methodology{" "}
               <ArrowUpRight size={12} />
             </button>
           </footer>
@@ -1028,9 +1057,9 @@ export function Dashboard({ section }: { section: string }) {
           {modal === "notifications" && (
             <div className="notification-list">
               <p className="muted">
-                {actual ? "From your latest audit" : mode === "sample" ? "From the sample report" : "No saved audit suggestions yet"}
+                {actual ? "From your latest audit" : mode === "sample" && !privateOverview ? "From the sample report" : "No saved audit suggestions yet"}
               </p>
-              {(actual?.patches ?? (mode === "sample" ? samplePatches : [])).map((p) => (
+              {(actual?.patches ?? (mode === "sample" && !privateOverview ? samplePatches : [])).map((p) => (
                 <button
                   key={p.id}
                   onClick={() => {
@@ -1267,7 +1296,7 @@ function Leaderboard({
   const [category, setCategory] = useState("All industries");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<string | null>(null);
-  const [indexView, setIndexView] = useState<"sample" | "published">("sample");
+  const [indexView, setIndexView] = useState<"tools" | "sample" | "published">("tools");
   const filtered = brands
     .filter(
       (b) =>
@@ -1287,6 +1316,7 @@ function Leaderboard({
   return (
     <>
       <div className="index-view-tabs">
+        <button onClick={() => setIndexView("tools")} className={indexView === "tools" ? "active" : ""}>Search rankings</button>
         <button
           onClick={() => setIndexView("sample")}
           className={indexView === "sample" ? "active" : ""}
@@ -1300,7 +1330,7 @@ function Leaderboard({
           Published page audits <Globe2 size={13} />
         </button>
       </div>
-      {indexView === "published" ? (
+      {indexView === "tools" ? <DeveloperToolsIndex /> : indexView === "published" ? (
         <PublishedIndex />
       ) : (
         <>
@@ -1366,6 +1396,7 @@ function Leaderboard({
             <RankChart
               metric={metric}
               category={category}
+              query={query}
               onSelect={setSelected}
             />
             <div className="chart-footer">
@@ -1528,7 +1559,8 @@ function Websites({
 }) {
   return (
     <>
-      <div className="websites-grid">
+      {session && <OwnedWebsites />}
+      {!session && <div className="websites-grid">
         <section className="panel website-card">
           <div className="website-card-top">
             <Brand name="Acme" />
@@ -1567,7 +1599,7 @@ function Websites({
             Add a website <ArrowRight size={15} />
           </strong>
         </button>
-      </div>
+      </div>}
       <section className="panel">
         <div className="panel-heading">
           <div>
@@ -1859,22 +1891,22 @@ function Settings({
         {[
           {
             name: "Website scanner",
-            text: "Evidence-backed technical checks. Initial host: example.com.",
+            text: "Technical checks from captured website evidence.",
             state: "Available",
             icon: Globe2,
           },
           {
-            name: "Agents API",
-            text: agentStatus
-              ? "Managed website evaluations available for approved accounts. Open Your agents to follow runs."
-              : "Managed website evaluation runner ready. Connect a server API key to enable live runs.",
-            state: agentStatus ? "Configured" : "Not connected",
+            name: "Website evaluations",
+            text: "Evaluate your website and inspect the saved evidence.",
+            state: "Open evaluations",
+            href: "/evaluations",
             icon: Bot,
           },
           {
             name: "Google Search Console",
-            text: "Organic search impressions and clicks.",
-            state: "Coming next",
+            text: "Connect your Google account and import private search reports.",
+            state: "Open Search Console",
+            href: "/search-console",
             icon: Search,
           },
           {
@@ -1890,11 +1922,11 @@ function Settings({
               <h3>{c.name}</h3>
               <p>{c.text}</p>
             </div>
-            <span
+            {c.href ? <Link href={c.href} className="button secondary">{c.state}</Link> : <span
               className={`status-pill ${c.state === "Available" ? "pass" : ""}`}
             >
               {c.state}
-            </span>
+            </span>}
           </div>
         ))}
       </section>
@@ -2006,9 +2038,35 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
   if (nextValues.length === 1 && nextValues[0].length <= 4096) {
     try {
       const next = new URL(nextValues[0], "https://folio.invalid");
+      if (next.origin === "https://folio.invalid" && next.pathname === "/benchmarks") {
+        const params = new URLSearchParams();
+        for (const key of ["suite", "run", "website"]) {
+          const values = next.searchParams.getAll(key);
+          if (values.length === 1 && /^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/.test(values[0])) params.set(key, values[0]);
+        }
+        returnTo = `/benchmarks${params.size ? `?${params}` : ""}`;
+      }
+      if (next.origin === "https://folio.invalid" && next.pathname === "/search-console") returnTo = "/search-console";
+      if (next.origin === "https://folio.invalid" && next.pathname === "/overview") returnTo = "/overview";
+      if (next.origin === "https://folio.invalid" && next.pathname === "/docs/api") returnTo = "/docs/api";
       if (next.origin === "https://folio.invalid" && ["/evaluations", "/agents"].includes(next.pathname)) {
-        const intent = evaluationHref(readEvaluationIntent(next.searchParams));
-        returnTo = next.pathname === "/agents" ? intent.replace("/evaluations", "/agents") : intent;
+        const views = next.searchParams.getAll("view");
+        const view = views.length === 1 && ["search", "page"].includes(views[0]) ? views[0] : null;
+        if (next.pathname === "/evaluations" && view === "search") {
+          const params = new URLSearchParams({ view: "search" });
+          for (const key of ["suite", "run", "website"]) {
+            const values = next.searchParams.getAll(key);
+            if (values.length === 1 && /^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/.test(values[0])) params.set(key, values[0]);
+          }
+          const target = readEvaluationIntent(next.searchParams).targetUrl;
+          if (target) params.set("target", target);
+          returnTo = `/evaluations?${params}`;
+        } else {
+          const intent = evaluationHref(readEvaluationIntent(next.searchParams));
+          const params = new URLSearchParams(intent.split("?")[1]);
+          if (next.pathname === "/evaluations" && view === "page") params.set("view", "page");
+          returnTo = `${next.pathname}${params.size ? `?${params}` : ""}`;
+        }
       }
     } catch { /* Invalid return hints fall back to the private website list. */ }
   }
@@ -2018,6 +2076,15 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [googleConfigured, setGoogleConfigured] = useState(false);
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch("/api/search-console", { signal: controller.signal, cache: "no-store" })
+      .then(response => response.ok ? response.json() : null)
+      .then(data => { if (!controller.signal.aborted) setGoogleConfigured(data?.configured === true); })
+      .catch(() => {});
+    return () => controller.abort();
+  }, []);
   return (
     <div className="login-page">
       <section className="login-story">
@@ -2050,7 +2117,7 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
         </span>
       </section>
       <section className="login-form-side">
-        <Link href="/overview" className="back-demo">
+        <Link href="/overview?view=demo" className="back-demo">
           Explore the demo <ArrowUpRight size={15} />
         </Link>
         <form
@@ -2087,6 +2154,15 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
               ? "A little clarity for your corner of the internet."
               : "A clearer picture is waiting for you."}
           </p>
+          {googleConfigured && <button className="button secondary" type="button" disabled={busy} onClick={async () => {
+            setBusy(true); setError("");
+            try {
+              const result = await authClient.signIn.social({ provider: "google", callbackURL: returnTo, errorCallbackURL: "/login?error=google" });
+              if (result.error) setError(result.error.message ?? "Google sign-in could not be completed.");
+            } catch { setError("Google sign-in could not be completed. Please try again."); }
+            finally { setBusy(false); }
+          }}>Sign in with Google</button>}
+          {searchParams.get("error") === "google" && <p className="form-error" role="alert">Google sign-in could not be completed. If you already use email and password, sign in that way before linking Google in Search Console.</p>}
           {signup && (
             <label>
               Your name
