@@ -1,3 +1,4 @@
+import { CategoryBatchRate } from "./category-batch-rate";
 import { readFile, writeFile, rename, mkdir, open, rm } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { getPlatformProxy } from "wrangler";
@@ -56,6 +57,7 @@ async function main() {
     if (!access.canRun || access.maxRunsPerDay !== null) throw Error("This explicit operator batch requires the selected account's established uncapped daily allowance.");
     const queue = new Map<string, KeywordBenchmarkRun>();
     let publishing = Promise.resolve(), stopped = false, submitted = 0;
+    let scheduler: Record<string, unknown> = {};
     const existingProgress = JSON.parse(await readFile(progressPath, "utf8")) as PublicCollectionProgress;
     const statuses = new Map(existingProgress.queries.map(item => [item.queryId, item]));
     const save = (query: PublicSearchQuery, run: KeywordBenchmarkRun) => {
@@ -71,7 +73,7 @@ async function main() {
         assertPublicCollectionProgress(progress, artifact.queries, artifact.observations); await atomic(progressPath, progress);
         const counts: Record<string, number> = {};
         for (const run of queue.values()) counts[run.status] = (counts[run.status] ?? 0) + 1;
-        await atomic(`${directory}/summary.json`, { ...scope, submittedThisProcess: submitted, counts, queued: artifact.queries.length - queue.size, stopped, updatedAt: progress.updatedAt });
+        await atomic(`${directory}/summary.json`, { ...scope, submittedThisProcess: submitted, counts, queued: artifact.queries.length - queue.size, stopped, scheduler, updatedAt: progress.updatedAt });
       });
       publishing = work.catch(() => {}); return work;
     };
@@ -103,32 +105,54 @@ async function main() {
     const usage = await getKeywordBenchmarkUsage(db, ownerId, { maxRunsPerDay: null, maxActiveRuns: scope.maxConcurrent });
     const slots = Math.min(requestedWorkers, Math.max(0, scope.maxConcurrent - usage.activeRuns));
     if (!slots) throw Error("Existing active attempts occupy all authorized concurrency; no replacement starts.");
-    let next = 0;
-    await Promise.all(Array.from({ length: slots }, async () => {
-      while (!stopped && next < pending.length) {
-        const query = pending[next++];
-        try {
-          // A second durable check also protects restarts after a process died during creation.
-          if (await db.prepare("SELECT id FROM keyword_benchmark_runs WHERE user_id=? AND case_id=?").bind(ownerId, publicCollectionCaseId(ownerId, query)).first()) { stopped = true; break; }
-          let run = await startKeywordBenchmark(db, ownerId, { caseId: publicCollectionCaseId(ownerId, query), kind: "baseline" }, env, { reserve: async (input, limits) => ({ run: await reserveKeywordBenchmarkRun(db, ownerId, input, { maxRunsPerDay: limits.maxRunsPerDay, maxActiveRuns: scope.maxConcurrent }), created: true }) });
-          submitted++; await save(query, run);
-          console.log(JSON.stringify({ queryId: query.id, status: run.status, submitted, hasSession: Boolean(run.sessionId) }));
-          if ((run.providerMetadata.creationHttpStatus ?? 0) >= 400 || run.status === "requires_action" && !run.sessionId) stopped = true;
-          while (active(run) && run.sessionId && Date.now() < Date.parse(run.deadlineAt ?? run.createdAt) + 30_000) {
-            await new Promise(resolve => setTimeout(resolve, 5000)); run = await reconcileKeywordBenchmark(db, ownerId, run.id, env); await save(query, run);
-          }
-          if (active(run) && run.sessionId) { run = await reconcileKeywordBenchmark(db, ownerId, run.id, env); await save(query, run); }
-          if (active(run)) stopped = true;
-          console.log(JSON.stringify({ queryId: query.id, finalStatus: run.status, published: artifact.observations.length }));
-        } catch (error) {
-          stopped = true;
-          if (error instanceof KeywordBenchmarkPersistenceError) await atomic(`${directory}/${query.id}-recovery.json`, error.run);
-          console.log(JSON.stringify({ queryId: query.id, status: "stopped-for-review", errorType: error instanceof Error ? error.name : "unknown" }));
+    let next = 0, draining = false, lastCreateAt = 0, heldThisProcess = 0;
+    const rate = new CategoryBatchRate(slots, Date.now());
+    const jobs = new Set<Promise<void>>();
+    const drain = () => { draining = true; console.log(JSON.stringify({ phase: "draining", confirmedOrCreating: jobs.size })); };
+    process.on("SIGUSR2", drain); process.on("SIGTERM", drain); process.on("SIGINT", drain);
+    const updateScheduler = () => { scheduler = { desiredConcurrency: rate.desired, availableCeiling: Math.max(0, slots - heldThisProcess), activeOrCreating: jobs.size, createSpacingMs: rate.spacingMs, cooldownUntil: rate.cooldownUntil ? new Date(rate.cooldownUntil).toISOString() : null, stoppedReason: rate.stoppedReason, draining }; };
+    async function executeQuestion(query: PublicSearchQuery) {
+      let run: KeywordBenchmarkRun | undefined;
+      try {
+        if (await db.prepare("SELECT id FROM keyword_benchmark_runs WHERE user_id=? AND case_id=?").bind(ownerId, publicCollectionCaseId(ownerId, query)).first()) { stopped = true; rate.stoppedReason = "concurrent-existing-attempt"; return; }
+        run = await startKeywordBenchmark(db, ownerId, { caseId: publicCollectionCaseId(ownerId, query), kind: "baseline" }, env, { reserve: async (input, limits) => ({ run: await reserveKeywordBenchmarkRun(db, ownerId, input, { maxRunsPerDay: limits.maxRunsPerDay, maxActiveRuns: scope.maxConcurrent }), created: true }) });
+        submitted++;
+        const httpStatus = run.providerMetadata.creationHttpStatus;
+        if ((httpStatus ?? 0) >= 400 || run.status === "requires_action" && !run.sessionId) {
+          rate.failure(httpStatus, Date.now());
+          console.log(JSON.stringify({ phase: "provider-backoff", httpStatus: httpStatus ?? null, desiredConcurrency: rate.desired, spacingMs: rate.spacingMs, stoppedReason: rate.stoppedReason }));
+        } else if (run.sessionId) rate.receipt(Date.now());
+        updateScheduler(); await save(query, run);
+        console.log(JSON.stringify({ queryId: query.id, status: run.status, submitted, hasSession: Boolean(run.sessionId), desiredConcurrency: rate.desired }));
+        while (active(run) && run.sessionId && Date.now() < Date.parse(run.deadlineAt ?? run.createdAt) + 30_000) {
+          await new Promise(resolve => setTimeout(resolve, 5000)); run = await reconcileKeywordBenchmark(db, ownerId, run.id, env); updateScheduler(); await save(query, run);
         }
+        if (active(run) && run.sessionId) { run = await reconcileKeywordBenchmark(db, ownerId, run.id, env); updateScheduler(); await save(query, run); }
+        if (active(run)) heldThisProcess++;
+        console.log(JSON.stringify({ queryId: query.id, finalStatus: run.status, published: artifact.observations.length }));
+      } catch (error) {
+        stopped = true; rate.stoppedReason = "persistence-or-reservation-needs-review";
+        if (error instanceof KeywordBenchmarkPersistenceError) await atomic(`${directory}/${query.id}-recovery.json`, error.run);
+        console.log(JSON.stringify({ queryId: query.id, status: "stopped-for-review", errorType: error instanceof Error ? error.name : "unknown" }));
       }
-    }));
+    }
+    try {
+      while ((!stopped && !draining && !rate.stoppedReason && next < pending.length) || jobs.size) {
+        const available = Math.max(0, slots - heldThisProcess);
+        if (!available && !jobs.size) rate.stoppedReason = "capacity-retained-by-unresolved-attempts";
+        if (!stopped && !draining && !rate.stoppedReason && next < pending.length && jobs.size < available && rate.canCreate(Date.now(), jobs.size) && Date.now() - lastCreateAt >= rate.spacingMs) {
+          const query = pending[next++]; lastCreateAt = Date.now();
+          const work = executeQuestion(query); jobs.add(work); work.finally(() => jobs.delete(work));
+        }
+        updateScheduler();
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+    } finally { process.off("SIGUSR2", drain); process.off("SIGTERM", drain); process.off("SIGINT", drain); }
+    stopped = stopped || Boolean(rate.stoppedReason); updateScheduler();
     await publishing;
-    console.log(JSON.stringify({ phase: "finished", submitted, stopped, remaining: pending.length - submitted }));
+    const latestSummary = JSON.parse(await readFile(`${directory}/summary.json`, "utf8"));
+    await atomic(`${directory}/summary.json`, { ...latestSummary, stopped, scheduler, updatedAt: new Date().toISOString() });
+    console.log(JSON.stringify({ phase: "finished", submitted, stopped, remaining: pending.length - submitted, scheduler }));
   } finally { await proxy?.dispose(); await lock.close(); await rm(`${directory}/runner.lock`, { force: true }); }
 }
 if (process.argv[1]?.endsWith("run-category-batch.ts")) main().catch(error => { console.error(JSON.stringify({ status: "stopped", errorType: error instanceof Error ? error.name : "unknown", message: "Inspect saved queue and provider state before resuming. No creation retry was made." })); process.exitCode = 1; });
