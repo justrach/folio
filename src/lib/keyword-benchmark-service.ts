@@ -124,9 +124,15 @@ export async function startKeywordBenchmark(db: D1Database, ownerId: string,
   } catch (error) {
     if (error instanceof KeywordBenchmarkPersistenceError) throw error;
     const known = error instanceof KeywordAgentError;
-    return persistReceipt(db, ownerId, run, { status: known && !error.ambiguous && !error.sessionId ? "failed" : "requires_action",
-      sessionId: known ? error.sessionId : null, providerMetadata: { ...run.providerMetadata, requestId: known ? error.requestId : null },
-      error: "Session creation could not be confirmed. Do not retry; provider cost is unknown." });
+    const rejected = known && !error.ambiguous && !error.sessionId;
+    return persistReceipt(db, ownerId, run, { status: rejected ? "failed" : "requires_action",
+      sessionId: known ? error.sessionId : null, providerMetadata: {
+        ...run.providerMetadata, requestId: known ? error.requestId : null,
+        ...(known ? { creationErrorCode: error.code } : {}),
+        ...(known && error.status !== undefined ? { creationHttpStatus: error.status } : {}),
+      },
+      error: rejected ? "Session creation was rejected before a session receipt was confirmed."
+        : "Session creation could not be confirmed. Do not retry; provider cost is unknown." });
   }
 }
 /** Explicit cancel or deadline action: a durable claim precedes the sole cancel POST. */

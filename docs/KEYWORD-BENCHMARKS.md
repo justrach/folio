@@ -100,6 +100,8 @@ bun run benchmark compare --owner-id "$BENCHMARK_OWNER_ID" \
 
 Commands save their full results under ignored `.local/keyword-benchmarks` with private directory/file permissions. Standard output reports the private file path and bounded status, not provider credentials or full answers. Comparison and status read saved data. Reconciliation retrieves the saved provider session and may enforce its already-persisted deadline. A cancel acknowledgement is not a confirmed stopped task.
 
+When a new creation fails, its private `providerMetadata` retains the original numeric `creationHttpStatus` when received and the bounded `creationErrorCode`, alongside any request/session receipt. These diagnostics are immutable through the run update helper and contain no provider body, arbitrary error message or credentials. Older records remain absent rather than having status inferred from timing. Recording an HTTP error does not release an ambiguous creation hold or authorize a retry; the original outcome and unknown usage remain intact. The external observation API continues to return a generic safe error rather than raw provider diagnostics.
+
 ## Authenticated browser API
 
 External agents use the separate [Folio Agent API](AGENT-API.md), with scoped keys, 24-hour default freshness and idempotent explicit ensure requests. Its GET routes never start work. The routes below serve the browser workflow.

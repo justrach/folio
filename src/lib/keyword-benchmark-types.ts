@@ -88,7 +88,12 @@ export type KeywordBenchmarkRun = KeywordBenchmarkExecution & {
   revision: number;
   answer: KeywordBenchmarkAnswer | null;
   usage: KeywordBenchmarkUsage;
-  providerMetadata: { environmentId: string | null; requestId: string | null; turnId: string | null };
+  providerMetadata: {
+    environmentId: string | null; requestId: string | null; turnId: string | null;
+    /** Safe original creation diagnostics; absent on older records, never reconstructed. */
+    creationHttpStatus?: number;
+    creationErrorCode?: "INVALID_INPUT" | "NOT_CONFIGURED" | "UPSTREAM_ERROR" | "INVALID_RESPONSE";
+  };
   error: string | null;
 };
 export type KeywordBenchmarkRunSummary = Omit<KeywordBenchmarkRun, "answer" | "case"> & {
