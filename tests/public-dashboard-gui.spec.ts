@@ -79,6 +79,8 @@ test("signed-out overview presents public task coverage and the original recorde
   await expect(detail.getByRole("heading", { name: questions[0], exact: true })).toBeVisible();
   const table = detail.getByRole("table", { name: "Returned recommendations", exact: true });
   await expect(table).toBeVisible();
+  await expect(table.getByRole("columnheader", { name: "Position", exact: true })).toBeVisible();
+  await expect(table.getByRole("columnheader", { name: "Recommendation", exact: true })).toBeVisible();
   const rows = table.locator("tbody tr"); await expect(rows).toHaveCount(3);
   await expect(rows.locator("td")).toHaveText(["1", "2", "3"]);
   await expect(rows.nth(0).getByRole("link", { name: "Beta Basics", exact: true })).toHaveAttribute("href", "https://beta.example.com/");

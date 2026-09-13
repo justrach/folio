@@ -8,6 +8,7 @@ import type { Scan } from "@/lib/demo-data";
 import type { SeoReportSummary } from "@/lib/seo-store";
 import type { SearchConsoleReportSummary } from "@/lib/search-console-types";
 import { compareKeywordBenchmarkRuns, isKeywordBenchmarkId, keywordSearchMode, type KeywordBenchmarkRun, type KeywordBenchmarkRunSummary, type KeywordBenchmarkSuite, type KeywordBenchmarkSuiteSummary, type KeywordSearchMode } from "@/lib/keyword-benchmark-types";
+import { visibilityReport } from "@/lib/visibility";
 import { keywordRecommendationMetrics } from "@/lib/keyword-search-mode";
 import { evaluationHref } from "@/lib/evaluation-navigation";
 import { WorkspaceEvaluationSummary } from "./workspace-evaluation-summary";
@@ -99,6 +100,7 @@ function OwnedOverview({scans,scansLoading,scansError,onRetryScans,onOpenScan}:O
   },[selectionKey,requestedIds,historyIds,data.runs.state]);
   const records=detail.key===selectionKey?detail.runs:[];
   const observations=[...completed.values()].flatMap(summary=>{const run=records.find(item=>item.id===summary.id);return run?[{run,metrics:keywordRecommendationMetrics(run)}]:[];});
+  const suggestions=visibilityReport(observations.map(item=>item.run)).recommendations;
   const identified=observations.filter(item=>item.metrics.targetNamed!=="unknown");
   const appeared=identified.filter(item=>item.metrics.targetNamed==="yes").length;
   const unknown=observations.length-identified.length;
@@ -144,6 +146,7 @@ function OwnedOverview({scans,scansLoading,scansError,onRetryScans,onOpenScan}:O
         </>}
 
       </section>
+      {metricsReady&&<section className="real-recommendations"><h2>Recommended next steps</h2><p>Based on your saved answers. Review each source before making changes.</p>{suggestions.length?<ol>{suggestions.map(item=><li key={item.id}><h3>{item.title}</h3><p>{item.action}</p><small>{item.basis}</small><p><Link href={`/benchmarks?run=${encodeURIComponent(item.runId)}`}>Read the supporting answer →</Link></p></li>)}</ol>:<p>{observations.length?"No missing-mention or missing-citation recommendation was identified in these answers.":"Complete a search observation to get recommendations supported by its answer."}</p>}<Link href="/docs/api">Use these results through the API →</Link></section>}
       <details className="real-overview-history"><summary>Details and history<ChevronDown size={15}/></summary><p>These figures use the latest completed answer per question. A newer unfinished attempt does not replace it. Website identity uses exact host matching; unknown identities are excluded from the rate. Sources may cite other websites. These saved API observations do not measure consumer chat websites, other providers, general search rank, or product quality. Up to 20 suites and the 100 most recent account attempts are loaded.</p>{comparableHistory?<><p>Same query and matching saved execution settings. Changes are observations, not proof of cause.</p><table><caption>{history[0].case.query}</caption><thead><tr><th>Recorded</th><th>Target position</th><th>Answer</th></tr></thead><tbody>{history.map(run=>{const metrics=keywordRecommendationMetrics(run);return <tr key={run.id}><td>{date(run.createdAt)}</td><td>{metrics.targetNamed==="yes"?metrics.targetPositions.map(value=>`#${value}`).join(", "):metrics.targetNamed==="no"?"Not listed":"Unknown"}</td><td><Link href={reportHref(run)}>Open saved answer</Link></td></tr>;})}</tbody></table></>:<p>No comparable history is available in the loaded records. At least two completed observations of the same question and execution settings are needed; no trend is inferred from unrelated questions.</p>}</details>
       <section className="real-evidence-overview" aria-label="Separate website evidence"><h2>Website reports</h2><div>
         <article><h3>Technical audits</h3>{scansError?<><p>Saved audits unavailable.</p><button onClick={onRetryScans}>Retry audits</button></>:scansLoading?<p>Loading saved audits…</p>:<><strong>{selectedScans.length} saved {selectedScans.length===1?"audit":"audits"}</strong><p>{selectedScans[0]?`Latest readiness: ${selectedScans[0].seoScore}/100 · ${date(selectedScans[0].createdAt)}`:"Technical readiness has not been measured for this exact URL."}</p>{selectedScans[0]&&<button onClick={()=>onOpenScan(selectedScans[0])}>Open latest audit<ArrowRight size={13}/></button>}</>}<Link href={evaluationHref({targetUrl:selected.url})}>Evaluate this website<ArrowRight size={13}/></Link></article>

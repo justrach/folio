@@ -24,6 +24,7 @@ Local records persist in `.wrangler/state/v3` across restarts. Use `bun run db:s
 - An explicit private workspace with saved website question coverage, returned positions, citation counts, and links to private audits, backlinks, and Search Console reports. Illustrative charts remain in the separate Demo report view.
 - Better Auth email/password sign-up, login, persisted sessions, and logout.
 - Optional Google sign-in and explicit read-only Search Console consent, with bounded private performance snapshots. Live Google validation remains separate; see [Search Console setup](docs/SEARCH-CONSOLE.md).
+- Optional GitHub sign-in and explicit account linking in Settings, using profile/email permissions. See [GitHub setup](docs/GITHUB-AUTH.md); live OAuth still requires configured application credentials.
 - Real bounded page audits, deterministic `readiness-v1` scores, evidence details, account-scoped saved history, and repeat scans. Optional discovery-file diagnostics inspect robots.txt, llms.txt, llms-full.txt and sitemap.xml without changing that score. Initially allows `example.com`; extra hosts need operator review and `SCAN_ALLOWED_HOSTS` configuration.
 - Review and download proposed title, description, and canonical changes as a ZIP. Downloads do not publish to the source website.
 - Public technical scores from explicitly published audits, with rubric details, latest run timestamps, filtering, and revocable publication. Account-added sites are not verified domain ownership.
@@ -60,7 +61,7 @@ Local records persist in `.wrangler/state/v3` across restarts. Use `bun run db:s
 | `/agents`      | Managed sessions, status, returned items and background activity                       |
 | `/pricing`     | Proposed plans, metered usage model and private plan-interest preference               |
 | `/settings`    | Account and integration information                                                    |
-| `/privacy`     | Data handling, Google permissions, retention, and support contact                     |
+| `/privacy`     | Data handling, Google/GitHub permissions, retention, and support contact              |
 | `/login`       | Better Auth sign-up and login                                                          |
 
 Follow the [frontend workflow](docs/FRONTEND-WORKFLOW.md) to move from a saved audit or SEO report into evaluation preflight, inspect agent returns, export evidence, and compare or prepare a fresh run. Navigation prepares context; paid work starts only through the corresponding explicit action.
@@ -79,6 +80,8 @@ bun run agents:approve <account-id>
 Restart the development server after changing `.dev.vars`. The run-count gate is not a monetary cap; configure provider-project spend controls separately.
 
 Google sign-in uses server-only `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`; owners grant Search Console access separately. The intended public origin is `https://usefolio.site`. Production requires its own D1 binding, secrets, exact OAuth callback, domain checks, and external-user Google configuration; see the [Search Console launch checklist](docs/SEARCH-CONSOLE.md#external-user-launch-at-usefoliosite). Local setup does not establish deployment or OAuth verification.
+
+GitHub identity uses server-only `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET`, with `/api/auth/callback/github` on the corresponding application origin as its callback. Existing Folio users sign in with their current method, then select **Connect GitHub** in Settings. See [GitHub identity](docs/GITHUB-AUTH.md) for exact local/production callbacks and scope details.
 
 See [DataForSEO integration](docs/DATAFORSEO.md), [Cloudflare and authentication](docs/cloudflare-auth.md), and [Agents API integration](docs/AGENTS-INTEGRATION.md). The DataForSEO adapter follows the bounded transport, response-envelope, and tool-boundary patterns reviewed in [OpenSEO](https://github.com/every-app/open-seo); Folio does not import that application.
 

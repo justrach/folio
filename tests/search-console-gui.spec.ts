@@ -70,6 +70,7 @@ async function fixture(page: Page, initialReports: Report[] = []) {
       configured: state.configured, signedIn: !!state.owner, connected: !!state.owner && state.connected,
       message: state.owner && state.connected ? "Google Search Console is connected." : "Sign in with Google to connect Search Console.",
     } });
+    if (pathname === "/api/github" && method === "GET") return route.fulfill({ json: { configured: false, signedIn: !!state.owner, connected: false } });
     if (pathname === "/api/search-console/properties" && method === "GET") {
       state.propertyReads++;
       return route.fulfill({ json: { properties: [

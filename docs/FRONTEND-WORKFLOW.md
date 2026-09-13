@@ -22,7 +22,7 @@ This guide describes the current UI. The [evaluation loop](EVALUATION-LOOP.md) e
 
 ## Start from your workspace
 
-`/overview` defaults to **My website results**. Signed-out visitors see a sign-in prompt; signed-in owners choose an existing saved website. The overview loads saved application records with GET requests only. It does not reconcile provider sessions, start a search, or import an SEO report.
+`/overview` defaults to the public benchmark dashboard. **My website results** is the explicit `/overview?view=workspace` view. Signed-out visitors to that view see a sign-in prompt; signed-in owners choose an existing saved website. The overview loads saved application records with GET requests only. It does not reconcile provider sessions, start a search, or import an SEO report.
 
 **Search observations** uses the latest completed answer for each question targeting that exact website. Open-web and reviewed-documentation observations occupy separate tabs. A newer pending, failed, cancelled, or needs-attention attempt stays visible without replacing its earlier completed answer. Each question links to its answer and, when different, its latest attempt.
 
@@ -31,6 +31,8 @@ The sidebar's **Switch website** control opens the authenticated account's saved
 The appearance rate uses only completed answers with a known target-identity result; unknown identities are reported and excluded from the denominator. Distinct cited pages counts source URLs across the loaded answers, including other websites. Question coverage, unfinished attempts, and read failures appear beside the metrics. The overview loads up to 20 suites and 100 recent attempts; these bounds and comparable same-question history are under **Details and history**. No trend is inferred from unrelated questions.
 
 **Website reports** separately links exact-URL technical audits, saved hostname-matching SEO reports, Search Console snapshots, and recent private website evaluations. Missing data is shown as missing. Changing accounts clears the owner-bound data and aborts its pending reads; changing websites resets the selected reports.
+
+The selected website’s **View results** link opens its combined workspace overview. **Audit website** prefills that exact website but starts no scan until submission. Evidence-linked next steps appear below completed answers; the [visibility API](VISIBILITY-API.md) provides read-key access to the same metrics and suggestion rules.
 
 The **Demo report** remains an explicit alternative. Its sample percentages, sparklines, citations and company ranks do not enter the real overview.
 

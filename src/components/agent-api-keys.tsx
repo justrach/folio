@@ -6,13 +6,15 @@ import { authClient } from "@/lib/auth-client";
 import type { AgentApiKeySummary } from "@/lib/agent-observation-types";
 
 export function AgentApiKeys() {
-  const { data: session, isPending } = authClient.useSession();
+  const { data: session, isPending, error: sessionError } = authClient.useSession();
   if (isPending) return <p role="status">Checking your workspace…</p>;
+  if (sessionError) return <p role="alert">Your sign-in could not be checked. <Link href="/login?next=%2Fdocs%2Fapi">Sign in to manage keys</Link></p>;
   if (!session?.user.id) return <div className="api-key-signin"><h3>Connect an agent to your workspace</h3><p>Sign in to create a key for your saved websites and search questions.</p><Link className="button primary" href="/login?next=%2Fdocs%2Fapi">Sign in to manage keys</Link></div>;
-  return <OwnerApiKeys key={session.user.id} />;
+  return <OwnerApiKeys key={session.user.id} account={session.user.email} />;
 }
 
-function OwnerApiKeys() {
+function OwnerApiKeys({account}:{account:string}) {
+  const [access,setAccess]=useState<"loading"|"ready"|"error"|"expired">("loading");
   const [keys, setKeys] = useState<AgentApiKeySummary[]>([]);
   const [name, setName] = useState("");
   const [canEvaluate, setCanEvaluate] = useState(false);
@@ -29,18 +31,26 @@ function OwnerApiKeys() {
     try {
       const response = await fetch(path, { ...init, cache: "no-store", signal: controller.signal });
       const body = await response.json();
-      if (!mounted.current) return;
+      if (!mounted.current || controller.signal.aborted) return;
+      if (response.status===401) { setAccess("expired");setKeys([]);setToken(null);return; }
       if (!response.ok) throw new Error(body.error?.message ?? "The key request could not complete.");
       return body as T;
     } finally { requests.current.delete(controller); }
   }
   useEffect(() => {
     mounted.current = true;
-    void request<{ keys: AgentApiKeySummary[] }>("/api/agent-keys").then(body => { if (body && mounted.current) setKeys(body.keys); })
-      .catch(failure => { if (mounted.current) setError(failure instanceof Error ? failure.message : "Keys could not be loaded."); })
-      .finally(() => { if (mounted.current) setBusy(""); });
-    const pending = requests.current;
-    return () => { mounted.current = false; pending.forEach(controller => controller.abort()); };
+    let active = true;
+    const controller = new AbortController();
+    void fetch("/api/agent-keys",{cache:"no-store",signal:controller.signal}).then(async response=>{
+      if(!active)return;
+      if(response.status===401){setAccess("expired");return;}
+      if(!response.ok)throw new Error("Keys unavailable");
+      const body=await response.json();
+      if(active){setKeys(body.keys);setAccess("ready");}
+    }).catch(()=>{if(active&&!controller.signal.aborted)setAccess("error");})
+      .finally(()=>{if(active)setBusy("");});
+    const pending=requests.current;
+    return()=>{active=false;mounted.current=false;controller.abort();pending.forEach(item=>item.abort());};
   }, []);
 
   async function create() {
@@ -49,7 +59,7 @@ function OwnerApiKeys() {
       const body = await request<{ key: AgentApiKeySummary; token: string }>("/api/agent-keys", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, scopes: canEvaluate ? ["read", "evaluate"] : ["read"], expiresInDays: days }) });
       if (!body || !mounted.current) return;
       setKeys(current => [body.key, ...current]); setToken(body.token); setName(""); setCanEvaluate(false);
-    } catch (failure) { if (mounted.current) setError(failure instanceof Error ? failure.message : "Key creation could not be confirmed. Reload the key list before trying again."); }
+    } catch (failure) { if (mounted.current) setError("Key creation could not be confirmed. Reload the key list before trying again."); }
     finally { if (mounted.current) setBusy(""); }
   }
   async function revoke(key: AgentApiKeySummary) {
@@ -58,10 +68,13 @@ function OwnerApiKeys() {
       const body = await request<{ key: AgentApiKeySummary }>(`/api/agent-keys/${encodeURIComponent(key.id)}`, { method: "DELETE", headers: { "Content-Type": "application/json" }, body: "{}" });
       if (!body || !mounted.current) return;
       setKeys(current => current.map(item => item.id === body.key.id ? body.key : item)); setToken(null); setNotice("Key revoked. Existing evaluation records are preserved.");
-    } catch (failure) { if (mounted.current) setError(failure instanceof Error ? failure.message : "The key could not be revoked."); }
+    } catch (failure) { if (mounted.current) setError("The key could not be revoked. Refresh its status before trying again."); }
     finally { if (mounted.current) setBusy(""); }
   }
-  return <div className="api-keys">
+  if(access==="loading")return <p role="status">Confirming your access to API keys…</p>;
+  if(access==="expired")return <p>Your session has expired. <Link href="/login?next=%2Fdocs%2Fapi">Sign in to manage keys</Link></p>;
+  if(access==="error")return <p role="alert">Your API keys could not be loaded. Refresh the page to try again.</p>;
+  return <div className="api-keys"><p>Signed in as <strong>{account}</strong>. <Link href="/settings">Manage account</Link></p>
     <form onSubmit={event => { event.preventDefault(); void create(); }}>
       <div className="api-key-fields"><label>Key name<input value={name} maxLength={100} required onChange={event => setName(event.target.value)} placeholder="My research agent" disabled={Boolean(busy)} /></label><label>Expires after<select value={days} onChange={event => setDays(Number(event.target.value))} disabled={Boolean(busy)}><option value={7}>7 days</option><option value={30}>30 days</option><option value={90}>90 days</option></select></label></div>
       <label className="api-key-permission"><input type="checkbox" checked={canEvaluate} disabled={Boolean(busy)} onChange={event => setCanEvaluate(event.target.checked)} /><span>Allow this key to start evaluations<small>Can incur usage charges. Your account’s website access, run limits, and active-task limits still apply.</small></span></label>

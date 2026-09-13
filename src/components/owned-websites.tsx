@@ -24,14 +24,14 @@ function propertyUrl(property: string) {
   catch { return null; }
 }
 
-export function OwnedWebsites() {
+export function OwnedWebsites({ onAudit }: { onAudit?: (url: string) => void }) {
   const { data: session, isPending } = authClient.useSession();
   if (isPending) return <p role="status">Loading your websites…</p>;
   if (!session) return null;
-  return <OwnerWebsites key={session.user.id} />;
+  return <OwnerWebsites key={session.user.id} onAudit={onAudit} />;
 }
 
-function OwnerWebsites() {
+function OwnerWebsites({ onAudit }: { onAudit?: (url: string) => void }) {
   const query = useSearchParams();
   const selectedId = query.get("site");
   const [sites, setSites] = useState<Site[]>([]);
@@ -98,6 +98,8 @@ function OwnerWebsites() {
           <div className="owned-website-title"><h3>{new URL(selected.url).hostname}</h3><span>{selected.isPublic ? "Technical scan shared" : "Private website"}</span></div>
           <p>{selected.seoScore == null ? "Technical readiness has not been measured yet." : `Latest technical readiness: ${selected.seoScore}/100.`}</p>
           <div className="owned-website-actions">
+            <Link href={`/overview?view=workspace&website=${encodeURIComponent(selected.id)}`} className="button secondary">View results <ArrowRight size={15} /></Link>
+            {onAudit && <button className="button secondary" onClick={() => onAudit(selected.url)}>Audit website</button>}
             <Link href={evaluationHref({ targetUrl: selected.url })} className="button primary">Evaluate website <ArrowRight size={15} /></Link>
             <Link href={`/benchmarks?website=${encodeURIComponent(selected.id)}`} className="button secondary">Keyword evaluations <ArrowRight size={15} /></Link>
             {matchingReport && <Link href={`/search-console?report=${encodeURIComponent(matchingReport.id)}`} className="button secondary">Open search report</Link>}
