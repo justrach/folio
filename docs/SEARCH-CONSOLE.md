@@ -4,6 +4,8 @@ Folio's `/search-console` workspace connects a user's Google account, lists prop
 
 ## Connect and import
 
+The setup card shows three compact progress steps: sign in, connect Google, and import a website. Its prompt follows the current connection state. Access explanations and the disconnect action sit in expandable details; saved-report history appears after the first import. Property loading and imports remain explicit, never automatic.
+
 Google sign-in requests only identity scopes (`openid`, `email`, `profile`). Existing email/password accounts remain usable. An authenticated owner explicitly links Google with `https://www.googleapis.com/auth/webmasters.readonly`, `prompt=consent`, and `access_type=offline`. Google defines this scope as read-only Search Console access. [Search Console authorization](https://developers.google.com/webmaster-tools/v1/how-tos/authorizing)
 
 Folio accepts verified Google profiles and explicit linking only when the Google email matches the signed-in Folio account. OAuth sign-in does not implicitly merge into an existing email/password account; sign in with that account's password before connecting Google.

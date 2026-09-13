@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, type RefObject } from "react";
-import { ArrowDownToLine, ArrowRight, Check, Loader2, Search } from "lucide-react";
+import { ArrowDownToLine, ArrowRight, Check, Globe, Loader2, Search, ShieldCheck } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import type { SearchConsoleProperty, SearchConsoleReport, SearchConsoleReportSummary, SearchConsoleRow } from "@/lib/search-console-types";
 import "./search-console.css";
@@ -124,16 +124,19 @@ function OwnerSearchConsole({ ownerId }: { ownerId: string | null }) {
   const visibleReport = ownerId && report?.id === selectedId ? report : null;
   return <div className="gsc-workspace">
     <section className="panel gsc-connection">
-      <div className="panel-heading"><h2>Google Search Console</h2><Search size={20}/></div>
+      <div className="panel-heading gsc-connection-heading"><h2>Google Search Console</h2><span className={`status-pill ${connection?.connected ? "pass" : ""}`}>{connection?.connected ? "Connected" : connection ? "Not connected" : "Checking connection…"}</span></div>
       <div className="gsc-body">
-        <span className={`status-pill ${connection?.connected ? "pass" : ""}`}>{connection?.connected ? "Connected" : connection ? "Not connected" : "Checking connection…"}</span>
-        <p>See how people find your website in Google Search.</p>
         <ol className="gsc-steps" aria-label="Search Console setup">
-          <li aria-current={!ownerId ? "step" : undefined}>Sign in with Google or your Folio email.</li>
-          <li aria-current={ownerId && connection && !connection.connected ? "step" : undefined}>Allow read-only access to Search Console.</li>
-          <li aria-current={connection?.connected ? "step" : undefined}>Choose a property and import its search data.</li>
+          <li aria-current={!ownerId ? "step" : undefined} data-complete={!!ownerId}><span>{ownerId ? <Check size={16}/> : "1"}</span>Sign in</li>
+          <li aria-current={ownerId && !connection?.connected ? "step" : undefined} data-complete={!!connection?.connected}><span>{connection?.connected ? <Check size={16}/> : "2"}</span>Connect Google</li>
+          <li aria-current={connection?.connected ? "step" : undefined}><span>3</span>Import website</li>
         </ol>
-        {connection?.message && <p className="gsc-muted">{connection.message}</p>}
+        <div className="gsc-setup-intro">
+          <div className="gsc-setup-icon" aria-hidden="true">{connection?.connected ? <Globe size={30}/> : <Search size={30}/>}</div>
+          <div><h3>{!ownerId ? "Your search traffic, in one place" : connection?.connected ? "Choose your website" : "Connect your Google account"}</h3>
+          <p>{!ownerId ? "Sign in to bring your Google search data into Folio." : connection?.connected ? "Select a Search Console property, then import its last 28 days." : "Allow read-only access to see your website’s search performance."}</p></div>
+        </div>
+        {connection?.message && (!connection.configured || connection.message.startsWith("Disconnected")) && <p className="gsc-muted">{connection.message}</p>}
         {query.get("connected") === "google" && connection?.connected && <p className="gsc-notice" role="status"><Check size={16}/> Google Search Console is connected.</p>}
         {query.get("error") && <p className="gsc-error" role="alert">Google connection was not completed. Try connecting again with the same Google account and allow read-only Search Console access.</p>}
         {error && <p className="gsc-error" role="alert">{error}</p>}
@@ -141,18 +144,18 @@ function OwnerSearchConsole({ ownerId }: { ownerId: string | null }) {
           {connection?.configured && !connection.connected && <button className="button primary" type="button" disabled={!!busy} onClick={connect}>{busy === "connect" ? <Loader2 size={16} className="spin"/> : <ArrowRight size={16}/>} {ownerId ? "Connect Google Search Console" : "Sign in with Google"}</button>}
           {!ownerId && <Link href="/login?next=%2Fsearch-console" className="button secondary">Sign in with email</Link>}
           {ownerId && connection?.connected && <>
-            <button className="button secondary" type="button" disabled={!!busy} onClick={() => action("properties",async signal => {
+            <button className="button primary" type="button" disabled={!!busy} onClick={() => action("properties",async signal => {
               const data = await readJson<{properties:SearchConsoleProperty[]}>("/api/search-console/properties",signal);
               if (signal.aborted) return;
               setProperties(data.properties); setPropertiesLoaded(true);
               setProperty(current => data.properties.some(p=>p.siteUrl===current) ? current : data.properties[0]?.siteUrl ?? "");
             })}>{busy === "properties" && <Loader2 size={16} className="spin"/>} Load Search Console properties</button>
-            <button className="button secondary" type="button" disabled={!!busy} onClick={() => action("disconnect",async signal => {
+            <details className="gsc-access"><summary>Manage access</summary><p>Disconnecting removes Folio’s stored tokens. Your Google identity and saved reports remain.</p><button className="button secondary" type="button" disabled={!!busy} onClick={() => action("disconnect",async signal => {
               await readJson("/api/search-console/connection",signal,{method:"DELETE"});
               if (signal.aborted) return;
               setProperties([]); setPropertiesLoaded(false); setProperty("");
               setConnection(current=>current ? {...current,connected:false,message:"Disconnected from Search Console. Your saved reports are still available."} : null);
-            })}>Disconnect Search Console</button>
+            })}>Disconnect Search Console</button></details>
           </>}
           {error && <button className="button secondary" type="button" onClick={()=>{setError("");setRefresh(n=>n+1);}}>Retry connection</button>}
         </div>
@@ -173,10 +176,11 @@ function OwnerSearchConsole({ ownerId }: { ownerId: string | null }) {
             <button className="button primary" type="submit" disabled={!!busy || !property}>{busy === "import" && <Loader2 className="spin" size={16}/>} Import search data</button>
           </> : <p>No Search Console properties are available to this Google account. Add or verify your website in <a href="https://search.google.com/search-console" target="_blank" rel="noreferrer">Google Search Console</a>, then load properties again.</p>}
         </form>}
-        <p className="gsc-muted">Read-only access. Imports do not change your website or start an AI evaluation. Disconnecting removes Folio’s stored Search Console tokens; Google identity and saved reports remain.</p>
+        <div className="gsc-trust"><ShieldCheck size={15}/><span>Read-only · Your website stays untouched</span></div>
+        <details className="gsc-access"><summary>What can Folio access?</summary><p>Imports read Search Console data; they do not change your website or start an AI evaluation. Disconnecting removes Folio’s stored Search Console tokens; Google identity and saved reports remain.</p></details>
       </div>
     </section>
-    {ownerId && <section className="panel gsc-history">
+    {ownerId && reports.length > 0 && <section className="panel gsc-history">
       <div className="panel-heading"><h2>Saved search reports</h2><span>{reports.length}</span></div>
       <div className="gsc-body">
         <p className="gsc-muted">Reopening a saved report uses its original observations. It does not request new data from Google.</p>

@@ -145,7 +145,7 @@ test("Search Console imports only after property selection and one explicit acti
   await expect(load).toBeEnabled();
   const setup = page.getByRole("list", { name: "Search Console setup", exact: true });
   await expect(setup.getByRole("listitem")).toHaveCount(3);
-  await expect(setup.locator('[aria-current="step"]')).toHaveText("Choose a property and import its search data.");
+  await expect(setup.locator('[aria-current="step"]')).toHaveText("3Import website");
   expect(state.propertyReads).toBe(0);
   expect(state.imports).toEqual([]);
   await load.click();
@@ -215,6 +215,7 @@ test("disconnecting Search Console retains private saved report access without n
   const saved = report();
   const state = await fixture(page, [saved]);
   await page.goto("/search-console");
+  await page.locator(".gsc-access summary").filter({ hasText: "Manage access" }).click();
   await page.getByRole("button", { name: "Disconnect Search Console", exact: true }).click();
   await expect.poll(() => state.disconnects).toBe(1);
   const reopen = page.getByRole("button", { name: `Open Search Console report for ${saved.property}`, exact: true });
@@ -232,7 +233,7 @@ test("signed-out Search Console entry suppresses owner data and import requests"
   await page.goto("/search-console?report=search-console-alpha");
   await expect(page.getByRole("button", { name: "Sign in with Google", exact: true })).toBeVisible();
   await expect(page.getByRole("list", { name: "Search Console setup", exact: true }).locator('[aria-current="step"]'))
-    .toHaveText("Sign in with Google or your Folio email.");
+    .toHaveText("1Sign in");
   await expect(results(page)).toHaveCount(0);
   await expect(page.getByText("alpha private search", { exact: true })).toHaveCount(0);
   await expect(page.getByRole("button", { name: /^Open Search Console report for / })).toHaveCount(0);
@@ -258,7 +259,7 @@ test("Google sign-in and explicit Search Console linking use separate permission
   state.owner = "alice";
   await page.goto("/search-console");
   await expect(page.getByRole("list", { name: "Search Console setup", exact: true }).locator('[aria-current="step"]'))
-    .toHaveText("Allow read-only access to Search Console.");
+    .toHaveText("2Connect Google");
   await page.getByRole("button", { name: "Connect Google Search Console", exact: true }).click();
   await expect.poll(() => state.socialLinks.length).toBe(1);
   expect(state.socialLinks[0]).toMatchObject({ provider: "google", callbackURL: "/api/search-console/finish",
