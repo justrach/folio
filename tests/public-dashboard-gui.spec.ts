@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import type { PublicCollectionStatus, PublicDashboardData, PublicDashboardQuery } from "../src/lib/public-dashboard";
+import { buildPublicDashboard, type PublicCollectionStatus, type PublicDashboardData, type PublicDashboardQuery } from "../src/lib/public-dashboard";
 import type { PublicSearchObservation } from "../src/lib/public-search-rankings";
 
 const at = "2026-09-13T09:00:00.000Z";
@@ -209,5 +209,70 @@ test("leaderboard loads publicly without consulting identity or private APIs", a
   await expect(page.getByRole("region", { name: "HTML page checks", exact: true })).toBeVisible();
   await page.reload();
   await expect(page.getByRole("heading", { name: "The Folio Index", exact: true })).toBeVisible();
+  noPrivateWork(state);
+});
+
+
+test("3500 public questions render bounded pages and preserve deep links, filters and history", async ({ page }) => {
+  const state = await setup(page);
+  const queries = Array.from({ length: 3500 }, (_, index) => ({
+    id: `scale-task-${index + 1}`, audience: audiences[index % audiences.length],
+    category: `Scale category ${Math.floor(index / 100) + 1}`,
+    query: `Unique question ${index + 1}: which products fit this fixture?`, language: "en", locale: "en-US",
+  }));
+  state.response = buildPublicDashboard({ format: "folio-public-search-rankings-v1", queries, observations: [] },
+    { format: "folio-public-search-progress-v1", updatedAt: at, queries: queries.map(query => ({ queryId: query.id, status: "not-started" })) });
+  await page.goto("/overview?query=scale-task-3478");
+  const pages = page.getByRole("navigation", { name: "Task pages", exact: true });
+  const detail = page.getByRole("region", { name: "Selected task", exact: true });
+  const picker = page.locator(".public-benchmark-mobile-picker select");
+  const list = page.locator(".public-benchmark-task-list");
+  await expect(pages.getByRole("status")).toHaveText("3476–3500 of 3500 tasks · Page 140 of 140");
+  await expect(list.locator("li")).toHaveCount(25);
+  await expect(picker.locator('option[value^="scale-task-"]')).toHaveCount(25);
+  await expect(detail.getByRole("heading", { name: queries[3477].query, exact: true })).toBeVisible();
+  await expect(pages.getByRole("button", { name: "Next task page", exact: true })).toBeDisabled();
+
+  const previous = pages.getByRole("button", { name: "Previous task page", exact: true });
+  await previous.focus(); await page.keyboard.press("Enter");
+  await expect(pages.getByRole("status")).toHaveText("3451–3475 of 3500 tasks · Page 139 of 140");
+  await expect(detail.getByRole("heading", { name: queries[3477].query, exact: true })).toBeVisible();
+  await expect(page).toHaveURL(/query=scale-task-3478$/);
+  const reads = state.publicReads;
+  await page.getByRole("button", { name: "Refresh public results", exact: true }).click();
+  await expect.poll(() => state.publicReads).toBeGreaterThan(reads);
+  await expect(pages.getByRole("status")).toContainText("Page 139 of 140");
+  await pages.getByRole("button", { name: "Show selected task", exact: true }).click();
+  await expect(pages.getByRole("status")).toContainText("Page 140 of 140");
+  if (await picker.isVisible()) await expect(picker).toBeFocused();
+  else await expect(list.getByRole("button", { name: `Open task: ${queries[3477].query}`, exact: true })).toBeFocused();
+  await previous.click();
+  if (await picker.isVisible()) await picker.selectOption("scale-task-3451");
+  else await list.getByRole("button", { name: `Open task: ${queries[3450].query}`, exact: true }).click();
+  await expect(detail.getByRole("heading", { name: queries[3450].query, exact: true })).toBeVisible();
+  await page.goBack();
+  await expect(pages.getByRole("status")).toContainText("Page 140 of 140");
+  await expect(detail.getByRole("heading", { name: queries[3477].query, exact: true })).toBeVisible();
+  await page.goForward();
+  await expect(pages.getByRole("status")).toContainText("Page 139 of 140");
+  await page.reload();
+  await expect(pages.getByRole("status")).toContainText("Page 139 of 140");
+
+  const search = page.getByRole("searchbox", { name: "Search tasks", exact: true });
+  await search.fill("Unique question 17:");
+  await expect(pages.getByRole("status")).toHaveText("1–1 of 1 tasks · Page 1 of 1");
+  await expect(list.locator("li")).toHaveCount(1);
+  await expect(picker.locator('option[value^="scale-task-"]')).toHaveCount(1);
+  await expect(detail.getByRole("heading", { name: queries[16].query, exact: true })).toBeVisible();
+  await search.fill("");
+  await page.getByRole("combobox", { name: "Audience", exact: true }).selectOption("Learning");
+  await expect(pages.getByRole("status")).toHaveText("1–25 of 700 tasks · Page 1 of 28");
+  await expect(list.locator("li")).toHaveCount(25);
+  await page.getByRole("combobox", { name: "Task status", exact: true }).selectOption("Published");
+  await expect(page.getByText("No tasks match these filters.", { exact: true })).toBeVisible();
+  await expect(list.locator("li")).toHaveCount(0);
+  await page.getByRole("button", { name: "Clear filters", exact: true }).click();
+  await expect(pages.getByRole("status")).toContainText("Page 139 of 140");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(await page.evaluate(() => innerWidth + 1));
   noPrivateWork(state);
 });

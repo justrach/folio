@@ -10,6 +10,7 @@ import "./ranked-search-table.css";
 import "./public-benchmark-dashboard.css";
 
 type Task = PublicDashboardData["queries"][number];
+const TASKS_PER_PAGE = 25;
 const date = (value: string) => new Date(value).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 
 function taskState(task: Task) {
@@ -39,7 +40,12 @@ export function PublicBenchmarkDashboard() {
   const [search, setSearch] = useState("");
   const [audience, setAudience] = useState("All audiences");
   const [status, setStatus] = useState("All tasks");
+  const [taskPage, setTaskPage] = useState<{ context: string; index: number } | null>(null);
+  const taskList = useRef<HTMLOListElement>(null);
+  const taskPicker = useRef<HTMLSelectElement>(null);
   const resultHeading = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => { setTaskPage(null); }, [queryId]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -87,7 +93,28 @@ export function PublicBenchmarkDashboard() {
     return (audience === "All audiences" || audience === task.audience) && text.includes(search.toLowerCase().trim())
       && (status === "All tasks" || status === "Published" && state.key === "published" || status === "In progress" && inProgress || status === "Not started" && state.key === "pending" || status === "Needs attention" && needsAttention);
   });
-  const selected = filtered.find(task => task.id === (queryId ?? initialTaskId)) ?? latest.find(task => filtered.includes(task)) ?? active.find(task => filtered.includes(task)) ?? filtered[0];
+  const filteredIds = new Set(filtered.map(task => task.id));
+  const selected = filtered.find(task => task.id === (queryId ?? initialTaskId)) ?? latest.find(task => filteredIds.has(task.id)) ?? active.find(task => filteredIds.has(task.id)) ?? filtered[0];
+  // A new selection (including back/forward) reveals its page. Snapshot refreshes
+  // preserve browsing position, and filters cannot leave a now-empty page selected.
+  const pageContext = JSON.stringify([queryId, initialTaskId, search, audience, status]);
+  const selectedPage = Math.floor(Math.max(0, filtered.findIndex(task => task.id === selected?.id)) / TASKS_PER_PAGE);
+  const pageCount = Math.max(1, Math.ceil(filtered.length / TASKS_PER_PAGE));
+  const pageIndex = Math.min(taskPage?.context === pageContext ? taskPage.index : selectedPage, pageCount - 1);
+  const pageStart = pageIndex * TASKS_PER_PAGE;
+  const pageTasks = filtered.slice(pageStart, pageStart + TASKS_PER_PAGE);
+  const selectionOnPage = pageTasks.some(task => task.id === selected?.id);
+  function showPage(index: number) {
+    setTaskPage({ context: pageContext, index });
+    taskList.current?.scrollTo({ top: 0 });
+  }
+  function revealSelectedTask() {
+    showPage(selectedPage);
+    requestAnimationFrame(() => {
+      if (taskPicker.current?.getClientRects().length) taskPicker.current.focus();
+      else taskList.current?.querySelector<HTMLButtonElement>('button[aria-pressed="true"]')?.focus();
+    });
+  }
   function selectTask(id: string, focus = false) {
     const next = new URLSearchParams(); next.set("query", id);
     window.history.pushState(null, "", `/overview?${next}`);
@@ -114,8 +141,13 @@ export function PublicBenchmarkDashboard() {
     <div className="public-benchmark-workbench">
       <section className="public-benchmark-task-browser" aria-label="Benchmark tasks">
         <div className="public-benchmark-list-heading"><h2>Tasks</h2><span>{filtered.length} of {data.queries.length}</span></div>
-        <div className="public-benchmark-mobile-picker"><label>Task<select value={filtered.some(task => task.id === selected?.id) ? selected?.id : ""} onChange={event => selectTask(event.target.value, true)}><option value="" disabled>Choose a task</option>{filtered.map(task => <option key={task.id} value={task.id}>{task.category} · {taskState(task).label}</option>)}</select></label></div>
-        <ol className="public-benchmark-task-list">{filtered.map(task => <li key={task.id}><button type="button" onClick={() => selectTask(task.id)} aria-pressed={selected?.id === task.id} aria-label={`Open task: ${task.query}`}>
+        {filtered.length > 0 && <nav className="public-benchmark-pagination" aria-label="Task pages">
+          <p role="status">{pageStart + 1}–{pageStart + pageTasks.length} of {filtered.length} tasks · Page {pageIndex + 1} of {pageCount}</p>
+          <div><button type="button" onClick={() => showPage(pageIndex - 1)} disabled={pageIndex === 0} aria-label="Previous task page">Previous</button><button type="button" onClick={() => showPage(pageIndex + 1)} disabled={pageIndex === pageCount - 1} aria-label="Next task page">Next</button>
+          {!selectionOnPage && selected && <button type="button" onClick={revealSelectedTask}>Show selected task</button>}</div>
+        </nav>}
+        <div className="public-benchmark-mobile-picker"><label>Task<select ref={taskPicker} value={selectionOnPage ? selected?.id : ""} onChange={event => selectTask(event.target.value, true)}><option value="" disabled>Choose a task on this page</option>{pageTasks.map(task => <option key={task.id} value={task.id}>{task.query} · {taskState(task).label}</option>)}</select></label></div>
+        <ol ref={taskList} start={pageStart + 1} className="public-benchmark-task-list">{pageTasks.map(task => <li key={task.id}><button type="button" onClick={() => selectTask(task.id)} aria-pressed={selected?.id === task.id} aria-label={`Open task: ${task.query}`}>
           <span className="public-task-topline"><span>{task.audience}</span><TaskStatus task={task} /></span><strong>{task.category}</strong><span className="public-task-question">{task.query}</span>
           <span className="public-task-bottomline">{task.latestObservation ? `${task.latestObservation.recommendations.length} recommendations · ${task.latestObservation.citations.length} sources` : task.collection.startedAt ? `Started ${date(task.collection.startedAt)}` : "No result yet"}<ChevronRight size={14} /></span>
         </button></li>)}</ol>

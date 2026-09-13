@@ -25,6 +25,11 @@
 .public-benchmark-list-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .public-benchmark-list-heading h2{font:600 15px/1.4 var(--sans,Arial,sans-serif);margin:0}
 .public-benchmark-list-heading>span{font-size:12px;color:#65735b}
+.public-benchmark-pagination{padding:0 0 12px;font-size:12px;color:#56654f}
+.public-benchmark-pagination p{margin:0 0 8px;font-variant-numeric:tabular-nums}
+.public-benchmark-pagination>div{display:flex;flex-wrap:wrap;gap:8px}
+.public-benchmark-pagination button{min-height:40px;padding:7px 12px;border:1px solid #c4cfb9;border-radius:4px;background:#fffef9;color:#344e38;font:inherit;cursor:pointer}
+.public-benchmark-pagination button:disabled{opacity:.5;cursor:default}
 .public-benchmark-task-list{list-style:none;margin:0;padding:0;max-height:calc(100vh - 180px);overflow:auto;scrollbar-width:thin;scrollbar-color:#c5d0bc transparent}
 .public-benchmark-task-list>li{border-top:1px solid #d8dece}
 .public-benchmark-task-list>li:last-child{border-bottom:1px solid #d8dece}
