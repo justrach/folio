@@ -37,3 +37,17 @@ test("SEO selection is explicit, keyword-only and survives saved-query parsing",
   assert.deepEqual(parseAgentObservation(parseAgentQuery("https://folio.example/?kind=keyword&caseId=case&useSeoTools=true")), { kind: "keyword", caseId: "case", maxAgeSeconds: 86400, useSeoTools: true });
   assert.throws(() => parseAgentObservation({ kind: "website", websiteId: "site", useSeoTools: true }));
 });
+
+test("protocol errors are structured and capability discovery explains unavailable paid tools",async()=>{
+  const client=new Client({name:"schema-fixture",version:"1"});
+  await client.connect(new StreamableHTTPClientTransport(new URL("https://folio.example/api/mcp"),{fetch:async(url,init)=>serveFolioMcp(new Request(url,init),context)}));
+  try{
+    const invalid=await client.callTool({name:"folio_observation",arguments:{kind:"website",websiteId:"site",caseId:"case"}});
+    assert.equal(invalid.isError,true);assert.equal((invalid.structuredContent as {error:{code:string}}).error.code,"invalid_input");
+    const forbidden=await client.callTool({name:"folio_evaluate",arguments:{kind:"website",websiteId:"site",requestKey:"fixture-key",confirmSpend:true}});
+    assert.equal((forbidden.structuredContent as {error:{code:string}}).error.code,"insufficient_scope");
+    const capabilities=await client.callTool({name:"folio_capabilities",arguments:{}});
+    assert.ok(JSON.stringify(capabilities.structuredContent).includes('"allowed":false'));
+    assert.ok((await client.listTools()).tools.every(t=>t.outputSchema));
+  }finally{await client.close();}
+});

@@ -26,3 +26,10 @@ test("unknown target identity cannot become zero share of voice",()=>{
  const report=visibilityReport([run("10","a",[{name:"Other",url:"https://competitor.com/"},{name:"Unknown",url:null}])]);
  assert.equal(report.current.visibilityScore,null);assert.equal(report.current.shareOfVoice,null);
 });
+
+test("reviewed product identities split shared hosts, deduplicate aliases and preserve unknown names",()=>{
+ const report=visibilityReport([run("10","a",[{name:"Cline",url:"https://github.com/cline/cline"},{name:"Cline",url:"https://cline.bot/"},{name:"Goose",url:"https://github.com/block/goose"},{name:"Unknown",url:"https://github.com/other/repo"}])]);
+ assert.equal(report.productComparison.products.length,2);assert.equal(report.productComparison.denominator,2);assert.equal(report.productComparison.unknownMentions,1);assert.deepEqual(report.productComparison.products.map(p=>p.shareOfVoice),[50,50]);assert.equal(report.citationHostComparison.hosts.find(h=>h.domain==="github.com")?.answers,1);
+ const mapped=visibilityReport([run("10","a",[{name:"Graff",url:"https://github.com/fixture/codegraff"}])],[{id:"graff",name:"Codegraff",aliases:["graff","codegraff"],urls:["https://github.com/fixture/codegraff"]}]);
+ assert.equal(mapped.productComparison.products[0].id,"graff");
+});

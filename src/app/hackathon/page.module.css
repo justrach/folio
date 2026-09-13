@@ -1,0 +1,36 @@
+.page { padding: 0 6%; }
+.header, .footer { max-width: 1180px; margin: auto; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 26px 0; }
+.header { border-bottom: 1px solid #bcc7bb; }
+.header span, .footer { font-size: 13px; color: #536158; }
+.header a, .actions a, .sectionHeading > a, .technology a { display: inline-flex; align-items: center; gap: 7px; }
+.main { max-width: 1180px; margin: auto; }
+.hero { padding: 72px 0 58px; max-width: 880px; }
+.page .byline { font-size: 14px; margin-bottom: 22px; }
+.hero h1 { font-size: clamp(44px, 6.5vw, 82px); line-height: 1.04; font-weight: 500; letter-spacing: -.055em; }
+.page .intro { font-size: 20px; max-width: 710px; margin: 26px 0; }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 24px; }
+.page .note { font-size: 13px; color: #536158; margin-top: 18px; }
+.workflow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px; padding: 32px 0 40px; border-top: 1px solid #bcc7bb; border-bottom: 1px solid #bcc7bb; }
+.workflow h2 { font-size: 20px; margin-bottom: 12px; }
+.workflow p { font-size: 15px; }
+.demo { padding: 52px 0; scroll-margin-top: 24px; }
+.sectionHeading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
+.sectionHeading p { margin-top: 12px; }
+.sectionHeading > a { flex-shrink: 0; font-size: 14px; }
+.technology { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; border-top: 1px solid #bcc7bb; padding: 45px 0; }
+.technology p { margin: 18px 0; }
+.technology a { font-size: 14px; }
+.next { display: flex; align-items: center; justify-content: space-between; gap: 28px; padding: 32px; background: #e9eddf; margin-bottom: 48px; }
+.next p { margin-top: 12px; max-width: 650px; font-size: 14px; }
+.footer { border-top: 1px solid #bcc7bb; }
+@media (max-width: 700px) {
+  .page { padding: 0 22px; }
+  .header { flex-wrap: wrap; gap: 12px; }
+  .header span { order: 3; width: 100%; }
+  .hero { padding: 42px 0; }
+  .page .intro { font-size: 18px; }
+  .workflow, .technology { grid-template-columns: 1fr; gap: 28px; }
+  .sectionHeading, .next { flex-direction: column; align-items: flex-start; }
+  .next { padding: 24px; }
+  .footer { flex-wrap: wrap; }
+}

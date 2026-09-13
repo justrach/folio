@@ -105,17 +105,24 @@ function trackRuntimeErrors(page: Page) {
   return errors;
 }
 
-test("landing opens the working dashboard", async ({ page }, testInfo) => {
+test("landing opens evaluations from a real result preview", async ({ page }, testInfo) => {
   const runtimeErrors = trackRuntimeErrors(page);
+  const writes: string[] = [];
+  await page.route("**/api/**", route => {
+    if (route.request().method() !== "GET") writes.push(route.request().url());
+    return route.fulfill({ json: null });
+  });
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("See which competitors AI recommends.");
+  const preview = page.getByRole("complementary", { name: "Real recommendation preview" });
+  await expect(preview).toBeVisible();
+  await expect(preview.getByRole("listitem")).toHaveCount(4);
   await noPageOverflow(page);
   await screenshot(page, testInfo, "landing");
-  await page.locator('a[href="/overview"]').first().click();
-  await expect(page).toHaveURL(/\/overview$/);
-  await expect(
-    page.getByRole("heading", { name: routes[0].heading, exact: true }),
-  ).toBeVisible();
+  await page.locator('.landing-hero a[href="/evaluations"]').click();
+  await expect(page).toHaveURL(/\/evaluations$/);
+  await expect(page.getByRole("heading", { name: "Evaluations", exact: true })).toBeVisible();
+  expect(writes).toEqual([]);
   expect(runtimeErrors).toEqual([]);
 });
 

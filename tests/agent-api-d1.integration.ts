@@ -79,7 +79,8 @@ test("actual D1 ensure races commit one request-linked provider start and preser
     assert.equal(creates, 1); assert.equal(new Set(raced.map(value => value.run?.id)).size, 1);
     const runId = raced[0].run!.id;
     const beforeRead = creates;
-    assert.equal((await getAgentObservation(db, "alice", input, env)).disposition, "missing");
+    const pendingObservation=await getAgentObservation(db,"alice",input,env);
+    assert.equal(pendingObservation.disposition,"missing");assert.equal(pendingObservation.historyState,"incomplete_attempt");assert.equal(pendingObservation.currentAttempt?.id,runId);
     assert.equal((await getAgentObservationRun(db, "alice", "keyword", runId)).run?.id, runId); assert.equal(creates, beforeRead);
     await assert.rejects(getAgentObservationRun(db, "bob", "keyword", runId), error => error instanceof AgentApiError && error.status === 404);
     await assert.rejects(ensureAgentObservation(db, principal, { ...input, maxAgeSeconds: 1 }, "same-request-123", env, options), error => error instanceof AgentApiError && error.code === "idempotency_conflict");
@@ -98,7 +99,8 @@ test("actual D1 ensure races commit one request-linked provider start and preser
     assert.equal(cached.run?.provenance.completedSearchCount, 1); assert.equal(cached.run?.provenance.searchMode, "open-web");
     assert.equal((await getAgentObservation(db, "alice", input, { ...env, OPENAI_AGENTS_MODEL: "changed-model" })).run?.model, "gpt-6-astra", "Open-web observations use the requested fixed Astra model.");
     const changed = await updateKeywordBenchmarkCase(db, "alice", suite.cases[0].id, 0, { ...trial, searchMode: "reviewed-domains" });
-    assert.equal((await getAgentObservation(db, "alice", input, env)).run, null, "Search mode/harness/network changes invalidate cache identity.");
+    const incompatible=await getAgentObservation(db,"alice",input,env);
+    assert.equal(incompatible.run,null,"Strict paid reuse stays incompatible");assert.equal(incompatible.latestCompletedRun?.id,runId);assert.equal(incompatible.historyState,"incompatible_history");assert.ok(incompatible.compatibility.mismatchReasons.includes("harness version"));
     await updateKeywordBenchmarkCase(db, "alice", changed.id, changed.revision, trial);
     assert.equal((await listAgentObservationTargets(db, "bob")).cases.length, 0);
     const ambiguousOptions = { fetcher: (async () => { creates++; throw new Error("Fixture connection lost after request write"); }) as typeof fetch };
@@ -196,5 +198,37 @@ test("visibility reads isolate owners and never create provider work", { timeout
     const excluded=await savedVisibility(db,"alice",visibilityFilters(new URLSearchParams({websiteId:"site-alice",endDate:"2000-01-01"})));
     assert.equal(excluded.current.completedQuestions,0);
 
+  }finally{await current.dispose();await rm(directory,{recursive:true,force:true});}
+});
+
+
+test("MCP saved discovery pages ties, filters owners, preserves unknown SEO detail and never fetches", {timeout:90_000},async(t)=>{
+  const {pagedTargets,pagedSeo,savedPageEvidence,savedRunHistory}=await import("../src/lib/mcp-saved-evidence");
+  const {reserveSeoReport}=await import("../src/lib/seo-store");
+  const directory=await mkdtemp(join(tmpdir(),"folio-mcp-reads-"));const current=runtime(directory);
+  t.mock.method(globalThis,"fetch",async()=>{throw new Error("No provider calls permitted");});
+  try{const db=await current.getD1Database("DB");await setup(db);
+    for(const id of ["site-a","site-b","site-c"])await db.prepare("INSERT INTO sites(id,user_id,url,name,created_at) VALUES(?,?,?,?,?)").bind(id,"alice",id==="site-a"?"https://example.com/":`https://${id}.com/`,id,1000).run();
+    const first=await pagedTargets(db,"alice",{kind:"website",limit:2});assert.equal(first.items.length,2);assert.equal(first.truncated,true);
+    const next=await pagedTargets(db,"alice",{kind:"website",limit:2,cursor:first.nextCursor!});assert.equal(next.items.length,1);assert.equal(new Set([...first.items,...next.items].map(i=>i.id)).size,3);
+    assert.equal((await pagedTargets(db,"bob",{kind:"website"})).items.length,0);
+    await assert.rejects(pagedTargets(db,"alice",{cursor:"bad"}));
+    const suite=await createKeywordBenchmarkSuite(db,"alice",{name:"Fixture",cases:[trial,{...trial,targetUrl:"https://other.com/"}]});
+    const questions=await pagedTargets(db,"alice",{websiteId:"site-a",suiteId:suite.id,searchMode:"open-web"});assert.equal(questions.items.length,1);
+    const seo=await reserveSeoReport(db,"alice","example.com");const details=await pagedSeo(db,"alice",{reportId:seo.id});assert.equal("detail" in details&&details.detail?.state,"not_collected");
+    await assert.rejects(pagedSeo(db,"bob",{reportId:seo.id}));const emptySeo=await pagedSeo(db,"alice",{domain:"other.com"});assert.equal("items" in emptySeo&&emptySeo.items.length,0);
+    const base=await createDemoEvaluationRun();const actual={...base,id:crypto.randomUUID(),mode:"live" as const,targetUrl:"https://example.com/",createdAt:new Date().toISOString()};
+    await createEvaluationRun(db,"alice",actual,{maxLivePerDay:3});
+    const evidence=await savedPageEvidence(db,"alice",{websiteId:"site-a",runId:actual.id});assert.ok(evidence.items.some(i=>"captureId" in i));assert.ok(evidence.items.every(i=>!("expectedFacts" in i)));
+    await assert.rejects(savedPageEvidence(db,"bob",{websiteId:"site-a"}));
+    const history=await savedRunHistory(db,"alice",{kind:"website",websiteId:"site-a"});assert.equal(history.items[0]?.id,actual.id);
+    assert.equal((await savedRunHistory(db,"bob",{kind:"website"})).items.length,0);
+    const {savedVisibilityComparison}=await import("../src/lib/mcp-saved-evidence");
+    const windows={websiteId:"site-a",baselineStart:"2026-01-01T00:00:00Z",baselineEnd:"2026-02-01T00:00:00Z",comparisonStart:"2026-02-01T00:00:00Z",comparisonEnd:"2026-03-01T00:00:00Z"};
+    assert.equal((await savedVisibilityComparison(db,"alice",windows)).state,"unmeasured");await assert.rejects(savedVisibilityComparison(db,"bob",windows));
+    await assert.rejects(savedVisibilityComparison(db,"alice",{...windows,comparisonStart:windows.baselineStart}));
+    const {invokeFolioTool}=await import("../src/lib/folio-mcp");
+    const batch=await invokeFolioTool("folio_observations",{targets:[{kind:"website",websiteId:"site-a"},{kind:"website",websiteId:"missing"}]},{db,principal:{ownerId:"alice",keyId:"fixture",scopes:["read"]},env}) as {items:{result?:unknown;error?:{code:string}}[]};
+    assert.ok(batch.items[0].result);assert.equal(batch.items[1].error?.code,"not_found");
   }finally{await current.dispose();await rm(directory,{recursive:true,force:true});}
 });

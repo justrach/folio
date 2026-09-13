@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { LandingPageReport } from "./landing-page-report";
 import { RankedSearchTable } from "./ranked-search-table";
+import { PUBLIC_SEARCH_QUERIES, latestPublicSearchObservation } from "@/lib/public-search-rankings";
 import evaluationBatch from "@/data/developer-tool-evaluations.json";
 import "./landing.css";
 
@@ -17,6 +18,28 @@ const questions = [
   ["Developer tools", "How do I get an integration working?"],
 ];
 
+function RecommendationPreview() {
+  const query = PUBLIC_SEARCH_QUERIES.find(item => latestPublicSearchObservation(item.id)?.recommendations.length);
+  const result = query && latestPublicSearchObservation(query.id);
+  if (!query || !result) return null;
+  const shortQuestion = query.query.length > 105 ? `${query.query.slice(0, 105).replace(/\s+\S*$/, "")}…` : query.query;
+  const rows = result.recommendations.slice(0, 4);
+  const href = `/overview?query=${encodeURIComponent(query.id)}`;
+  return <aside className="landing-preview" aria-label="Real recommendation preview">
+    <div className="landing-preview-heading"><span>Inside a Folio report</span><span>Real results</span></div>
+    <h2>{query.category}</h2>
+    <p className="landing-preview-question">{shortQuestion}</p>
+    {shortQuestion !== query.query && <details className="landing-preview-question-detail"><summary>Read the full question</summary><p>{query.query}</p></details>}
+    <div className="landing-preview-axis"><span>Returned recommendations</span><span>Position</span></div>
+    <ol>{rows.map((row, index) => <li key={`${row.position}-${index}`}>
+      <div><strong>{row.name}</strong><span>{row.citationUrls.length ? `${row.citationUrls.length} ${row.citationUrls.length === 1 ? "source" : "sources"} to inspect` : "No source attached"}</span></div>
+      <span className="landing-preview-rank" aria-label={`Position ${row.position}`}>{row.position}</span>
+    </li>)}</ol>
+    <Link className="landing-preview-link" href={href}>Read the answer and sources <ArrowUpRight size={16} aria-hidden="true" /></Link>
+    {result.recommendations.length > rows.length && <p className="landing-preview-more">First {rows.length} of {result.recommendations.length} recommendations shown.</p>}
+  </aside>;
+}
+
 export function Landing() {
   const reportCount = evaluationBatch.results.filter(result => result.captureKind === "public-homepage" && result.status === "complete").length;
   return <div className="landing">
@@ -25,7 +48,7 @@ export function Landing() {
       <Link href="/" className="wordmark" aria-label="Folio home"><Mark /><span>folio.</span></Link>
       <nav aria-label="Website navigation">
         <a href="#sample-report">Rankings</a>
-        <a href="#evaluation-suites">Use cases</a>
+        <a href="#how-it-works">How it works</a>
         <Link href="/leaderboard">The index</Link>
         <Link href="/pricing">Pricing</Link>
       </nav>
@@ -34,31 +57,34 @@ export function Landing() {
 
     <main id="main-content">
       <section className="landing-hero">
-        <h1>Put your website<br />to the test.</h1>
-        <div className="landing-intro">
-          <p>See which websites Astra recommends for a question. Inspect its sources, check your page, and compare a fresh result after you make a change.</p>
+        <div className="landing-hero-copy">
+          <p className="landing-audience">For website owners and product teams</p>
+          <h1>See which competitors AI recommends.</h1>
+          <p className="landing-hero-description">See which companies appear for your customers’ questions. Inspect the sources and your own pages, then decide what to improve.</p>
           <div className="landing-actions">
-            <Link href="/overview" className="button primary">Open your workspace <ArrowUpRight size={16} aria-hidden="true" /></Link>
-            <a href="#sample-report">See the rankings</a>
+            <Link href="/evaluations" className="button primary">Evaluate your website <ArrowUpRight size={16} aria-hidden="true" /></Link>
+            <Link href="/leaderboard">Explore real results</Link>
           </div>
-          <p className="landing-access">Sign in to run evaluations. Saved public observations are open to browse.</p>
+          <p className="landing-access">Sign in to prepare an evaluation. You choose when to run it.</p>
         </div>
+        <RecommendationPreview />
       </section>
+      <div className="landing-benefits" aria-label="What you get">
+        <p><strong>Know who appears.</strong> See the returned recommendations.</p>
+        <p><strong>Inspect the sources.</strong> Read the evidence behind an answer.</p>
+        <p><strong>Review what to change.</strong> Check your pages before editing.</p>
+      </div>
 
-      <section className="landing-report-section" id="sample-report" aria-labelledby="report-heading">
+      <section className="landing-workflow" id="how-it-works" aria-labelledby="workflow-heading">
         <div className="landing-section-heading">
-          <div>
-            <h2 id="report-heading">See who gets recommended.</h2>
-            <p>Choose a question to compare the websites returned by Astra with web search.</p>
-          </div>
-          <Link href="/leaderboard">Browse rankings <ArrowUpRight size={15} aria-hidden="true" /></Link>
+          <div><h2 id="workflow-heading">A clear next step for your website.</h2><p>Start with a customer question. Finish with evidence your team can act on.</p></div>
         </div>
-        <RankedSearchTable compact />
-        <details className="landing-technical-report">
-          <summary>HTML page checks for {reportCount} websites</summary>
-          <p>Open a saved page report to inspect technical findings alongside the search observations.</p>
-          <LandingPageReport />
-        </details>
+        <ol>
+          <li><h3>Ask a useful question</h3><p>Save the questions people ask when choosing a product like yours. Start an evaluation when you’re ready.</p></li>
+          <li><h3>Inspect the evidence</h3><p>See the returned companies and sources. Inspect your own page to check whether the relevant information is already there.</p></li>
+          <li><h3>Make a change. Check again.</h3><p>Use page checks and repair suggestions to decide what to edit. After your team publishes, run a fresh evaluation and review the evidence.</p></li>
+        </ol>
+        <p className="landing-workflow-note">Each result records one run. A different answer after an edit does not establish that the edit caused it.</p>
       </section>
 
       <section className="landing-audiences" id="evaluation-suites" aria-labelledby="audience-heading">
@@ -68,6 +94,22 @@ export function Landing() {
           <p className="landing-scope">Each search ranking belongs to its exact question. The separate page reports use the same HTML rubric across all five audiences.</p>
         </div>
         <dl>{questions.map(([audience, question]) => <div key={audience}><dt>{audience}</dt><dd>{question}</dd></div>)}</dl>
+      </section>
+
+      <section className="landing-report-section" id="sample-report" aria-labelledby="report-heading">
+        <div className="landing-section-heading">
+          <div>
+            <h2 id="report-heading">See who gets recommended.</h2>
+            <p>Explore real search recommendations, with the returned order and sources intact.</p>
+          </div>
+          <Link href="/leaderboard">Browse rankings <ArrowUpRight size={15} aria-hidden="true" /></Link>
+        </div>
+        <RankedSearchTable compact />
+        <details className="landing-technical-report">
+          <summary>HTML page checks for {reportCount} websites</summary>
+          <p>Open a saved page report to inspect technical findings alongside the search observations.</p>
+          <LandingPageReport />
+        </details>
       </section>
 
       <section className="landing-explainer" aria-labelledby="details-heading">
@@ -93,8 +135,8 @@ export function Landing() {
       </section>
 
       <section className="landing-next">
-        <div><h2>Start with your own page.</h2><p>Prepare an evaluation in your workspace.</p></div>
-        <Link href="/evaluations" className="button primary">Open evaluations <ArrowUpRight size={16} aria-hidden="true" /></Link>
+        <div><h2>What will AI say about your website?</h2><p>Choose the questions that matter to your customers.</p></div>
+        <Link href="/evaluations" className="button primary">Evaluate your website <ArrowUpRight size={16} aria-hidden="true" /></Link>
       </section>
     </main>
 

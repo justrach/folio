@@ -99,6 +99,7 @@ function project(run: EvaluationRun | KeywordBenchmarkRun): AgentObservationRun 
     provenance: { searchMode: keyword ? keywordSearchMode(run.case.searchMode) : null,
       harnessVersion: keyword ? run.harnessVersion : run.suiteVersion,
       environmentFingerprint: keyword ? run.environmentFingerprint : null,
+      environmentType: keyword ? run.environmentType : "none",
       allowedDomains: keyword ? run.allowedDomains : [],
       completedSearchCount: keyword && run.answer?.collection ? run.answer.collection.searchItems.filter(item => item.type === "web_search_call" && item.status === "completed" && item.turn_id === run.answer!.collection!.rootTurnId).length : null } };
 }
@@ -114,10 +115,34 @@ async function ownedRun(db: D1Database, ownerId: string, kind: AgentObservationK
   if (!run || ("mode" in run && run.mode !== "live")) throw new AgentApiError("The private observation was not found.", 404, "not_found");
   return run;
 }
-export async function getAgentObservation(db: D1Database, ownerId: string, request: AgentObservationInput, env: AgentRunEnvironment, options: AgentObservationOptions = {}): Promise<AgentObservation> {
+export async function getAgentObservation(db: D1Database, ownerId: string, request: AgentObservationInput, env: AgentRunEnvironment, options: AgentObservationOptions = {}) {
   const input = validateAgentObservationInput(request), { selection } = await selectionFor(db, ownerId, input, env, options);
   const saved = await findSavedAgentObservation(db, selection), run = saved ? await ownedRun(db, ownerId, input.kind, saved.id) : null;
-  return envelope(run, input.maxAgeSeconds, run ? "saved" : "missing", options);
+  // Historical discovery is separate from the strict selection used by paid reuse.
+  const historySql = input.kind === "keyword"
+    ? "SELECT id,status FROM keyword_benchmark_runs WHERE user_id=? AND case_id=?"
+    : "SELECT id,status FROM evaluation_runs WHERE user_id=? AND target_url=(SELECT url FROM sites WHERE user_id=? AND id=?) AND mode='live' AND deleted_at IS NULL";
+  const values = input.kind === "keyword" ? [ownerId, input.caseId] : [ownerId, ownerId, input.websiteId];
+  const latest = await db.prepare(`${historySql} AND status='completed' ORDER BY created_at DESC,id DESC LIMIT 1`).bind(...values).first<{id:string}>();
+  const attempt = await db.prepare(`${historySql} AND status IN ('queued','running','requires_action') ORDER BY created_at DESC,id DESC LIMIT 1`).bind(...values).first<{id:string}>();
+  const historical = latest ? await ownedRun(db, ownerId, input.kind, latest.id) : null;
+  const compatibleIds = historical ? await db.prepare(`SELECT id FROM (${selection.matchingSql}) WHERE id=?`).bind(...selection.matchingValues, historical.id).first() : null;
+  const mismatchReasons:string[]=[];
+  if(historical&&!compatibleIds){
+    if("caseId" in historical){
+      const fields=["owner","case identity","question inputs","model","harness version","environment type","environment fingerprint"];
+      const actual=[ownerId,historical.caseId,JSON.stringify(historical.case),historical.model,historical.harnessVersion,historical.environmentType,historical.environmentFingerprint];
+      selection.matchingValues.forEach((value,i)=>{if(value!==actual[i])mismatchReasons.push(fields[i]);});
+    }else mismatchReasons.push("Website inputs, model, rubric, reference answers or selected SEO evidence differ from current reuse configuration");
+  }
+  const response = envelope(run, input.maxAgeSeconds, run ? "saved" : "missing", options);
+  return { ...response, selectionMeaning: "run is the latest completed observation compatible with the current configuration; historical evidence is separate",
+    latestCompletedRun: historical ? project(historical) : null, compatibleRun: response.run,
+    currentAttempt: attempt ? project(await ownedRun(db, ownerId, input.kind, attempt.id)) : null,
+    historyState: historical ? !compatibleIds ? "incompatible_history" : response.freshness.fresh ? "fresh" : "stale" : attempt ? "incomplete_attempt" : "no_history",
+    compatibility: { latestCompletedMatchesCurrent: historical ? Boolean(compatibleIds) : null,
+      mismatchReasons } };
+
 }
 export async function getAgentObservationRun(db: D1Database, ownerId: string, kind: AgentObservationKind, id: string, maxAgeSeconds = AGENT_OBSERVATION_DEFAULT_MAX_AGE, options: AgentObservationOptions = {}) {
   if (!Number.isInteger(maxAgeSeconds) || maxAgeSeconds < 0 || maxAgeSeconds > 604_800) throw new AgentApiError("Invalid maxAgeSeconds.");

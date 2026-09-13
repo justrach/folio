@@ -42,6 +42,8 @@ Local records persist in `.wrangler/state/v3` across restarts. Use `bun run db:s
 
 ## Product routes
 
+Start a hackathon walkthrough at `/hackathon`: public saved rankings, the GPT-6.0 Astra workflow, and links to evaluations and MCP setup. Opening this page starts no provider work.
+
 | Route          | Purpose                                                                                |
 | -------------- | -------------------------------------------------------------------------------------- |
 | `/`            | Product story and evidence-based positioning                                           |

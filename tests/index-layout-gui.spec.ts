@@ -48,8 +48,7 @@ test("Index has one compact view selector and does not mount the private activit
   await expect(page.getByRole("button", { name: "Search rankings", exact: true })).toHaveCount(1);
   await expect(page.getByRole("group", { name: "Evaluation view", exact: true })).toHaveCount(1);
   await expect(page.getByRole("complementary", { name: "Background agent activity" })).toHaveCount(0);
-  if (testInfo.project.name === "desktop") await expect(page.locator(".ranked-search-query")).toBeHidden();
-  else await expect(page.locator(".ranked-search-query")).toBeVisible();
+  await expect(page.locator(".ranked-search-query")).toBeVisible();
   const headingSize = await page.locator("h1").evaluate(element => parseFloat(getComputedStyle(element).fontSize));
   expect(headingSize).toBeLessThanOrEqual(30);
   const queryControl = page.getByRole("combobox", { name: "Search query", exact: true });
@@ -78,7 +77,11 @@ test("synthetic populated rankings retain positions, citations and keyboard disc
   page.on("request", request => requests.push(request.url()));
   await page.setContent(fixtureHtml(observation));
   const rows = page.locator(".ranked-search-row");
+  await expect(page.getByRole("figure", { name: "Returned recommendations" })).toBeVisible();
   await expect(rows.locator(".ranked-search-position")).toHaveText(["1", "2"]);
+  const points = await rows.locator(".ranked-search-position").evaluateAll(elements => elements.map(element => element.getBoundingClientRect().x));
+  expect(points[1]).toBeGreaterThan(points[0]);
+  await expect(page.locator(".ranked-search-provenance time")).toBeHidden();
   await expect(rows.nth(0).getByRole("link", { name: "Fixture Cedar", exact: true })).toHaveAttribute("href", "https://cedar.example");
   await expect(rows.nth(0).getByRole("link", { name: "Synthetic Cedar team documentation" })).toBeVisible();
   await expect(rows.nth(1)).toContainText("Website URL not returned");

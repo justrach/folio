@@ -16,24 +16,21 @@ function citationLabel(url: string, title?: string | null) {
 }
 
 export function RecordedRanking({ query, observation }: { query: PublicSearchQuery; observation: PublicSearchObservation }) {
+  const maximum = Math.max(1, ...observation.recommendations.map(item => item.position));
   return <>
-    <p className="ranked-search-meta">
-      Observed <time dateTime={observation.observedAt}>{dateFormat.format(new Date(observation.observedAt))} UTC</time>
-      <span> · {observation.model} · Open-web search</span>
-    </p>
-    {observation.recommendations.length > 0 ? <table className="ranked-search-table">
-      <caption className="ranked-search-sr-only">Returned recommendations</caption>
-      <colgroup><col className="ranked-search-rank-column" /><col /></colgroup>
-      <thead><tr><th scope="col">Position</th><th scope="col">Recommendation</th></tr></thead>
-      <tbody>{observation.recommendations.map((recommendation, index) => <RecommendationRow
-        key={`${recommendation.position}-${index}`} recommendation={recommendation} citations={observation.citations} />)}</tbody>
-    </table> : <div className="ranked-search-empty" role="status"><h3>No recommendations returned.</h3><p>This completed observation did not include a recommendation list.</p></div>}
+    {observation.recommendations.length > 0 ? <figure className="ranked-search-chart" aria-label="Returned recommendations">
+      <figcaption><strong>Recommendation order</strong><span>Each dot marks a returned position. 1 is first.</span></figcaption>
+      <div className="ranked-search-axis" aria-hidden="true"><span>Position 1</span><span>{maximum}</span></div>
+      <ol>{observation.recommendations.map((recommendation, index) => <RecommendationRow
+        key={`${recommendation.position}-${index}`} recommendation={recommendation} citations={observation.citations}
+        maximum={maximum} />)}</ol>
+    </figure> : <div className="ranked-search-empty" role="status"><h3>No recommendations returned.</h3><p>This completed observation did not include a recommendation list.</p></div>}
     <details className="ranked-search-provenance">
       <summary>About this observation</summary>
       <p>Position follows the returned list for this question. Depending on the question, recommendations may be websites, products, resources or steps. Another run can return a different order. Reasons and citations remain evidence to review.</p>
       <dl>
         <dt>Model</dt><dd>{observation.model}</dd>
-        <dt>Observed at</dt><dd>{observation.observedAt}</dd>
+        <dt>Observed at</dt><dd><time dateTime={observation.observedAt}>{dateFormat.format(new Date(observation.observedAt))} UTC</time></dd>
         <dt>Surface</dt><dd>OpenAI managed Agents API</dd>
         <dt>Search mode</dt><dd>{observation.searchMode}</dd>
         <dt>Language / locale</dt><dd>{query.language} / {query.locale}</dd>
@@ -51,14 +48,18 @@ export function RecordedRanking({ query, observation }: { query: PublicSearchQue
   </>;
 }
 
-function RecommendationRow({ recommendation, citations }: { recommendation: PublicSearchRecommendation; citations: PublicSearchObservation["citations"] }) {
+function RecommendationRow({ recommendation, citations, maximum }: { recommendation: PublicSearchRecommendation; citations: PublicSearchObservation["citations"]; maximum: number }) {
   const sourceUrls = [...new Set(recommendation.citationUrls)];
-  return <tr className="ranked-search-row">
-    <td className="ranked-search-position">{recommendation.position}</td>
-    <th scope="row" className="ranked-search-website">
+  return <li className="ranked-search-row">
+    <div className="ranked-search-plot-row">
+    <div className="ranked-search-website">
       {recommendation.url ? <a className="ranked-search-name" href={recommendation.url} target="_blank" rel="noreferrer">{recommendation.name}</a>
         : <span className="ranked-search-name">{recommendation.name}</span>}
       <p className="ranked-search-domain">{recommendation.url ? sourceLabel(recommendation.url) : "Website URL not returned"}</p>
+    </div>
+    <div className="ranked-search-track"><span className="ranked-search-position" aria-label={`Position ${recommendation.position}`} style={{ left: `${maximum > 1 ? (recommendation.position - 1) / (maximum - 1) * 100 : 0}%` }}>{recommendation.position}</span></div>
+    </div>
+    <div className="ranked-search-row-evidence">
       {sourceUrls.length > 0 ? <div className="ranked-search-citations"><span>Sources:</span><ul>
         {sourceUrls.map(url => {
           const title = citations.find(citation => citation.url === url)?.title;
@@ -68,6 +69,6 @@ function RecommendationRow({ recommendation, citations }: { recommendation: Publ
       <details className="ranked-search-evidence"><summary>Returned reason</summary>
         <p>{recommendation.reason || "No reason was recorded for this recommendation."}</p>
       </details>
-    </th>
-  </tr>;
+    </div>
+  </li>;
 }

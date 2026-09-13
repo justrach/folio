@@ -95,7 +95,7 @@ export function PublicBenchmarkDashboard() {
   }
 
   return <div className="public-benchmark-dashboard" role="region" aria-label="Public benchmark results">
-    <div className="public-benchmark-toolbar"><p><span className="public-benchmark-provider">Astra</span> OpenAI web search</p><div><span>Updated <time dateTime={data.updatedAt}>{date(data.updatedAt)}</time></span><button type="button" onClick={() => setRevision(value => value + 1)} aria-label="Refresh public results" disabled={refreshing}><RefreshCw size={14} />{refreshing ? "Refreshing" : "Refresh"}</button></div></div>
+    <div className="public-benchmark-toolbar"><p>Explore the questions and their sources</p><div><button type="button" onClick={() => setRevision(value => value + 1)} aria-label="Refresh public results" disabled={refreshing}><RefreshCw size={14} />{refreshing ? "Refreshing" : "Refresh"}</button></div></div>
     {error && <p className="public-benchmark-refresh-error" role="alert">The latest update could not be loaded. The last saved results are still shown.</p>}
     <dl className="public-benchmark-summary" aria-label="Benchmark totals">
       <div><dt>Published answers</dt><dd>{summary.publishedQueryCount}<small> / {summary.queryCount}</small></dd><p>One latest answer per task</p></div>

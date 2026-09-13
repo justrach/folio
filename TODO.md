@@ -106,3 +106,24 @@ Production Cloudflare deployment and payment setup remain unchecked. Hosted CI p
 - [x] Add scoped bearer-authenticated Streamable HTTP MCP, coding-client setup, and explicit idempotent SEO lookups shared with REST.
 - [x] Add opt-in selected-domain SEO capability for managed open-web keyword sandboxes, with separate harness identity and no shell credential exposure.
 - [ ] Validate hosted sandbox-to-MCP connectivity and a real DataForSEO tool result separately from fixture tests.
+
+## MCP evidence and public graph follow-up
+
+- Implemented separate historical/current-compatible observations, bounded typed batch reads, paginated discovery/history, matched saved visibility comparisons, separate reviewed product/host metrics, capability/error envelopes, and saved page-evidence access. See [MCP contracts and limits](docs/MCP.md).
+- SEO detail investigation found that current persisted reports contain aggregates only. Exact report reads now state that keyword, landing-page and backlink rows were not collected. A row-level provider collector is not implemented by this change.
+- Public rankings now graph actual returned positions; the public sample-score tab is removed. A separate real multi-company scoring evaluation is tracked in [issue #8](https://github.com/justrach/folio/issues/8).
+- Local fixtures, provider validation and production deployment remain separately recorded; these entries do not establish new paid/live collection.
+
+### 13 September saved checkpoint
+
+Incoming collaborator work (`9383bf7`, merged through `5e0a3a1`, author `yxlyx`) adds compact Search Console setup steps and is integrated without conflicts. The previously uncommitted hackathon page/README route entry is included in this reviewed checkpoint. The separate issue #8 real-score evaluation remains another task, not part of these MCP fixes.
+
+Validation: 232 unit tests and 22 actual temporary-D1 tests passed; affected public graph/browser checks passed. The second landing revision has a real result preview above the fold and moves the query explorer below the workflow. Desktop/mobile visual checks cover 320–1440px. Parallel GUI runs encountered trace-file cleanup collisions; affected cases are rerun with isolated output directories rather than hiding the failures.
+
+Production: migration `0013_seo_agent_tools.sql` was applied successfully to the existing production D1. The app revision at this checkpoint is not yet deployed. Earlier clean production builds and scheduler dry run passed; the final integrated revision still needs its final production build, deploy and hosted smoke checks.
+
+Remaining acceptance work:
+- [ ] Finish final integrated build/deployment and verify public pages/authenticated boundary on the deployed version. No new paid provider test is authorized by this checkpoint.
+- [ ] Validate the MCP workflows with a hosted owner-scoped client separately from SDK/D1 fixtures.
+- [ ] Review issue #7 row-level collection scope: saved aggregate reports now explicitly say detail was never collected; no new detailed SEO collector exists.
+- [ ] Integrate/review the separate real-readiness graph task (#8) when ready; do not invent Overall/SEO health/Discovery scores.

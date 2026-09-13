@@ -18,7 +18,7 @@ export type AgentObservationRun = {
   usage: EvaluationRun["usage"] | KeywordBenchmarkUsage; error: string | null; pollUrl: string;
   recovery: { runId: string; sessionId: string } | null;
   provenance: { searchMode: "reviewed-domains" | "open-web" | null; harnessVersion: string;
-    environmentFingerprint: string | null; allowedDomains: string[]; completedSearchCount: number | null };
+    environmentFingerprint: string | null; environmentType?: string | null; allowedDomains: string[]; completedSearchCount: number | null };
 };
 export type AgentObservation = {
   disposition: "saved" | "fresh_saved" | "existing_active" | "started" | "missing";
