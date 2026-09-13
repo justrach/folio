@@ -50756,6 +50756,2088 @@
         "The consulted IKEA office warranty is dated August 2024 and does not list MICKE; separate MICKE warranty coverage and any guaranteed support duration remain unconfirmed.",
         "No source-page access failures occurred; dynamic shopping and parts-request outcomes were not exercised."
       ]
+    },
+    {
+      "id": "obs-japan-small-group-comparison-v1-s01-q07-fe66fc26848d6be187a13d61",
+      "queryId": "japan-small-group-comparison-v1-s01-q07",
+      "observedAt": "2026-09-13T16:13:21.025Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Intrepid Travel",
+          "url": "https://www.intrepidtravel.com/us/japan/japan-express-174835",
+          "reason": "Evaluate first for the 56-day balance deadline and advertised hold/instalment options, provided basic shared accommodation and unavailable Japan Express upgrades suit you.",
+          "citationUrls": [
+            "https://www.intrepidtravel.com/us/standard-booking-conditions",
+            "https://www.intrepidtravel.com/us/flexible-bookings",
+            "https://www.intrepidtravel.com/us/japan/japan-express-174835"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "G Adventures",
+          "url": "https://www.gadventures.com/trips/japan-express-osaka-to-tokyo/AJJR/",
+          "reason": "Evaluate next for the lower US$350 Classic deposit, transferable Lifetime Deposit and advertised optional private room; future credit does not restore cash.",
+          "citationUrls": [
+            "https://www.gadventures.com/terms-conditions/booking-terms/usa-booking-terms/",
+            "https://www.gadventures.com/about-us/lifetime-deposits/",
+            "https://www.gadventures.com/trips/japan-express-osaka-to-tokyo/AJJR/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.intrepidtravel.com/us/standard-booking-conditions",
+          "title": "Intrepid Travel US — Standard Booking Conditions"
+        },
+        {
+          "url": "https://www.intrepidtravel.com/us/flexible-bookings",
+          "title": "Intrepid Travel US — Flexible Bookings"
+        },
+        {
+          "url": "https://www.intrepidtravel.com/us/japan/japan-express-174835",
+          "title": "Intrepid Travel — Japan Express"
+        },
+        {
+          "url": "https://www.gadventures.com/terms-conditions/booking-terms/usa-booking-terms/",
+          "title": "G Adventures — US Booking Terms & Conditions"
+        },
+        {
+          "url": "https://www.gadventures.com/about-us/lifetime-deposits/",
+          "title": "G Adventures — Lifetime Deposits"
+        },
+        {
+          "url": "https://www.gadventures.com/trips/japan-express-osaka-to-tokyo/AJJR/",
+          "title": "G Adventures — Japan Express–Osaka to Tokyo"
+        }
+      ],
+      "limitations": [
+        "Public official sources checked September 13, 2026; US booking assumed. Your booking location, product and accepted contract determine applicable terms.",
+        "No travel dates, budget amount or live booking quote were supplied. Departure inventory, exact total costs, promotional eligibility and room availability were not verified.",
+        "Search surfaced archived terms; the comparison uses the current terms linked from the operators' booking-conditions pages. No source access failures occurred.",
+        "The recommendations are conditional judgments from a limited public-web review, not exhaustive market coverage, measured rankings or independently verified trip performance."
+      ]
+    },
+    {
+      "id": "obs-python-course-fit-v1-s01-q07-0a7bbd07e33e7270fc128a66",
+      "queryId": "python-course-fit-v1-s01-q07",
+      "observedAt": "2026-09-13T16:13:30.480Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "edX — MichiganX Programming for Everybody",
+          "url": "https://www.edx.org/course/programming-for-everybody-getting-started-with-pyt?index=product&position=1&queryID=3890934a4a4fabc6f82b51eda00b675d",
+          "reason": "First to investigate for its published 2–4-hour weekly beginner schedule, named instructor, and audit option; current enrollment details require confirmation because direct reads were incomplete.",
+          "citationUrls": [
+            "https://www.edx.org/course/programming-for-everybody-getting-started-with-pyt?index=product&position=1&queryID=3890934a4a4fabc6f82b51eda00b675d",
+            "https://support.edx.org/hc/en-us/articles/360013426233-How-long-can-I-access-a-course-in-the-audit-track-before-it-expires"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Coursera — Programming for Everybody",
+          "url": "https://www.coursera.org/learn/python",
+          "reason": "Alternative with a detailed beginner Python 3 syllabus, flexible pacing, and an identifiable university instructor; free preview does not establish full-course access.",
+          "citationUrls": [
+            "https://www.coursera.org/learn/python",
+            "https://blog.coursera.org/introducing-courseras-new-course-preview-experience/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.edx.org/course/programming-for-everybody-getting-started-with-pyt?index=product&position=1&queryID=3890934a4a4fabc6f82b51eda00b675d",
+          "title": "MichiganX: Programming for Everybody (Getting Started with Python) | edX"
+        },
+        {
+          "url": "https://www.coursera.org/learn/python",
+          "title": "Programming for Everybody (Getting Started with Python) | Coursera"
+        },
+        {
+          "url": "https://www.coursera.org/learn/introduction-to-python-for-beginners",
+          "title": "Introduction to Python for Beginners | Coursera"
+        },
+        {
+          "url": "https://www.si.umich.edu/people/charles-severance",
+          "title": "Charles Severance | University of Michigan School of Information"
+        },
+        {
+          "url": "https://blog.coursera.org/introducing-courseras-new-course-preview-experience/",
+          "title": "Introducing Coursera’s new course preview experience"
+        },
+        {
+          "url": "https://support.edx.org/hc/en-us/articles/360013426233-How-long-can-I-access-a-course-in-the-audit-track-before-it-expires",
+          "title": "How long can I access a course in the audit track before it expires?"
+        },
+        {
+          "url": "https://support.edx.org/hc/en-us/articles/360021149373-How-can-I-get-access-after-a-course-expires",
+          "title": "How can I get access after a course expires?"
+        }
+      ],
+      "limitations": [
+        "Public official sources only; no login, enrollment, checkout, or course execution. Personalized prices, trial eligibility, renewal terms, aid awards, and actual exercise access were not verified.",
+        "Direct edX course-page reads for Michigan, Georgia Tech, and Harvard returned navigation shells; an attempted Michigan URL returned an internal error. Michigan course details rely on the official page’s search-indexed content, which can lag live enrollment.",
+        "No explicit content-revision date or changelog was found for the two recommended Michigan courses. Exact Python minor versions, lab compatibility, live instructor availability, and response times remain unverified.",
+        "This targeted search is not exhaustive market coverage. Recommendation order reflects published suitability for this question, not a search-engine rank or independently verified product performance."
+      ]
+    },
+    {
+      "id": "obs-taskrabbit-assembly-booking-v1-s01-q07-8355136856f40566641a70ad",
+      "queryId": "taskrabbit-assembly-booking-v1-s01-q07",
+      "observedAt": "2026-09-13T16:13:31.567Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Confirm preparation is feasible",
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260503269403-Furniture-Assembly-Task-Tips-for-Clients",
+          "reason": "Avoid arrival delays by checking package placement, workspace and customer responsibilities before hiring.",
+          "citationUrls": [
+            "https://support.taskrabbit.com/hc/en-us/articles/46260503269403-Furniture-Assembly-Task-Tips-for-Clients",
+            "https://www.ikea.com/us/en/customer-service/services/assembly-service-via-taskrabbit-terms-and-conditions-pubec4c8560/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Compare booking options and total",
+          "url": "https://www.ikea.com/us/en/customer-service/services/assembly/",
+          "reason": "Compare eligible IKEA flat pricing with hourly minimums and platform fees against the complete budget.",
+          "citationUrls": [
+            "https://www.ikea.com/us/en/customer-service/services/assembly/",
+            "https://support.taskrabbit.com/hc/en-us/articles/46260407116955-I-d-Like-To-Understand-The-Fees-On-My-Task-s-Invoice",
+            "https://support.taskrabbit.com/hc/en-us/articles/46260462857499-What-s-the-One-Hour-Minimum",
+            "https://www.taskrabbit.com/locations/new-york-city/assemble-furniture"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Confirm tools, mounting and exclusions",
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260485221019-What-Supplies-Will-My-Tasker-Have",
+          "reason": "Verify Tasker capability and required hardware; excluded work can create additional costs.",
+          "citationUrls": [
+            "https://support.taskrabbit.com/hc/en-us/articles/46260485221019-What-Supplies-Will-My-Tasker-Have",
+            "https://www.taskrabbit.com/locations/new-york-city/assemble-furniture",
+            "https://www.ikea.com/us/en/customer-service/services/assembly-service-via-taskrabbit-terms-and-conditions-pubec4c8560/"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Complete account, access and attendance preparation",
+          "url": "https://www.ikea.com/us/en/customer-service/services/assembly-service-via-taskrabbit-terms-and-conditions-pubec4c8560/",
+          "reason": "IKEA purchases require account validation, appointment confirmation and adult attendance throughout.",
+          "citationUrls": [
+            "https://www.ikea.com/us/en/customer-service/services/assembly-service-via-taskrabbit-terms-and-conditions-pubec4c8560/",
+            "https://support.taskrabbit.com/hc/en-us/articles/46260514501275-Do-I-Have-to-Be-Home-When-My-Task-Is-Completed"
+          ]
+        },
+        {
+          "position": 5,
+          "name": "Resolve cancellation exposure",
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260411471899-Cancellation-Policy",
+          "reason": "Official general and IKEA-specific terms describe different financial consequences for customer unavailability.",
+          "citationUrls": [
+            "https://support.taskrabbit.com/hc/en-us/articles/46260411471899-Cancellation-Policy",
+            "https://www.ikea.com/us/en/customer-service/services/assembly-service-via-taskrabbit-terms-and-conditions-pubec4c8560/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260503269403-Furniture-Assembly-Task-Tips-for-Clients",
+          "title": "Furniture Assembly Task Tips for Clients"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/services/assembly/",
+          "title": "Assembly by Taskrabbit"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/services/assembly-service-via-taskrabbit-terms-and-conditions-pubec4c8560/",
+          "title": "Assembly Service Via Taskrabbit Terms and Conditions"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260407116955-I-d-Like-To-Understand-The-Fees-On-My-Task-s-Invoice",
+          "title": "I’d Like To Understand The Fees On My Task’s Invoice"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260462857499-What-s-the-One-Hour-Minimum",
+          "title": "What's the One-Hour Minimum?"
+        },
+        {
+          "url": "https://www.taskrabbit.com/locations/new-york-city/assemble-furniture",
+          "title": "Furniture Assembly in New York City"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260485221019-What-Supplies-Will-My-Tasker-Have",
+          "title": "What Supplies Will My Tasker Have?"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260411471899-Cancellation-Policy",
+          "title": "Cancellation Policy"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260514501275-Do-I-Have-to-Be-Home-When-My-Task-Is-Completed",
+          "title": "Do I Have to Be Home When My Task Is Completed?"
+        }
+      ],
+      "limitations": [
+        "Public web research checked September 13, 2026; discovery included unrestricted searches, while conclusions use official US sources. This is a recommended evaluation order, not a measured search rank or exhaustive market comparison.",
+        "No booking, login or checkout was performed. Exact NYC availability, item eligibility, final fees, applicable taxes and total price were not verified.",
+        "No guaranteed hourly spending cap, universal pre-unboxing requirement or first-time-customer discount was established by the consulted sources.",
+        "IKEA purchase terms and general Taskrabbit policy differ on customer-unavailability charges; applicability needs confirmation for the selected booking route.",
+        "No source access failures occurred. Some support pages contained template artifacts, but their substantive guidance was readable. Individual Tasker performance was not independently verified."
+      ]
+    },
+    {
+      "id": "obs-browserbase-browser-workflow-v1-s01-q07-a9a8ea129c8b18571fee3f5f",
+      "queryId": "browserbase-browser-workflow-v1-s01-q07",
+      "observedAt": "2026-09-13T16:15:03.433Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Browserbase download retrieval",
+          "url": "https://docs.browserbase.com/platform/browser/files/downloads",
+          "reason": "Validate cloud synchronization and reliable artifact delivery; individual retrieval and legacy session ZIP are both documented options.",
+          "citationUrls": [
+            "https://docs.browserbase.com/platform/browser/files/downloads",
+            "https://www.browserbase.com/changelog/improved-downloads-api"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Browserbase Playwright uploads",
+          "url": "https://docs.browserbase.com/platform/browser/files/uploads",
+          "reason": "Use direct setInputFiles for the simplest integration; evaluate API staging for larger files without assuming an undocumented size limit.",
+          "citationUrls": [
+            "https://docs.browserbase.com/platform/browser/files/uploads",
+            "https://docs.browserbase.com/reference/api/create-session-uploads"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Browserbase Live View upload integration",
+          "url": "https://docs.browserbase.com/platform/browser/files/uploads",
+          "reason": "Customer-driven uploads require a custom picker and programmatic transfer because the remote native picker cannot read local files.",
+          "citationUrls": [
+            "https://docs.browserbase.com/platform/browser/files/uploads"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Browserbase Developer plan evaluation",
+          "url": "https://www.browserbase.com/pricing",
+          "reason": "A plausible low-entry-cost trial candidate, conditional on measured job economics and clarification of conflicting retention figures.",
+          "citationUrls": [
+            "https://www.browserbase.com/pricing"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://docs.browserbase.com/platform/browser/files/downloads",
+          "title": "Downloads — Browserbase Documentation"
+        },
+        {
+          "url": "https://www.browserbase.com/changelog/improved-downloads-api",
+          "title": "Improved Downloads API — May 6, 2026"
+        },
+        {
+          "url": "https://docs.browserbase.com/platform/browser/files/uploads",
+          "title": "Uploads — Browserbase Documentation"
+        },
+        {
+          "url": "https://docs.browserbase.com/reference/api/create-session-uploads",
+          "title": "Create Session Uploads — Browserbase API Reference"
+        },
+        {
+          "url": "https://www.browserbase.com/pricing",
+          "title": "Browserbase Pricing"
+        }
+      ],
+      "limitations": [
+        "Public-web documentation research only; no browser sessions, transfers, billing transactions, or independent performance tests were executed.",
+        "No numeric upload/download ceiling, definition of larger files, file-specific storage/egress charge, staged-upload lifetime, or Developer SLA was established by the consulted pages. Missing documentation does not prove a feature is unavailable or unlimited.",
+        "The pricing page conflicts on Developer data retention: seven days in the plan card versus 30 days in the comparison table; file-specific applicability remains unclear.",
+        "Discovery was not restricted to a predefined domain list; conclusions use official sources relevant to Browserbase. This was a targeted evaluation, not exhaustive market coverage.",
+        "No access failures occurred for the cited public pages. Published documentation and pricing can change."
+      ]
+    },
+    {
+      "id": "obs-duolingo-spanish-fit-v1-s01-q07-1478f93976902f15d414cad4",
+      "queryId": "duolingo-spanish-fit-v1-s01-q07",
+      "observedAt": "2026-09-13T16:15:09.652Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Duolingo",
+          "url": "https://en.duolingo.com/",
+          "reason": "Try free short mobile lessons for a sustainable routine; current offline download entitlement remains unconfirmed, so avoid upgrading solely for offline access.",
+          "citationUrls": [
+            "https://en.duolingo.com/",
+            "https://blog.duolingo.com/duolingo-energy/",
+            "https://blog.duolingo.com/duolingo-max/",
+            "https://blog.duolingo.com/language-learning-for-the-next-billion-duolingo-in-india/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Language Transfer: Complete Spanish",
+          "url": "https://www.languagetransfer.org/complete-spanish",
+          "reason": "Free audio complement with advance track downloads and locked-phone playback documented for Android and iPhone.",
+          "citationUrls": [
+            "https://play.google.com/store/apps/details?id=org.languagetransfer",
+            "https://apps.apple.com/us/app/language-transfer/id1519599004"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Busuu",
+          "url": "https://www.busuu.com/en/how-to/offline-mode",
+          "reason": "Structured Spanish starting at A1 with documented Premium offline lessons, subject to platform-specific download and storage restrictions.",
+          "citationUrls": [
+            "https://help.busuu.com/hc/en-gb/articles/16519527128849-How-many-languages-can-I-learn",
+            "https://help.busuu.com/hc/en-gb/articles/16526881245713-Can-I-learn-offline"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://en.duolingo.com/",
+          "title": "Duolingo — official overview"
+        },
+        {
+          "url": "https://blog.duolingo.com/duolingo-energy/",
+          "title": "Why Duolingo Switched From Hearts to a Battery"
+        },
+        {
+          "url": "https://blog.duolingo.com/duolingo-max/",
+          "title": "Duolingo Max — features and availability"
+        },
+        {
+          "url": "https://blog.duolingo.com/language-learning-for-the-next-billion-duolingo-in-india/",
+          "title": "Language learning for the next billion: Duolingo in India"
+        },
+        {
+          "url": "https://play.google.com/store/apps/details?id=org.languagetransfer",
+          "title": "Language Transfer — developer listing on Google Play"
+        },
+        {
+          "url": "https://apps.apple.com/us/app/language-transfer/id1519599004",
+          "title": "Language Transfer — developer listing on the US App Store"
+        },
+        {
+          "url": "https://help.busuu.com/hc/en-gb/articles/16519527128849-How-many-languages-can-I-learn",
+          "title": "Busuu: How many languages can I learn?"
+        },
+        {
+          "url": "https://help.busuu.com/hc/en-gb/articles/16526881245713-Can-I-learn-offline",
+          "title": "Busuu: Can I learn offline?"
+        }
+      ],
+      "limitations": [
+        "Public web research conducted September 13, 2026, using live search and official pages or developer-authored store descriptions. Discovery was not limited to a predefined vendor list; coverage is selective, not exhaustive.",
+        "No apps were installed or tested, accounts accessed, purchases made, or product performance independently verified. Recommendation order is editorial fit for this query, not a search-engine rank or benchmark.",
+        "Current Duolingo offline downloads, cache scope and offline subscription entitlements could not be confirmed. Historical Plus references do not establish current availability; official material also contains evolving feature descriptions.",
+        "Exact US subscription prices, trial eligibility, billing and refund terms, and compatibility with the user's particular device were not verified. Busuu's complete offline feature coverage and Language Transfer's certified proficiency outcomes were not established.",
+        "No access failures occurred for the pages opened. Search absence does not prove a feature is unavailable; recently crawled pages may still contain older information."
+      ]
+    },
+    {
+      "id": "obs-resend-email-setup-v1-s01-q07-07dea93c10fe34420488f321",
+      "queryId": "resend-email-setup-v1-s01-q07",
+      "observedAt": "2026-09-13T16:15:30.428Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "React Email with application-owned localization",
+          "url": "https://react.email/docs/guides/internationalization/react-intl",
+          "reason": "First choice for a solo React/TypeScript developer who wants locale messages and selection maintained alongside application code; official guides and examples document library integration.",
+          "citationUrls": [
+            "https://react.email/docs/guides/internationalization/react-intl",
+            "https://github.com/resend/resend-react-i18next-example"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Resend hosted Templates",
+          "url": "https://resend.com/docs/dashboard/templates/introduction",
+          "reason": "Useful for dashboard editing and controlled publishing, provided variable restrictions and application-owned locale routing fit the product.",
+          "citationUrls": [
+            "https://resend.com/docs/dashboard/templates/introduction",
+            "https://resend.com/docs/api-reference/templates/create-template",
+            "https://resend.com/docs/dashboard/templates/template-variables",
+            "https://resend.com/docs/dashboard/templates/version-history"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Crowdin’s Resend connector",
+          "url": "https://store.crowdin.com/resend",
+          "reason": "A conditional option for synchronizing translations and localized template variants when manual coordination becomes burdensome; beta status and total costs need review.",
+          "citationUrls": [
+            "https://store.crowdin.com/resend"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://react.email/docs/guides/internationalization/react-intl",
+          "title": "React Intl — React Email"
+        },
+        {
+          "url": "https://github.com/resend/resend-react-i18next-example",
+          "title": "Resend and React Email with react-i18next"
+        },
+        {
+          "url": "https://resend.com/docs/dashboard/templates/introduction",
+          "title": "Using Templates — Resend"
+        },
+        {
+          "url": "https://resend.com/docs/api-reference/templates/create-template",
+          "title": "Create Template — Resend"
+        },
+        {
+          "url": "https://resend.com/docs/dashboard/templates/template-variables",
+          "title": "Working with Variables — Resend"
+        },
+        {
+          "url": "https://resend.com/docs/dashboard/templates/version-history",
+          "title": "Version History — Resend"
+        },
+        {
+          "url": "https://store.crowdin.com/resend",
+          "title": "Resend.com translation with Crowdin"
+        },
+        {
+          "url": "https://resend.com/pricing",
+          "title": "Pricing — Resend"
+        }
+      ],
+      "limitations": [
+        "Public-web research as of September 13, 2026; discovery began without domain restrictions, and conclusions rely on official product documentation and repositories. This is not exhaustive market coverage or a measured ranking.",
+        "No accounts, API sends, rendering tests, delivery measurements, or translation-quality tests were performed; documented capabilities are not independently verified performance.",
+        "Search excerpts showed an older 20-variable limit; directly opened current documentation specifies 50. Current pages still differ on the reserved unsubscribe variable: RESEND_UNSUBSCRIBE_URL in the API reference versus UNSUBSCRIBE_URL in the variables guide.",
+        "Hosted-template count limits, localization-specific plan entitlements, native automatic translation/locale detection/fallback, and total Crowdin translation costs were not established by the consulted evidence.",
+        "Opening https://react.email/docs/guides/internationalization/react-i18next returned an internal error; the official Resend react-i18next example repository was accessible instead."
+      ]
+    },
+    {
+      "id": "obs-stripe-payment-setup-v1-s01-q07-7d4b8c84c6078fe40e558e4e",
+      "queryId": "stripe-payment-setup-v1-s01-q07",
+      "observedAt": "2026-09-13T16:16:40.136Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Stripe Checkout and dynamic payment methods",
+          "url": "https://docs.stripe.com/payments/payment-methods/dynamic-payment-methods",
+          "reason": "First priority: reduce initial integration work while checking which enabled methods actually appear for your buyers.",
+          "citationUrls": [
+            "https://stripe.com/pricing",
+            "https://docs.stripe.com/payments/payment-methods/dynamic-payment-methods"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Stripe payment-method eligibility",
+          "url": "https://docs.stripe.com/payments/payment-methods/payment-method-support",
+          "reason": "Check US merchant eligibility independently of customer reach; documented PayPal support excludes US accounts.",
+          "citationUrls": [
+            "https://docs.stripe.com/payments/payment-methods/payment-method-support",
+            "https://docs.stripe.com/payments/paypal"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Stripe subscriptions and ACH Direct Debit",
+          "url": "https://docs.stripe.com/payments/ach-direct-debit",
+          "reason": "Confirm renewal compatibility and delayed bank-payment handling before granting paid access.",
+          "citationUrls": [
+            "https://docs.stripe.com/payments/payment-methods/payment-method-support",
+            "https://docs.stripe.com/payments/ach-direct-debit"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Stripe currencies and multi-currency settlement",
+          "url": "https://docs.stripe.com/payouts/multi-currency-settlement",
+          "reason": "Separate customer charging from bank payouts and verify exact supported currencies, bank requirements, and fees.",
+          "citationUrls": [
+            "https://docs.stripe.com/currencies",
+            "https://docs.stripe.com/payouts/multi-currency-settlement"
+          ]
+        },
+        {
+          "position": 5,
+          "name": "Stripe US pricing",
+          "url": "https://stripe.com/pricing",
+          "reason": "Model domestic, international, conversion, and refund costs against the product price and expected sales mix.",
+          "citationUrls": [
+            "https://stripe.com/pricing"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://stripe.com/pricing",
+          "title": "Stripe Pricing & Fees"
+        },
+        {
+          "url": "https://docs.stripe.com/payments/payment-methods/dynamic-payment-methods",
+          "title": "Dynamic payment methods"
+        },
+        {
+          "url": "https://docs.stripe.com/payments/payment-methods/payment-method-support",
+          "title": "Payment method support"
+        },
+        {
+          "url": "https://docs.stripe.com/payments/paypal",
+          "title": "PayPal payments"
+        },
+        {
+          "url": "https://docs.stripe.com/payments/ach-direct-debit",
+          "title": "ACH Direct Debit payments"
+        },
+        {
+          "url": "https://docs.stripe.com/currencies",
+          "title": "Supported currencies"
+        },
+        {
+          "url": "https://docs.stripe.com/payouts/multi-currency-settlement",
+          "title": "Multi-currency settlement"
+        }
+      ],
+      "limitations": [
+        "Public web research consulted official Stripe sources on September 13, 2026; discovery was not restricted to a predefined domain list. This is not exhaustive market coverage or an independent performance benchmark.",
+        "The retrieved currencies page omitted its country-specific presentment list, and the multi-currency settlement page omitted its detailed currency, supported-bank-country, fee, and minimum-payout table. Exact US account currency options and settlement terms remain unconfirmed.",
+        "No page access failures occurred, but some retrieved pages exposed incomplete dynamic content. No login, account inspection, transactions, or integration tests were performed.",
+        "The product category, customer geography, price, and one-time versus subscription model were not supplied. Recommendations assume a US business selling its own software through standard Stripe Payments; account approval and method-specific business restrictions were not established.",
+        "Adaptive Pricing integration eligibility and full terms were not reviewed; only its public pricing disclosure was consulted. Custom pricing and account-specific terms may differ."
+      ]
+    },
+    {
+      "id": "obs-temporal-workflow-fit-v1-s01-q07-c2b537a29868a112c712dc9a",
+      "queryId": "temporal-workflow-fit-v1-s01-q07",
+      "observedAt": "2026-09-13T16:16:55.692Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Temporal Web UI",
+          "url": "https://docs.temporal.io/web-ui",
+          "reason": "First validate that execution history and Worker/Activity views make customer incidents diagnosable, including Worker-dependent stack queries.",
+          "citationUrls": [
+            "https://docs.temporal.io/web-ui"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Temporal Visibility and Search Attributes",
+          "url": "https://docs.temporal.io/visibility",
+          "reason": "Validate real support searches against eventual consistency, Cloud query restrictions, and shared rate limits.",
+          "citationUrls": [
+            "https://docs.temporal.io/visibility",
+            "https://docs.temporal.io/list-filter",
+            "https://docs.temporal.io/cloud/limits"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "TypeScript replay debugging",
+          "url": "https://docs.temporal.io/develop/typescript/best-practices/debugging",
+          "reason": "Reproduce Workflow failures from history while checking exact-version compatibility and the official VS Code extension’s archived status.",
+          "citationUrls": [
+            "https://docs.temporal.io/develop/typescript/best-practices/debugging",
+            "https://github.com/temporalio/vscode-debugger-extension"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "TypeScript logs, metrics, and tracing",
+          "url": "https://docs.temporal.io/develop/typescript/platform/observability",
+          "reason": "Correlate execution history with Worker and external-service evidence; instrumentation still requires a working telemetry setup.",
+          "citationUrls": [
+            "https://docs.temporal.io/develop/typescript/platform/observability"
+          ]
+        },
+        {
+          "position": 5,
+          "name": "Temporal Cloud versus self-hosting",
+          "url": "https://docs.temporal.io/cloud/pricing",
+          "reason": "Evaluate plan costs and retention against a first-product budget, and verify longer-term history access rather than assuming Archive availability.",
+          "citationUrls": [
+            "https://docs.temporal.io/cloud/pricing",
+            "https://docs.temporal.io/cloud/limits",
+            "https://docs.temporal.io/web-ui"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://docs.temporal.io/web-ui",
+          "title": "Temporal Web UI"
+        },
+        {
+          "url": "https://docs.temporal.io/visibility",
+          "title": "Temporal Visibility"
+        },
+        {
+          "url": "https://docs.temporal.io/list-filter",
+          "title": "List Filter"
+        },
+        {
+          "url": "https://docs.temporal.io/cloud/limits",
+          "title": "System limits - Temporal Cloud"
+        },
+        {
+          "url": "https://docs.temporal.io/develop/typescript/best-practices/debugging",
+          "title": "Debugging - TypeScript SDK"
+        },
+        {
+          "url": "https://github.com/temporalio/vscode-debugger-extension",
+          "title": "temporalio/vscode-debugger-extension — archived official repository"
+        },
+        {
+          "url": "https://docs.temporal.io/develop/typescript/platform/observability",
+          "title": "Observability - TypeScript SDK"
+        },
+        {
+          "url": "https://docs.temporal.io/cloud/pricing",
+          "title": "Temporal Cloud pricing"
+        }
+      ],
+      "limitations": [
+        "Public web research only; discovery was not restricted to a predefined domain list, and recommendations rely on official documentation and the official repository. This is not exhaustive market coverage or independently verified performance.",
+        "No SDK, debugger, workflow, account, or paid service was executed. Exact Node.js/SDK/editor compatibility, incident-resolution speed, and your total operating cost remain untested.",
+        "A maintained official successor to the archived VS Code extension and self-service Cloud Archive availability or entitlement were not established from the consulted sources.",
+        "The attempted URL https://docs.temporal.io/visibility-and-list-filters returned an internal error; the official List Filter page was subsequently reached through the Visibility documentation. GitHub displayed a partial loading error, but its archive notice and README were readable.",
+        "Sources are live documentation and may change; no pinned release documentation or account-specific contract was verified."
+      ]
+    },
+    {
+      "id": "obs-notion-client-project-fit-v1-s01-q07-be58d76d2b8ee591159e8801",
+      "queryId": "notion-client-project-fit-v1-s01-q07",
+      "observedAt": "2026-09-13T16:17:02.573Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Notion plan and archive workflow",
+          "url": "https://www.notion.com/help/archive-pages",
+          "reason": "Evaluate Plus with a manual completion workflow or Business for the native Archive beta.",
+          "citationUrls": [
+            "https://www.notion.com/help/archive-pages",
+            "https://www.notion.com/pricing"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Notion client handoff exports",
+          "url": "https://www.notion.com/help/export-your-content",
+          "reason": "Test format fidelity and permission restrictions before promising client deliverables.",
+          "citationUrls": [
+            "https://www.notion.com/help/export-your-content"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Notion workspace backup",
+          "url": "https://www.notion.com/help/back-up-your-data",
+          "reason": "Verify export coverage and recovery; do not depend on workspace-wide PDF.",
+          "citationUrls": [
+            "https://www.notion.com/help/back-up-your-data"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Notion recovery and retention",
+          "url": "https://www.notion.com/help/duplicate-delete-and-restore-content",
+          "reason": "Match history windows and restoration steps to client project requirements.",
+          "citationUrls": [
+            "https://www.notion.com/help/duplicate-delete-and-restore-content"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.notion.com/help/archive-pages",
+          "title": "Archive pages — Notion Help Center"
+        },
+        {
+          "url": "https://www.notion.com/pricing",
+          "title": "Notion Pricing Plans"
+        },
+        {
+          "url": "https://www.notion.com/help/export-your-content",
+          "title": "Export your content — Notion Help Center"
+        },
+        {
+          "url": "https://www.notion.com/help/back-up-your-data",
+          "title": "Back up your data — Notion Help Center"
+        },
+        {
+          "url": "https://www.notion.com/help/duplicate-delete-and-restore-content",
+          "title": "Delete & restore content — Notion Help Center"
+        }
+      ],
+      "limitations": [
+        "Public web discovery was unrestricted by domain; recommendations use current official Notion sources. This was a focused evaluation, not exhaustive market coverage or a measured ranking.",
+        "No workspace, export, recovery, or API execution was tested. Archived-content export coverage and faithful preservation of relations, rollups, embeds, permissions, and version history were not established by the consulted documentation.",
+        "The backup page contains conflicting workspace-PDF statements; its dated removal notice is the basis for advising against reliance. Actual rollout and nested-PDF behavior were not independently verified.",
+        "Archive is described as subject to your agreement, but applicable beta contractual terms and guarantees were not established. No immutable archive or guaranteed archival retention was established.",
+        "The initial /help/delete-and-restore-content URL returned an internal error; the linked official /help/duplicate-delete-and-restore-content page was subsequently accessed successfully."
+      ]
+    },
+    {
+      "id": "obs-slack-history-and-guests-v1-s01-q06-117f62d635cf851cd7e50b67",
+      "queryId": "slack-history-and-guests-v1-s01-q06",
+      "observedAt": "2026-09-13T16:20:01.733Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Slack history and retention",
+          "url": "https://slack.com/help/articles/203457187-Customize-data-retention-in-Slack",
+          "reason": "First establish whether searchable history and deletion settings meet your business recordkeeping needs.",
+          "citationUrls": [
+            "https://slack.com/help/articles/27204752526611-Feature-limitations-on-the-free-version-of-Slack",
+            "https://slack.com/help/articles/203457187-Customize-data-retention-in-Slack"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Slack export eligibility and completeness",
+          "url": "https://slack.com/help/articles/201658943-Export-your-workspace-data",
+          "reason": "Public exports, approved all-conversation exports, and exceptional applications have different restrictions; file links are not attachment backups.",
+          "citationUrls": [
+            "https://slack.com/help/articles/201658943-Export-your-workspace-data",
+            "https://slack.com/help/articles/204897248-Guide-to-Slack-import-and-export-tools"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Slack guest access",
+          "url": "https://slack.com/help/articles/202518103-Understand-guest-roles-in-Slack",
+          "reason": "Validate channel scope, historical visibility, expiry, and single-channel versus multi-channel billing before inviting collaborators.",
+          "citationUrls": [
+            "https://slack.com/help/articles/202518103-Understand-guest-roles-in-Slack",
+            "https://slack.com/help/articles/204897248-Guide-to-Slack-import-and-export-tools"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Slack administrative controls",
+          "url": "https://slack.com/help/articles/201314026-Permissions-by-role-in-Slack",
+          "reason": "Check role-specific authority, authentication, invitations, apps, and the distinction between access logs and Enterprise audit events.",
+          "citationUrls": [
+            "https://slack.com/help/articles/201314026-Permissions-by-role-in-Slack",
+            "https://slack.com/help/articles/115004155306-Security-tips-to-protect-your-workspace",
+            "https://slack.com/help/articles/360002084807-View-access-logs-for-your-workspace"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://slack.com/help/articles/27204752526611-Feature-limitations-on-the-free-version-of-Slack",
+          "title": "Feature limitations on the free version of Slack"
+        },
+        {
+          "url": "https://slack.com/help/articles/203457187-Customize-data-retention-in-Slack",
+          "title": "Customize data retention in Slack"
+        },
+        {
+          "url": "https://slack.com/help/articles/201658943-Export-your-workspace-data",
+          "title": "Export your workspace data"
+        },
+        {
+          "url": "https://slack.com/help/articles/204897248-Guide-to-Slack-import-and-export-tools",
+          "title": "Guide to Slack import and export tools"
+        },
+        {
+          "url": "https://slack.com/help/articles/202518103-Understand-guest-roles-in-Slack",
+          "title": "Understand guest roles in Slack"
+        },
+        {
+          "url": "https://slack.com/help/articles/201314026-Permissions-by-role-in-Slack",
+          "title": "Permissions by role in Slack"
+        },
+        {
+          "url": "https://slack.com/help/articles/115004155306-Security-tips-to-protect-your-workspace",
+          "title": "Security tips to protect your workspace"
+        },
+        {
+          "url": "https://slack.com/help/articles/360002084807-View-access-logs-for-your-workspace",
+          "title": "View access logs for your workspace"
+        }
+      ],
+      "limitations": [
+        "Public web research conducted September 13, 2026, with unrestricted discovery and recommendations supported by current official Slack pages. This is a query-specific evaluation order, not a market ranking or exhaustive comparison.",
+        "No workspace login, settings inspection, export execution, guest test, or independent product-performance verification was performed. No source access failures occurred.",
+        "Slack’s export table and broader guide describe Free/Pro private-channel and DM exports differently; exceptional application eligibility and approval timing remain unconfirmed for this business.",
+        "No invitation-date-only guest history control was established from the consulted documentation. Exact pricing, contractual terms, and Slack Connect eligibility were not evaluated."
+      ]
+    },
+    {
+      "id": "obs-notion-knowledge-portability-v1-s01-q06-04dd6d453a17ea38b11a42ef",
+      "queryId": "notion-knowledge-portability-v1-s01-q06",
+      "observedAt": "2026-09-13T16:20:32.989Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Notion Plus",
+          "url": "https://www.notion.com/pricing",
+          "reason": "Starting plan to evaluate when a 30-day history window matches the team's review routine; consider Business for 90 days.",
+          "citationUrls": [
+            "https://www.notion.com/pricing"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Notion version history",
+          "url": "https://www.notion.com/help/duplicate-delete-and-restore-content",
+          "reason": "Test restoration on representative handbook content before depending on it.",
+          "citationUrls": [
+            "https://www.notion.com/help/duplicate-delete-and-restore-content"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Notion deletion recovery",
+          "url": "https://www.notion.com/help/custom-data-retention-settings",
+          "reason": "Check who can recover deleted material and distinguish Enterprise retention controls from support assistance.",
+          "citationUrls": [
+            "https://www.notion.com/help/custom-data-retention-settings",
+            "https://www.notion.com/help/back-up-your-data"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Notion workspace exports",
+          "url": "https://www.notion.com/help/back-up-your-data",
+          "reason": "Evaluate an external copy for completeness and practical reconstruction.",
+          "citationUrls": [
+            "https://www.notion.com/help/back-up-your-data"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.notion.com/pricing",
+          "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise"
+        },
+        {
+          "url": "https://www.notion.com/help/duplicate-delete-and-restore-content",
+          "title": "Delete & restore content"
+        },
+        {
+          "url": "https://www.notion.com/help/custom-data-retention-settings",
+          "title": "Custom data retention settings"
+        },
+        {
+          "url": "https://www.notion.com/help/back-up-your-data",
+          "title": "Back up your data"
+        }
+      ],
+      "limitations": [
+        "Public-web research only; no account access or hands-on recovery tests. Discovery was not domain-restricted; conclusions use official Notion sources. This is not exhaustive market coverage or an engine ranking. No access failures occurred.",
+        "The restoration guide's blanket 30-day rollback statement conflicts with its Free plan's 7-day limit; use the plan-specific window pending clarification. It also describes retention after Trash deletion without establishing ordinary users' access to it.",
+        "The pricing page still lists workspace PDF export despite the backup guide's dated removal notice; actual workspace availability was not verified.",
+        "The consulted sources do not establish a guaranteed recovery turnaround, complete workspace rollback, or whether upgrading retroactively exposes older versions. Confirm these if required."
+      ]
+    },
+    {
+      "id": "obs-ikea-product-and-delivery-v1-s01-q06-2a82948ceb96254fad015234",
+      "queryId": "ikea-product-and-delivery-v1-s01-q06",
+      "observedAt": "2026-09-13T16:21:37.847Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Check product-specific assembly documents",
+          "url": "https://www.ikea.com/us/en/customer-service/knowledge/articles/514ff041-1ddd-4059-9fd4-0350805fee67.html",
+          "reason": "Determine tools and assembly requirements before choosing DIY.",
+          "citationUrls": [
+            "https://www.ikea.com/us/en/customer-service/knowledge/articles/514ff041-1ddd-4059-9fd4-0350805fee67.html"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Match delivery to the assembly location",
+          "url": "https://www.ikea.com/us/en/customer-service/services/delivery/",
+          "reason": "Doorstep and in-home delivery leave packages in different places.",
+          "citationUrls": [
+            "https://www.ikea.com/us/en/customer-service/services/delivery/",
+            "https://www.ikea.com/us/en/customer-service/services/assembly/"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Quote Taskrabbit assembly for the exact order",
+          "url": "https://www.ikea.com/us/en/customer-service/knowledge/articles/6aada8f2-0f76-473f-95d9-b6a413aec984.html",
+          "reason": "Starting prices do not establish your final fee or local availability.",
+          "citationUrls": [
+            "https://www.ikea.com/us/en/customer-service/knowledge/articles/6aada8f2-0f76-473f-95d9-b6a413aec984.html",
+            "https://www.ikea.com/us/en/customer-service/knowledge/articles/ff2a1f30-b293-43b5-b802-4e061ea0d904.html",
+            "https://www.ikea.com/us/en/customer-service/services/assembly/"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Confirm assembly scope and exclusions",
+          "url": "https://www.ikea.com/us/en/customer-service/services/assembly/",
+          "reason": "Identify work requiring separate arrangements.",
+          "citationUrls": [
+            "https://www.ikea.com/us/en/customer-service/services/assembly/"
+          ]
+        },
+        {
+          "position": 5,
+          "name": "Verify scheduling and change terms",
+          "url": "https://www.ikea.com/us/en/customer-service/knowledge/articles/ff2a1f30-b293-43b5-b802-4e061ea0d904.html",
+          "reason": "Account activation is required, and official booking windows conflict.",
+          "citationUrls": [
+            "https://www.ikea.com/us/en/customer-service/knowledge/articles/ff2a1f30-b293-43b5-b802-4e061ea0d904.html",
+            "https://www.ikea.com/us/en/customer-service/services/assembly/",
+            "https://www.ikea.com/us/en/customer-service/faq/",
+            "https://www.ikea.com/us/en/customer-service/services/delivery/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/knowledge/articles/514ff041-1ddd-4059-9fd4-0350805fee67.html",
+          "title": "IKEA US: Are all the tools required for assembly included with your furniture?"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/services/delivery/",
+          "title": "IKEA US: Shipping and Delivery service"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/services/assembly/",
+          "title": "IKEA US: Assembly by Taskrabbit"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/knowledge/articles/6aada8f2-0f76-473f-95d9-b6a413aec984.html",
+          "title": "IKEA US: Does IKEA offer assembly services and what is the cost?"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/knowledge/articles/ff2a1f30-b293-43b5-b802-4e061ea0d904.html",
+          "title": "IKEA US: How does IKEA assembly service work?"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/faq/",
+          "title": "IKEA US: FAQs"
+        }
+      ],
+      "limitations": [
+        "Public-web research checked September 13, 2026; no checkout, purchase, account creation, or service testing was performed. Product, ZIP code, final fees, stock, and appointment availability were not supplied or verified.",
+        "Official pages disagree on the advance assembly booking window (90 versus 14 days). The general FAQ also says payment follows completion, whereas the dedicated assembly page distinguishes IKEA prepayment from direct Taskrabbit post-service payment; verify the terms for your booking route.",
+        "Full linked contractual terms were not separately reviewed. No public-web access failures occurred; an initial workspace-readiness call used an incorrect identifier and was corrected.",
+        "These are ordered evaluation recommendations for this question, not market rankings, exhaustive coverage, or independently verified service performance."
+      ]
+    },
+    {
+      "id": "obs-allbirds-product-fit-and-care-v1-s01-q05-eb6c19995ae8b1fed044552b",
+      "queryId": "allbirds-product-fit-and-care-v1-s01-q05",
+      "observedAt": "2026-09-13T16:22:07.507Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Allbirds Waterproof collection",
+          "url": "https://www.allbirds.com/pages/waterproof-collection",
+          "reason": "Start with models explicitly documented as having a waterproof membrane when rain protection is essential.",
+          "citationUrls": [
+            "https://www.allbirds.com/pages/waterproof-collection"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Allbirds Mizzle wet-weather limitations",
+          "url": "https://www.allbirds.com/products/womens-wool-runner-up-mizzles-hazy-indigo",
+          "reason": "Water-repellent construction differs from the waterproof range; the example listing also carries stock and final-sale restrictions.",
+          "citationUrls": [
+            "https://www.allbirds.com/blogs/news/waterproof-press-release",
+            "https://www.allbirds.com/products/womens-wool-runner-up-mizzles-hazy-indigo"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Allbirds Wool Runner NZ Waterproof fit guide",
+          "url": "https://www.allbirds.com/products/mens-wool-runner-nz-waterproof-weathered-brown",
+          "reason": "Model-specific guidance says it runs small and slightly narrow, making generic sizing assumptions unreliable.",
+          "citationUrls": [
+            "https://www.allbirds.com/products/mens-wool-runner-nz-waterproof-weathered-brown"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Allbirds shoe-care guidance",
+          "url": "https://www.allbirds.com/pages/shoe-care",
+          "reason": "Combine general washing instructions with the waterproof and Mizzle restrictions on machine washing.",
+          "citationUrls": [
+            "https://www.allbirds.com/pages/shoe-care",
+            "https://www.allbirds.com/products/mens-wool-runner-nz-waterproof-weathered-brown",
+            "https://www.allbirds.com/products/womens-wool-runner-up-mizzles-hazy-indigo"
+          ]
+        },
+        {
+          "position": 5,
+          "name": "Allbirds US return policy",
+          "url": "https://www.allbirds.com/pages/help",
+          "reason": "Unworn/unwashed conditions, final-sale exclusions, and return-label costs affect a first purchase with uncertain fit.",
+          "citationUrls": [
+            "https://www.allbirds.com/pages/help"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.allbirds.com/pages/waterproof-collection",
+          "title": "Allbirds — The Waterproof Collection"
+        },
+        {
+          "url": "https://www.allbirds.com/blogs/news/waterproof-press-release",
+          "title": "Allbirds Launches Its First-Ever 100% Waterproof Wool Sneakers"
+        },
+        {
+          "url": "https://www.allbirds.com/products/womens-wool-runner-up-mizzles-hazy-indigo",
+          "title": "Women's Wool Runner-up Mizzle — Hazy Indigo"
+        },
+        {
+          "url": "https://www.allbirds.com/products/mens-wool-runner-nz-waterproof-weathered-brown",
+          "title": "Men's Wool Runner NZ Waterproof — Weathered Brown"
+        },
+        {
+          "url": "https://www.allbirds.com/pages/shoe-care",
+          "title": "Allbirds — How to Care for Your Shoes"
+        },
+        {
+          "url": "https://www.allbirds.com/pages/help",
+          "title": "Allbirds — US Help and Return Policy"
+        }
+      ],
+      "limitations": [
+        "Public web research checked September 13, 2026. Recommendations concern evaluation steps for this query, not measured search rankings or exhaustive market coverage.",
+        "Manufacturer claims were not independently performance-tested. The consulted sources did not establish immersion limits, rain-duration ratings, slip certification, a numeric wash limit, or a treatment-renewal schedule.",
+        "Size/color inventory and checkout coverage pricing were not transactionally verified. Product pages can expose both purchase controls and out-of-stock messages.",
+        "The US help page contains generic free-return wording alongside more specific customer-paid return-label terms with optional purchased coverage; clarify any conflicting terms before ordering.",
+        "No page-access failures occurred for the pages opened."
+      ]
+    },
+    {
+      "id": "obs-everlane-product-and-sizing-v1-s01-q05-5681b0e3d24c4319a4c7ae03",
+      "queryId": "everlane-product-and-sizing-v1-s01-q05",
+      "observedAt": "2026-09-13T16:23:19.022Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "The Way-High® Jean 2.0",
+          "url": "https://www.everlane.com/products/womens-way-high-jean-2-long-medium-wash",
+          "reason": "High-rise ankle-length option with documented 27.5- and 29.5-inch inseams; compare the 12.25-inch listed rise with an existing pair.",
+          "citationUrls": [
+            "https://www.everlane.com/products/womens-way-high-jean-2-long-medium-wash"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "The Column Jean",
+          "url": "https://www.everlane.com/products/womens-column-jean-long-ocean",
+          "reason": "Mid-rise straight-leg option with a listed 10.5-inch front rise and longer 31- or 33-inch inseams.",
+          "citationUrls": [
+            "https://www.everlane.com/products/womens-column-jean-long-ocean"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Men’s Straight-Leg Stretch Jean",
+          "url": "https://www.everlane.com/products/mens-straight-leg-stretch-jean-dark-indigo-rinse",
+          "reason": "Men’s option with 30- or 32-inch inseams and an explicitly size-32-based rise measurement.",
+          "citationUrls": [
+            "https://www.everlane.com/products/mens-straight-leg-stretch-jean-dark-indigo-rinse"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "The Box-Cut Tee in Essential Cotton",
+          "url": "https://www.everlane.com/products/womens-organic-cotton-box-cut-pocket-tee-heathered-charcoal",
+          "reason": "Relaxed, slightly cropped tee with garment measurements to compare against an existing shirt and the intended jeans waistband.",
+          "citationUrls": [
+            "https://www.everlane.com/products/womens-organic-cotton-box-cut-pocket-tee-heathered-charcoal"
+          ]
+        },
+        {
+          "position": 5,
+          "name": "Everlane US return policy",
+          "url": "https://www.everlane.com/policies/refund-policy",
+          "reason": "Establishes the first-order fit-trial window, Final Sale exclusion and return-method fees.",
+          "citationUrls": [
+            "https://www.everlane.com/policies/refund-policy"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.everlane.com/products/womens-way-high-jean-2-long-medium-wash",
+          "title": "The Way-High® Jean 2.0 | Medium Wash | 29.5-inch Inseam"
+        },
+        {
+          "url": "https://www.everlane.com/products/womens-column-jean-long-ocean",
+          "title": "The Column Jean | Ocean | 33-inch Inseam"
+        },
+        {
+          "url": "https://www.everlane.com/products/mens-straight-leg-stretch-jean-dark-indigo-rinse",
+          "title": "Straight-Leg Stretch Jean | Dark Indigo Rinse"
+        },
+        {
+          "url": "https://www.everlane.com/products/womens-organic-cotton-box-cut-pocket-tee-heathered-charcoal",
+          "title": "The Box-Cut Tee in Essential Cotton | Heathered Charcoal | Pocket"
+        },
+        {
+          "url": "https://www.everlane.com/policies/refund-policy",
+          "title": "Everlane Refund policy"
+        }
+      ],
+      "limitations": [
+        "Public web research covered selected official examples, not the entire Everlane assortment or an exhaustive market comparison. Recommendation order is editorial, not a measured search-engine rank.",
+        "Extracted product controls did not confirm live stock for each size, wash and inseam. Listings and policies can change before purchase.",
+        "The official sizing FAQ opened without readable content. Product charts exposed inconsistent body/garment labeling and malformed conversion entries, so ambiguous measurements should be confirmed rather than inferred.",
+        "Separate tee-length options, custom inseams, hemming services and petite/tall proportional grading were not established by the consulted pages; this does not prove brand-wide unavailability.",
+        "No purchases, fit trials or independent verification of fabric performance, shrinkage, durability or measurement accuracy were performed."
+      ]
+    },
+    {
+      "id": "obs-ikea-returns-and-services-v1-s01-q05-05cbfab76a213228ff211e93",
+      "queryId": "ikea-returns-and-services-v1-s01-q05",
+      "observedAt": "2026-09-13T16:23:52.462Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "IKEA US returns",
+          "url": "https://www.ikea.com/us/en/customer-service/returns-claims/",
+          "reason": "Check product eligibility, condition requirements and return transport costs before committing.",
+          "citationUrls": [
+            "https://www.ikea.com/us/en/customer-service/returns-claims/",
+            "https://www.ikea.com/us/en/customer-service/knowledge/articles/9dcce819-276g-4622-b9bd-839c404485f1.html",
+            "https://www.ikea.com/us/en/customer-service/terms-conditions/delivery-terms-and-conditions-pub7aa7b291/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "IKEA Taskrabbit assembly scope",
+          "url": "https://www.ikea.com/us/en/customer-service/services/assembly/",
+          "reason": "Confirm instruction-based assembly and required anchoring fit your needs; disposal and installation exclusions matter.",
+          "citationUrls": [
+            "https://www.ikea.com/us/en/customer-service/services/assembly/",
+            "https://www.ikea.com/us/en/customer-service/services/assembly-service-via-taskrabbit-terms-and-conditions-pubec4c8560/"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "IKEA Taskrabbit booking",
+          "url": "https://www.ikea.com/us/en/customer-service/knowledge/articles/ff2a1f30-b293-43b5-b802-4e061ea0d904.html",
+          "reason": "Verify the itemized price, local availability, account activation and confirmed appointment before relying on service.",
+          "citationUrls": [
+            "https://www.ikea.com/us/en/customer-service/knowledge/articles/ff2a1f30-b293-43b5-b802-4e061ea0d904.html",
+            "https://www.ikea.com/us/en/customer-service/services/assembly/",
+            "https://www.ikea.com/us/en/customer-service/services/assembly-service-via-taskrabbit-terms-and-conditions-pubec4c8560/"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "IKEA US delivery options",
+          "url": "https://www.ikea.com/us/en/customer-service/services/delivery/",
+          "reason": "Select appropriate package placement and verify access so the furniture is ready for assembly.",
+          "citationUrls": [
+            "https://www.ikea.com/us/en/customer-service/services/delivery/",
+            "https://www.ikea.com/us/en/customer-service/terms-conditions/delivery-terms-and-conditions-pub7aa7b291/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/returns-claims/",
+          "title": "IKEA US Return policy"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/knowledge/articles/9dcce819-276g-4622-b9bd-839c404485f1.html",
+          "title": "What if I need to return my package? How does that work?"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/terms-conditions/delivery-terms-and-conditions-pub7aa7b291/",
+          "title": "IKEA US Delivery Terms & Conditions"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/services/assembly/",
+          "title": "Assembly by Taskrabbit"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/services/assembly-service-via-taskrabbit-terms-and-conditions-pubec4c8560/",
+          "title": "Assembly Service Via Taskrabbit Terms and Conditions"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/knowledge/articles/ff2a1f30-b293-43b5-b802-4e061ea0d904.html",
+          "title": "How does IKEA assembly service work?"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/services/delivery/",
+          "title": "IKEA US Shipping and Delivery service"
+        }
+      ],
+      "limitations": [
+        "Public-web research only; no checkout, ZIP-specific quote, booking or independent service-performance verification. This is a prioritized evaluation, not a measured search rank or exhaustive market comparison.",
+        "No access failures occurred. Exact local availability, return pickup charges and refund entitlement for completed assembly after a merchandise return were not established.",
+        "Official wording differs on cancellation contact: the assembly terms say notify IKEA, while booking guidance directs customers with an assigned Tasker to Taskrabbit chat. Confirm the applicable route and retain acknowledgment.",
+        "The assembly terms consulted remain dated November 19, 2024. Recheck the terms presented with your actual booking."
+      ]
+    },
+    {
+      "id": "obs-taskrabbit-local-booking-fit-v1-s01-q05-47f3d30ddcf48921f5be022e",
+      "queryId": "taskrabbit-local-booking-fit-v1-s01-q05",
+      "observedAt": "2026-09-13T16:25:02.054Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Taskrabbit hourly minimum verification",
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260502667035-Tasker-Rates-Minimum-Hours-Policy",
+          "reason": "Establish the individual minimum charge; one-hour and two-hour options appear in NYC listings.",
+          "citationUrls": [
+            "https://support.taskrabbit.com/hc/en-us/articles/46260502667035-Tasker-Rates-Minimum-Hours-Policy",
+            "https://www.taskrabbit.com/locations/brooklyn/assemble-furniture"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Taskrabbit total-cost comparison",
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260411872155-What-s-the-Taskrabbit-Service-Fee",
+          "reason": "Platform fees and taxes can make the advertised hourly rate insufficient for budgeting.",
+          "citationUrls": [
+            "https://support.taskrabbit.com/hc/en-us/articles/46260411872155-What-s-the-Taskrabbit-Service-Fee",
+            "https://support.taskrabbit.com/hc/en-us/articles/46260504648731-What-s-the-Taskrabbit-Trust-Support-Fee"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Taskrabbit fixed-price IKEA assembly",
+          "url": "https://www.taskrabbit.com/blog/ikea-furniture-assembly-cost/",
+          "reason": "Eligible items offer price certainty with a monetary booking minimum instead of hourly minimums.",
+          "citationUrls": [
+            "https://www.taskrabbit.com/blog/ikea-furniture-assembly-cost/",
+            "https://support.taskrabbit.com/hc/en-us/articles/46260502667035-Tasker-Rates-Minimum-Hours-Policy"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Taskrabbit scope and budget confirmation",
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260499891355-How-Much-Does-it-Cost-to-Hire-a-Tasker",
+          "reason": "Item details, restrictions and estimated hours are necessary to assess whether the job fits the budget.",
+          "citationUrls": [
+            "https://support.taskrabbit.com/hc/en-us/articles/46260499891355-How-Much-Does-it-Cost-to-Hire-a-Tasker",
+            "https://www.taskrabbit.com/locations/brooklyn/assemble-furniture"
+          ]
+        },
+        {
+          "position": 5,
+          "name": "Taskrabbit cancellation review",
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260411471899-Cancellation-Policy",
+          "reason": "Late cancellation can consume the budget even when assembly does not take place.",
+          "citationUrls": [
+            "https://support.taskrabbit.com/hc/en-us/articles/46260411471899-Cancellation-Policy"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260502667035-Tasker-Rates-Minimum-Hours-Policy",
+          "title": "Tasker Rates & Minimum Hours Policy"
+        },
+        {
+          "url": "https://www.taskrabbit.com/locations/brooklyn/assemble-furniture",
+          "title": "Furniture Assembly Services in Brooklyn"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260411872155-What-s-the-Taskrabbit-Service-Fee",
+          "title": "What's the Taskrabbit Service Fee?"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260504648731-What-s-the-Taskrabbit-Trust-Support-Fee",
+          "title": "What's the Taskrabbit Trust & Support Fee?"
+        },
+        {
+          "url": "https://www.taskrabbit.com/blog/ikea-furniture-assembly-cost/",
+          "title": "How Much Does IKEA Furniture Assembly Cost?"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260499891355-How-Much-Does-it-Cost-to-Hire-a-Tasker",
+          "title": "How Much Does it Cost to Hire a Tasker?"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260411471899-Cancellation-Policy",
+          "title": "Cancellation Policy"
+        }
+      ],
+      "limitations": [
+        "Public official sources checked September 13, 2026; no login, booking, checkout quote or transaction was performed. No access failures occurred on the cited pages.",
+        "Exact NYC fees, taxes, eligible item quotes and Tasker availability were not verified. Local profiles can change and contain stale promotions; the Brooklyn page still mentions Black Friday.",
+        "No verified minimum-hours search filter, automatic total-budget cap, or first-time minimum waiver was found in the consulted sources. Do not assume these features exist.",
+        "This is a query-specific recommendation order, not a search-engine ranking, exhaustive market survey or independent assessment of Tasker performance."
+      ]
+    },
+    {
+      "id": "obs-intrepid-travel-trip-fit-v1-s01-q05-f2c4e7e9c71f5243ca88131b",
+      "queryId": "intrepid-travel-trip-fit-v1-s01-q05",
+      "observedAt": "2026-09-13T16:28:07.171Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Intrepid rooming FAQ",
+          "url": "https://www.intrepidtravel.com/us/contact-us/frequently-asked-questions/choosing-your-trip",
+          "reason": "Establish the sharing baseline and distinguish requests from guarantees before comparing fares.",
+          "citationUrls": [
+            "https://www.intrepidtravel.com/us/contact-us/frequently-asked-questions/choosing-your-trip"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "18 to 35s Essential Japan",
+          "url": "https://www.intrepidtravel.com/us/japan/essential-japan-166807",
+          "reason": "Conditional budget-oriented option for ages 18–35 accepting dorms; no single supplement and few included meals.",
+          "citationUrls": [
+            "https://www.intrepidtravel.com/us/japan/essential-japan-166807"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Japan Highlights",
+          "url": "https://www.intrepidtravel.com/us/japan/japan-highlights-166797",
+          "reason": "Mostly hotel accommodation for travelers accepting sharing; single supplements currently unavailable.",
+          "citationUrls": [
+            "https://www.intrepidtravel.com/us/japan/japan-highlights-166797"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Premium Highlights of Japan",
+          "url": "https://www.intrepidtravel.com/us/japan/premium-highlights-japan-174960",
+          "reason": "Explicit all-night single-supplement option, subject to availability and a departure-specific price check.",
+          "citationUrls": [
+            "https://www.intrepidtravel.com/us/japan/premium-highlights-japan-174960"
+          ]
+        },
+        {
+          "position": 5,
+          "name": "Cycle Japan",
+          "url": "https://www.intrepidtravel.com/us/japan/cycle-japan-168031",
+          "reason": "Conditional cycling option illustrating partial supplement coverage: Days 5 and 7 remain shared.",
+          "citationUrls": [
+            "https://www.intrepidtravel.com/us/japan/cycle-japan-168031"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.intrepidtravel.com/us/contact-us/frequently-asked-questions/choosing-your-trip",
+          "title": "Intrepid Travel US — Choosing your trip"
+        },
+        {
+          "url": "https://www.intrepidtravel.com/us/japan/essential-japan-166807",
+          "title": "Intrepid Travel US — 18 to 35s Essential Japan"
+        },
+        {
+          "url": "https://www.intrepidtravel.com/us/japan/japan-highlights-166797",
+          "title": "Intrepid Travel US — Japan Highlights"
+        },
+        {
+          "url": "https://www.intrepidtravel.com/us/japan/premium-highlights-japan-174960",
+          "title": "Intrepid Travel US — Premium Highlights of Japan"
+        },
+        {
+          "url": "https://www.intrepidtravel.com/us/japan/cycle-japan-168031",
+          "title": "Intrepid Travel US — Cycle Japan"
+        },
+        {
+          "url": "https://www.intrepidtravel.com/us/standard-booking-conditions",
+          "title": "Intrepid Travel US — Standard Booking Conditions"
+        }
+      ],
+      "limitations": [
+        "No budget amount, age, departure date or room preference was supplied; recommendations are conditional, not a determination of affordability.",
+        "Public web research only; no booking flow, account, quote request or transaction was used. Departure-specific room inventory and supplement prices were not confirmed; extracted date selectors did not expose a complete availability table.",
+        "General FAQ wording and some itinerary extension suggestions conflict with trip-specific restrictions. Obtain written clarification for the exact departure; do not generalize a restriction to every Japan itinerary.",
+        "No universal first-time-customer discount or specific supplement-refund guarantee was established by the consulted evidence.",
+        "Discovery began with an unrestricted public-web search, followed by official-source checks. Coverage is selective, not exhaustive; product performance was not independently verified. No source-page access failures occurred."
+      ]
+    },
+    {
+      "id": "obs-g-adventures-trip-fit-v1-s01-q05-367641bac7c7e849ef3c7852",
+      "queryId": "g-adventures-trip-fit-v1-s01-q05",
+      "observedAt": "2026-09-13T16:28:09.698Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "G Adventures Booking FAQ",
+          "url": "https://www.gadventures.com/faqs/booking-related/",
+          "reason": "Start with total-cost planning, mandatory insurance and confirmation rules before committing a strict budget.",
+          "citationUrls": [
+            "https://www.gadventures.com/faqs/booking-related/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Epic Japan: Speed Trains & Street Food",
+          "url": "https://www.gadventures.com/trips/japan-travel/AJTO/",
+          "reason": "Budget-oriented option for ages 18–39 willing to share rooms and plan meals and optional sightseeing.",
+          "citationUrls": [
+            "https://www.gadventures.com/trips/japan-travel/AJTO/"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Japan Express – Osaka to Tokyo",
+          "url": "https://www.gadventures.com/trips/japan-express-osaka-to-tokyo/AJJR/",
+          "reason": "Hotel-based highlights comparison, with a compact route requiring scrutiny of walking and frequent transfers.",
+          "citationUrls": [
+            "https://www.gadventures.com/trips/japan-express-osaka-to-tokyo/AJJR/"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Back Roads of Japan",
+          "url": "https://www.gadventures.com/trips/backroads-of-japan/6199/",
+          "reason": "Rural alternative with cycling and homestays, but long travel days and luggage-forwarding details to clarify.",
+          "citationUrls": [
+            "https://www.gadventures.com/trips/backroads-of-japan/6199/"
+          ]
+        },
+        {
+          "position": 5,
+          "name": "JR Central luggage rules",
+          "url": "https://global.jr-central.co.jp/en/info/oversized-baggage/",
+          "reason": "Distinguishes railway baggage options from G Adventures’ stricter published tour guidance.",
+          "citationUrls": [
+            "https://global.jr-central.co.jp/en/info/oversized-baggage/",
+            "https://www.gadventures.com/trips/japan-express-osaka-to-tokyo/AJJR/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.gadventures.com/faqs/booking-related/",
+          "title": "Booking Your Tour FAQs | G Adventures"
+        },
+        {
+          "url": "https://www.gadventures.com/trips/japan-travel/AJTO/",
+          "title": "Epic Japan: Speed Trains & Street Food | G Adventures"
+        },
+        {
+          "url": "https://www.gadventures.com/trips/japan-express-osaka-to-tokyo/AJJR/",
+          "title": "Japan Express – Osaka to Tokyo | G Adventures"
+        },
+        {
+          "url": "https://www.gadventures.com/trips/backroads-of-japan/6199/",
+          "title": "Back Roads of Japan | G Adventures"
+        },
+        {
+          "url": "https://global.jr-central.co.jp/en/info/oversized-baggage/",
+          "title": "Luggage information | Central Japan Railway Company"
+        }
+      ],
+      "limitations": [
+        "No budget amount, age, dates, departure airport or room preference was supplied, so affordability and eligibility cannot be determined.",
+        "Public-web research was selective, with unrestricted discovery followed by official-source review; it is not exhaustive coverage or independently verified tour performance.",
+        "Advertised fares and availability depend on departure and can change. Meal allowances are estimates, not spending caps; no live booking quote was obtained.",
+        "Exact daily timings, all optional-activity costs, room-supplement coverage and rail-pass alternatives for ineligible travellers were not established.",
+        "G Adventures’ baggage fee/size guidance differs from JR Central’s rules, and Back Roads gives inconsistent luggage-forwarding durations; operator clarification is needed.",
+        "No consulted-page access failures occurred. No account access, booking, hold or transaction was performed."
+      ]
+    },
+    {
+      "id": "obs-coursera-course-fit-v1-s01-q05-7808496be1bf77d1792e0492",
+      "queryId": "coursera-course-fit-v1-s01-q05",
+      "observedAt": "2026-09-13T16:30:17.847Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Python Basics — University of Michigan",
+          "url": "https://www.coursera.org/learn/python-basics",
+          "reason": "First to preview for its documented interactive textbook, frequent practice items, and explicit debugging instruction; actual assessment feedback quality remains unverified.",
+          "citationUrls": [
+            "https://www.coursera.org/learn/python-basics"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Programming for Everybody (Getting Started with Python) — University of Michigan",
+          "url": "https://www.coursera.org/learn/python",
+          "reason": "Alternative with no prerequisites, a narrower introductory scope, worked exercises, and coding tasks; some assignments are explicitly AI-graded, but task-specific feedback details are unclear.",
+          "citationUrls": [
+            "https://www.coursera.org/learn/python"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.coursera.org/learn/python-basics",
+          "title": "Python Basics | Coursera"
+        },
+        {
+          "url": "https://www.coursera.org/learn/python",
+          "title": "Programming for Everybody (Getting Started with Python) | Coursera"
+        },
+        {
+          "url": "https://blog.coursera.org/introducing-courseras-new-course-preview-experience/",
+          "title": "Introducing Coursera’s new course preview experience: A more meaningful way to start learning"
+        },
+        {
+          "url": "https://blog.coursera.org/ai-grading-in-peer-reviews-enhancing-courseras-learning-experience-with-faster-high-quality-feedback/",
+          "title": "AI Grading in Peer Reviews: Enhancing Coursera’s Learning Experience with Faster, High-Quality Feedback"
+        },
+        {
+          "url": "https://blog.coursera.org/coursera-coach-providing-essential-learner-support/",
+          "title": "Coursera Coach: Providing Essential Learner Support"
+        },
+        {
+          "url": "https://www.coursera.org/about/terms",
+          "title": "Terms of Use | Coursera"
+        }
+      ],
+      "limitations": [
+        "Public web research only; no login, enrollment, payment, or assessment submission. Feedback usefulness and product performance were not independently tested.",
+        "Course-specific retry limits, cooldowns, feedback examples, peer-review turnaround, human support commitments, and grade-challenge options were not established by the consulted public pages.",
+        "Exact US enrollment pricing, trial eligibility and duration, Coach access, and availability of Full Course, No Certificate remain unconfirmed.",
+        "The Help Center assessment index appeared in search, but opening it returned only a minimal page; detailed support policies were not verified.",
+        "Some official feature explanations date from 2024–2025. Their descriptions and historical results do not establish universal availability in September 2026.",
+        "Discovery used unrestricted public-web queries; final recommendations rely on official sources and a limited shortlist, not exhaustive market coverage."
+      ]
+    },
+    {
+      "id": "obs-duolingo-learning-fit-v1-s01-q05-4cf6923e6fc4beb4e39e8baa",
+      "queryId": "duolingo-learning-fit-v1-s01-q05",
+      "observedAt": "2026-09-13T16:31:50.752Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Duolingo learning-path personalized practice",
+          "url": "https://blog.duolingo.com/spaced-repetition-for-learning/",
+          "reason": "Best starting point for a busy beginner because built-in selection of review content reduces planning.",
+          "citationUrls": [
+            "https://blog.duolingo.com/spaced-repetition-for-learning/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Duolingo free Practice tab",
+          "url": "https://blog.duolingo.com/guide-to-duolingo-practice-hub/",
+          "reason": "Offers targeted mistake, vocabulary, speaking and listening practice, with mobile availability explicitly documented.",
+          "citationUrls": [
+            "https://blog.duolingo.com/guide-to-duolingo-practice-hub/",
+            "https://blog.duolingo.com/duolingo-101-how-to-learn-a-language-on-duolingo/"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Duolingo access and subscription evaluation",
+          "url": "https://blog.duolingo.com/duolingo-energy/",
+          "reason": "Check whether energy and interruptions constrain your workday study session before paying.",
+          "citationUrls": [
+            "https://blog.duolingo.com/duolingo-energy/"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Duolingo learning-evidence evaluation",
+          "url": "https://duolingo-papers.s3.amazonaws.com/reports/Duolingo_whitepaper_language_read_listen_write_speak_2024.pdf",
+          "reason": "Assess study applicability and delayed recall rather than treating course completion findings as proof of a particular review feature.",
+          "citationUrls": [
+            "https://duolingo-papers.s3.amazonaws.com/reports/Duolingo_whitepaper_language_read_listen_write_speak_2024.pdf"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://blog.duolingo.com/spaced-repetition-for-learning/",
+          "title": "What Is Spaced Repetition, and Why Is It Good for Learning?"
+        },
+        {
+          "url": "https://blog.duolingo.com/guide-to-duolingo-practice-hub/",
+          "title": "The Duolingo Practice Tab Is Free for Learners"
+        },
+        {
+          "url": "https://blog.duolingo.com/duolingo-101-how-to-learn-a-language-on-duolingo/",
+          "title": "How to Use Duolingo for Language Learning"
+        },
+        {
+          "url": "https://blog.duolingo.com/duolingo-energy/",
+          "title": "Why Duolingo Switched From Hearts to a Battery"
+        },
+        {
+          "url": "https://duolingo-papers.s3.amazonaws.com/reports/Duolingo_whitepaper_language_read_listen_write_speak_2024.pdf",
+          "title": "Duolingo Path Meets Expectations for Proficiency Outcomes"
+        }
+      ],
+      "limitations": [
+        "Public-web research as of September 13, 2026; discovery was not restricted to a predefined vendor or domain list. Recommendations concern this Duolingo evaluation, not an exhaustive market comparison or measured search ranking.",
+        "Official pages differ in age and access descriptions. No account or app was accessed, so account-specific rollout, browser feature parity, beginner unlock points, current prices and standalone practice energy costs remain unverified.",
+        "The consulted documentation does not establish user-configurable spaced-review intervals, a due-review queue or identical scheduling across practice modes.",
+        "Research findings are provider-reported and were not independently verified. No consulted evidence isolates current Practice-tab effectiveness for beginners studying alongside full-time employment. No source-access failures occurred."
+      ]
+    },
+    {
+      "id": "obs-edx-course-fit-v1-s01-q05-2727837183ec14061930a7cd",
+      "queryId": "edx-course-fit-v1-s01-q05",
+      "observedAt": "2026-09-13T16:34:44.517Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "MichiganX: Programming for Everybody (Getting Started with Python)",
+          "url": "https://www.edx.org/course/programming-for-everybody-getting-started-with-pyt?index=product&position=1&queryID=3890934a4a4fabc6f82b51eda00b675d",
+          "reason": "First to investigate for a working beginner because the indexed edX listing estimates 2–4 hours weekly and no prerequisites; current edX-specific exercise access still needs confirmation.",
+          "citationUrls": [
+            "https://www.edx.org/course/programming-for-everybody-getting-started-with-pyt?index=product&position=1&queryID=3890934a4a4fabc6f82b51eda00b675d",
+            "https://www.online.umich.edu/courses/programming-for-everybody-getting-started-with-python/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "GTx: Computing in Python I: Fundamentals and Procedural Programming",
+          "url": "https://www.edx.org/learn/python/the-georgia-institute-of-technology-computing-in-python-i-fundamentals-and-procedural-programming/",
+          "reason": "An alternative with explicit programming and debugging fundamentals for someone able to budget 9–10 hours weekly; the current exercise inventory and audit coding-tool access were not established.",
+          "citationUrls": [
+            "https://www.edx.org/learn/python/the-georgia-institute-of-technology-computing-in-python-i-fundamentals-and-procedural-programming/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://support.edx.org/hc/en-us/articles/1500003964681-What-is-the-audit-track",
+          "title": "What is the audit track? — edX Help Center"
+        },
+        {
+          "url": "https://support.edx.org/hc/en-us/articles/360045027553-Why-can-t-I-access-the-assignments-and-exams",
+          "title": "Why can't I access the assignments and exams? — edX Help Center"
+        },
+        {
+          "url": "https://support.edx.org/hc/en-us/articles/360000297167-View-your-grade-details",
+          "title": "View your grade details — edX Help Center"
+        },
+        {
+          "url": "https://www.edx.org/course/programming-for-everybody-getting-started-with-pyt?index=product&position=1&queryID=3890934a4a4fabc6f82b51eda00b675d",
+          "title": "MichiganX: Programming for Everybody (Getting Started with Python) — edX"
+        },
+        {
+          "url": "https://www.online.umich.edu/courses/programming-for-everybody-getting-started-with-python/",
+          "title": "Programming for Everybody (Getting Started with Python) — Michigan Online"
+        },
+        {
+          "url": "https://www.edx.org/learn/python/the-georgia-institute-of-technology-computing-in-python-i-fundamentals-and-procedural-programming/",
+          "title": "GTx: Computing in Python I: Fundamentals and Procedural Programming — edX"
+        },
+        {
+          "url": "https://support.edx.org/hc/en-us/articles/206503568-How-do-self-paced-courses-work",
+          "title": "How do self-paced courses work? — edX Help Center"
+        }
+      ],
+      "limitations": [
+        "Public-web research conducted September 13, 2026, including an unrestricted discovery search; coverage is not exhaustive and recommendation order is editorial, not a measured search-engine rank.",
+        "Direct edX course-page reads returned navigation-only content on follow-up. Course workload and prerequisites rely on official indexed listings, whose crawl dates vary; live enrollment availability and run dates were not confirmed.",
+        "Michigan Online's abbreviated syllabus covers both Coursera and edX, so its exercise labels do not prove current edX-track access.",
+        "No login, enrollment, purchase, or exercise execution was performed. Current course-specific prices, grading thresholds, retry limits, feedback quality, tool requirements, and exact access deadlines were not verified.",
+        "Provider workload estimates and learning claims were not independently tested; missing feature evidence means unconfirmed, not necessarily absent."
+      ]
+    },
+    {
+      "id": "obs-coursera-course-access-and-cost-v1-s01-q05-0c653486cf4771d5f259e34e",
+      "queryId": "coursera-course-access-and-cost-v1-s01-q05",
+      "observedAt": "2026-09-13T16:36:09.452Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Coursera Course Preview",
+          "url": "https://blog.coursera.org/introducing-courseras-new-course-preview-experience/",
+          "reason": "Best first step to assess beginner fit and workload before paying.",
+          "citationUrls": [
+            "https://blog.coursera.org/introducing-courseras-new-course-preview-experience/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Coursera subscription trial",
+          "url": "https://www.coursera.org/about/terms",
+          "reason": "Check conversion and cancellation obligations before starting a trial.",
+          "citationUrls": [
+            "https://www.coursera.org/about/terms",
+            "https://www.coursera.org/courseraplus"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Coursera individual access and Coursera Plus",
+          "url": "https://www.coursera.org/courseraplus",
+          "reason": "Compare coverage and total cost against your realistic study pace.",
+          "citationUrls": [
+            "https://www.coursera.org/courseraplus",
+            "https://www.coursera.org/about/terms"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Coursera Financial Aid",
+          "url": "https://blog.coursera.org/introducing-courseras-new-course-preview-experience/",
+          "reason": "Explore affordability support when the selected course offers it.",
+          "citationUrls": [
+            "https://blog.coursera.org/introducing-courseras-new-course-preview-experience/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://blog.coursera.org/introducing-courseras-new-course-preview-experience/",
+          "title": "Introducing Coursera’s new course preview experience: A more meaningful way to start learning"
+        },
+        {
+          "url": "https://www.coursera.org/about/terms",
+          "title": "Coursera Terms of Use — effective January 1, 2026"
+        },
+        {
+          "url": "https://www.coursera.org/courseraplus",
+          "title": "Coursera Plus — plans, FAQ and offer terms"
+        }
+      ],
+      "limitations": [
+        "Public web research only; no account, personalized checkout, enrollment or billing flow was accessed. No access failures occurred for the cited pages.",
+        "No specific course was supplied, so prerequisites, deadlines, access duration and account-specific prices or trial eligibility remain unverified.",
+        "The promotion does not clearly establish trial inclusion. The general subscription refund exclusion and separate Specialization provision require plan-specific clarification.",
+        "Trial access after early cancellation, automatic reminders, subscription pausing, repeat-trial eligibility and lifetime access were not established by the consulted evidence.",
+        "This is a recommendation order for this question, not a measured search ranking, exhaustive market comparison or independently verified product-performance assessment."
+      ]
+    },
+    {
+      "id": "obs-deploy-small-node-app-v1-s03-q05-912305b412935660fb37bc10",
+      "queryId": "deploy-small-node-app-v1-s03-q05",
+      "observedAt": "2026-09-13T16:38:00.766Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Render",
+          "url": "https://render.com/docs/web-services",
+          "reason": "First baseline for preserving the existing service model with explicitly colocated PostgreSQL and internal connections.",
+          "citationUrls": [
+            "https://render.com/docs/web-services",
+            "https://render.com/docs/regions",
+            "https://render.com/docs/postgresql-creating-connecting"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Railway",
+          "url": "https://docs.railway.com/deployments/regions",
+          "reason": "Alternative with selectable service regions and movable volumes, provided database migration downtime and operational setup are acceptable.",
+          "citationUrls": [
+            "https://docs.railway.com/deployments/regions",
+            "https://docs.railway.com/databases/postgresql"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Vercel",
+          "url": "https://vercel.com/docs/functions/configuring-functions/region",
+          "reason": "Suitable to evaluate when the service fits Functions and compute can be placed near a separately selected PostgreSQL provider.",
+          "citationUrls": [
+            "https://vercel.com/docs/functions/configuring-functions/region",
+            "https://vercel.com/docs/postgres"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Cloudflare Workers",
+          "url": "https://developers.cloudflare.com/workers/configuration/placement/",
+          "reason": "Conditional option for backend-aware placement and Hyperdrive, after verifying actual Node.js dependency compatibility.",
+          "citationUrls": [
+            "https://developers.cloudflare.com/workers/configuration/placement/",
+            "https://developers.cloudflare.com/workers/runtime-apis/nodejs/",
+            "https://developers.cloudflare.com/hyperdrive/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://render.com/docs/web-services",
+          "title": "Render: Web Services"
+        },
+        {
+          "url": "https://render.com/docs/regions",
+          "title": "Render: Regions"
+        },
+        {
+          "url": "https://render.com/docs/postgresql-creating-connecting",
+          "title": "Render: Create and Connect to Render Postgres"
+        },
+        {
+          "url": "https://docs.railway.com/deployments/regions",
+          "title": "Railway: Regions"
+        },
+        {
+          "url": "https://docs.railway.com/databases/postgresql",
+          "title": "Railway: PostgreSQL"
+        },
+        {
+          "url": "https://vercel.com/docs/functions/configuring-functions/region",
+          "title": "Vercel: Configuring regions for Functions"
+        },
+        {
+          "url": "https://vercel.com/docs/postgres",
+          "title": "Vercel: Postgres on Vercel"
+        },
+        {
+          "url": "https://developers.cloudflare.com/workers/configuration/placement/",
+          "title": "Cloudflare Workers: Placement"
+        },
+        {
+          "url": "https://developers.cloudflare.com/workers/runtime-apis/nodejs/",
+          "title": "Cloudflare Workers: Node.js compatibility"
+        },
+        {
+          "url": "https://developers.cloudflare.com/hyperdrive/",
+          "title": "Cloudflare: Hyperdrive overview"
+        }
+      ],
+      "limitations": [
+        "Public official documentation researched on September 13, 2026 through live web search; this is not exhaustive market coverage or an independently verified performance benchmark.",
+        "Railway’s regions page returned Internal Error on two direct opens. Its region list and volume-migration restrictions were available in official-page search excerpts; verify the live selector before choosing.",
+        "An older Vercel search result stated three Pro regions; the directly opened region page, updated August 11, 2026, states five. The answer uses the latter.",
+        "User geography, current database location, dependency inventory, traffic, latency targets, and budget were not provided; recommendation order assumes a conventional Node.js service and one PostgreSQL primary.",
+        "Exact team pricing, account-specific entitlements, regional capacity, runtime limits, and residency guarantees were not fully verified. No deployment, latency test, restore test, or authenticated account inspection was performed.",
+        "Cloudflare placement hints do not establish strict geographic confinement. A separate guaranteed regional-execution entitlement or residency term was not verified."
+      ]
+    },
+    {
+      "id": "obs-auth-b2b-small-team-v1-s02-q03-4181fc623a3cecd47d7d6a09",
+      "queryId": "auth-b2b-small-team-v1-s02-q03",
+      "observedAt": "2026-09-13T16:40:03.677Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "WorkOS",
+          "url": "https://workos.com",
+          "reason": "Best initial hosted fit: free AuthKit with documented unlimited organizations and flexible memberships; enterprise connections and custom domains introduce substantial costs.",
+          "citationUrls": [
+            "https://workos.com/pricing",
+            "https://workos.com/docs/authkit/users-organizations"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Clerk",
+          "url": "https://clerk.com",
+          "reason": "Prebuilt organization UI suits a small team, but the 20-member limit and $100/month Enhanced B2B gate constrain the total budget.",
+          "citationUrls": [
+            "https://clerk.com/pricing",
+            "https://clerk.com/docs/guides/organizations/overview"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Better Auth",
+          "url": "https://better-auth.com",
+          "reason": "Free TypeScript framework with configurable organization limits and permissions, provided the founders can operate authentication infrastructure.",
+          "citationUrls": [
+            "https://better-auth.com/docs/plugins/organization",
+            "https://better-auth.com/pricing"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Auth0",
+          "url": "https://auth0.com",
+          "reason": "Free enterprise-login options merit consideration, but five free organizations and unresolved paid B2B pricing require careful entitlement checks.",
+          "citationUrls": [
+            "https://auth0.com/pricing",
+            "https://auth0.com/blog/auth0-b2b-plans-upgraded/",
+            "https://auth0.com/docs/manage-users/organizations/using-tokens"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://workos.com/pricing",
+          "title": "WorkOS Pricing"
+        },
+        {
+          "url": "https://workos.com/docs/authkit/users-organizations",
+          "title": "WorkOS AuthKit: Users and Organizations"
+        },
+        {
+          "url": "https://clerk.com/pricing",
+          "title": "Clerk Pricing"
+        },
+        {
+          "url": "https://clerk.com/docs/guides/organizations/overview",
+          "title": "Clerk Organizations"
+        },
+        {
+          "url": "https://better-auth.com/docs/plugins/organization",
+          "title": "Better Auth Organization Plugin"
+        },
+        {
+          "url": "https://better-auth.com/pricing",
+          "title": "Better Auth Pricing"
+        },
+        {
+          "url": "https://auth0.com/pricing",
+          "title": "Auth0 Pricing"
+        },
+        {
+          "url": "https://auth0.com/blog/auth0-b2b-plans-upgraded/",
+          "title": "Auth0 B2B Plans Upgraded: Free Self-Service SSO, SCIM, and More!"
+        },
+        {
+          "url": "https://auth0.com/docs/manage-users/organizations/using-tokens",
+          "title": "Auth0: Work with Tokens and Organizations"
+        }
+      ],
+      "limitations": [
+        "Public live web research only; discovery was not domain-restricted, and conclusions use official sources. Coverage is limited to the four requested products, not the entire market.",
+        "Auth0's rendered pricing page did not establish the applicable paid B2B price and organization allowance; displayed B2C pricing and blank feature cells were not treated as B2B entitlements.",
+        "WorkOS per-organization member and custom-role quotas, and Auth0 per-organization member limits, were not established from the consulted pages.",
+        "No page access failures occurred. Interactive plan selections, account-specific terms, startup eligibility, and contractual entitlements were not verified.",
+        "No SDK execution, security audit, performance benchmark, or independent verification of isolation, revocation timing, support, or migration coverage was performed. Actual framework, usage, and hosting costs were unspecified."
+      ]
     }
   ]
 }
