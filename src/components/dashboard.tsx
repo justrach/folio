@@ -56,6 +56,7 @@ import {
 import { RankChart, Sparkline, VisibilityChart } from "./charts";
 import { PublishedIndex, PublicationControls } from "./published-index";
 import { SeoDataPanel } from "./seo-data-panel";
+import { SeoChecks } from "./seo-checks";
 import { SearchConsolePanel } from "./search-console-panel";
 import { OwnedWebsites } from "./owned-websites";
 import { RealOverview, workspaceOverviewHref } from "./real-overview";
@@ -981,43 +982,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
                       Review improvements <ArrowRight size={14} />
                     </Button>
                   </div>
-                  <section className="panel">
-                    <div className="panel-heading">
-                      <h2>The details behind your score</h2>
-                      {!actual && <SampleLabel />}
-                    </div>
-                    <div className="checks-list">
-                      {(actual?.checks ?? sampleChecks).map((check) => (
-                        <div className="check-row" key={check.id}>
-                          <span className={`check-status ${check.status}`}>
-                            {check.status === "pass" ? (
-                              <Check size={17} />
-                            ) : check.status === "optional" ? (
-                              <Info size={16} />
-                            ) : (
-                              <span>!</span>
-                            )}
-                          </span>
-                          <div>
-                            <h3>{check.label}</h3>
-                            <p>{check.detail}</p>
-                          </div>
-                          <span className={`status-pill ${check.status}`}>
-                            {check.status === "pass"
-                              ? "Passed"
-                              : check.status === "optional"
-                                ? "Optional"
-                                : "Review"}
-                          </span>
-                          <span className="check-points">
-                            {check.maxPoints
-                              ? `${check.points} / ${check.maxPoints}`
-                              : "—"}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
+                  <SeoChecks key={actual?.id ?? "sample"} checks={actual?.checks ?? sampleChecks} sample={!actual} />
                 </>
               )}
               {section === "patches" && (

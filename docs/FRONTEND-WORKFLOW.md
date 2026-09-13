@@ -20,6 +20,8 @@ Folio connects saved technical audits, private SEO reports, and managed website 
 
 This guide describes the current UI. The [evaluation loop](EVALUATION-LOOP.md) explains execution and recovery; the [evaluation strategy](../EVALUATION-STRATEGY.md) defines what the checks establish.
 
+The `/seo` checks panel shows a left-hand percentage breakdown of all checks (including optional checks), with status filters and an inspector on the right. No tests appear until a user selects Pass, Needs improvement, Fail, or Optional using a bar or filter. Rows then expand to show findings, short supporting notes, and points. Optional checks are labeled Not scored; these count-based percentages are not the weighted SEO score. On mobile the breakdown stacks above the inspector. Saved evidence and scoring remain unchanged.
+
 ## Start from your workspace
 
 `/overview` defaults to the public benchmark dashboard. **My website results** is the explicit `/overview?view=workspace` view. Signed-out visitors to that view see a sign-in prompt; signed-in owners choose an existing saved website. The overview loads saved application records with GET requests only. It does not reconcile provider sessions, start a search, or import an SEO report.
