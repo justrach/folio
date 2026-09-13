@@ -75,12 +75,6 @@ import { WebsiteSwitcher } from "./website-switcher";
 type Modal = "scan" | "methodology" | "notifications" | "search" | null;
 const navigation = [
   {
-    label: "Public dashboard",
-    href: "/overview",
-    section: "overview",
-    icon: LayoutDashboard,
-  },
-  {
     label: "My websites",
     href: "/websites",
     section: "websites",
@@ -579,7 +573,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
               )}
             </div>
           </div>
-          {section === "overview" && <nav className="real-overview-tabs" aria-label="Overview view"><Link href="/overview">Public dashboard</Link><Link href={workspaceOverviewHref(query)} aria-current={!demoRequested ? "page" : undefined}>My website results</Link><Link href="/overview?view=demo" aria-current={demoRequested ? "page" : undefined} onClick={() => setMode("sample")}>Demo report</Link></nav>}
+          {section === "overview" && <nav className="real-overview-tabs" aria-label="Overview view"><Link href={workspaceOverviewHref(query)} aria-current={!demoRequested ? "page" : undefined}>My website results</Link><Link href="/overview?view=demo" aria-current={demoRequested ? "page" : undefined} onClick={() => setMode("sample")}>Demo report</Link></nav>}
           {section === "overview" && !demoRequested ? <RealOverview ownerId={ownerId} scans={scans} scansLoading={loadingScans} scansError={scanOwnerId === ownerId ? scanError : ""} onRetryScans={() => setScanRefresh(value => value + 1)} onOpenScan={openScan} /> : <>
 
           {scanOwnerId === ownerId && scanError && ["overview", "websites", "seo", "patches"].includes(section) && (
