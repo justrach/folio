@@ -302,7 +302,7 @@ test("directory, sample, published, and private-evaluation navigation submits no
   await methodology.scrollIntoViewIfNeeded();
   await expect(methodology).toBeInViewport();
   await methodology.click();
-  await page.getByRole("link", { name: "Open private website evaluations", exact: true }).click();
+  await page.getByRole("link", { name: "Open website evaluations", exact: true }).click();
   await expect(page).toHaveURL(/\/evaluations$/);
   await page.goBack();
   await showHtmlChecks(page);

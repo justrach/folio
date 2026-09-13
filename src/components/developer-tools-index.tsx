@@ -100,7 +100,7 @@ export function DeveloperToolsIndex() {
     <details className="devtools-methodology"><summary>How to read these observations</summary>
       <p>Batch recorded {new Date(evaluationBatch.generatedAt).toISOString().slice(0, 10)}. Each capture is limited to {evaluationBatch.captureLimitBytes.toLocaleString("en-US")} response bytes, {evaluationBatch.timeoutMs / 1000} seconds, and three redirects. JavaScript is not executed. Successful captures include a timestamp and SHA-256 hash; unavailable captures stay unmeasured.</p>
       <p>Checks needing attention include partial points and failures. Official description sources and review dates appear in each row, separately from Folio’s capture time. Inclusion does not establish endorsement or domain ownership.</p>
-      <Link href="/evaluations">Open private website evaluations</Link>
+      <Link href="/evaluations">Open website evaluations</Link>
     </details>
   </div>;
 }

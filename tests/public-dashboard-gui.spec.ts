@@ -197,3 +197,16 @@ test("background publication updates totals without replacing the task already b
   await expect(page).toHaveURL(/\/overview$/);
   noPrivateWork(state);
 });
+
+
+test("leaderboard loads publicly without consulting identity or private APIs", async ({ page }) => {
+  const state = await setup(page);
+  await page.goto("/leaderboard?view=workspace&website=private-hint");
+  await expect(page.getByRole("heading", { name: "The Folio Index", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Search rankings", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "HTML page checks", exact: true }).click();
+  await expect(page.getByRole("region", { name: "HTML page checks", exact: true })).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "The Folio Index", exact: true })).toBeVisible();
+  noPrivateWork(state);
+});

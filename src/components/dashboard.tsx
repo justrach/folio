@@ -249,11 +249,15 @@ export function Dashboard({ section }: { section: string }) {
   const views = query.getAll("view");
   const view = views.length === 1 ? views[0] : null;
   const workspace = view === "workspace" || query.has("website") || query.has("scope");
+  if (section === "leaderboard") return <PublicOverviewShell section="leaderboard" />;
   if (section === "overview" && view !== "demo" && !workspace) return <PublicOverviewShell />;
   return <WorkspaceDashboard section={section} />;
 }
 
-function PublicOverviewShell() {
+function PublicOverviewShell({ section = "overview" }: { section?: "overview" | "leaderboard" }) {
+  const index = section === "leaderboard";
+  const [methodOpen, setMethodOpen] = useState(false);
+  const [notice, setNotice] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
   useEffect(() => {
     const close = (event: KeyboardEvent) => { if (event.key === "Escape") setMobileOpen(false); };
@@ -266,21 +270,18 @@ function PublicOverviewShell() {
       <Link href="/" className="wordmark" aria-label="Folio home"><FolioMark /><span>folio<span className="wordmark-period">.</span></span></Link>
       <span className="nav-caption">PUBLIC</span>
       <nav aria-label="Public navigation">
-        <Link href="/overview" className="nav-link active" aria-current="page" onClick={() => setMobileOpen(false)}><LayoutDashboard size={17}/><span>Public dashboard</span></Link>
-        <Link href="/leaderboard" className="nav-link" onClick={() => setMobileOpen(false)}><Trophy size={17}/><span>The Folio Index</span></Link>
+        <Link href="/overview" className={`nav-link ${!index ? "active" : ""}`} aria-current={!index ? "page" : undefined} onClick={() => setMobileOpen(false)}><LayoutDashboard size={17}/><span>Public dashboard</span></Link>
+        <Link href="/leaderboard" className={`nav-link ${index ? "active" : ""}`} aria-current={index ? "page" : undefined} onClick={() => setMobileOpen(false)}><Trophy size={17}/><span>The Folio Index</span></Link>
         <Link href="/docs/api" className="nav-link" onClick={() => setMobileOpen(false)}><Code2 size={17}/><span>API reference</span></Link>
       </nav>
-      <span className="nav-caption">WORKSPACE</span>
-      <nav aria-label="Main navigation">{navigation.filter(item => item.section !== "overview").map(item => <Link key={item.section} href={item.href} className="nav-link" onClick={() => setMobileOpen(false)}><item.icon size={17}/><span>{item.label}</span></Link>)}
-        <Link href="/agents" className="nav-link" onClick={() => setMobileOpen(false)}><Bot size={17}/><span>Your agents</span></Link>
-      </nav>
-      <div className="sidebar-bottom"><Link href="/overview?view=workspace" className="public-workspace-link">Private workspace<ArrowUpRight size={14}/></Link></div>
     </aside>
     <div className="main-shell">
-      <header className="topbar"><div className="breadcrumb"><button className="mobile-menu icon-button" onClick={() => setMobileOpen(true)} aria-label="Open navigation"><Menu size={21}/></button><Globe2 size={15}/><span>Public benchmarks</span></div><div className="topbar-actions"><Link href="/login" aria-label="Account">Sign in</Link></div></header>
-      <main className="page-content">
-        <div className="page-heading"><div><h1>Benchmark dashboard</h1><p>Recorded answers, citations and run status.</p></div><div className="heading-actions"><Link href="/overview?view=workspace" className="button secondary">My website results<ArrowRight size={14}/></Link></div></div>
-        <PublicBenchmarkDashboard />
+      <header className="topbar"><div className="breadcrumb"><button className="mobile-menu icon-button" onClick={() => setMobileOpen(true)} aria-label="Open navigation"><Menu size={21}/></button><Globe2 size={15}/><span>Public benchmarks</span></div></header>
+      <main className={`page-content${index ? " index-page" : ""}`}>
+        <div className="page-heading"><div><h1>{index ? "The Folio Index" : "Benchmark dashboard"}</h1><p>{index ? "Public search answers and website page checks." : "Recorded answers, citations and run status."}</p></div></div>
+        {index ? <Leaderboard onMethod={() => setMethodOpen(true)} onNotify={setNotice} /> : <PublicBenchmarkDashboard />}
+        {notice && <p role="status">{notice}</p>}
+        {methodOpen && <Dialog title="The thinking behind the numbers." onClose={() => setMethodOpen(false)}><Methodology /></Dialog>}
         <footer className="page-footer"><span><FolioMark small/></span><Link href="/overview?view=demo">Demo report<ArrowUpRight size={12}/></Link></footer>
       </main>
     </div>
