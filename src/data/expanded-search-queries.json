@@ -1,0 +1,166 @@
+{
+  "format": "folio-public-search-rankings-v1",
+  "queries": [
+    {
+      "id": "browserbase-browser-workflow-v1",
+      "audience": "Developer tools",
+      "category": "Browserbase \u00b7 browser workflow",
+      "query": "Can Browserbase support a Playwright workflow that needs a persistent browser login, and what session, region and recording controls should I check?",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "resend-email-setup-v1",
+      "audience": "Developer tools",
+      "category": "Resend \u00b7 email setup",
+      "query": "What is required to send transactional email from a new domain with Resend, including domain verification, DNS records and handling delivery events?",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "stripe-payment-setup-v1",
+      "audience": "Developer tools",
+      "category": "Stripe \u00b7 payment setup",
+      "query": "What must a US software business set up to accept one-time payments and subscriptions with Stripe, including webhooks, account eligibility and test mode?",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "temporal-workflow-fit-v1",
+      "audience": "Developer tools",
+      "category": "Temporal \u00b7 workflow fit",
+      "query": "When should a Node.js service use Temporal for a workflow with retries and external API calls, and what does the team need to operate?",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "notion-client-project-fit-v1",
+      "audience": "Software & work",
+      "category": "Notion \u00b7 client project fit",
+      "query": "Would Notion work for a five-person agency sharing documents and project plans with clients, and how do guest permissions and plan limits affect that setup?",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "slack-history-and-guests-v1",
+      "audience": "Software & work",
+      "category": "Slack \u00b7 history and guests",
+      "query": "Which Slack plan fits a ten-person US team that needs older conversations to stay searchable and occasionally collaborates with external guests?",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "basecamp-client-project-fit-v1",
+      "audience": "Software & work",
+      "category": "Basecamp \u00b7 client project fit",
+      "query": "How does Basecamp organize tasks, documents and conversations for a small agency with clients, and what can each client see?",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "notion-knowledge-portability-v1",
+      "audience": "Software & work",
+      "category": "Notion \u00b7 knowledge portability",
+      "query": "What should a team check when using Notion as an internal handbook, including search, access control, offline needs and export formats?",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "ikea-product-and-delivery-v1",
+      "audience": "Shops & brands",
+      "category": "IKEA \u00b7 product and delivery",
+      "query": "What should a US shopper verify about an IKEA desk before ordering, including dimensions, stock by location, delivery or pickup fees and assembly?",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "allbirds-product-fit-and-care-v1",
+      "audience": "Shops & brands",
+      "category": "Allbirds \u00b7 product fit and care",
+      "query": "How should a first-time US Allbirds shopper compare shoe sizing, product materials and care instructions without assuming every style fits or performs the same?",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "everlane-product-and-sizing-v1",
+      "audience": "Shops & brands",
+      "category": "Everlane \u00b7 product and sizing",
+      "query": "How can a US Everlane shopper compare T-shirt and jean sizing, fabric composition and care instructions before choosing specific items?",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "ikea-returns-and-services-v1",
+      "audience": "Shops & brands",
+      "category": "IKEA \u00b7 returns and services",
+      "query": "What are the current US IKEA return conditions for assembled versus unopened furniture, and how do collection or assembly services affect the total purchase cost?",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "taskrabbit-local-booking-fit-v1",
+      "audience": "Services & travel",
+      "category": "Taskrabbit \u00b7 local booking fit",
+      "query": "How can someone in New York City check Taskrabbit furniture-assembly availability, compare providers and understand what the chosen service includes?",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "intrepid-travel-trip-fit-v1",
+      "audience": "Services & travel",
+      "category": "Intrepid Travel \u00b7 trip fit",
+      "query": "What should a solo adult compare across Intrepid Travel Japan itineraries, including group size, trip style, physical demands, age rules and room sharing?",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "g-adventures-trip-fit-v1",
+      "audience": "Services & travel",
+      "category": "G Adventures \u00b7 trip fit",
+      "query": "How should a first-time solo traveler compare G Adventures Japan trips by travel style, age eligibility, pace, group size and room-sharing arrangements?",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "taskrabbit-price-and-cancellation-v1",
+      "audience": "Services & travel",
+      "category": "Taskrabbit \u00b7 price and cancellation",
+      "query": "How is the total Taskrabbit furniture-assembly price calculated, and what minimum charges, fees or cancellation conditions should a customer check?",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "coursera-course-fit-v1",
+      "audience": "Learning",
+      "category": "Coursera \u00b7 course fit",
+      "query": "How can a complete beginner find a Coursera Python course with a manageable weekly workload, practical exercises and suitable prerequisites?",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "duolingo-learning-fit-v1",
+      "audience": "Learning",
+      "category": "Duolingo \u00b7 learning fit",
+      "query": "What Spanish practice does Duolingo offer a complete beginner, and how do its lesson and speaking formats differ from a course with a teacher?",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "edx-course-fit-v1",
+      "audience": "Learning",
+      "category": "edX \u00b7 course fit",
+      "query": "How should a complete beginner choose an edX Python course based on prerequisites, weekly workload, exercise format and course dates?",
+      "language": "en",
+      "locale": "en-US"
+    },
+    {
+      "id": "coursera-course-access-and-cost-v1",
+      "audience": "Learning",
+      "category": "Coursera \u00b7 course access and cost",
+      "query": "For a specific Coursera Python course, what can I study without paying and what requires a subscription or certificate fee, including cancellation conditions?",
+      "language": "en",
+      "locale": "en-US"
+    }
+  ],
+  "observations": []
+}

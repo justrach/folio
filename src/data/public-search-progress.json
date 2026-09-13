@@ -1,6 +1,6 @@
 {
   "format": "folio-public-search-progress-v1",
-  "updatedAt": "2026-09-13T06:25:43.867Z",
+  "updatedAt": "2026-09-13T06:40:04.187Z",
   "queries": [
     {
       "queryId": "deploy-small-node-app-v1",
@@ -27,20 +27,27 @@
       "queryId": "vector-search-small-app-v1",
       "status": "completed",
       "startedAt": "2026-09-13T06:23:40.927Z",
-      "finishedAt": "2026-09-13T06:25:28.632Z"
+      "finishedAt": "2026-09-13T06:25:28.632Z",
+      "observationId": "obs-vector-search-small-app-v1-066ddb0e78d1d8f94020ca92"
     },
     {
       "queryId": "research-api-citations-v1",
-      "status": "running",
-      "startedAt": "2026-09-13T06:25:28.693Z"
+      "status": "completed",
+      "startedAt": "2026-09-13T06:25:28.693Z",
+      "finishedAt": "2026-09-13T06:27:02.469Z",
+      "observationId": "obs-research-api-citations-v1-924b57b6b1fdd7a5f38d69a3"
     },
     {
       "queryId": "sentry-posthog-product-team-v1",
-      "status": "not-started"
+      "status": "completed",
+      "startedAt": "2026-09-13T06:27:02.519Z",
+      "finishedAt": "2026-09-13T06:28:53.013Z",
+      "observationId": "obs-sentry-posthog-product-team-v1-62f260a222ab8e97c3fbdf60"
     },
     {
       "queryId": "client-project-workspace-v1",
-      "status": "not-started"
+      "status": "unresolved",
+      "startedAt": "2026-09-13T06:28:53.064Z"
     },
     {
       "queryId": "team-chat-history-v1",
@@ -73,6 +80,142 @@
     {
       "queryId": "duolingo-spanish-fit-v1",
       "status": "not-started"
+    },
+    {
+      "queryId": "browserbase-browser-workflow-v1",
+      "status": "completed",
+      "startedAt": "2026-09-13T06:33:46.329Z",
+      "finishedAt": "2026-09-13T06:35:11.938Z",
+      "observationId": "obs-browserbase-browser-workflow-v1-d9630b11c7da5d6c85d49d98"
+    },
+    {
+      "queryId": "resend-email-setup-v1",
+      "status": "completed",
+      "startedAt": "2026-09-13T06:33:46.339Z",
+      "finishedAt": "2026-09-13T06:35:11.530Z",
+      "observationId": "obs-resend-email-setup-v1-df6619cfbec5b30a073fecc7"
+    },
+    {
+      "queryId": "stripe-payment-setup-v1",
+      "status": "completed",
+      "startedAt": "2026-09-13T06:33:46.348Z",
+      "finishedAt": "2026-09-13T06:35:15.894Z",
+      "observationId": "obs-stripe-payment-setup-v1-f6bdabffe4bbc0e281c16249"
+    },
+    {
+      "queryId": "temporal-workflow-fit-v1",
+      "status": "completed",
+      "startedAt": "2026-09-13T06:33:46.358Z",
+      "finishedAt": "2026-09-13T06:35:13.386Z",
+      "observationId": "obs-temporal-workflow-fit-v1-cfce6d2182364ff6afe2b295"
+    },
+    {
+      "queryId": "notion-client-project-fit-v1",
+      "status": "completed",
+      "startedAt": "2026-09-13T06:33:46.367Z",
+      "finishedAt": "2026-09-13T06:35:09.798Z",
+      "observationId": "obs-notion-client-project-fit-v1-be0008dd317b98fe8fa6d820"
+    },
+    {
+      "queryId": "slack-history-and-guests-v1",
+      "status": "completed",
+      "startedAt": "2026-09-13T06:34:55.811Z",
+      "finishedAt": "2026-09-13T06:36:31.840Z",
+      "observationId": "obs-slack-history-and-guests-v1-58587b46df6fc1628f0a5310"
+    },
+    {
+      "queryId": "basecamp-client-project-fit-v1",
+      "status": "completed",
+      "startedAt": "2026-09-13T06:34:55.826Z",
+      "finishedAt": "2026-09-13T06:36:30.098Z",
+      "observationId": "obs-basecamp-client-project-fit-v1-cf49f09cbc56a033c5d3b9c8"
+    },
+    {
+      "queryId": "notion-knowledge-portability-v1",
+      "status": "completed",
+      "startedAt": "2026-09-13T06:34:55.835Z",
+      "finishedAt": "2026-09-13T06:36:30.967Z",
+      "observationId": "obs-notion-knowledge-portability-v1-0757e0527aea7d03c29a8423"
+    },
+    {
+      "queryId": "ikea-product-and-delivery-v1",
+      "status": "completed",
+      "startedAt": "2026-09-13T06:34:55.844Z",
+      "finishedAt": "2026-09-13T06:36:16.860Z",
+      "observationId": "obs-ikea-product-and-delivery-v1-b3b0857a710dc6c84f12cd99"
+    },
+    {
+      "queryId": "allbirds-product-fit-and-care-v1",
+      "status": "completed",
+      "startedAt": "2026-09-13T06:34:55.854Z",
+      "finishedAt": "2026-09-13T06:36:19.067Z",
+      "observationId": "obs-allbirds-product-fit-and-care-v1-295f3f1b7ce85886d851ddf0"
+    },
+    {
+      "queryId": "everlane-product-and-sizing-v1",
+      "status": "completed",
+      "startedAt": "2026-09-13T06:34:55.863Z",
+      "finishedAt": "2026-09-13T06:36:31.162Z",
+      "observationId": "obs-everlane-product-and-sizing-v1-e7d3483bf06a3c1680759fd3"
+    },
+    {
+      "queryId": "ikea-returns-and-services-v1",
+      "status": "completed",
+      "startedAt": "2026-09-13T06:34:55.871Z",
+      "finishedAt": "2026-09-13T06:36:31.321Z",
+      "observationId": "obs-ikea-returns-and-services-v1-3beffad33ec5d4f0c1b2b492"
+    },
+    {
+      "queryId": "taskrabbit-local-booking-fit-v1",
+      "status": "completed",
+      "startedAt": "2026-09-13T06:34:55.879Z",
+      "finishedAt": "2026-09-13T06:38:13.747Z",
+      "observationId": "obs-taskrabbit-local-booking-fit-v1-6268e8a03e624d55c080db48"
+    },
+    {
+      "queryId": "intrepid-travel-trip-fit-v1",
+      "status": "completed",
+      "startedAt": "2026-09-13T06:34:55.888Z",
+      "finishedAt": "2026-09-13T06:36:38.825Z",
+      "observationId": "obs-intrepid-travel-trip-fit-v1-06ec906be49ed89d57d366bf"
+    },
+    {
+      "queryId": "g-adventures-trip-fit-v1",
+      "status": "completed",
+      "startedAt": "2026-09-13T06:34:55.896Z",
+      "finishedAt": "2026-09-13T06:36:18.895Z",
+      "observationId": "obs-g-adventures-trip-fit-v1-c721b031e9d5ece611f1aaf8"
+    },
+    {
+      "queryId": "taskrabbit-price-and-cancellation-v1",
+      "status": "completed",
+      "startedAt": "2026-09-13T06:34:55.904Z",
+      "finishedAt": "2026-09-13T06:36:33.073Z",
+      "observationId": "obs-taskrabbit-price-and-cancellation-v1-00936b52ef52a4e79c311de3"
+    },
+    {
+      "queryId": "coursera-course-fit-v1",
+      "status": "unresolved",
+      "startedAt": "2026-09-13T06:34:55.913Z"
+    },
+    {
+      "queryId": "duolingo-learning-fit-v1",
+      "status": "completed",
+      "startedAt": "2026-09-13T06:34:55.922Z",
+      "finishedAt": "2026-09-13T06:36:12.495Z",
+      "observationId": "obs-duolingo-learning-fit-v1-d6780b5b0b52c243b5066e7f"
+    },
+    {
+      "queryId": "edx-course-fit-v1",
+      "status": "unresolved",
+      "startedAt": "2026-09-13T06:34:55.930Z"
+    },
+    {
+      "queryId": "coursera-course-access-and-cost-v1",
+      "status": "completed",
+      "startedAt": "2026-09-13T06:34:55.939Z",
+      "finishedAt": "2026-09-13T06:36:31.171Z",
+      "observationId": "obs-coursera-course-access-and-cost-v1-5a2f190f4b4d0898e431aa64"
     }
   ]
 }

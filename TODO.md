@@ -28,7 +28,7 @@ Working checklist for completing the current website-evaluation pilot. Check ite
 ## Connected workflow and local runtime
 
 - [x] Add repository-specific `AGENTS.md` guidance covering navigation, managed sessions, privacy, evidence semantics, tests, and existing authorization.
-- [x] Default signed-in workspaces to saved audits and show recent private evaluations without requiring a technical audit first.
+- [x] Show saved audits and recent private evaluations in the explicit workspace view without requiring a technical audit first.
 - [x] Carry exact website/report/run context through audit, SEO, evaluation, agent, comparison, and login flows without automatic paid starts.
 - [x] Show account/target readiness, active-session blocking, and rolling run allowance beside the evaluation form.
 - [x] Separate fresh website evaluation from paid frozen replay and make reports, exports, and comparisons directly reachable.
@@ -65,15 +65,17 @@ Search Console implementation now includes optional Google identity, explicit re
 
 ## Search rankings and agent API
 
-- [x] Default the overview to owned website observations and connected reports, with explicit demo selection and separate unfinished attempts.
+- [x] Default `/overview` to the public benchmark dashboard; retain owned website observations at `?view=workspace`, an explicit `?view=demo`, and separate unfinished attempts.
+- [x] Keep `/leaderboard` in a public shell without account identity or private workspace reads, including private-looking query hints.
+- [x] Add strict `GET /api/public/benchmarks`, separate collection/publication counters, per-question recommendation details, titled sources, mobile filters and history-aware task links. Snapshot refreshes perform no auth, D1 or provider operation.
 - [x] Make evaluations question-first while preserving direct page-evidence links; save editable 1–10 question suites and broader starter packs without inference.
 - [x] Inspect four optional discovery documents without changing the HTML readiness score or treating their presence as search rank.
 - [x] Put saved evaluation reports and ordered keyword recommendations first, with citations, provider coverage, progress, and explicit baseline comparisons.
 - [x] Add Astra open-web research in hosted sandboxes, preserving legacy restricted-domain observations and per-run harness provenance.
 - [x] Add scoped, expiring Folio API keys; 24-hour default freshness; durable idempotent ensure requests; OpenAPI, Markdown and browser reference pages.
-- [x] Validate two private open-web searches locally. Retain the third unknown creation and its blocking hold by the owner’s explicit decision.
+- [x] Validate two private open-web searches locally. Retain the third unknown creation and its accounting; current operator dispositions are recorded in [live validation](docs/LIVE-VALIDATION.md), without automatically retrying an uncertain creation.
 - [x] Add a ranked public table and an explicit collection/export script with a strict public projection.
-- [ ] Collect and review the public query observations. The artifact currently has three queries and zero observations; no private customer results are published into it.
+- [ ] Complete collection and public review of the initial 15 primary questions. At the 13 September public-dashboard checkpoint, six real tasks completed and the seventh creation was unconfirmed, stopping that batch. Published counts come from the validated public artifacts, separately from completion status. See [live validation](docs/LIVE-VALIDATION.md) for current recovery and accounting; private customer results are not published into this collection.
 
 ## Subsequent product expansion
 
@@ -81,7 +83,9 @@ These are not claims about the current pilot: repeated independent cross-company
 
 ## Validation of this checklist
 
-Latest UI/API checkpoint: exact Bun 1.4.1 type checking, 205 unit tests, and 14 isolated actual D1 cases passed. The broad desktop/mobile run passed 190 cases and skipped two intentional duplicates. Four report-layout/login assertions were updated for the new view controls, one real failed-start notice race was fixed, and one login test was interrupted by a Next.js development reload. All six affected cases passed their focused reruns; the new question editor also passed six desktop/mobile checks. Provider work stayed on hold. These results validate the local UI/API, not additional live search collection or production deployment.
+Public-dashboard checkpoint: eight focused public-data unit tests, 42 affected desktop/mobile GUI cases, and 12 new public-dashboard/index GUI cases passed. The checks cover public-only reads, strict data validation, query/history selection, filters, mobile overflow, and separation from the private workspace. GUI provider responses were mocked. Bun 1.4.1 type checking, all 215 unit tests, and the OpenNext Cloudflare build passed for the public-dashboard snapshot at `3f1ec76` with the public-shell and label updates later committed in `fa35a5b`. Later merged changes need their own validation. A further 24 targeted Index/ranking/browser checks passed, including the updated navigation handoff. These tests do not establish all 15 live results or production deployment. See [public dashboard](docs/PUBLIC-DASHBOARD.md).
+
+Earlier UI/API checkpoint: exact Bun 1.4.1 type checking, 205 unit tests, and 14 isolated actual D1 cases passed. The broad desktop/mobile run passed 190 cases and skipped two intentional duplicates. Four report-layout/login assertions were updated for the new view controls, one real failed-start notice race was fixed, and one login test was interrupted by a Next.js development reload. All six affected cases passed their focused reruns; the new question editor also passed six desktop/mobile checks. These fixture runs made no provider calls. Later live collection is recorded separately; these results validate the local UI/API, not additional live search collection or production deployment.
 
 September checkpoint: TypeScript, 149 unit tests, five real Miniflare D1 integration cases, OpenNext Cloudflare build, and scheduler dry run passed. The full browser run passed 94 cases, with two obsolete default-tab assertions and one concurrent trace-file collision; all three affected cases passed their isolated rerun (one intentional mobile auth duplicate remained skipped). Eight new desktop/mobile directory checks passed after fixing a hidden table label that expanded the mobile viewport and intercepted pointer input. The separately updated landing passed desktop/mobile navigation and bounded contrast checks. A saved homepage observation reproduced offline. The built local Wrangler preview preserved the signed-in account and saved Search Console report and showed the approved account ready for DataForSEO. The free DataForSEO credential check succeeded; no paid SEO lookup or new live keyword trial was started.
 

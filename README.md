@@ -1,6 +1,6 @@
 # Folio
 
-Inspect website discovery through captured-page checks, private Astra search observations, and source-linked recommendation tables. Built with Next.js, OpenNext for Cloudflare, Better Auth, D1, and real components from Rare UI.
+Inspect website discovery through a public benchmark dashboard, captured-page checks, and private Astra search observations. Open a question to see its returned recommendations and sources. Built with Next.js, OpenNext for Cloudflare, Better Auth, D1, and real components from Rare UI.
 
 Progress and remaining launch dependencies: [TODO.md](TODO.md).
 
@@ -14,13 +14,14 @@ bun run setup
 bun run dev --port 3001
 ```
 
-Open [the landing page](http://localhost:3001/) or [the dashboard](http://localhost:3001/overview). Setup preserves existing credentials and generates a fresh authentication secret only for a new environment. No Cloudflare account is needed for the local D1 emulator.
+Open [the landing page](http://localhost:3001/) or [the public dashboard](http://localhost:3001/overview). Your saved website results are in [the private workspace](http://localhost:3001/overview?view=workspace); illustrative charts have an explicit [demo view](http://localhost:3001/overview?view=demo). Setup preserves existing credentials and generates a fresh authentication secret only for a new environment. No Cloudflare account is needed for the local D1 emulator.
 
 Local records persist in `.wrangler/state/v3` across restarts. Use `bun run db:status:local`, `bun run db:migrate:local`, and `bun run db:backup:local` to inspect migrations, apply them, or create a private local export. See [local D1 and runtime tests](docs/LOCAL-D1.md) for the shared persistence path, isolated Miniflare tests, and the D1/Postgres decision.
 
 ## What works
 
-- A saved-website overview with real question coverage, returned positions, citation counts, and links to private audits, backlinks, and Search Console reports. Illustrative charts remain under an explicit Demo report tab.
+- A public dashboard showing published answer coverage, collection status, and each question's original recommendation order with titled source links. Audience, status and text filters, mobile task selection, and shareable query links work without signing in. Reads only refresh public snapshots; they start no agent work.
+- An explicit private workspace with saved website question coverage, returned positions, citation counts, and links to private audits, backlinks, and Search Console reports. Illustrative charts remain in the separate Demo report view.
 - Better Auth email/password sign-up, login, persisted sessions, and logout.
 - Optional Google sign-in and explicit read-only Search Console consent, with bounded private performance snapshots. Live Google validation remains separate; see [Search Console setup](docs/SEARCH-CONSOLE.md).
 - Real bounded page audits, deterministic `readiness-v1` scores, evidence details, account-scoped saved history, and repeat scans. Optional discovery-file diagnostics inspect robots.txt, llms.txt, llms-full.txt and sitemap.xml without changing that score. Initially allows `example.com`; extra hosts need operator review and `SCAN_ALLOWED_HOSTS` configuration.
@@ -43,14 +44,16 @@ Local records persist in `.wrangler/state/v3` across restarts. Use `bun run db:s
 | Route          | Purpose                                                                                |
 | -------------- | -------------------------------------------------------------------------------------- |
 | `/`            | Product story and evidence-based positioning                                           |
-| `/overview`    | Saved website search observations, audits and connected reports; explicit demo         |
+| `/overview`    | Public task progress and published per-question recommendations; no account required |
+| `/overview?view=workspace` | Private saved website search observations, audits and connected reports |
+| `/overview?view=demo` | Explicitly illustrative dashboard |
 | `/websites`    | Saved audit history and publication controls                                           |
 | `/visibility`  | Sample buyer prompts and AI discovery view                                             |
 | `/seo`         | Actual or sample technical page-check details                                          |
 | `/search-data` | Explicit SEO lookup, saved reports, and prepared evaluation handoff                    |
 | `/search-console` | Google connection, explicit performance imports, and private saved snapshots      |
 | `/patches`     | Review, approve, and download repair suggestions                                       |
-| `/leaderboard` | Query-specific search observations, developer-tool directory, and separately labelled sample/technical views |
+| `/leaderboard` | Public index shell: query-specific search observations, website directory, and separately labelled sample/technical views |
 | `/benchmarks` | Private keyword questions, baseline/fresh observations, sources and comparisons |
 | `/docs/api` | Public HTTP reference and signed-in Folio API-key management |
 | `/evaluations` | Search questions and saved rankings by default; Page evidence keeps website checks and exports |
@@ -61,6 +64,8 @@ Local records persist in `.wrangler/state/v3` across restarts. Use `bun run db:s
 | `/login`       | Better Auth sign-up and login                                                          |
 
 Follow the [frontend workflow](docs/FRONTEND-WORKFLOW.md) to move from a saved audit or SEO report into evaluation preflight, inspect agent returns, export evidence, and compare or prepare a fresh run. Navigation prepares context; paid work starts only through the corresponding explicit action.
+
+The [public dashboard contract](docs/PUBLIC-DASHBOARD.md) describes `/api/public/benchmarks`, task links, snapshot refreshes and the difference between a completed collection and a published answer. Public `/overview` and `/leaderboard` do not mount account identity or private workspace reads.
 
 ## Data and credentials
 
@@ -79,6 +84,8 @@ See [DataForSEO integration](docs/DATAFORSEO.md), [Cloudflare and authentication
 
 ## Evidence and scope
 
+The public dashboard derives its counts from reviewed public artifacts. Its initial primary collection contains 15 questions; collection progress and published answer coverage are separate. An unfinished or unconfirmed task contributes no invented answer or position. The dated live collection status and unknown-attempt accounting are recorded in [live validation](docs/LIVE-VALIDATION.md), not inferred from dashboard availability. The 36-page HTML coverage is a separate measurement.
+
 Keyword observations have private D1 storage, browser/CLI/API controls, durable reservations, recovery, deadline cancellation and baseline/fresh comparison. New `open-web` cases use Astra with OpenAI live web search; older `reviewed-domains` cases keep their restricted corpus. A position is the original recommendation order in one saved answer, not Google rank or general product quality. Target-host matches and target citations are separate; unknown website identities remain unknown. See [keyword operations](docs/KEYWORD-BENCHMARKS.md).
 
 The separate AI visibility trends, sample company profiles, sample citations, and sample index remain illustrative fixtures. They are never stored as measured results or mixed into the published-audit endpoint. A technical readiness score does not establish Google position, live model citations, or task success. DataForSEO uses a separate provider index; its traffic is estimated, and its authority rank is not Folio's readiness score.
@@ -95,9 +102,10 @@ Competitive research found substantial existing overlap. Folio is positioned aro
 
 ## Architecture, evaluations, and business model
 
+- [PUBLIC-DASHBOARD.md](docs/PUBLIC-DASHBOARD.md): public routes, strict snapshot API, collection versus publication, task selection, sources and coverage limits.
 - [AGENT-API.md](docs/AGENT-API.md): scoped keys, 24-hour default freshness, explicit ensure requests, idempotency, recovery and private result projections.
 - [KEYWORD-BENCHMARKS.md](docs/KEYWORD-BENCHMARKS.md): open-web and legacy search scopes, recommendation order, private suites and baseline/fresh comparisons.
-- [FRONTEND-WORKFLOW.md](docs/FRONTEND-WORKFLOW.md): account-aware overview, target/report handoffs, launch preflight, private inputs, agent returns, and replay versus fresh evaluation controls.
+- [FRONTEND-WORKFLOW.md](docs/FRONTEND-WORKFLOW.md): private workspace, target/report handoffs, launch preflight, private inputs, agent returns, and replay versus fresh evaluation controls.
 - [EVALUATION-LOOP.md](docs/EVALUATION-LOOP.md): one run from capture through managed execution, independent verification, private review, and explicit retesting; includes a flow diagram and current improvement-loop gaps.
 - [ARCHITECTURE.md](ARCHITECTURE.md): Next.js/OpenNext, Cloudflare D1, Better Auth, managed session lifecycle, data flow and private/public/provider boundaries.
 - [LOCAL-D1.md](docs/LOCAL-D1.md): persistent local bindings, migration/status/backup commands, isolated D1 integration tests, and database growth decisions.
@@ -142,6 +150,6 @@ Agent interaction studies used actual [Beautiful UI](https://www.beautifului.dev
 
 ## Private website workflow
 
-`/websites` shows the signed-in account’s websites and saved Search Console connections. Opening a connected property brings its existing search report, saved backlink data, website evaluation, and keyword suite together. `/benchmarks` saves private questions and compares baseline/fresh API-agent observations; `/agents` links to research activity and website evaluations. Opening a report or changing a selection does not start a paid lookup. See [keyword API and CLI](docs/KEYWORD-BENCHMARKS.md).
+`/overview?view=workspace` opens saved account results; `/websites` shows the signed-in account’s websites and saved Search Console connections. Opening a connected property brings its existing search report, saved backlink data, website evaluation, and keyword suite together. `/benchmarks` saves private questions and compares baseline/fresh API-agent observations; `/agents` links to research activity and website evaluations. Opening a report or changing a selection does not start a paid lookup. See [keyword API and CLI](docs/KEYWORD-BENCHMARKS.md).
 
 Provider credentials and access controls remain server-side. The public directory and optional technical publication do not expose private Search Console reports or raw agent evidence. Public search observations use a separate reviewed projection; saving a private run grants no publication permission. Chrome and the in-app browser maintain separate login sessions; use Google sign-in in the browser where the private report is opened.

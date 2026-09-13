@@ -1,6 +1,6 @@
 # Folio architecture
 
-Folio is a Next.js application for inspecting a website's technical readiness, SEO context, and how an agent handles captured website evidence. These measurements share a workspace, but keep separate inputs, scoring, and publication rules. The application uses the **managed OpenAI Agents API** for live evidence reviews. OpenAI runs the agent; Folio owns authentication, capture, run records, result verification, and presentation.
+Folio is a Next.js application with a public search-results dashboard and private website workspaces. Technical readiness, SEO context, keyword search observations, and captured-evidence evaluations keep separate inputs, scoring, and publication rules. The application uses the **managed OpenAI Agents API** for live agent work. OpenAI runs the agent; Folio owns authentication, capture, run records, result verification, and presentation.
 
 This document describes the implementation and identifies production work still required. See [EVALUATION-STRATEGY.md](EVALUATION-STRATEGY.md) for what the results establish and [docs/MONETIZATION.md](docs/MONETIZATION.md) for proposed commercial packaging.
 
@@ -23,12 +23,14 @@ flowchart LR
   Next --> GSC[Google Search Console: properties and performance]
   D1 --> Public[Opt-in technical index projection]
   Public --> Browser
-  Artifact[Reviewed public search artifact] --> Browser
+  Artifact[Reviewed public search and progress artifacts] --> PublicDashboard[Public snapshot GET and validation]
+  PublicDashboard --> Browser
 ```
 
 | Layer               | Responsibility                                                                                                     | Implementation                                                          |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
 | Presentation        | Landing page, workspace navigation, charts, evaluations, evidence inspection, agent activity, and proposed pricing | `src/components/`, `src/app/[[...slug]]/page.tsx`                       |
+| Public dashboard | Read-only task progress, published results, per-query selection and strict derived counters | `src/lib/public-dashboard.ts`, `src/components/public-benchmark-dashboard.tsx`, `src/app/api/public/benchmarks/route.ts` |
 | Server boundary     | Session validation, owner-scoped access, bounded inputs, provider calls, and public response projections           | `src/app/api/`                                                          |
 | Authentication      | Email/password, optional Google identity, explicit same-email linking, and persisted sessions                       | `src/lib/auth.ts`, `src/lib/google-auth.ts`, `src/lib/auth-schema.ts`    |
 | Agent-facing API    | Scoped key authentication, saved freshness, atomic idempotency and shared run services | `src/lib/agent-api*.ts`, `src/lib/agent-observation-*.ts`, `src/app/api/v1/` |
@@ -80,6 +82,7 @@ Recurring creation of new evaluations and delivered notifications remain separat
 | `PATCH /api/sites`                                 | Owner changes that site's technical-result publication flag                                         |
 | `GET/POST /api/scans`                              | Owner reads saved scans or runs one approved-page readiness scan                                    |
 | `GET /api/leaderboard`                             | Public projection of explicitly published technical scans using the current readiness rubric        |
+| `GET /api/public/benchmarks`                       | Unauthenticated, validated public artifacts and derived coverage; no D1, auth or provider access     |
 | `GET /api/seo-data`                                | Configuration/authorization only; no paid provider request                                          |
 | `POST /api/seo-data`                               | Approved owner deliberately requests organic and backlinks context                                  |
 | `GET /api/agents/status`                           | Managed Agents API configuration state; not proof of a successful live request                      |
@@ -135,6 +138,7 @@ Imports validate the exact property against Google's list, then request finalize
 | Sample charts and sample evaluations                                                           | Marked as illustrative; never promoted to measured company results by connecting a key                    |
 | Private agent runs | Owner-only browser/CLI records and scoped-key projections; no automatic public export |
 | Public search observations | Separately reviewed allowlisted artifact: query, time, execution labels, ordered recommendations, citations and limits |
+| Public collection progress | Reviewed query IDs, bounded status values, optional start/finish times and public observation references; no owner/provider IDs, errors or usage |
 
 The site publication toggle applies to the site's latest eligible technical scan, including future scans while the flag remains enabled. It is not permission to publish captures, private expected facts, provider usage, or the separate agent evaluation. The public index is a submitted set of URLs; the application does not yet prove domain ownership or comprehensively rank companies.
 
@@ -146,9 +150,9 @@ The fetcher allows reviewed HTTPS hosts, rejects credentials/IP/local host forms
 
 Private keyword benchmarks use migrations 0009 and 0010 for suites, frozen cases, run/configuration history, creation/cancellation attempts and usage reservations. Browser, CLI and scoped-key APIs share the service. Saving questions for an existing owned website performs no inference. New open-web cases use Astra and unrestricted-domain OpenAI live web search; their hosted sandbox has network disabled. Legacy cases retain their reviewed-domain search/network restrictions and original hashes. Normal limits are six starts per rolling day and one active keyword run, with explicit owner daily exceptions. A saved three-minute deadline is enforced by active reconciliation or CLI `--wait`, not a hard billing cap or deployed keyword scheduler. Comparisons require matching query, target, locale, mode, references and execution settings. Baselines are observations, not answer keys. See [keyword operations](docs/KEYWORD-BENCHMARKS.md).
 
-The public search view loads a separately reviewed artifact whose strict field allowlist excludes owner/run/session IDs, usage, private references, raw provider items and credentials. It requires completed open-web observations, retains original one-based recommendation positions and serves the latest observation only for the same exact query. It does not fill missing queries or combine positions into a general company score. Returned reasons/citations remain observations to inspect, not independently verified factual support. Publication of this artifact is separate from private run storage and technical site-publication flags.
+The public search view loads separately reviewed artifacts whose strict field allowlists exclude owner/run/session IDs, usage, private references, raw provider items and credentials. Completed open-web observations retain original one-based recommendation positions. The dashboard selects the latest observation only for the same exact query; it neither fills missing answers nor combines positions into a general company score. Returned reasons/citations remain observations to inspect, not independently verified factual support. Publication is separate from private run storage and technical site-publication flags. An unresolved creation remains an unknown attempt in private accounting; operational dispositions are documented in [live validation](docs/LIVE-VALIDATION.md).
 
-The developer-tool directory is a different public dataset: reviewed source links and dated `readiness-v1` homepage summaries. Its batch script captures bounded HTML and evaluates it inside workerd without executing page JavaScript. Full captures stay in ignored local storage; published summaries contain bounded checks and content hashes. The local Folio preview is displayed separately. Neither this dataset nor keyword search observations reproduce consumer ChatGPT answers or measure execution against other vendors’ APIs.
+The developer-tool directory is a different public dataset: reviewed source links and dated `readiness-v1` homepage summaries. Its batch script captures bounded HTML and evaluates it inside workerd without executing page JavaScript. Full captures stay in ignored local storage; published summaries contain bounded checks and content hashes. Local preview captures are excluded from the public directory. Neither this dataset nor keyword search observations reproduce consumer ChatGPT answers or measure execution against other vendors’ APIs.
 
 Authentication, D1 persistence, technical checks, manual DataForSEO access, managed session integration, and private evidence verification have distinct configuration requirements. A configured key is not a successful live integration test. Report live provider verification separately from fixture-driven automated tests.
 
@@ -165,9 +169,17 @@ The live launch form accepts explicitly confirmed owner reference answers and wi
 
 Saved Search Console reports can explicitly open a private website through `/api/sites/from-search-console`. The exact owner report supplies only its public HTTPS target identity; performance rows never enter model inputs. Creation is idempotent, private by default, and atomically capped at 100 websites. The website view reads saved SEO summaries for the selected host and starts a fresh lookup only from its update action. Public technical publication remains separate from private evidence.
 
-## Saved website overview
+## Public dashboard and saved website overview
 
-`real-overview.tsx` composes owner-scoped saved-site, keyword-suite/run, SEO-report, and Search Console summary endpoints. It mounts beneath an owner-keyed boundary and aborts reads when that boundary changes. Selecting a website uses exact normalized URL matching for keyword cases and technical audits; SEO and Search Console follow their own host/property matching rules. The overview issues GETs only and suppresses the separate activity dock there.
+Plain `/overview` mounts `PublicOverviewShell` and `PublicBenchmarkDashboard`, without Better Auth hooks, private data effects, or the private activity dock. `/leaderboard` always uses the public shell, including when its URL contains workspace-looking hints. The existing opt-in technical index still uses its separate public scan projection. `/overview?view=workspace` explicitly selects account results, and `?view=demo` selects the illustrative dashboard. Legacy overview website/scope hints continue to select the private workflow and cannot grant ownership.
+
+`GET /api/public/benchmarks` reads `public-search-rankings.json`, `public-search-progress.json`, and the separate public homepage summary/catalog. It validates both search artifacts and their exact query/observation relationships, derives `PublicDashboardData`, and returns `Cache-Control: no-store`. Unknown fields, invalid references or malformed data produce a generic 503 without leaking rejected values. The client validates the derived counters and selected observations again. This route performs no authentication, D1 access, provider retrieval, inference or capture.
+
+Published coverage counts questions with a public observation; collection counters separately retain not-started, queued, running, completed, failed, cancelled and unresolved tasks. Completed collection without a public answer remains awaiting publication. A later active task does not remove an older published answer. Distinct website hosts and citation URLs are counted over each query's latest published answer; no average rank is computed. HTML coverage stays separate and excludes local previews.
+
+Task selection uses `/overview?query=<public-query-id>` and native browser history. Search/audience/status filters and a mobile task selector change presentation only. Source titles accompany the exact returned citation URLs, with expandable reasons and observation provenance. Snapshot refreshes use the public GET, currently at 15-second intervals while unpublished tasks other than failed/cancelled remain. These are bundled artifact snapshots, not provider event streaming; production updates require publishing a new application artifact. See [public dashboard behavior and limits](docs/PUBLIC-DASHBOARD.md).
+
+Within the explicit private workspace, `real-overview.tsx` composes owner-scoped saved-site, keyword-suite/run, SEO-report, and Search Console summary endpoints. It mounts beneath an owner-keyed boundary and aborts reads when that boundary changes. Selecting a website uses exact normalized URL matching for keyword cases and technical audits; SEO and Search Console follow their own host/property matching rules. The private overview issues GETs only and suppresses the separate activity dock there.
 
 Metrics use the latest completed answer per question within one search mode. Failed or unresolved later attempts remain separate. The appearance denominator excludes unknown target identities; distinct citations count URLs in the loaded answers. Bounded history and partial reads are disclosed. Page-readiness scores and connected-provider observations retain separate cards and source reports. The sample dashboard is an explicit alternate view.
 
