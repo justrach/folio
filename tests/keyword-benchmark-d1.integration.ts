@@ -7,7 +7,7 @@ import type { D1Database } from "@cloudflare/workers-types";
 import { Miniflare } from "miniflare";
 import { unstable_splitSqlQuery } from "wrangler";
 import { createKeywordBenchmarkSuite, getKeywordBenchmarkSuite, reserveKeywordBenchmarkRun,
-  markKeywordBenchmarkCreateAttempt, updateKeywordBenchmarkRun, getKeywordBenchmarkRun, archiveKeywordBenchmarkRun, reserveKeywordBenchmarkCancellation,
+  markKeywordBenchmarkCreateAttempt, updateKeywordBenchmarkRun, getKeywordBenchmarkRun, archiveKeywordBenchmarkRun, reserveKeywordBenchmarkCancellation, updateKeywordBenchmarkUsage,
   listKeywordBenchmarkRuns, listWebsiteKeywordRunsPage, getKeywordBenchmarkUsage, updateKeywordBenchmarkCase, KeywordBenchmarkStoreError } from "../src/lib/keyword-benchmark-store";
 import { cancelKeywordBenchmark, keywordBenchmarkOverview, reconcileKeywordBenchmark, seedKeywordBenchmark, startKeywordBenchmark } from "../src/lib/keyword-benchmark-service";
 import { compareKeywordBenchmarkRuns } from "../src/lib/keyword-benchmark-types";
@@ -360,8 +360,14 @@ test("archiving old unresolved runs releases capacity without deleting usage or 
   assert.equal(archived.usage.cachedInputTokens,40);assert.ok(archived.archivedAt);assert.equal(archived.status,"requires_action");assert.equal(archived.sessionId,run.sessionId);assert.deepEqual(archived.usage,run.usage);
   assert.equal((await getKeywordBenchmarkUsage(db,"alice")).activeRuns,0);
   await assert.rejects(reserveKeywordBenchmarkRun(db,"alice",{caseId:suite.cases[0].id,kind:"baseline",...config}),/unresolved/);
-  await reserveKeywordBenchmarkRun(db,"alice",{caseId:suite.cases[1].id,kind:"baseline",...config});
+  let next=await reserveKeywordBenchmarkRun(db,"alice",{caseId:suite.cases[1].id,kind:"baseline",...config});
   await assert.rejects(reserveKeywordBenchmarkRun(db,"alice",{caseId:suite.cases[1].id,kind:"baseline",...config}),/limit/);
+  next=await markKeywordBenchmarkCreateAttempt(db,"alice",next.id,next.revision);
+  next=await updateKeywordBenchmarkRun(db,"alice",next.id,next.revision,{status:"failed",sessionId:"late-metered-session"});
+  await assert.rejects(updateKeywordBenchmarkUsage(db,"bob",next,{inputTokens:100,outputTokens:10,totalTokens:110,costUsd:null}));
+  const metered=await updateKeywordBenchmarkUsage(db,"alice",next,{inputTokens:100,cachedInputTokens:40,outputTokens:10,totalTokens:110,costUsd:null});
+  assert.equal(metered.status,"failed");assert.equal(metered.answer,null);assert.equal(metered.usage.cachedInputTokens,40);
+  assert.equal((await updateKeywordBenchmarkUsage(db,"alice",metered,{inputTokens:null,outputTokens:null,totalTokens:null,costUsd:null})).usage.inputTokens,100);
   assert.equal((await db.prepare("SELECT COUNT(*) n FROM provider_cost_latest WHERE source_id=?").bind(run.id).first<{n:number}>())!.n,1);
   await assert.rejects(db.prepare("UPDATE keyword_benchmark_runs SET archived_at=NULL WHERE id=?").bind(run.id).run());
  } finally {await current.dispose();await rm(directory,{recursive:true,force:true});}

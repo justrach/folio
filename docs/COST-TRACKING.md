@@ -19,3 +19,5 @@ The shared library combines the frozen 3,500-question corpus with 350 additional
 ## Archiving unresolved attempts
 
 An owner can archive an unresolved keyword attempt older than 24 hours. If a provider session is known, cancellation must already have been requested. Archiving removes only its local active-capacity hold; it preserves provider IDs, status, quota accounting and cost observations. It does not assert remote cancellation or zero cost. The original case remains blocked while unresolved; different cases retain the normal one-active-run limit. Late provider status and usage can still be retrieved. The authenticated archive endpoint requires exact owner, origin and saved revision.
+
+Provider usage can arrive after a terminal answer. Explicit progress refresh retrieves that same session and appends late metering through an owner/revision guard, without changing its terminal result or starting inference. Missing late usage never replaces known counts.

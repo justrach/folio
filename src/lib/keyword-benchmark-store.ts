@@ -425,3 +425,17 @@ export async function archiveKeywordBenchmarkRun(db: D1Database, ownerId: string
   if (!row) throw new KeywordBenchmarkStoreError("Only an unchanged unresolved attempt older than 24 hours can be archived. Request cancellation first when a session is recorded.",409);
   return decodeRun(row);
 }
+
+/** Late provider metering may arrive after a terminal answer; never rewrite that answer. */
+export async function updateKeywordBenchmarkUsage(db: D1Database, ownerId: string, run: KeywordBenchmarkRun, usage: KeywordBenchmarkRun["usage"]) {
+ requireOwner(ownerId);
+ if (usage.inputTokens === null || usage.outputTokens === null) return run;
+ for (const [key,value] of Object.entries(usage)) if (value !== null && (!Number.isFinite(value) || value < 0 || (key!=="costUsd" && !Number.isSafeInteger(value)))) throw new KeywordBenchmarkStoreError("Invalid provider usage.",400);
+ if (usage.cachedInputTokens != null && usage.cachedInputTokens > usage.inputTokens) throw new KeywordBenchmarkStoreError("Invalid cached usage.",400);
+ if (JSON.stringify(run.usage)===JSON.stringify(usage)) return run;
+ const row=await db.prepare(`UPDATE keyword_benchmark_runs SET usage_json=?,updated_at=?,revision=revision+1
+ WHERE user_id=? AND id=? AND revision=? AND session_id=? AND status IN ('completed','failed','cancelled') RETURNING ${runColumns},answer_json`)
+ .bind(json(usage,1000),Date.now(),ownerId,run.id,run.revision,run.sessionId).first<RunRow>();
+ if(!row) throw new KeywordBenchmarkStoreError("The saved run changed; refresh it before updating usage.",409);
+ return decodeRun(row);
+}

@@ -32,6 +32,7 @@ export function KeywordObservationReport({ run, baseline, busy, onRefresh, onCan
         const url = URL.createObjectURL(new Blob([JSON.stringify({format:"folio-private-keyword-observation-v1",run},null,2)],{type:"application/json"}));
         const anchor = document.createElement("a"); anchor.href=url;anchor.download=`folio-keyword-${run.id}.json`;anchor.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
       }}><ArrowDownToLine size={14}/> Download private observation</button> : <button className="button primary" type="button" disabled={busy} onClick={onRefresh}>Refresh progress</button>}
+      {completed && <button className="button secondary" type="button" disabled={busy} onClick={onRefresh}>Refresh recorded usage</button>}
       <button className="button secondary" type="button" disabled={busy} onClick={onPrepare}>Prepare another observation <ArrowRight size={14}/></button>
       {active(run) && run.sessionId && <button className="button secondary" type="button" disabled={busy || Boolean(run.cancelAttemptAt)} onClick={onCancel}>Cancel observation</button>}
     </div>

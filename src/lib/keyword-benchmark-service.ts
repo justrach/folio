@@ -10,7 +10,7 @@ import { buildKeywordBenchmarkRequest, cancelKeywordBenchmarkSession, createKeyw
 import { acknowledgeKeywordBenchmarkCancellation, createKeywordBenchmarkSuite, getKeywordBenchmarkRun,
   getKeywordBenchmarkSuite, getKeywordBenchmarkUsage, KeywordBenchmarkStoreError, listKeywordBenchmarkRuns,
   listKeywordBenchmarkSuites, markKeywordBenchmarkCreateAttempt, reserveKeywordBenchmarkCancellation,
-  reserveKeywordBenchmarkRun, updateKeywordBenchmarkRun, type KeywordBenchmarkRunPatch } from "./keyword-benchmark-store";
+  reserveKeywordBenchmarkRun, updateKeywordBenchmarkRun, updateKeywordBenchmarkUsage, type KeywordBenchmarkRunPatch } from "./keyword-benchmark-store";
 import { isKeywordBenchmarkId, keywordSearchMode, type KeywordBenchmarkCaseInput, type KeywordBenchmarkRun } from "./keyword-benchmark-types";
 
 import { KEYWORD_OPEN_WEB_MODELS, isKeywordOpenWebModel } from "./keyword-models";
@@ -170,7 +170,13 @@ export async function reconcileKeywordBenchmark(db: D1Database, ownerId: string,
   requireAccess(env, ownerId);
   let run = await ownedRun(db, ownerId, id);
   let initialInputUnconfirmed = false;
-  if (terminal(run) || !run.sessionId) return run;
+  if (!run.sessionId) return run;
+  if (terminal(run)) {
+    try {
+      const observed = await reconcileKeywordBenchmarkSession(run.sessionId, env, { ...options, expectedAllowedDomains: run.allowedDomains, expectedSearchMode: keywordSearchMode(run.case.searchMode) });
+      return await updateKeywordBenchmarkUsage(db,ownerId,run,observed.usage);
+    } catch { return ownedRun(db,ownerId,id); }
+  }
   try {
     const observation = await reconcileKeywordBenchmarkSession(run.sessionId!, env, { ...options, expectedAllowedDomains: run.allowedDomains, expectedSearchMode: keywordSearchMode(run.case.searchMode) });
     initialInputUnconfirmed = Boolean(observation.initialInputUnconfirmed);
