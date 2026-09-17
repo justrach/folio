@@ -169,13 +169,20 @@ test("HTML coverage counts only latest public catalog captures, separately retai
   assert.throws(() => buildPublicHtmlCoverage(catalog, {...batch, results: [row("measured", "complete", 5), {...row("measured", "complete", 10), capturedAt: "invalid"}]}));
 });
 
-test("actual public GET reads only published artifacts, needs no auth, and cannot start provider work", async () => {
+test("actual public GET reads only published projections, needs no auth, and cannot start provider work", async () => {
+  const contextKey = Symbol.for("__cloudflare-context__");
+  const globals = globalThis as unknown as Record<symbol, unknown>;
+  const previousContext = globals[contextKey];
+  globals[contextKey] = {env: {DB: {prepare(sql: string) {
+    assert.equal(sql, "SELECT payload_json,updated_at FROM public_keyword_observations WHERE payload_json IS NOT NULL ORDER BY updated_at,run_id");
+    return {async all() {return {results: []};}};
+  }}}};
   const previousFetch = globalThis.fetch;
   globalThis.fetch = async () => { throw new Error("Public fixture must not call any network or provider."); };
   try {
     const route = await import("../src/app/api/public/benchmarks/route");
     assert.equal("POST" in route, false);
-    const response = route.GET();
+    const response = await route.GET();
     assert.equal(response.status, 200);
     assert.equal(response.headers.get("cache-control"), "no-store");
     assert.equal(response.headers.get("x-content-type-options"), "nosniff");
@@ -186,5 +193,9 @@ test("actual public GET reads only published artifacts, needs no auth, and canno
     assert.ok(data.htmlCoverage && data.htmlCoverage.catalogWebsiteCount > 0);
     assert.equal(data.htmlCoverage?.suiteVersion, "readiness-v1");
     assert.equal(data.summary.queryCount, data.queries.length);
-  } finally { globalThis.fetch = previousFetch; }
+    globals[contextKey] = {env: {DB: {prepare() {throw new Error("Fixture database unavailable");}}}};
+    const unavailable = await route.GET();
+    assert.equal(unavailable.status, 503, "Do not serve stale shared results after a failed database read.");
+    assert.equal(unavailable.headers.get("cache-control"), "no-store");
+  } finally { globalThis.fetch = previousFetch; globals[contextKey] = previousContext; }
 });

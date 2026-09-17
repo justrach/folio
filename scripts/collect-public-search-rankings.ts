@@ -5,14 +5,14 @@ import { fileURLToPath } from "node:url";
 import type { D1Database } from "@cloudflare/workers-types";
 import { getPlatformProxy } from "wrangler";
 import type { AgentsEnvironment } from "../src/lib/agents";
-import { KEYWORD_OPEN_WEB_MODEL, keywordAgentHarnessVersion } from "../src/lib/keyword-benchmark-agent";
-import { isKeywordBenchmarkId, keywordSearchMode, type KeywordBenchmarkAnswer, type KeywordBenchmarkRun } from "../src/lib/keyword-benchmark-types";
-import { createKeywordBenchmarkSuite, getKeywordBenchmarkSuite, KeywordBenchmarkStoreError, validateKeywordBenchmarkAnswer } from "../src/lib/keyword-benchmark-store";
+import { isKeywordBenchmarkId, keywordSearchMode, type KeywordBenchmarkRun } from "../src/lib/keyword-benchmark-types";
+import { createKeywordBenchmarkSuite, getKeywordBenchmarkSuite, KeywordBenchmarkStoreError } from "../src/lib/keyword-benchmark-store";
 import { getKeywordBenchmarkRun, listKeywordBenchmarkRuns, reconcileKeywordBenchmark, startKeywordBenchmark,
   KeywordBenchmarkPersistenceError } from "../src/lib/keyword-benchmark-service";
-import { validateKeywordCollectionEvidence } from "../src/lib/keyword-search-mode";
-import type { PublicSearchObservation, PublicSearchQuery, PublicSearchRankings } from "../src/lib/public-search-rankings";
+import type { PublicSearchQuery, PublicSearchRankings } from "../src/lib/public-search-rankings";
 import { assertPublicSearchRankings } from "../src/lib/public-search-rankings-validation";
+import { projectPublicSearchObservation, PublicCollectionUsageError } from "../src/lib/public-observation-projection";
+export { projectPublicSearchObservation, PublicCollectionUsageError } from "../src/lib/public-observation-projection";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const artifactPath = resolve(root, "src/data/public-search-rankings.json");
@@ -20,55 +20,12 @@ const suiteName = "Public search collection · v1";
 const suiteDescription = "Private source evidence for explicit public search-observation exports. Saving or collecting does not publish an answer.";
 const hash = (value: unknown) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 const active = (run: KeywordBenchmarkRun) => ["queued", "running", "requires_action"].includes(run.status);
-export class PublicCollectionUsageError extends Error {}
 
 export function publicCollectionCaseId(ownerId: string, query: PublicSearchQuery) {
   return `public-search-${hash([ownerId, query.id, query.query, query.language, query.locale, "open-web", "keyword-observation-v1"]).slice(0, 48)}`;
 }
 function sameQuery(run: KeywordBenchmarkRun, query: PublicSearchQuery) {
   return run.case.query === query.query && run.case.language === query.language && run.case.locale === query.locale;
-}
-function publicAnswerFields(answer: KeywordBenchmarkAnswer) {
-  return {
-    recommendations: answer.mentions.map((mention, index) => ({ position: index + 1, name: mention.name, url: mention.url,
-      ...(mention.reason?.trim() ? { reason: mention.reason } : {}), citationUrls: [...(mention.citationUrls ?? [])] })),
-    citations: answer.citations.map(citation => ({ url: citation.url, ...(citation.title?.trim() ? { title: citation.title } : {}) })),
-    limitations: [...(answer.limitations ?? [])],
-  };
-}
-/** Exact allowlist projection. Keep returned order, duplicates, missing URLs and stated limitations. */
-export function projectPublicSearchObservation(run: KeywordBenchmarkRun, query: PublicSearchQuery, privateIdentifiers: string[] = []): PublicSearchObservation {
-  if (run.status !== "completed" || !run.answer || !run.sessionId || !run.answer.collection || !sameQuery(run, query)
-    || run.case.targetUrl !== null || (run.case.referenceFacts?.length ?? 0) > 0 || keywordSearchMode(run.case.searchMode) !== "open-web"
-    || run.model !== KEYWORD_OPEN_WEB_MODEL || run.environmentType !== "openai_hosted" || run.allowedDomains.length
-    || run.harnessVersion !== keywordAgentHarnessVersion("open-web"))
-    throw new PublicCollectionUsageError("Export requires a completed Astra open-web collection for this exact public query, without private targets or reference facts.");
-  const collection = validateKeywordCollectionEvidence(run.answer.collection);
-  if (collection.searchMode !== "open-web" || collection.sessionId !== run.sessionId || collection.rootTurnId !== run.providerMetadata.turnId)
-    throw new PublicCollectionUsageError("The saved collection does not match this run's provider receipt.");
-  let retainedAnswer: KeywordBenchmarkAnswer;
-  try { retainedAnswer = validateKeywordBenchmarkAnswer(JSON.parse(collection.finalAnswerJson)); }
-  catch { throw new PublicCollectionUsageError("The retained final answer is invalid. Nothing was published."); }
-  const answerFields = publicAnswerFields(run.answer);
-  if (JSON.stringify(answerFields) !== JSON.stringify(publicAnswerFields(retainedAnswer)))
-    throw new PublicCollectionUsageError("The proposed public fields do not match the retained final answer. Nothing was published.");
-  const projected = {
-    queryId: query.id, observedAt: new Date(collection.collectedAt).toISOString(), status: "completed" as const,
-    model: run.model, surface: run.surface, searchMode: "open-web" as const,
-    harnessVersion: run.harnessVersion, environmentType: run.environmentType,
-    ...answerFields,
-  };
-  const observation: PublicSearchObservation = { id: `obs-${query.id.slice(0, 80)}-${hash(projected).slice(0, 24)}`, ...projected };
-  assertPublicSearchRankings({ format: "folio-public-search-rankings-v1", queries: [query], observations: [observation] });
-  const serialized = JSON.stringify(observation);
-  const privateValues = [run.id, run.caseId, run.suiteId, run.sessionId,
-    run.providerMetadata.environmentId, run.providerMetadata.requestId, run.providerMetadata.turnId,
-    collection.finalAnswerItemId, ...collection.searchItems.map(item => typeof item.id === "string" ? item.id : ""),
-    typeof collection.validationItem.id === "string" ? collection.validationItem.id : "", ...privateIdentifiers];
-  if (privateValues.some(value => value && serialized.includes(value))
-    || /\b(?:sk-[A-Za-z0-9_-]{12,}|folio_v1_[a-f0-9]{64}|Bearer\s+[A-Za-z0-9._-]+)/i.test(serialized))
-    throw new PublicCollectionUsageError("The proposed public export contains private identifiers or credential-like text. Review the private source; nothing was published.");
-  return observation;
 }
 export function parsePublicCollectionCli(argv: string[]) {
   const command = argv[0];

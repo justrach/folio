@@ -4,38 +4,11 @@ import { readFileSync } from "node:fs";
 import { DatabaseSync, type SQLInputValue } from "node:sqlite";
 import type { D1Database } from "@cloudflare/workers-types";
 import { ensurePublicCollectionSuite, parsePublicCollectionCli, projectPublicSearchObservation, publicCollectionCaseId, PublicCollectionUsageError } from "../scripts/collect-public-search-rankings";
-import { KEYWORD_OPEN_WEB_MODEL, keywordAgentHarnessVersion } from "../src/lib/keyword-benchmark-agent";
+import { projectWebsitePublicObservation, PublicCollectionUsageError as ProjectionError } from "../src/lib/public-observation-projection";
+import { buildKeywordBenchmarkRequest } from "../src/lib/keyword-benchmark-agent";
 import type { KeywordBenchmarkRun } from "../src/lib/keyword-benchmark-types";
-import type { PublicSearchQuery } from "../src/lib/public-search-rankings";
+import { publicKeywordRunFixture as run, retainPublicKeywordAnswer as retainAnswer, publicKeywordQuery as query } from "./fixtures/public-keyword";
 import { assertPublicSearchRankings } from "../src/lib/public-search-rankings-validation";
-
-const query: PublicSearchQuery = { id: "public-fixture", audience: "Learning", category: "Courses", query: "Where can a beginner learn a language?", language: "en", locale: "en-US" };
-function run(): KeywordBenchmarkRun {
-  const value: KeywordBenchmarkRun = { id: "private_run_123", suiteId: "private_suite_123", caseId: "private_case_123", kind: "baseline", baselineRunId: null,
-    surface: "openai-managed-agents", publication: "private", model: KEYWORD_OPEN_WEB_MODEL,
-    harnessVersion: keywordAgentHarnessVersion("open-web"), environmentType: "openai_hosted", environmentFingerprint: "private_configuration_digest",
-    case: { query: query.query, targetUrl: null, language: query.language, locale: query.locale, rubricVersion: "keyword-observation-v1", searchMode: "open-web" },
-    status: "completed", sessionId: "private_session_123", createAttemptAt: "2026-09-13T00:00:00.000Z", allowedDomains: [], deadlineAt: "2026-09-13T00:03:00.000Z",
-    cancelAttemptAt: null, cancelAcknowledgedAt: null, createdAt: "2026-09-13T00:00:00.000Z", updatedAt: "2026-09-13T00:00:30.000Z", revision: 3,
-    providerMetadata: { environmentId: "private_environment_123", requestId: "private_request_123", turnId: "private_turn_123" }, error: null,
-    usage: { inputTokens: null, outputTokens: null, totalTokens: null, costUsd: null },
-    answer: { text: "Raw private response.", mentions: [
-      { name: "Beta", url: "https://beta.com/", reason: "Original reason", citationUrls: ["https://beta.com/docs"] },
-      { name: "Alpha", url: null, citationUrls: [] },
-      { name: "Beta", url: "https://beta.com/", citationUrls: ["https://beta.com/docs"] },
-    ], citations: [{ url: "https://beta.com/docs", title: "Beta documentation", quote: "Private raw quote omitted from public artifact." }], limitations: ["One observed response; not a general market rank."],
-      collection: { format: "folio-keyword-collection-v1", searchMode: "open-web", collectedAt: "2026-09-13T00:00:30.000Z", sessionId: "private_session_123", rootTurnId: "private_turn_123",
-        finalAnswerItemId: "private_final_123", finalAnswerJson: '{"raw":"private_owner_123"}',
-        searchItems: [{ id: "private_search_123", type: "web_search_call", turn_id: "private_turn_123", status: "completed", raw: "private raw search material" }],
-        validationItem: { id: "private_validation_123", type: "command_execution", turn_id: "private_turn_123", status: "completed", exit_code: null, output: "FOLIO_KEYWORD_JSON_VALID" } } },
-  };
-  retainAnswer(value);
-  return value;
-}
-function retainAnswer(value: KeywordBenchmarkRun) {
-  const { collection, ...answer } = value.answer!;
-  if (collection) collection.finalAnswerJson = JSON.stringify({ ...answer, rawPrivateField: "private_owner_123" });
-}
 
 test("public collection export preserves original positions and excludes private source fields", () => {
   const source = run(), before = JSON.stringify(source);
@@ -149,4 +122,59 @@ test("private collection suite reuse rejects edited questions and isolates accou
   const changed = JSON.stringify({ ...first.cases[0], query: "Private edited query" });
   sqlite.prepare("UPDATE keyword_benchmark_cases SET case_json=? WHERE id=?").run(changed, first.cases[0].id);
   await assert.rejects(ensurePublicCollectionSuite(db, "alice", [query]), PublicCollectionUsageError);
+});
+
+
+test("website publication excludes owner inputs and preserves retained public evidence without mutation", () => {
+  const source = run();
+  source.case.targetUrl = "https://private-target.com/";
+  source.case.referenceFacts = [{ id: "private-reference", statement: "Owner-only expected answer" }];
+  const before = structuredClone(source), queryBefore = structuredClone(query);
+  const result = projectWebsitePublicObservation(source, query, ["private_owner_123"]);
+  assert.deepEqual(result, projectPublicSearchObservation(run(), query));
+  assert.deepEqual(source, before);
+  assert.deepEqual(query, queryBefore);
+  assert.equal(JSON.stringify(result).includes("private-target"), false);
+  assert.equal(JSON.stringify(result).includes("Owner-only"), false);
+  assert.throws(() => projectPublicSearchObservation(source, query), PublicCollectionUsageError);
+  assert.equal(ProjectionError, PublicCollectionUsageError);
+  const request = buildKeywordBenchmarkRequest({ ...source.case, runId: source.id, caseId: source.caseId,
+    model: source.model, allowedDomains: source.allowedDomains });
+  assert.equal(request.input.includes(source.case.targetUrl), false);
+  assert.equal(request.input.includes("Owner-only expected answer"), false);
+  result.recommendations[0].citationUrls.push("https://unrelated.com/");
+  assert.deepEqual(source, before);
+});
+
+test("both public projectors scan question metadata and observation fields for private identifiers and credentials", () => {
+  for (const project of [projectPublicSearchObservation, projectWebsitePublicObservation]) {
+    for (const secret of ["private_owner_123", "private_session_123", "sk-syntheticSecretToken12345", "folio_sandbox_" + "a".repeat(64), "Bearer syntheticToken123"] ) {
+      const source = run(), publicQuery = { ...query, query: `Where can I learn ${secret}?` };
+      source.case.query = publicQuery.query;
+      assert.throws(() => project(source, publicQuery, ["private_owner_123"]), /private identifiers or credential-like text/);
+      const metadataQuery = { ...query, category: secret };
+      assert.throws(() => project(run(), metadataQuery, ["private_owner_123"]), /private identifiers or credential-like text/);
+      const answerSource = run();
+      answerSource.answer!.limitations = [secret]; retainAnswer(answerSource);
+      assert.throws(() => project(answerSource, query, ["private_owner_123"]), /private identifiers or credential-like text/);
+    }
+  }
+});
+
+test("website publication requires the same retained receipt, standard harness, query and public answer", () => {
+  const variants = [
+    (value: KeywordBenchmarkRun) => { value.harnessVersion += "-seo-v1"; },
+    (value: KeywordBenchmarkRun) => { value.case.query = "A different question"; },
+    (value: KeywordBenchmarkRun) => { value.case.locale = "en-GB"; },
+    (value: KeywordBenchmarkRun) => { value.answer!.collection!.sessionId = "other-session"; },
+    (value: KeywordBenchmarkRun) => { value.answer!.collection!.rootTurnId = "other-turn"; },
+    (value: KeywordBenchmarkRun) => { value.answer!.mentions[0].reason = "Edited after collection"; },
+    (value: KeywordBenchmarkRun) => { value.answer!.mentions.reverse(); value.answer!.mentions.unshift(value.answer!.mentions.splice(1, 1)[0]); },
+    (value: KeywordBenchmarkRun) => { value.status = "running"; },
+    (value: KeywordBenchmarkRun) => { value.model = "different-model"; },
+  ];
+  for (const change of variants) {
+    const source = run(); source.case.targetUrl = "https://private-target.com/"; change(source);
+    assert.throws(() => projectWebsitePublicObservation(source, query));
+  }
 });

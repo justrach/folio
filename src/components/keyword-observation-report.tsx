@@ -1,4 +1,5 @@
 "use client";
+import { KeywordPublication } from "./keyword-publication";
 
 import { useEffect, useState } from "react";
 import { ArrowDownToLine, ArrowRight, Check, ChevronDown, CircleDashed, ExternalLink } from "lucide-react";
@@ -39,6 +40,7 @@ export function KeywordObservationReport({ run, baseline, busy, onRefresh, onCan
     {completed ? <>
       <section className="benchmark-presence" aria-label="Target presence"><div><h3>Did your site appear?</h3><p>Matched by website address.</p></div><dl><div><dt>Target in recommendations</dt><dd>{presenceLabel(metrics.targetNamed)}</dd><small>{metrics.targetNamed === "yes" ? `Returned at ${metrics.targetPositions.map(value => `position ${value}`).join(", ")}` : metrics.targetNamed === "unknown" ? "Some identities could not be matched." : "No listed URL matched your site."}</small></div><div><dt>Target cited as a source</dt><dd>{citationLabel(metrics.targetCited)}</dd><small>In the returned source links.</small></div></dl></section>
       <PublicWebsiteComparison key={run.id} run={run} />
+      <KeywordPublication key={`publication-${run.id}`} runId={run.id} />
       {baseline && <Comparison baseline={baseline} fresh={run}/>}
     </> : <KeywordProgress run={run}/>}
 

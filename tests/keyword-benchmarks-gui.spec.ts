@@ -393,3 +393,35 @@ test("private report compares matching public context without publishing or star
   await expect(comparison.getByText("Public fixture recommendation")).toHaveCount(0);
   expect(state.starts).toEqual([]); expect(state.saves).toEqual([]); expect(state.forbidden).toEqual([]);
 });
+
+test("publication requires a reviewed preview; withdrawal clears the shared result without a paid start", async ({page})=>{
+ const state=await fixture(page,[run()]);
+ const payload={format:"folio-public-search-rankings-v1",queries:[{id:"shared-fixture",audience:"Software & work",category:"Planning",query:suite.cases[0].query,language:"en",locale:"US"}],observations:[]};
+ const actions:string[]=[];let published=false,revision=0;
+ await page.route("**/api/benchmarks/runs/*/publication",async route=>{
+  const request=route.request();
+  if(request.method()==="GET")return route.fulfill({json:{published,revision,payload:published?payload:null}});
+  const body=request.postDataJSON();actions.push(body.action);
+  if(body.action==="preview")return route.fulfill({json:{payload,reviewHash:"reviewed-fixture",revision}});
+  if(body.action==="publish") {expect(body.reviewHash).toBe("reviewed-fixture");published=true;revision++;}
+  if(body.action==="withdraw"){expect(body.revision).toBe(revision);published=false;revision++;}
+  return route.fulfill({json:{published,revision,payload:published?payload:null}});
+ });
+ await page.goto("/benchmarks?run=baseline-fixture");
+ const sharing=page.getByRole("region",{name:"Public index sharing"});
+ await sharing.getByRole("button",{name:"Share this result with the public index"}).click();
+ await sharing.getByLabel("Category",{exact:true}).fill("Planning");
+ await sharing.getByRole("button",{name:"Preview public fields"}).click();
+ await expect(sharing.getByRole("heading",{name:"Exactly what will be published"})).toBeVisible();
+ expect(actions).toEqual(["preview"]);expect(published).toBe(false);
+ await noOverflow(page);
+ await sharing.getByRole("button",{name:"Cancel preview"}).click();
+ await expect(sharing.getByRole("button",{name:"Publish these fields"})).toHaveCount(0);
+ await sharing.getByRole("button",{name:"Preview public fields"}).click();
+ await sharing.getByRole("button",{name:"Publish these fields"}).click();
+ await expect(sharing.getByRole("link",{name:"View in the public index"})).toHaveAttribute("href","/overview?query=shared-fixture");
+ await sharing.getByRole("button",{name:"Withdraw from public index"}).click();
+ await expect(sharing.getByRole("button",{name:"Preview public fields"})).toBeVisible();
+ expect(actions).toEqual(["preview","preview","publish","withdraw"]);expect(state.starts).toEqual([]);expect(state.forbidden).toEqual([]);
+ await noOverflow(page);
+});

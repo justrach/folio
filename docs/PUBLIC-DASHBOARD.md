@@ -73,3 +73,17 @@ The landing page, public overview result and Search rankings view plot actual re
 The private question editor can now browse published questions and reuse their exact wording, language and locale. Selecting one replaces the editable question draft and starts no provider work. Owners can also prepare three editable scenarios from their supplied audience/task description. These are deterministic drafts, not facts inferred from a website capture.
 
 A completed private keyword report reads the public snapshot and shows the newest observation with identical question, language, locale, model, search mode, surface, harness version and environment type. It retains original public recommendation positions and links to the source question. Private references and environment fingerprints are not public; no before/after change score or causality claim is made. Mismatches remain unmeasured, and a failed public read does not hide the private answer. The comparison request contains no private question, website, owner or run selector, and performs no writes or inference.
+
+## Owner-selected shared observations
+
+Completed standard open-web website observations can be explicitly shared from their report. Opening sharing reads publication state; Preview computes the exact question metadata, recommendation order, source links, model/harness, observation time and limitations. Publish requires the hash of that reviewed projection. No action here creates provider work.
+
+Migration `0014_public_keyword_observations.sql` stores the projection with an owner/run foreign key and revision. Raw answer text, reference facts, target metadata, provider receipts and usage remain private. Completed source evidence must match its retained final answer and provider receipt. Public GET reads only this projection table alongside reviewed static artifacts; it does not join private records. A database failure returns unavailable rather than serving stale shared records.
+
+Withdrawal clears the projection and increments a retained revision, invalidating old previews. Source deletion cascades the projection. Already downloaded copies cannot be recalled. Two owners publishing the same public observation do not transfer withdrawal authority: each controls only their own publication, and another independent copy can remain visible. Existing static operator publications are separate copies.
+
+The browser must first show the exact public fields. Catalog-exact questions retain their existing identity/category; new questions use content-derived IDs. Returned position remains an observation, not a universal score. The first version accepts only the currently validated standard Astra open-web harness; SEO-assisted and no-browser observations remain separate.
+
+Release 17 September 2026: migration0014 applied before the D1-backed public GET. Deployed Worker version `a554097b-09a5-4b58-a1e6-77e6162c62c8`. Live public GET retained 3,500 questions and 286 observations with no-store caching; anonymous publication GET/POST returned401. No owner result was published during release checks.
+
+Validation: 261 unit tests, 24 real isolated D1 tests, 46 affected desktop/mobile GUI checks, and the production OpenNext build passed. After the final merge correction, nine focused dashboard/D1 checks passed; desktop/mobile preview overflow checks also passed. Provider calls were not made. Actual authenticated production publication remains unverified; local D1 and mocked browser tests establish only their respective scopes.
