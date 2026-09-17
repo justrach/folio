@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import type { CostSummary } from "@/lib/provider-costs";
 import "./cost-summary.css";
 const dollars = (micros: number | null) => micros === null ? "Unknown" : new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 4 }).format(micros / 1_000_000);
-const sourceName = (source: string) => ({keyword:"Question runs",evaluation:"Website evaluations",seo:"Search & backlinks","semantic-review":"Semantic reviews"}[source] ?? source);
+const sourceName = (source: string) => ({keyword:"Question runs",evaluation:"Website evaluations",seo:"Search & backlinks","semantic-review":"Semantic reviews","agent-semantic-tool":"Agent TypeSafe checks"}[source] ?? source);
 export function CostSummaryPanel() {
   const [data,setData] = useState<CostSummary | null>(null), [error,setError] = useState("");
   const [refresh,setRefresh] = useState(0);

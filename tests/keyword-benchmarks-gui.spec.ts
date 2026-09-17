@@ -528,3 +528,17 @@ test("unknown creation explains recovery limits without offering a nonexistent c
   await expect(report(page)).toContainText("Needs attention");
   expect(state.starts).toEqual([]); expect(state.cancels).toEqual([]); expect(state.forbidden).toEqual([]);
 });
+
+test('TypeSafe tool authorization is opt-in and sent only on explicit question launch',async({page})=>{
+ const state=await fixture(page);
+ state.suites=[{...suite,cases:suite.cases.map(c=>({...c,searchMode:'open-web' as const}))}];
+ state.openWebModels=[{id:'gpt-5.6-luna',label:'Luna',validation:'experimental'},{id:'gpt-5.6-sol',label:'Sol',validation:'experimental'},{id:'gpt-5.6-terra',label:'Terra',validation:'experimental'}];
+ await page.goto(`/benchmarks?suite=${suite.id}`);
+ const check=page.getByRole('checkbox',{name:/Let this agent check claims with TypeSafe/});
+ await expect(check).not.toBeChecked();await check.check();expect(state.starts).toHaveLength(0);
+ await page.getByRole('combobox',{name:'Model for the next observation'}).selectOption('gpt-5.6-terra');expect(state.starts).toHaveLength(0);
+ await noOverflow(page);
+ await page.getByRole('button',{name:'Run baseline',exact:true}).click();
+ await expect.poll(()=>state.starts.length).toBe(1);
+ expect(state.starts[0]).toMatchObject({caseId:'case-fixture',useTypesafeTools:true,model:'gpt-5.6-terra'});
+});

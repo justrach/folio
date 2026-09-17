@@ -23,3 +23,5 @@ An owner can archive an unresolved keyword attempt older than 24 hours. If a pro
 Provider usage can arrive after a terminal answer. Explicit progress refresh retrieves that same session and appends late metering through an owner/revision guard, without changing its terminal result or starting inference. Missing late usage never replaces known counts.
 
 TypeSafe page-evidence reviews are included in the owner cost summary through `provider_cost_latest`. Their one-per-evaluation reservation and final token counts live in `typesafe_reviews`; monetary values remain NULL without a verified price. Deleting evaluation evidence erases the review text but retains its usage and quota accounting. See [semantic reviews](TYPESAFE-REVIEWS.md).
+
+Agent-invoked TypeSafe checks use a separate `agent-semantic-tool` source from post-run semantic reviews. Each call reservation counts once, including unknown outcomes. Repeated MCP requests with the same key do not add charges. Monetary totals stay unknown; runtime limits cap calls, not a guaranteed dollar amount.

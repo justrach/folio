@@ -187,3 +187,14 @@ test("recorded cache tokens come from the selected cumulative usage, never added
     assert.equal(result.usage.costUsd,null);
   }
 });
+
+test('TypeSafe is opt-in service MCP for each open-web model and changes harness provenance',()=>{
+ for(const model of ['gpt-5.6-luna','gpt-5.6-sol','gpt-5.6-terra','gpt-6-astra']) {
+  const plain={...input,model,allowedDomains:[],searchMode:'open-web' as const};
+  assert.equal(buildKeywordBenchmarkRequest(plain).agent.tools.length,1);
+  const payload=buildKeywordBenchmarkRequest({...plain,typesafeMcp:{url:'https://folio.example.com/api/typesafe-mcp',authorization:'Bearer folio_typesafe_'+'a'.repeat(64)}});
+  assert.equal(payload.agent.tools[1].type,'mcp');assert.match(payload.metadata.harness_version,/-typesafe-v1$/);
+  assert.equal(payload.environment.network.access,'disabled');assert.ok(!payload.input.includes('folio_typesafe_'));
+ }
+ assert.throws(()=>buildKeywordBenchmarkRequest({...input,typesafeMcp:{url:'http://localhost/api/typesafe-mcp',authorization:'secret'}}));
+});

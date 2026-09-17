@@ -73,6 +73,7 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
   const [run, setRun] = useState<KeywordBenchmarkRun | null>(null);
   const [baseline, setBaseline] = useState<KeywordBenchmarkRun | null>(null);
   const [baselineChoices, setBaselineChoices] = useState<Record<string, string>>({});
+  const [typesafeCase, setTypesafeCase] = useState("");
   const [seoCase, setSeoCase] = useState("");
   const [modelChoice, setModelChoice] = useState("gpt-6-astra");
   const [busy, setBusy] = useState("");
@@ -210,7 +211,7 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
     if (!ready || runs.some(item => item.caseId === caseId && item.status === "requires_action" && (item.archivedAt || (item.holdReleasedAt && !item.sessionId)))
       || (kind === "fresh" && !baselineRunId)) return;
     void action(`start-${caseId}`, async signal => {
-      const result = await request<{run:KeywordBenchmarkRun}>("/api/benchmarks/runs", signal, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({caseId,kind,...(currentSuite?.cases.find(item => item.id === caseId)?.searchMode === "open-web" && selectedModel ? {model:selectedModel.id} : {}),...(seoCase === `${suiteId}/${caseId}` && (!selectedModel || selectedModel.id === "gpt-6-astra") ? {useSeoTools:true} : {}),...(baselineRunId ? {baselineRunId} : {})}) });
+      const result = await request<{run:KeywordBenchmarkRun}>("/api/benchmarks/runs", signal, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({caseId,kind,...(currentSuite?.cases.find(item => item.id === caseId)?.searchMode === "open-web" && selectedModel ? {model:selectedModel.id} : {}),...(seoCase === `${suiteId}/${caseId}` && (!selectedModel || selectedModel.id === "gpt-6-astra") ? {useSeoTools:true} : {}),...(typesafeCase === `${suiteId}/${caseId}` ? {useTypesafeTools:true} : {}),...(baselineRunId ? {baselineRunId} : {})}) });
       if (signal.aborted) return;
       if (result.run.suiteId !== suiteId || result.run.caseId !== caseId || result.run.publication !== "private") throw new Error("The returned observation does not match this question.");
       select(result.run.suiteId, result.run.id); setRun(result.run); setRefresh(value => value + 1);
@@ -259,6 +260,7 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
           <label>Model for the next observation<select value={selectedModel.id} disabled={!!busy} aria-describedby="benchmark-model-note" onChange={event => { setModelChoice(event.target.value); if (event.target.value !== "gpt-6-astra") setSeoCase(""); }}>{openWebModels.map(item => <option key={item.id} value={item.id}>{item.label}{item.validation === "experimental" ? " · Experimental" : ""}</option>)}</select></label>
           <p id="benchmark-model-note" className="benchmark-muted">{selectedModel.validation === "experimental" ? `${selectedModel.label} is experimental in this workflow. A paid attempt may fail or return incomplete evidence.` : `${selectedModel.label} uses the validated open-web workflow.`} Changing the model starts no work. Results from different models are separate observations.</p>
         </>}
+        {selectedCase.searchMode === "open-web" && <label><input type="checkbox" checked={typesafeCase === `${suiteId}/${selectedCase.id}`} disabled={!!busy} onChange={event => setTypesafeCase(event.target.checked ? `${suiteId}/${selectedCase.id}` : "")}/> Let this agent check claims with TypeSafe before answering. Authorizes up to three additional paid checks of agent-supplied source excerpts. Judgments are advisory.</label>}
         {selectedCase.searchMode === "open-web" && selectedCase.targetUrl && <label><input type="checkbox" checked={seoCase === `${suiteId}/${selectedCase.id}` && (!selectedModel || selectedModel.id === "gpt-6-astra")} disabled={!!busy || !!selectedModel && selectedModel.id !== "gpt-6-astra"} onChange={event => setSeoCase(event.target.checked ? `${suiteId}/${selectedCase.id}` : "")}/> Let this agent look up search and backlinks for this website. Allows one additional paid DataForSEO overview; repeated tool calls reuse it.</label>}
         {selectedCase.searchMode === "open-web" && selectedCase.targetUrl && selectedModel && selectedModel.id !== "gpt-6-astra" && <p className="benchmark-muted">Search and backlink tools are available only with Astra. Their use with other models has not been validated.</p>}
         {baselines.length > 0 && <label>Baseline for {selectedCase.query}<select value={baselineId} onChange={event => setBaselineChoices(value => ({...value,[selectedCase.id]:event.target.value}))}>{baselines.map(item => <option value={item.id} key={item.id}>{item.model} · {date(item.createdAt)}</option>)}</select></label>}
