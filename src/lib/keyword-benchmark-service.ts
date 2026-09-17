@@ -13,6 +13,8 @@ import { acknowledgeKeywordBenchmarkCancellation, createKeywordBenchmarkSuite, g
   reserveKeywordBenchmarkRun, updateKeywordBenchmarkRun, type KeywordBenchmarkRunPatch } from "./keyword-benchmark-store";
 import { isKeywordBenchmarkId, keywordSearchMode, type KeywordBenchmarkCaseInput, type KeywordBenchmarkRun } from "./keyword-benchmark-types";
 
+import { KEYWORD_OPEN_WEB_MODELS, isKeywordOpenWebModel } from "./keyword-models";
+
 export const KEYWORD_BENCHMARK_LIMITS = { maxRunsPerDay: 6, maxActiveRuns: 1 } as const;
 export type KeywordBenchmarkServiceOptions = KeywordAgentOptions & { useSeoTools?: boolean; now?: Date; allowedDomains?: string[];
   reserve?: (input: Parameters<typeof reserveKeywordBenchmarkRun>[2], limits: { maxRunsPerDay: number | null; maxActiveRuns: number }) => Promise<{ run: KeywordBenchmarkRun; created: boolean }> };
@@ -26,7 +28,7 @@ export class KeywordBenchmarkPersistenceError extends Error {
 export function keywordBenchmarkAccess(env: AgentsEnvironment, ownerId: string) {
   const connection = getAgentsConnectionStatus(env);
   const authorized = Boolean(ownerId) && (env.OPENAI_ALLOWED_USER_IDS ?? "").split(",").map(value => value.trim()).filter(Boolean).includes(ownerId);
-  return { configured: connection.configured, authorized, canRun: connection.configured && authorized, model: connection.model,
+  return { configured: connection.configured, authorized, canRun: connection.configured && authorized, model: connection.model, openWebModels: KEYWORD_OPEN_WEB_MODELS,
     ...KEYWORD_BENCHMARK_LIMITS, maxRunsPerDay: authorized && isAgentDailyLimitExempt(env, ownerId) ? null : KEYWORD_BENCHMARK_LIMITS.maxRunsPerDay, deadlineMs: KEYWORD_AGENT_DEADLINE_MS,
     message: !connection.configured ? "Connect the evaluation provider before starting a benchmark."
       : !authorized ? "This account needs approval before it can spend evaluation credits."
@@ -84,19 +86,22 @@ async function persistReceipt(db: D1Database, ownerId: string, run: KeywordBench
     }
   }
 }
-export async function keywordBenchmarkExecutionConfig(trial: KeywordBenchmarkCaseInput, env: AgentsEnvironment, options: KeywordBenchmarkServiceOptions = {}) {
+export async function keywordBenchmarkExecutionConfig(trial: KeywordBenchmarkCaseInput, env: AgentsEnvironment, options: KeywordBenchmarkServiceOptions = {}, selectedModel?: string) {
   const searchMode = keywordSearchMode(trial.searchMode);
+  if (selectedModel !== undefined && (searchMode !== "open-web" || !isKeywordOpenWebModel(selectedModel)))
+    throw new KeywordBenchmarkStoreError("Choose a supported model for an open-web question.", 400);
   if (options.useSeoTools) {
+    if (selectedModel && selectedModel !== KEYWORD_OPEN_WEB_MODEL) throw new KeywordBenchmarkStoreError("SEO-assisted observations currently support Astra only.", 400);
     if (searchMode !== "open-web") throw new KeywordBenchmarkStoreError("SEO tools require an open-web question.", 400);
 
   }
   const allowedDomains = searchMode === "open-web" ? [] : keywordAllowedDomains(options.allowedDomains ?? [...KEYWORD_BENCHMARK_ALLOWED_DOMAINS]);
-  return { searchMode, allowedDomains, model: searchMode === "open-web" ? KEYWORD_OPEN_WEB_MODEL : getAgentsConnectionStatus(env).model, harnessVersion: keywordAgentHarnessVersion(searchMode, options.useSeoTools),
+  return { searchMode, allowedDomains, model: searchMode === "open-web" ? selectedModel ?? KEYWORD_OPEN_WEB_MODEL : getAgentsConnectionStatus(env).model, harnessVersion: keywordAgentHarnessVersion(searchMode, options.useSeoTools),
     environmentType: "openai_hosted", environmentFingerprint: options.useSeoTools ? await agentApiHash((await keywordEnvironmentFingerprint(allowedDomains, searchMode)) + ":sandbox-seo-v1") : await keywordEnvironmentFingerprint(allowedDomains, searchMode), deadlineMs: KEYWORD_AGENT_DEADLINE_MS };
 }
 /** Paid start: validate before reserving, then commit the one-attempt marker before one provider POST. */
 export async function startKeywordBenchmark(db: D1Database, ownerId: string,
-  input: { caseId: string; kind: "baseline" | "fresh"; baselineRunId?: string }, env: AgentsEnvironment, options: KeywordBenchmarkServiceOptions = {}): Promise<KeywordBenchmarkRun> {
+  input: { caseId: string; kind: "baseline" | "fresh"; baselineRunId?: string; model?: string }, env: AgentsEnvironment, options: KeywordBenchmarkServiceOptions = {}): Promise<KeywordBenchmarkRun> {
   const access = requireAccess(env, ownerId);
   if (!isKeywordBenchmarkId(input.caseId)) throw new KeywordBenchmarkStoreError("Choose a valid benchmark case.", 400);
   const row = await db.prepare("SELECT suite_id FROM keyword_benchmark_cases WHERE user_id=? AND id=?").bind(ownerId, input.caseId).first<{ suite_id: string }>();
@@ -105,7 +110,7 @@ export async function startKeywordBenchmark(db: D1Database, ownerId: string,
   const trial = suite?.cases.find(value => value.id === input.caseId);
   if (!trial) throw new KeywordBenchmarkStoreError("The private benchmark case was not found.", 404);
   if (options.useSeoTools) sandboxSeoUrl(env, ownerId, trial.targetUrl);
-  const config = await keywordBenchmarkExecutionConfig(trial, env, options);
+  const config = await keywordBenchmarkExecutionConfig(trial, env, options, input.model);
   const providerInput = { runId: "preflight", caseId: trial.id, query: trial.query, language: trial.language, locale: trial.locale,
     model: config.model, allowedDomains: config.allowedDomains, searchMode: config.searchMode };
   buildKeywordBenchmarkRequest(providerInput);

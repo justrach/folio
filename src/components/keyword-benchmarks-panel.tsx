@@ -12,7 +12,8 @@ import "./keyword-benchmarks-panel.css";
 
 type Site = { id: string; name: string; url: string };
 type Template = { id: string; name: string; description?: string; cases: unknown[] };
-type Access = { configured: boolean; authorized: boolean; canRun: boolean; maxRunsPerDay: number | null; maxActiveRuns: number };
+type OpenWebModel = { id: string; label: string; validation: "validated" | "experimental" };
+type Access = { openWebModels?: OpenWebModel[]; configured: boolean; authorized: boolean; canRun: boolean; maxRunsPerDay: number | null; maxActiveRuns: number };
 type Usage = { attemptsLast24Hours: number; remainingRuns: number | null; activeRuns: number; remainingActiveRuns: number };
 type Overview = { suites: KeywordBenchmarkSuiteSummary[]; templates: Template[]; access: Access; usage: Usage };
 type RecoverySnapshot = { recovery: { runId: string; sessionId: string | null }; run: KeywordBenchmarkRun; receivedAt: string };
@@ -73,6 +74,7 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
   const [baseline, setBaseline] = useState<KeywordBenchmarkRun | null>(null);
   const [baselineChoices, setBaselineChoices] = useState<Record<string, string>>({});
   const [seoCase, setSeoCase] = useState("");
+  const [modelChoice, setModelChoice] = useState("gpt-6-astra");
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -202,11 +204,13 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
     }
     finally { pendingAction.current = false; if (!signal.aborted) setBusy(""); }
   }
+  const openWebModels = overview?.access.openWebModels ?? [];
+  const selectedModel = openWebModels.find(item => item.id === modelChoice) ?? openWebModels.find(item => item.id === "gpt-6-astra") ?? openWebModels[0];
   function start(caseId: string, kind: "baseline" | "fresh", baselineRunId?: string) {
     if (!ready || runs.some(item => item.caseId === caseId && item.holdReleasedAt && item.status === "requires_action" && !item.sessionId)
       || (kind === "fresh" && !baselineRunId)) return;
     void action(`start-${caseId}`, async signal => {
-      const result = await request<{run:KeywordBenchmarkRun}>("/api/benchmarks/runs", signal, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({caseId,kind,...(seoCase === `${suiteId}/${caseId}` ? {useSeoTools:true} : {}),...(baselineRunId ? {baselineRunId} : {})}) });
+      const result = await request<{run:KeywordBenchmarkRun}>("/api/benchmarks/runs", signal, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({caseId,kind,...(currentSuite?.cases.find(item => item.id === caseId)?.searchMode === "open-web" && selectedModel ? {model:selectedModel.id} : {}),...(seoCase === `${suiteId}/${caseId}` && (!selectedModel || selectedModel.id === "gpt-6-astra") ? {useSeoTools:true} : {}),...(baselineRunId ? {baselineRunId} : {})}) });
       if (signal.aborted) return;
       if (result.run.suiteId !== suiteId || result.run.caseId !== caseId || result.run.publication !== "private") throw new Error("The returned observation does not match this question.");
       select(result.run.suiteId, result.run.id); setRun(result.run); setRefresh(value => value + 1);
@@ -243,7 +247,7 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
     <nav className="benchmark-notebook" aria-label="Keyword notebook"><div className="benchmark-notebook-heading">
       {overview?.suites.length ? <label>Keyword suite<select value={suiteId} disabled={!!busy} onChange={event => select(event.target.value)}><option value="" disabled>Choose a saved suite</option>{overview.suites.map(item => <option key={item.id} value={item.id}>{item.name} · {item.caseCount} questions</option>)}</select></label> : <p>{overview ? "Save a suite to begin." : "Loading your saved suites…"}</p>}
       <button type="button" className="benchmark-refresh" disabled={!!busy} onClick={() => setRefresh(value => value + 1)} aria-label="Refresh saved history"><RefreshCw size={15}/></button>
-    </div>{runs.length > 0 && <div className="benchmark-history" aria-label="Saved keyword observations">{runs.map(item => <button key={item.id} type="button" disabled={!!busy} aria-pressed={item.id === runId} aria-label={`Open ${item.kind} observation for ${item.case.query}`} onClick={() => select(item.suiteId,item.id)}><strong>{item.case.query}</strong><span>{item.kind === "baseline" ? "Baseline" : "Fresh"} · {statusLabel(item.status)} · {date(item.createdAt)}</span></button>)}</div>}</nav>
+    </div>{runs.length > 0 && <div className="benchmark-history" aria-label="Saved keyword observations">{runs.map(item => <button key={item.id} type="button" disabled={!!busy} aria-pressed={item.id === runId} aria-label={`Open ${item.kind} observation for ${item.case.query}`} onClick={() => select(item.suiteId,item.id)}><strong>{item.case.query}</strong><span>{item.kind === "baseline" ? "Baseline" : "Fresh"} · {statusLabel(item.status)} · {item.model} · {date(item.createdAt)}</span></button>)}</div>}</nav>
     {overview?.suites.length && !suiteId && !runId ? <p className="benchmark-muted">Choose a saved suite. No suite was selected automatically for this website.</p> : null}
     {runId && !currentRun && <p role="status" className="benchmark-loading">Opening saved observation…</p>}
     {currentRun && <KeywordObservationReport run={currentRun} baseline={baseline} busy={!!busy} onRefresh={() => refreshRun("reconcile")} onCancel={() => refreshRun("cancel")} onPrepare={() => {setSettingsOpen(true); requestAnimationFrame(() => {settingsRef.current?.scrollIntoView({behavior:"smooth",block:"start"}); settingsRef.current?.querySelector("summary")?.focus();});}}/>}
@@ -251,8 +255,14 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
       <p className="benchmark-question-coverage">{answeredQuestions} of {currentSuite.cases.length} questions have a completed answer{attentionQuestions > 0 ? ` · ${attentionQuestions} latest ${attentionQuestions === 1 ? "attempt needs" : "attempts need"} attention` : ""}.</p>
       <div className="benchmark-question-list" aria-label="Saved questions">{currentSuite.cases.map(item => <button key={item.id} type="button" aria-label={item.query} aria-pressed={item.id===selectedCase?.id} onClick={() => setCaseChoice(item.id)}>{item.query}<span className="question-result-state">{caseRuns(item.id)[0] ? statusLabel(caseRuns(item.id)[0].status) : "Draft · not started"}</span></button>)}</div>
       {selectedCase && <div className="benchmark-selected-question"><h2>{selectedCase.query}</h2><p className="benchmark-muted">{selectedCase.targetUrl ?? "No website target"} · {selectedCase.language} · {selectedCase.locale}</p><p className="benchmark-muted">{selectedCase.searchMode === "open-web" ? "Search scope: open web" : "Search scope: reviewed documentation"}. The recorded answer is private.</p>
-        {selectedCase.searchMode === "open-web" && selectedCase.targetUrl && <label><input type="checkbox" checked={seoCase === `${suiteId}/${selectedCase.id}`} disabled={!!busy} onChange={event => setSeoCase(event.target.checked ? `${suiteId}/${selectedCase.id}` : "")}/> Let this agent look up search and backlinks for this website. Allows one additional paid DataForSEO overview; repeated tool calls reuse it.</label>}
-        {baselines.length > 0 && <label>Baseline for {selectedCase.query}<select value={baselineId} onChange={event => setBaselineChoices(value => ({...value,[selectedCase.id]:event.target.value}))}>{baselines.map(item => <option value={item.id} key={item.id}>{date(item.createdAt)}</option>)}</select></label>}
+        {selectedCase.searchMode === "open-web" && selectedModel && <>
+          <label>Model for the next observation<select value={selectedModel.id} disabled={!!busy} aria-describedby="benchmark-model-note" onChange={event => { setModelChoice(event.target.value); if (event.target.value !== "gpt-6-astra") setSeoCase(""); }}>{openWebModels.map(item => <option key={item.id} value={item.id}>{item.label}{item.validation === "experimental" ? " · Experimental" : ""}</option>)}</select></label>
+          <p id="benchmark-model-note" className="benchmark-muted">{selectedModel.validation === "experimental" ? `${selectedModel.label} is experimental in this workflow. A paid attempt may fail or return incomplete evidence.` : `${selectedModel.label} uses the validated open-web workflow.`} Changing the model starts no work. Results from different models are separate observations.</p>
+        </>}
+        {selectedCase.searchMode === "open-web" && selectedCase.targetUrl && <label><input type="checkbox" checked={seoCase === `${suiteId}/${selectedCase.id}` && (!selectedModel || selectedModel.id === "gpt-6-astra")} disabled={!!busy || !!selectedModel && selectedModel.id !== "gpt-6-astra"} onChange={event => setSeoCase(event.target.checked ? `${suiteId}/${selectedCase.id}` : "")}/> Let this agent look up search and backlinks for this website. Allows one additional paid DataForSEO overview; repeated tool calls reuse it.</label>}
+        {selectedCase.searchMode === "open-web" && selectedCase.targetUrl && selectedModel && selectedModel.id !== "gpt-6-astra" && <p className="benchmark-muted">Search and backlink tools are available only with Astra. Their use with other models has not been validated.</p>}
+        {baselines.length > 0 && <label>Baseline for {selectedCase.query}<select value={baselineId} onChange={event => setBaselineChoices(value => ({...value,[selectedCase.id]:event.target.value}))}>{baselines.map(item => <option value={item.id} key={item.id}>{item.model} · {date(item.createdAt)}</option>)}</select></label>}
+        {selectedCase.searchMode === "open-web" && selectedModel && baselineId && baselines.find(item => item.id === baselineId)?.model !== selectedModel.id && <p className="benchmark-muted">The selected baseline uses a different model. A fresh run will retain that baseline link, but it will not be a matched comparison. Run a baseline with {selectedModel.label} for a same-model comparison.</p>}
         <div className="benchmark-actions"><button className="button secondary" type="button" disabled={!ready || selectedCaseUnresolved || !!busy} onClick={() => start(selectedCase.id,"baseline")}>Run baseline</button><button className="button primary" type="button" disabled={!ready || selectedCaseUnresolved || !baselineId || !!busy} onClick={() => start(selectedCase.id,"fresh",baselineId)}>Run fresh observation</button></div>
         {selectedCaseUnresolved && <p className="benchmark-muted">This question has an unresolved earlier attempt. Choose a different question while it is reviewed.</p>}
         {!baselineId && <p className="benchmark-muted">A completed baseline is needed before a fresh comparison.</p>}

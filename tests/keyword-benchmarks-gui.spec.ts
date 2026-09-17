@@ -30,6 +30,7 @@ function summary(value: KeywordBenchmarkRun) {
 async function fixture(page: Page, initialRuns: KeywordBenchmarkRun[] = [], saved = true) {
   const state = { owner: "alice" as string | null, saved, suites: [suite], runs: initialRuns, starts: [] as Record<string, unknown>[], saves: [] as Record<string, unknown>[],
     forbidden: [] as string[], detailReads: [] as string[], finishedReads: [] as string[], reconciles: [] as string[], cancels: [] as string[],
+    openWebModels: undefined as undefined | { id: string; label: string; validation: "validated" | "experimental" }[],
     holdDetail: null as Promise<void> | null, completeOnReconcile: false, failReceipt: false, unmetered: false };
   const connection = { configured: false, authorized: false, canRun: false, model: "fixture-model", allowedTargets: [], message: "Browser fixture only." };
   const user = () => ({ id: state.owner!, name: "Fixture owner", email: `${state.owner}@example.test`, emailVerified: true, createdAt: at, updatedAt: at });
@@ -48,7 +49,7 @@ async function fixture(page: Page, initialRuns: KeywordBenchmarkRun[] = [], save
     if (path === "/api/benchmarks" && method === "GET") return route.fulfill({ json: {
       suites: state.saved ? state.suites.map(item => ({ ...item, cases: undefined, caseCount: item.cases.length })) : [],
       templates: [{ id: "template-fixture", name: "Developer questions fixture", description: "Saved questions only.", cases: suite.cases }],
-      access: { configured: true, authorized: true, canRun: true, model: "fixture-model", maxRunsPerDay: state.unmetered ? null : 6, maxActiveRuns: 1 },
+      access: { openWebModels: state.openWebModels, configured: true, authorized: true, canRun: true, model: "fixture-model", maxRunsPerDay: state.unmetered ? null : 6, maxActiveRuns: 1 },
       usage: { attemptsLast24Hours: state.starts.length, remainingRuns: state.unmetered ? null : 6 - state.starts.length,
         activeRuns: state.runs.filter(isKeywordBenchmarkBlocking).length,
         remainingActiveRuns: state.runs.some(isKeywordBenchmarkBlocking) ? 0 : 1 },
@@ -60,6 +61,8 @@ async function fixture(page: Page, initialRuns: KeywordBenchmarkRun[] = [], save
     if (path === "/api/benchmarks/runs" && method === "POST") {
       const body = req.postDataJSON(); state.starts.push(body);
       const value = run(`${body.kind}-created`, body.kind);
+      value.case = state.suites.flatMap(item => item.cases).find(item => item.id === body.caseId) ?? value.case;
+      if (body.model) value.model = body.model;
       if (body.kind === "baseline") { value.status = "running"; value.answer = null; }
       if (state.failReceipt) {
         state.runs.unshift({ ...value, sessionId: null, status: "requires_action" });
@@ -142,7 +145,7 @@ test("a fresh answer compares with its completed baseline and saved navigation s
   await expect(comparison).toContainText("New fixture tool");
   await comparison.screenshot({path:info.outputPath("keyword-comparison.png"),animations:"disabled"});
   expect(state.starts).toEqual([{ caseId: "case-fixture", kind: "fresh", baselineRunId: "baseline-fixture" }]);
-  await expect(report(page)).toContainText("Ordered as returned by Astra for this question.");
+  await expect(report(page)).toContainText("Ordered as returned by fixture-model for this question.");
   await page.getByRole("button", { name: `Open baseline observation for ${suite.cases[0].query}`, exact: true }).click();
   await expect(report(page)).toContainText("Baseline fixture answer.");
   await page.goBack(); await expect(report(page)).toContainText("Fresh fixture answer.");
@@ -424,4 +427,75 @@ test("publication requires a reviewed preview; withdrawal clears the shared resu
  await expect(sharing.getByRole("button",{name:"Preview public fields"})).toBeVisible();
  expect(actions).toEqual(["preview","preview","publish","withdraw"]);expect(state.starts).toEqual([]);expect(state.forbidden).toEqual([]);
  await noOverflow(page);
+});
+
+const modelOptions = [
+  { id: "gpt-6-astra", label: "Astra", validation: "validated" as const },
+  { id: "gpt-5.6-luna", label: "Luna", validation: "experimental" as const },
+];
+test("open-web model selection starts nothing until an explicit paid start", async ({ page }) => {
+  const state = await fixture(page);
+  state.openWebModels = modelOptions;
+  state.suites = [{ ...suite, cases: suite.cases.map(item => ({ ...item, searchMode: "open-web" })) }];
+  await page.goto(`/benchmarks?suite=${suite.id}`);
+  const select = page.getByRole("combobox", { name: "Model for the next observation", exact: true });
+  await expect(select).toHaveValue("gpt-6-astra");
+  const seo = page.getByRole("checkbox", { name: /Let this agent look up search and backlinks/ });
+  await seo.check();
+  await select.selectOption("gpt-5.6-luna");
+  await expect(seo).not.toBeChecked();
+  await expect(seo).toBeDisabled();
+  await expect(page.getByText(/Search and backlink tools are available only with Astra/)).toBeVisible();
+  await select.selectOption("gpt-6-astra");
+  await expect(seo).toBeEnabled();
+  await expect(seo).not.toBeChecked();
+  await select.selectOption("gpt-5.6-luna");
+  await expect(page.getByText(/Luna is experimental in this workflow/)).toBeVisible();
+  expect(state.starts).toEqual([]);
+  await noOverflow(page);
+  await page.getByRole("button", { name: "Run baseline", exact: true }).click();
+  await expect.poll(() => state.starts.length).toBe(1);
+  expect(state.starts[0]).toEqual({ caseId: suite.cases[0].id, kind: "baseline", model: "gpt-5.6-luna" });
+  expect(state.forbidden).toEqual([]);
+});
+
+test("reviewed documentation omits the open-web model from a paid start", async ({ page }) => {
+  const state = await fixture(page); state.openWebModels = modelOptions;
+  await page.goto(`/benchmarks?suite=${suite.id}`);
+  await expect(page.getByRole("combobox", { name: "Model for the next observation", exact: true })).toHaveCount(0);
+  await page.getByRole("button", { name: "Run baseline", exact: true }).click();
+  await expect.poll(() => state.starts.length).toBe(1);
+  expect(state.starts[0]).toEqual({ caseId: suite.cases[0].id, kind: "baseline" });
+});
+
+test("changing model preserves the fresh baseline link and explains mismatched context", async ({ page }) => {
+  const baseline = run(); baseline.model = "gpt-6-astra"; baseline.case = { ...baseline.case, searchMode: "open-web" };
+  const state = await fixture(page, [baseline]); state.openWebModels = modelOptions;
+  state.suites = [{ ...suite, cases: [{ ...suite.cases[0], ...baseline.case }] }];
+  await page.goto(`/benchmarks?suite=${suite.id}`);
+  await page.getByRole("combobox", { name: "Model for the next observation", exact: true }).selectOption("gpt-5.6-luna");
+  await expect(page.getByText(/The selected baseline uses a different model/)).toBeVisible();
+  expect(state.starts).toEqual([]);
+  await page.getByRole("button", { name: "Run fresh observation", exact: true }).click();
+  await expect.poll(() => state.starts.length).toBe(1);
+  expect(state.starts[0]).toMatchObject({ model: "gpt-5.6-luna", kind: "fresh", baselineRunId: baseline.id });
+  await expect(page.getByText("Ordered as returned by gpt-5.6-luna for this question.")).toBeVisible();
+});
+
+test("model selection resets when a different owner signs in", async ({ page }) => {
+  const state = await fixture(page); state.openWebModels = modelOptions;
+  state.suites = [{ ...suite, cases: suite.cases.map(item => ({ ...item, searchMode: "open-web" })) }];
+  await page.goto(`/benchmarks?suite=${suite.id}`);
+  await page.getByRole("combobox", { name: "Model for the next observation", exact: true }).selectOption("gpt-5.6-luna");
+  await navigate(page, "/settings");
+  await page.getByRole("button", { name: "Sign out", exact: true }).click();
+  await expect.poll(() => state.owner).toBeNull();
+  await page.goto("/login");
+  await page.getByLabel("Email address", { exact: true }).fill("bob@example.test");
+  await page.getByLabel("Password", { exact: true }).fill("browser-fixture-password");
+  await page.getByRole("button", { name: "Sign in", exact: true }).click();
+  await expect(page).toHaveURL(/\/websites$/);
+  await navigate(page, "/benchmarks");
+  await expect(page.getByRole("combobox", { name: "Model for the next observation", exact: true })).toHaveValue("gpt-6-astra");
+  expect(state.starts).toEqual([]); expect(state.forbidden).toEqual([]);
 });

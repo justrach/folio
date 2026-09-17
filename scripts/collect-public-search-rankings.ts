@@ -4,6 +4,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { D1Database } from "@cloudflare/workers-types";
 import { getPlatformProxy } from "wrangler";
+import { isKeywordOpenWebModel } from "../src/lib/keyword-models";
 import type { AgentsEnvironment } from "../src/lib/agents";
 import { isKeywordBenchmarkId, keywordSearchMode, type KeywordBenchmarkRun } from "../src/lib/keyword-benchmark-types";
 import { createKeywordBenchmarkSuite, getKeywordBenchmarkSuite, KeywordBenchmarkStoreError } from "../src/lib/keyword-benchmark-store";
@@ -29,7 +30,7 @@ function sameQuery(run: KeywordBenchmarkRun, query: PublicSearchQuery) {
 }
 export function parsePublicCollectionCli(argv: string[]) {
   const command = argv[0];
-  if (!command || command === "--help") return { command: "help", ownerId: "", queryId: undefined, runId: undefined, wait: false, publish: false };
+  if (!command || command === "--help") return { command: "help", ownerId: "", queryId: undefined, runId: undefined, model: undefined, wait: false, publish: false };
   if (!["seed", "start", "reconcile", "status", "export"].includes(command)) throw new PublicCollectionUsageError("Unknown public collection command.");
   const values = new Map<string, string>(), flags = new Set<string>();
   for (let i = 1; i < argv.length; i++) {
@@ -38,7 +39,7 @@ export function parsePublicCollectionCli(argv: string[]) {
       if (flags.has(key)) throw new PublicCollectionUsageError("Duplicate command flag.");
       flags.add(key); continue;
     }
-    if (!["--owner-id", "--query-id", "--run-id"].includes(key) || values.has(key) || !argv[i + 1] || argv[i + 1].startsWith("--")) throw new PublicCollectionUsageError("Invalid or duplicate command option.");
+    if (!["--owner-id", "--query-id", "--run-id", "--model"].includes(key) || values.has(key) || !argv[i + 1] || argv[i + 1].startsWith("--")) throw new PublicCollectionUsageError("Invalid or duplicate command option.");
     values.set(key, argv[++i]);
   }
   const ownerId = values.get("--owner-id") ?? "", queryId = values.get("--query-id"), runId = values.get("--run-id");
@@ -50,7 +51,9 @@ export function parsePublicCollectionCli(argv: string[]) {
   if (["reconcile", "export"].includes(command) && !isKeywordBenchmarkId(runId)) throw new PublicCollectionUsageError("Provide a valid saved --run-id.");
   if (runId && !["reconcile", "export"].includes(command)) throw new PublicCollectionUsageError("--run-id applies only to reconcile or export.");
   if (queryId && !["start", "status"].includes(command)) throw new PublicCollectionUsageError("--query-id applies only to start or status.");
-  return { command, ownerId, queryId, runId, wait: flags.has("--wait"), publish: flags.has("--publish") };
+  const model = values.get("--model");
+  if (model !== undefined && (command !== "start" || !isKeywordOpenWebModel(model))) throw new PublicCollectionUsageError("Choose a supported --model only for an explicit start.");
+  return { command, ownerId, queryId, runId, model, wait: flags.has("--wait"), publish: flags.has("--publish") };
 }
 async function readArtifact() {
   const value: unknown = JSON.parse(await readFile(artifactPath, "utf8")); assertPublicSearchRankings(value); return value;
@@ -104,7 +107,7 @@ async function waitForRun(db: D1Database, ownerId: string, initial: KeywordBench
 }
 function help() {
   console.log("Usage: node --conditions=react-server --import tsx scripts/collect-public-search-rankings.ts <seed|start|reconcile|status|export> --owner-id <existing-local-account>\n"
-    + "start --query-id <public-query-id> --confirm-spend [--wait]\nreconcile --run-id <saved-run-id> [--wait]\nstatus [--query-id <public-query-id>]\nexport --run-id <completed-run-id> [--publish]\n"
+    + "start --query-id <public-query-id> --confirm-spend [--model gpt-6-astra|gpt-5.6-luna] [--wait]\nreconcile --run-id <saved-run-id> [--wait]\nstatus [--query-id <public-query-id>]\nexport --run-id <completed-run-id> [--publish]\n"
     + "Raw evidence stays private in local D1 and .local/public-search-collections. Export writes a private preview unless --publish is explicit. Only start creates a paid task; --wait retrieves it and enforces its saved deadline, not a guaranteed billing cap.");
 }
 async function main() {
@@ -120,9 +123,15 @@ async function main() {
     const { DB: db, ...env } = proxy.env;
     if (!(await db.prepare("SELECT id FROM user WHERE id=?").bind(options.ownerId).first())) throw new PublicCollectionUsageError("The selected local account does not exist.");
     if (options.command === "seed" || options.command === "start") {
-      const suite = await ensurePublicCollectionSuite(db, options.ownerId, artifact.queries);
-      if (options.command === "seed") { await privateOutput(suite, "suite"); return; }
-      let run = await startKeywordBenchmark(db, options.ownerId, { caseId: publicCollectionCaseId(options.ownerId, selected!), kind: "baseline" }, env);
+      // Suites are bounded to fifty cases; a large index spans deterministic chunks.
+      if (options.command === "seed") {
+        for (let offset = 0; offset < artifact.queries.length; offset += 50)
+          await privateOutput(await ensurePublicCollectionSuite(db, options.ownerId, artifact.queries.slice(offset, offset + 50)), "suite");
+        return;
+      }
+      const offset = Math.floor(artifact.queries.findIndex(query => query.id === selected!.id) / 50) * 50;
+      await ensurePublicCollectionSuite(db, options.ownerId, artifact.queries.slice(offset, offset + 50));
+      let run = await startKeywordBenchmark(db, options.ownerId, { caseId: publicCollectionCaseId(options.ownerId, selected!), kind: "baseline", model: options.model }, env);
       await privateOutput(run, "start");
       if (options.wait) { run = await waitForRun(db, options.ownerId, run, env); await privateOutput(run, "result"); }
       console.log(`Collection status: ${run.status}.`); if (["failed", "cancelled", "requires_action"].includes(run.status)) process.exitCode = 2;

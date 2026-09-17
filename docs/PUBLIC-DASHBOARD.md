@@ -82,8 +82,24 @@ Migration `0014_public_keyword_observations.sql` stores the projection with an o
 
 Withdrawal clears the projection and increments a retained revision, invalidating old previews. Source deletion cascades the projection. Already downloaded copies cannot be recalled. Two owners publishing the same public observation do not transfer withdrawal authority: each controls only their own publication, and another independent copy can remain visible. Existing static operator publications are separate copies.
 
-The browser must first show the exact public fields. Catalog-exact questions retain their existing identity/category; new questions use content-derived IDs. Returned position remains an observation, not a universal score. The first version accepts only the currently validated standard Astra open-web harness; SEO-assisted and no-browser observations remain separate.
+The browser must first show the exact public fields. Catalog-exact questions retain their existing identity/category; new questions use content-derived IDs. Returned position remains an observation, not a universal score. Publication accepts the standard open-web harness and explicitly allowlisted models after retained-evidence validation; SEO-assisted and no-browser observations remain separate. Astra has live validation; Luna remains experimental until its exact Folio contract has been exercised.
 
 Release 17 September 2026: migration0014 applied before the D1-backed public GET. Deployed Worker version `a554097b-09a5-4b58-a1e6-77e6162c62c8`. Live public GET retained 3,500 questions and 286 observations with no-store caching; anonymous publication GET/POST returned401. No owner result was published during release checks.
 
 Validation: 261 unit tests, 24 real isolated D1 tests, 46 affected desktop/mobile GUI checks, and the production OpenNext build passed. After the final merge correction, nine focused dashboard/D1 checks passed; desktop/mobile preview overflow checks also passed. Provider calls were not made. Actual authenticated production publication remains unverified; local D1 and mocked browser tests establish only their respective scopes.
+
+## Model-specific collection and reading
+
+Open-web starts now accept an explicit allowlisted model. Astra remains the default; Luna is offered as experimental pending a completed hosted-web validation in Folio. Selecting a model never creates work. The selected model is frozen in the existing reservation and sent with its single create request; the one-active-run limit is shared across models. Unsupported choices are rejected before reservation. SEO-assisted starts remain Astra-only because that combined tool path has not been validated for Luna.
+
+The public index can select a model and read its latest observation for each exact question. Missing model results remain unmeasured; a result or running state from another model is not substituted. Models remain part of comparison identity. The all-model view is latest-per-question, not a pooled vote or cross-model score.
+
+The public collection CLI accepts `start --model gpt-5.6-luna` alongside its existing `--confirm-spend` requirement. Large catalogs are split into suites of at most 50 questions; seeding does not start collection. A published Luna result must pass the same retained-answer, provider-receipt, search and validation-marker checks as Astra. Allowlisting a model is not evidence of a successful provider run.
+
+Reference: the [official Luna model page](https://developers.openai.com/api/docs/models/gpt-5.6-luna) lists web search, hosted shell and structured outputs. Folio's exact managed-session combination still requires its own live check.
+
+Model-controls release: Worker `94ba1e26-16d7-4d14-969b-4d0129958fbc` deployed on 17 September 2026. No new provider sessions or publications were created. The public corpus still contains 286 Astra open-web observations; Luna currently has no published observation in this corpus. The older no-browser Luna cohort is a separate harness and is not pooled into these results.
+
+Validation: 267 unit tests and 25 isolated D1 tests passed. The affected GUI run passed 54 checks and failed two stale assertions expecting every fixture report to say Astra; after correcting them to the recorded fixture model, both desktop/mobile reruns passed. TypeScript and the production OpenNext build passed. Live checks covered the Luna unmeasured URL, switching to Astra rankings, 390px layout, and absence of private/provider API POSTs during navigation. A first overbroad no-POST assertion caught Cloudflare `/cdn-cgi/rum` analytics; the follow-up identified that destination and verified the relevant API boundary. Screenshots are private ignored local artifacts, not repository data.
+
+Authenticated production validation remains pending: the existing local validation account was rejected by production sign-in. No account approval list or spending limit was changed. A finite two-question Luna validation plan is saved locally, but no starts have been made.

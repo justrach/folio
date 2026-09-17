@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { keywordBenchmarkAccess } from "../src/lib/keyword-benchmark-service";
+import { keywordBenchmarkAccess, keywordBenchmarkExecutionConfig } from "../src/lib/keyword-benchmark-service";
 import { keywordBenchmarkErrorResponse, requireKeywordBenchmarkOrigin } from "../src/lib/keyword-benchmark-api";
 import { KeywordBenchmarkStoreError } from "../src/lib/keyword-benchmark-store";
 import { KeywordAgentError } from "../src/lib/keyword-benchmark-agent";
@@ -31,4 +31,15 @@ test("benchmark mutations require the configured app origin and responses do not
     assert.ok(response.status >= 500); assert.equal(response.headers.get("cache-control"), "private, no-store");
     assert.equal((await response.text()).includes("PRIVATE_TOKEN"), false);
   }
+});
+
+test("explicit open-web model selection freezes supported models and rejects unsupported combinations",async()=>{
+ const trial={query:"Which tool helps a team plan?",targetUrl:null,language:"en",locale:"en-US",rubricVersion:"keyword-observation-v1",searchMode:"open-web" as const};
+ const env={OPENAI_API_KEY:"fixture-not-a-real-key"};
+ assert.equal((await keywordBenchmarkExecutionConfig(trial,env)).model,"gpt-6-astra");
+ assert.equal((await keywordBenchmarkExecutionConfig(trial,env,{},"gpt-5.6-luna")).model,"gpt-5.6-luna");
+ await assert.rejects(keywordBenchmarkExecutionConfig(trial,env,{},"unknown-model"));
+ await assert.rejects(keywordBenchmarkExecutionConfig(trial,env,{useSeoTools:true},"gpt-5.6-luna"));
+ await assert.rejects(keywordBenchmarkExecutionConfig({...trial,searchMode:"reviewed-domains"},env,{},"gpt-5.6-luna"));
+ assert.deepEqual(keywordBenchmarkAccess(env,"alice").openWebModels.map(model=>model.id),["gpt-6-astra","gpt-5.6-luna"]);
 });

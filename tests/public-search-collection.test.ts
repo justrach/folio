@@ -178,3 +178,12 @@ test("website publication requires the same retained receipt, standard harness, 
     assert.throws(() => projectWebsitePublicObservation(source, query));
   }
 });
+
+test("multi-model CLI and public projection preserve distinct model observations",()=>{
+ const base=run(), other=run();other.model="gpt-5.6-luna";
+ const astra=projectPublicSearchObservation(base,query),luna=projectPublicSearchObservation(other,query);
+ assert.notEqual(astra.id,luna.id);assert.equal(luna.model,"gpt-5.6-luna");
+ assert.equal(parsePublicCollectionCli(["start","--owner-id","alice","--query-id",query.id,"--confirm-spend","--model","gpt-5.6-luna"]).model,"gpt-5.6-luna");
+ assert.throws(()=>parsePublicCollectionCli(["start","--owner-id","alice","--query-id",query.id,"--confirm-spend","--model","unsupported"]));
+ assert.throws(()=>parsePublicCollectionCli(["status","--owner-id","alice","--model","gpt-5.6-luna"]));
+});

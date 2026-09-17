@@ -45,7 +45,7 @@ export function KeywordObservationReport({ run, baseline, busy, onRefresh, onCan
     </> : <KeywordProgress run={run}/>}
 
     {completed && run.answer && <div className="benchmark-evidence-layout">
-      <section className="benchmark-recommendations" aria-label="Returned recommendations"><h3>Recommendations</h3><p className="benchmark-muted">Ordered as returned by Astra for this question.</p>
+      <section className="benchmark-recommendations" aria-label="Returned recommendations"><h3>Recommendations</h3><p className="benchmark-muted">Ordered as returned by {modelLabel(run)} for this question.</p>
         {metrics.recommendations.length ? <ol>{metrics.recommendations.map(item => {
           const mention = run.answer!.mentions[item.position - 1];
           return <li key={`${item.position}-${item.name}`}><details><summary><span className="benchmark-position">{item.position}</span><span><strong>{item.name}</strong><small>{item.domain ?? "Website identity unknown"}{item.matchesTarget === true ? " · Your site" : ""}</small></span><span className="benchmark-recommendation-source-count">{item.citationUrls.length} {item.citationUrls.length === 1 ? "source" : "sources"}<ChevronDown size={14}/></span></summary><div><p>{mention.reason || "No explanation was returned for this entry."}</p>{safeLink(item.url) && <a href={safeLink(item.url)!} target="_blank" rel="noreferrer">Open listed website <ExternalLink size={12}/></a>}{item.citationUrls.length ? <ul aria-label={`Sources returned for ${item.name}`}>{item.citationUrls.map((url,index) => <li key={`${url}-${index}`}><SourceLink url={url}/></li>)}</ul> : <p className="benchmark-muted">No citations were linked to this recommendation.</p>}</div></details></li>;

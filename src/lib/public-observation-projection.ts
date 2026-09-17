@@ -1,6 +1,7 @@
 import "server-only";
+import { isKeywordOpenWebModel } from "./keyword-models";
 import { createHash } from "node:crypto";
-import { KEYWORD_OPEN_WEB_MODEL, keywordAgentHarnessVersion } from "./keyword-benchmark-agent";
+import { keywordAgentHarnessVersion } from "./keyword-benchmark-agent";
 import { keywordSearchMode, type KeywordBenchmarkAnswer, type KeywordBenchmarkRun } from "./keyword-benchmark-types";
 import { validateKeywordBenchmarkAnswer } from "./keyword-benchmark-store";
 import { validateKeywordCollectionEvidence } from "./keyword-search-mode";
@@ -24,11 +25,11 @@ function publicAnswerFields(answer: KeywordBenchmarkAnswer) {
 function projectObservation(run: KeywordBenchmarkRun, query: PublicSearchQuery, privateIdentifiers: string[], website: boolean): PublicSearchObservation {
   if (run.status !== "completed" || !run.answer || !run.sessionId || !run.answer.collection || !sameQuery(run, query)
     || (!website && (run.case.targetUrl !== null || (run.case.referenceFacts?.length ?? 0) > 0)) || keywordSearchMode(run.case.searchMode) !== "open-web"
-    || run.model !== KEYWORD_OPEN_WEB_MODEL || run.environmentType !== "openai_hosted" || run.allowedDomains.length
+    || !isKeywordOpenWebModel(run.model) || run.environmentType !== "openai_hosted" || run.allowedDomains.length
     || run.harnessVersion !== keywordAgentHarnessVersion("open-web"))
     throw new PublicCollectionUsageError(website
-      ? "Publication requires a completed Astra open-web collection for this exact question and the standard target-withheld harness."
-      : "Export requires a completed Astra open-web collection for this exact public query, without private targets or reference facts.");
+      ? "Publication requires a completed supported-model open-web collection for this exact question and the standard target-withheld harness."
+      : "Export requires a completed supported-model open-web collection for this exact public query, without private targets or reference facts.");
   const collection = validateKeywordCollectionEvidence(run.answer.collection);
   if (collection.searchMode !== "open-web" || collection.sessionId !== run.sessionId || collection.rootTurnId !== run.providerMetadata.turnId)
     throw new PublicCollectionUsageError("The saved collection does not match this run's provider receipt.");

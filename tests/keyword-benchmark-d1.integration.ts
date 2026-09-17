@@ -287,3 +287,22 @@ test("operator suite allowance is bounded and does not change the browser defaul
     await assert.rejects(createKeywordBenchmarkSuite(db,"bob",{name:"Unbounded denied",cases:[input]},{maxSuites:101}), error => error instanceof KeywordBenchmarkStoreError && error.status===400);
   } finally { await current.dispose(); await rm(directory,{recursive:true,force:true}); }
 });
+
+test("selected open-web model is frozen before one provider create and unsupported models reserve nothing", {timeout:90_000},async()=>{
+ const directory=await mkdtemp(join(tmpdir(),"folio-model-selection-d1-"));let current:Miniflare|undefined;
+ try {
+  current=runtime(directory);const db=await current.getD1Database("DB");await setup(db);
+  const suite=await createKeywordBenchmarkSuite(db,"alice",{name:"Model selection",cases:[{...input,searchMode:"open-web"}]});
+  const env={OPENAI_API_KEY:"synthetic-fixture",OPENAI_ALLOWED_USER_IDS:"alice"};
+  const requested:string[]=[];
+  const options={fetcher:(async(_url:unknown,init?:RequestInit)=>{requested.push(JSON.parse(String(init?.body)).agent.model);return Response.json({id:"session_model_fixture",object:"agent.session",status:"in_progress",required_actions:[]});}) as typeof fetch};
+  await assert.rejects(startKeywordBenchmark(db,"alice",{caseId:suite.cases[0].id,kind:"baseline",model:"unsupported"},env,options));
+  assert.equal((await getKeywordBenchmarkUsage(db,"alice")).attemptsLast24Hours,0);assert.equal(requested.length,0);
+  const saved=await startKeywordBenchmark(db,"alice",{caseId:suite.cases[0].id,kind:"baseline",model:"gpt-5.6-luna"},env,options);
+  assert.equal(saved.model,"gpt-5.6-luna");assert.deepEqual(requested,["gpt-5.6-luna"]);
+  await assert.rejects(startKeywordBenchmark(db,"alice",{caseId:suite.cases[0].id,kind:"baseline",model:"gpt-6-astra"},env,options));
+  assert.deepEqual(requested,["gpt-5.6-luna"],"active guard spans models");
+  await current.dispose();current=runtime(directory);const restored=await getKeywordBenchmarkRun(await current.getD1Database("DB"),"alice",saved.id);
+  assert.equal(restored?.model,"gpt-5.6-luna");assert.equal(restored?.sessionId,"session_model_fixture");
+ } finally {try{await current?.dispose();}finally{await rm(directory,{recursive:true,force:true});}}
+});

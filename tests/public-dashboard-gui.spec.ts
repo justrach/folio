@@ -276,3 +276,42 @@ test("3500 public questions render bounded pages and preserve deep links, filter
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(await page.evaluate(() => innerWidth + 1));
   noPrivateWork(state);
 });
+
+test("model selection scopes history, preserves query links and never inherits another model's progress", async ({ page }) => {
+  const state = await setup(page);
+  const base = fixture();
+  const luna = { ...structuredClone(published), id: "fixture-luna", model: "gpt-5.6-luna", observedAt: "2026-09-13T08:00:00.000Z",
+    recommendations: [{ position: 1, name: "Luna Choice", url: "https://luna.example.com/", citationUrls: [] }], citations: [] };
+  state.response = buildPublicDashboard({ format: "folio-public-search-rankings-v1",
+    queries: base.queries.map(({ id, audience, category, query, language, locale }) => ({ id, audience, category, query, language, locale })),
+    observations: [luna, published] }, { format: "folio-public-search-progress-v1", updatedAt: at,
+    queries: base.queries.map(query => ({ queryId: query.id, status: query.collection.status })) });
+  await page.goto("/overview?query=fixture-task-1");
+  const detail = page.getByRole("region", { name: "Selected task", exact: true });
+  const model = page.getByRole("combobox", { name: "Model", exact: true });
+  await expect(detail.getByRole("link", { name: "Beta Basics", exact: true })).toBeVisible();
+  await model.selectOption("gpt-5.6-luna");
+  await expect(page).toHaveURL(/query=fixture-task-1&model=gpt-5.6-luna$/);
+  await expect(detail.getByRole("link", { name: "Luna Choice", exact: true })).toBeVisible();
+  await expect(detail).not.toContainText("Beta Basics");
+  await expect(detail.getByRole("link", { name: "Link to this task" })).toHaveAttribute("href", "/overview?query=fixture-task-1&model=gpt-5.6-luna");
+  await expect(page.locator('dl[aria-label="Benchmark totals"]').locator("dd")).toHaveText(["1 / 15", "—", "1", "0"]);
+  const picker = page.getByRole("combobox", { name: "Task", exact: true });
+  if (await picker.isVisible()) await picker.selectOption("fixture-task-3");
+  else await page.getByRole("button", { name: `Open task: ${questions[2]}`, exact: true }).click();
+  await expect(page).toHaveURL(/query=fixture-task-3&model=gpt-5.6-luna$/);
+  await expect(detail).toContainText("No published answer for this model");
+  await expect(detail).not.toContainText("The agent is working");
+  await page.reload(); await expect(model).toHaveValue("gpt-5.6-luna");
+  await expect(detail).toContainText("No published answer for this model");
+  await page.goBack(); await expect(detail.getByRole("link", { name: "Luna Choice", exact: true })).toBeVisible();
+  await page.goBack(); await expect(model).toHaveValue("");
+  await expect(detail.getByRole("link", { name: "Beta Basics", exact: true })).toBeVisible();
+  await page.goForward(); await expect(model).toHaveValue("gpt-5.6-luna");
+  await page.goto("/overview?query=fixture-task-1&model=unknown-model");
+  await expect(model).toHaveValue("unknown-model");
+  await expect(detail).toContainText("No published answer for this model");
+  await expect(page.getByRole("progressbar", { name: "Tasks with published answers", exact: true })).toHaveAttribute("aria-valuenow", "0");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(await page.evaluate(() => innerWidth + 1));
+  noPrivateWork(state);
+});

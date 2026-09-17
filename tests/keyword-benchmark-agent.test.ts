@@ -165,3 +165,12 @@ test("open-web completion preserves full provider search evidence and final answ
     assert.equal(parseKeywordBenchmarkAnswer({ ...openAnswer, citations: [{ url, title: "Invalid public source" }] }, [], "open-web"), null);
   }
 });
+
+test("Luna open-web requests retain the same bounded search contract and identify the selected model",()=>{
+ const payload=buildKeywordBenchmarkRequest({...input,model:"gpt-5.6-luna",searchMode:"open-web",allowedDomains:[]});
+ assert.equal(payload.agent.model,"gpt-5.6-luna");
+ assert.match(payload.agent.instructions,/single Luna API-agent/);
+ assert.doesNotMatch(payload.agent.instructions,/single Astra API-agent/);
+ assert.deepEqual(payload.environment.network,{access:"disabled"});
+ assert.equal(payload.agent.multi_agent.enabled,false);
+});
