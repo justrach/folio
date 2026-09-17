@@ -1,3 +1,4 @@
+import { publicFetch } from "./public-fetch";
 import { evaluateHtml, type EvaluationCheck } from "./evaluation";
 import { analyzeDiscoveryDocument, DISCOVERY_DOCUMENT_KINDS, DISCOVERY_DOCUMENT_LIMITS,
   type DiscoveryDocumentAnalysis, type DiscoveryDocumentInput } from "./discovery-documents";
@@ -70,17 +71,17 @@ export function normalizeScanUrl(input: string): URL {
   return url;
 }
 
-export function assertAllowedUrl(url: URL, allowedHosts: Set<string>) {
+export function assertAllowedUrl(url: URL, allowedHosts: Set<string> | null) {
   normalizeScanUrl(url.href);
-  if (!allowedHosts.has(url.hostname.toLowerCase()))
+  if (allowedHosts && !allowedHosts.has(url.hostname.toLowerCase()))
     throw new ScanError(
-      "This domain is not enabled for scans. This deployment permits example.com by default; an operator can add a reviewed public domain to SCAN_ALLOWED_HOSTS.",
+      "Website audits are not available for this domain yet. Your website has not been scanned.",
       403,
     );
 }
 
 export type BoundedFetchOptions = {
-  allowedHosts: Set<string>;
+  allowedHosts: Set<string> | null;
   fetcher?: typeof fetch;
   maxBytes?: number;
   timeoutMs?: number;
@@ -93,7 +94,7 @@ export async function boundedFetch(input: URL, options: BoundedFetchOptions) {
     () => controller.abort(),
     options.timeoutMs ?? REQUEST_TIMEOUT_MS,
   );
-  const fetcher = options.fetcher ?? fetch;
+  const fetcher = options.fetcher ?? (options.allowedHosts === null ? publicFetch : fetch);
   let url = new URL(input.href);
   try {
     for (let redirects = 0; redirects <= MAX_REDIRECTS; redirects++) {
@@ -215,7 +216,7 @@ export async function scanWebsite(
   input: string,
   options: { allowedHosts?: string; fetcher?: typeof fetch } = {},
 ) {
-  const allowedHosts = configuredScanHosts(options.allowedHosts);
+  const allowedHosts = options.allowedHosts === undefined ? null : configuredScanHosts(options.allowedHosts);
   const url = normalizeScanUrl(input);
   assertAllowedUrl(url, allowedHosts);
   const page = await boundedFetch(url, {

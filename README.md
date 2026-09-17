@@ -25,7 +25,7 @@ Local records persist in `.wrangler/state/v3` across restarts. Use `bun run db:s
 - Better Auth email/password sign-up, login, persisted sessions, and logout.
 - Optional Google sign-in and explicit read-only Search Console consent, with bounded private performance snapshots. Live Google validation remains separate; see [Search Console setup](docs/SEARCH-CONSOLE.md).
 - Optional GitHub sign-in and explicit account linking in Settings, using profile/email permissions. See [GitHub setup](docs/GITHUB-AUTH.md); live OAuth still requires configured application credentials.
-- Real bounded page audits, deterministic `readiness-v1` scores, evidence details, account-scoped saved history, and repeat scans. Optional discovery-file diagnostics inspect robots.txt, llms.txt, llms-full.txt and sitemap.xml without changing that score. Initially allows `example.com`; extra hosts need operator review and `SCAN_ALLOWED_HOSTS` configuration.
+- Real bounded page audits, deterministic `readiness-v1` scores, evidence details, account-scoped saved history, and repeat scans. Optional discovery-file diagnostics inspect robots.txt, llms.txt, llms-full.txt and sitemap.xml without changing that score. Public HTTPS websites can be audited without a domain allowlist. Private destinations and unsafe redirects are blocked.
 - Review and download proposed title, description, and canonical changes as a ZIP. Downloads do not publish to the source website.
 - Public technical scores from explicitly published audits, with rubric details, latest run timestamps, filtering, and revocable publication. Account-added sites are not verified domain ownership.
 - Independently sourced developer-tool directory with searchable, sortable tables and dated Folio public-homepage checks. These HTML-page observations do not measure API execution or developer-tool task success; see [directory evaluation](docs/DEVELOPER-TOOLS-EVALUATION.md).
@@ -162,3 +162,7 @@ Provider credentials and access controls remain server-side. The public director
 ## Authenticated MCP and sandbox SEO
 
 Folio now includes `/api/mcp` for coding clients and `/api/v1/seo` for explicit, idempotent DataForSEO lookups. Keyword sandboxes can opt into one selected-domain SEO lookup with a short-lived capability; existing evaluation keys require a separate `seo` permission. See [MCP setup and behavior](docs/MCP.md) for migration, configuration, client examples and validation limits.
+
+### Public website audits
+
+Signed-in users can audit public HTTPS pages without domain approval. Technical audits ignore `SCAN_ALLOWED_HOSTS`; that variable still scopes AI evidence capture. Redirects are checked at every hop, and response size, time, content type, authentication, private storage and hourly limits remain enforced. Local Node scans validate DNS addresses in the HTTPS socket's lookup callback (including mixed public/private answers), preserving TLS hostname verification. Production uses global Worker fetch with `global_fetch_strictly_public`; do not substitute a private-network binding or remove that deployment flag.

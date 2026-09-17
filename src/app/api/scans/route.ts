@@ -1,4 +1,3 @@
-import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getSession } from "@/lib/auth";
 import { readJsonBody } from "@/lib/api-request";
 import { getDb } from "@/lib/db";
@@ -89,10 +88,7 @@ export async function POST(request: Request) {
         },
         { status: 429, headers: { "Retry-After": "3600" } },
       );
-    const { env } = await getCloudflareContext({ async: true });
-    const result = await scanWebsite(submittedUrl.href, {
-      allowedHosts: env.SCAN_ALLOWED_HOSTS || process.env.SCAN_ALLOWED_HOSTS,
-    });
+    const result = await scanWebsite(submittedUrl.href);
     const siteId = crypto.randomUUID();
     // The owner key is included in every lookup; another user's site cannot be attached.
     await db

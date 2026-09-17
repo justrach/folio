@@ -166,11 +166,11 @@ test("URL normalization rejects private, credentialed and alternate-protocol des
   assert.throws(
     () =>
       assertAllowedUrl(normalizeScanUrl("https://example.com.evil.org"), hosts),
-    /not enabled/,
+    /not available for this domain/,
   );
   assert.throws(
     () => assertAllowedUrl(normalizeScanUrl("https://unapproved.org"), hosts),
-    /not enabled/,
+    /not available for this domain/,
   );
 });
 
@@ -308,4 +308,21 @@ test("write requests reject foreign origins and oversized JSON without a declare
     }),
   );
   assert.equal(body.url, "https://example.com");
+});
+
+ test("public audits accept unrelated websites without an operator host list", async () => {
+  for (const host of ["codegraff.com", "www.wikipedia.org", "independent-business.org"]) {
+    const result = await scanWebsite(`https://${host}/`, { fetcher: async () => new Response(completeHtml, { headers: { "content-type": "text/html" } }) });
+    assert.equal(result.submittedUrl, `https://${host}/`);
+  }
+});
+
+test("public audits check each redirect before fetching private destinations", async () => {
+  for (const target of ["https://127.0.0.1/", "https://169.254.169.254/", "https://[::1]/", "https://server.internal/", "http://public.org/", "https://public.org:8443/"]) {
+    let calls = 0;
+    await assert.rejects(boundedFetch(new URL("https://public.org"), { allowedHosts: null, fetcher: async () => {
+      calls++; return new Response(null, { status: 302, headers: { location: target } });
+    } }), ScanError);
+    assert.equal(calls, 1);
+  }
 });

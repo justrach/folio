@@ -20,6 +20,7 @@ OPENAI_MAX_RUNS_PER_DAY=1
 # Exact already-approved Better Auth IDs exempt from daily caps only; active-run limits still apply.
 OPENAI_UNMETERED_USER_IDS=
 # Only scan operator-approved public domains, including any redirect hostnames.
+# Applies to AI evidence capture, not the public technical-audit endpoint.
 SCAN_ALLOWED_HOSTS=example.com,www.example.com
 DATAFORSEO_LOGIN=
 DATAFORSEO_PASSWORD=
