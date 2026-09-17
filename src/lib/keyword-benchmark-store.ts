@@ -359,9 +359,11 @@ export async function updateKeywordBenchmarkRun(db: D1Database, ownerId: string,
   if ((status === "completed" && (!answer || !sessionId)) || (status !== "completed" && answer))
     throw new KeywordBenchmarkStoreError("Only a completed provider session may save a final answer.", 400);
   const suppliedUsage = { ...existing.usage, ...patch.usage };
-  const usage = { inputTokens: suppliedUsage.inputTokens, outputTokens: suppliedUsage.outputTokens, totalTokens: suppliedUsage.totalTokens, costUsd: suppliedUsage.costUsd };
+  const usage = { inputTokens: suppliedUsage.inputTokens, outputTokens: suppliedUsage.outputTokens, totalTokens: suppliedUsage.totalTokens, costUsd: suppliedUsage.costUsd, ...(suppliedUsage.cachedInputTokens === undefined ? {} : { cachedInputTokens: suppliedUsage.cachedInputTokens }) };
   for (const [field, number] of Object.entries(usage)) if (number !== null && (!Number.isFinite(number) || number < 0 || (field !== "costUsd" && !Number.isInteger(number))))
     throw new KeywordBenchmarkStoreError("Invalid provider usage.", 400);
+  if (usage.cachedInputTokens != null && (usage.inputTokens == null || usage.cachedInputTokens > usage.inputTokens))
+    throw new KeywordBenchmarkStoreError("Cached input cannot exceed reported input usage.", 400);
   const suppliedMetadata = { ...existing.providerMetadata, ...patch.providerMetadata };
   const providerMetadata: KeywordBenchmarkRun["providerMetadata"] = {
     environmentId: suppliedMetadata.environmentId, requestId: suppliedMetadata.requestId, turnId: suppliedMetadata.turnId,

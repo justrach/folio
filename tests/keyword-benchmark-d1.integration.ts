@@ -351,13 +351,13 @@ test("archiving old unresolved runs releases capacity without deleting usage or 
   const old=new Date(Date.now()-2*86400000);
   let run=await reserveKeywordBenchmarkRun(db,"alice",{caseId:suite.cases[0].id,kind:"baseline",...config},{now:old});
   run=await markKeywordBenchmarkCreateAttempt(db,"alice",run.id,run.revision);
-  run=await updateKeywordBenchmarkRun(db,"alice",run.id,run.revision,{status:"requires_action",sessionId:"fixture-session",usage:{inputTokens:100,outputTokens:10,totalTokens:110,costUsd:null}});
+  run=await updateKeywordBenchmarkRun(db,"alice",run.id,run.revision,{status:"requires_action",sessionId:"fixture-session",usage:{inputTokens:100,cachedInputTokens:40,outputTokens:10,totalTokens:110,costUsd:null}});
   await assert.rejects(archiveKeywordBenchmarkRun(db,"alice",run.id,run.revision),/Request cancellation/);
   run=await reserveKeywordBenchmarkCancellation(db,"alice",run.id,run.revision);
   await assert.rejects(archiveKeywordBenchmarkRun(db,"bob",run.id,run.revision));
   await assert.rejects(archiveKeywordBenchmarkRun(db,"alice",run.id,run.revision-1));
   const archived=await archiveKeywordBenchmarkRun(db,"alice",run.id,run.revision);
-  assert.ok(archived.archivedAt);assert.equal(archived.status,"requires_action");assert.equal(archived.sessionId,run.sessionId);assert.deepEqual(archived.usage,run.usage);
+  assert.equal(archived.usage.cachedInputTokens,40);assert.ok(archived.archivedAt);assert.equal(archived.status,"requires_action");assert.equal(archived.sessionId,run.sessionId);assert.deepEqual(archived.usage,run.usage);
   assert.equal((await getKeywordBenchmarkUsage(db,"alice")).activeRuns,0);
   await assert.rejects(reserveKeywordBenchmarkRun(db,"alice",{caseId:suite.cases[0].id,kind:"baseline",...config}),/unresolved/);
   await reserveKeywordBenchmarkRun(db,"alice",{caseId:suite.cases[1].id,kind:"baseline",...config});
