@@ -1,3 +1,4 @@
+import { buildPublicDashboard } from "../src/lib/public-dashboard";
 import { expect, test, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { EVAL_SUITE } from "../src/lib/evals";
@@ -38,6 +39,7 @@ async function fixture(page: Page, initialRuns: KeywordBenchmarkRun[] = [], save
       id: `fixture-session-${state.owner}`, userId: state.owner, token: "fixture-token", expiresAt: "2099-01-01T00:00:00Z", createdAt: at, updatedAt: at } } : null });
     if (path === "/api/auth/sign-out") { state.owner = null; return route.fulfill({ json: { success: true } }); }
     if (path === "/api/auth/sign-in/email") { state.owner = "bob"; return route.fulfill({ json: { user: user(), token: "fixture-token", redirect: false } }); }
+    if (path === "/api/public/benchmarks" && method === "GET") return route.fulfill({ json: buildPublicDashboard({ format: "folio-public-search-rankings-v1", queries: [], observations: [] }, { format: "folio-public-search-progress-v1", updatedAt: at, queries: [] }) });
     if (path === "/api/sites" && method === "GET") return route.fulfill({ json: { sites: state.owner ? [
       { id: "owned-codegraff", name: "Codegraff fixture", url: target, isPublic: false, createdAt: at, seoScore: null, lastScannedAt: null },
       { id: "other-owned-site", name: "Other fixture site", url: "https://other.example.test/", isPublic: false, createdAt: at, seoScore: null, lastScannedAt: null },
@@ -366,4 +368,28 @@ test("sandbox SEO is off by default and only the explicit start carries authoriz
   await page.getByRole("button", { name: "Run baseline", exact: true }).click();
   await expect.poll(() => state.starts.length).toBe(1);
   expect(state.starts[0]).toMatchObject({ caseId: suite.cases[0].id, kind: "baseline", useSeoTools: true });
+});
+
+
+test("private report compares matching public context without publishing or starting work", async ({ page }) => {
+  const value = run("public-context", "baseline");
+  value.case = { ...value.case, searchMode: "open-web" };
+  const state = await fixture(page, [value]);
+  const query = { id: "public-query", audience: "Learning", category: "Fixture", query: value.case.query, language: value.case.language, locale: value.case.locale };
+  const observation = { id: "public-observation", queryId: query.id, observedAt: at, status: "completed", model: value.model, surface: value.surface,
+    searchMode: "open-web", harnessVersion: value.harnessVersion, environmentType: value.environmentType,
+    recommendations: [{ position: 1, name: "Public fixture recommendation", url: "https://example.com", citationUrls: [] }], citations: [], limitations: ["Fixture only"] };
+  let available = true;
+  await page.route("**/api/public/benchmarks", route => route.fulfill({ json: buildPublicDashboard({ format: "folio-public-search-rankings-v1", queries: [query], observations: available ? [observation] : [] },
+    { format: "folio-public-search-progress-v1", updatedAt: at, queries: [{ queryId: query.id, status: available ? "completed" : "not-started", ...(available ? { observationId: observation.id } : {}) }] }) }));
+  await page.goto(`/benchmarks?suite=${suite.id}&run=${value.id}`);
+  const comparison = page.getByRole("region", { name: "Compare with the public index", exact: true });
+  await expect(comparison).toContainText("Public fixture recommendation");
+  await expect(comparison).toContainText("no change score");
+  await expect(comparison.getByRole("link", { name: "Inspect the public question, sources and history" })).toHaveAttribute("href", "/overview?query=public-query");
+  available = false;
+  await comparison.getByRole("button", { name: "Refresh public comparison" }).click();
+  await expect(comparison).toContainText("no published observation with the same model");
+  await expect(comparison.getByText("Public fixture recommendation")).toHaveCount(0);
+  expect(state.starts).toEqual([]); expect(state.saves).toEqual([]); expect(state.forbidden).toEqual([]);
 });

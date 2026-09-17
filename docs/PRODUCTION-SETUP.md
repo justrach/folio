@@ -73,3 +73,13 @@ The owner explicitly requested reusing local accounts, websites and saved result
 The SQL-file import hit a statement-size limit on large evidence rows; its failed attempts rolled back. The successful transfer used parameterized D1 queries through the authenticated Wrangler account, preserving the stored evidence. Private transfer files and backups remain ignored. Browser sessions, temporary verification/rate-limit entries and job leases were not copied. Old Google-client tokens were omitted because production uses a separate client; saved Search Console reports remain available and new Google imports require reconnecting there. Local credentials, callbacks and data were unchanged.
 
 Production Google identity sign-in reopened the migrated owner account and its saved website, audit and SEO report in Chrome. Public rankings and HTTPS homepage were also verified. No sandbox or paid SEO lookup was started by deployment. The scheduler remains disabled. A successful deployment does not establish unrestricted external Google onboarding, new provider runs, or any unfinished MCP integration.
+
+## 17 September public-index integration release
+
+Deployed from isolated `codex/website-index-integration`, based on `bcbcbbc44b91e6565bda16af09af64cd0dc97e21`, with completed-report public comparisons and exact public-question reuse. Worker version: `a656a918-2a8e-4274-b690-3c376fcf1bf4`.
+
+The production configuration was used with `--keep-vars`; existing D1, auth URL, secrets, self binding and disabled scheduler were preserved. Remote migration status reported no migrations pending. The separate landing and mention-index route Workers were retained. No paid provider work or database migration was performed.
+
+Validation: TypeScript, all 258 unit tests, 44 affected desktop/mobile browser checks, and the final production OpenNext build passed. Earlier public-ranking UI tests timed out by repeating all 3,500 catalog queries in 45 seconds; browser coverage now checks every category boundary plus published/unmeasured states, while strict artifact tests still validate all stored records. A prior baseline also passed 14 public-dashboard browser checks.
+
+Live API validation confirmed 3,500 questions, 286 published observations, 121 distinct recommended hosts and 1,142 distinct cited URLs. All 286 observations are Astra open-web results; this release creates no new observations or model diversity. Homepage/login/overview returned 200; anonymous private site/benchmark APIs returned 401. The independent mention index retained its three cohorts and ten query breakdowns. These are different evaluation scopes and are not pooled.

@@ -67,3 +67,9 @@ Eight focused public-data unit tests passed, including strict projection, cross-
 ## Real ranking graph
 
 The landing page, public overview result and Search rankings view plot actual returned recommendation positions on an ordinal axis. They do not convert positions to scores out of 100. The full question stays readable beside bounded filters; each company keeps its source links and answer explanation. Model, capture date and harness details remain in the evidence disclosure rather than the prominent public labels. The public leaderboard no longer exposes the illustrative multi-company score chart. A separate future real scoring evaluation is tracked in issue #8; existing HTML-readiness scores retain their bounded technical meaning. No new collection or live-update infrastructure is implied by the graph.
+
+## Private website handoff
+
+The private question editor can now browse published questions and reuse their exact wording, language and locale. Selecting one replaces the editable question draft and starts no provider work. Owners can also prepare three editable scenarios from their supplied audience/task description. These are deterministic drafts, not facts inferred from a website capture.
+
+A completed private keyword report reads the public snapshot and shows the newest observation with identical question, language, locale, model, search mode, surface, harness version and environment type. It retains original public recommendation positions and links to the source question. Private references and environment fingerprints are not public; no before/after change score or causality claim is made. Mismatches remain unmeasured, and a failed public read does not hide the private answer. The comparison request contains no private question, website, owner or run selector, and performs no writes or inference.

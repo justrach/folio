@@ -20,7 +20,17 @@ async function noOverflow(page: Page) {
   expect(widths[0]).toBeLessThanOrEqual(widths[1] + 1);
 }
 
-test("public rankings preserve the returned order and sources for each exact query", async ({ page }, testInfo) => {
+// Artifact tests validate every stored query/observation. Browser coverage exercises
+// category boundaries plus published and unmeasured rendering without revisiting
+// the same empty-state path thousands of times as the catalog grows.
+const categories = [...new Set(PUBLIC_SEARCH_QUERIES.map(query => query.category))];
+const browserQueries = [...new Map(categories.flatMap(category => {
+  const queries = PUBLIC_SEARCH_QUERIES.filter(query => query.category === category);
+  return [queries[0], queries.at(-1), queries.find(query => latestPublicSearchObservation(query.id)), queries.find(query => !latestPublicSearchObservation(query.id))].filter((query): query is typeof PUBLIC_SEARCH_QUERIES[number] => Boolean(query));
+}).map(query => [query.id, query])).values()];
+
+test("public rankings preserve order and sources across category boundaries and result states", async ({ page }, testInfo) => {
+  test.setTimeout(180_000);
   const readOnly = await browseOnly(page);
   await page.goto("/");
   const report = rankings(page);
@@ -29,7 +39,7 @@ test("public rankings preserve the returned order and sources for each exact que
   const category = report.getByRole("combobox", { name: "Category", exact: true });
   const query = report.getByRole("combobox", { name: "Search query", exact: true });
 
-  for (const item of PUBLIC_SEARCH_QUERIES) {
+  for (const item of browserQueries) {
     await category.selectOption(item.category);
     await query.selectOption(item.id);
     await expect(report).toContainText(item.query);
@@ -73,9 +83,9 @@ test("ranking categories constrain query selection and HTML checks remain a sepa
   const report = rankings(page);
   const category = report.getByRole("combobox", { name: "Category", exact: true });
   const query = report.getByRole("combobox", { name: "Search query", exact: true });
-  for (const item of PUBLIC_SEARCH_QUERIES) {
-    await category.selectOption(item.category);
-    const expected = PUBLIC_SEARCH_QUERIES.filter(candidate => candidate.category === item.category);
+  for (const categoryName of categories) {
+    await category.selectOption(categoryName);
+    const expected = PUBLIC_SEARCH_QUERIES.filter(candidate => candidate.category === categoryName);
     await expect(query.getByRole("option")).toHaveCount(expected.length);
     await expect(query).toHaveValue(expected[0].id);
     await expect(report).toContainText(expected[0].query);

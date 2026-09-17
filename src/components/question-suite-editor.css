@@ -12,3 +12,10 @@
 .benchmark-question-coverage{font-size:14px;color:#405347;line-height:1.6;margin:0 0 16px}
 .benchmark-question-list button .question-result-state{display:block;font-size:12px;font-weight:400;margin-top:7px;color:#405347}
 @media(max-width:640px){.question-suite-locale{grid-template-columns:1fr}.question-suite-editor textarea{min-height:260px}}
+
+.question-suite-editor details { padding: 1rem; border: 1px solid var(--line, #c5c9b7); }
+.question-suite-editor summary { cursor: pointer; min-height: 44px; padding-block: .65rem; }
+.public-question-picker ul { list-style: none; padding: 0; display: grid; gap: .75rem; }
+.public-question-picker li { display: grid; gap: .35rem; }
+.public-question-picker button { white-space: normal; text-align: left; height: auto; min-height: 44px; }
+.question-suite-editor details :focus-visible { outline: 3px solid currentColor; outline-offset: 3px; }

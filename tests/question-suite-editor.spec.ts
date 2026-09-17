@@ -1,3 +1,4 @@
+import { buildPublicDashboard } from "../src/lib/public-dashboard";
 import { expect, test, type Page } from "@playwright/test";
 import { EVAL_SUITE } from "../src/lib/evals";
 import { CUSTOMER_QUESTION_TEMPLATES } from "../src/lib/keyword-benchmark-catalog";
@@ -145,5 +146,46 @@ test("logout discards the unsaved draft and a different owner starts with only t
   await expect(page.getByRole("combobox", { name: "Saved website", exact: true })).not.toContainText("alice");
   await expect(page.locator("body")).not.toContainText(privateQuestion);
   expect(state.saves).toEqual([]);
+  await noWorkOrOverflow(page, state);
+});
+
+
+test("owner-context drafts are editable and remain unstarted", async ({ page }) => {
+  const state = await fixture(page);
+  await page.goto(`/benchmarks?target=${encodeURIComponent(site("alice").url)}`);
+  await openEditor(page);
+  const form = editor(page);
+  await form.getByRole("textbox", { name: "Questions, one per line", exact: true }).fill("");
+  await form.getByText("Prepare new questions for your website", { exact: true }).click();
+  await form.getByLabel("Who are your customers?").fill("design teams");
+  await form.getByLabel("What do they need to do?").fill("review prototypes");
+  await form.getByRole("button", { name: "Add three scenario drafts" }).click();
+  await expect(form).toContainText("3 / 10 questions");
+  await expect(form.getByRole("textbox", { name: "Questions, one per line", exact: true })).toHaveValue(/design teams/);
+  await form.getByRole("button", { name: "Save questions", exact: true }).click();
+  expect(state.saves[0].questions).toHaveLength(3);
+  await noWorkOrOverflow(page, state);
+});
+
+
+test("published question selection preserves exact wording and locale without spending", async ({ page }) => {
+  const state = await fixture(page);
+  const query = { id: "shared-question", audience: "Learning", category: "Design", query: "Which options support design teams?", language: "en", locale: "en-GB" };
+  const date = "2026-09-13T05:00:00Z";
+  await page.route("**/api/public/benchmarks", route => route.fulfill({ json: buildPublicDashboard({ format: "folio-public-search-rankings-v1", queries: [query], observations: [{
+    id: "shared-answer", queryId: query.id, observedAt: date, status: "completed", model: "fixture", surface: "openai-managed-agents", searchMode: "open-web", harnessVersion: "fixture", environmentType: "fixture", recommendations: [], citations: [], limitations: [],
+  }] }, { format: "folio-public-search-progress-v1", updatedAt: date, queries: [{ queryId: query.id, status: "completed", observationId: "shared-answer" }] }) }));
+  await page.goto(`/benchmarks?target=${encodeURIComponent(site("alice").url)}`);
+  await openEditor(page);
+  const form = editor(page);
+  await form.getByText("Reuse a question from the public index", { exact: true }).focus();
+  await page.keyboard.press("Enter");
+  await form.getByLabel("Find a published question").fill("design");
+  await form.getByRole("button", { name: query.query, exact: true }).click();
+  await expect(form.getByRole("textbox", { name: "Questions, one per line", exact: true })).toHaveValue(query.query);
+  await expect(form.getByLabel("Answer language", { exact: true })).toHaveValue("en");
+  await expect(form.getByLabel("Customer location", { exact: true })).toHaveValue("en-GB");
+  await form.getByRole("button", { name: "Save questions", exact: true }).click();
+  expect(state.saves[0]).toMatchObject({ questions: [query.query], language: "en", locale: "en-GB" });
   await noWorkOrOverflow(page, state);
 });
