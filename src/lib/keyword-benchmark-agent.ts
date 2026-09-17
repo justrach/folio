@@ -104,7 +104,7 @@ export function buildKeywordBenchmarkRequest(input: KeywordAgentInput) {
     !bounded(input.language, 80) || !bounded(input.locale, 80) ||
     !bounded(input.model, 100) || !/^[a-zA-Z0-9._-]+$/.test(input.model)) invalid("Invalid bounded keyword research input.");
   const mode = keywordSearchMode(input.searchMode);
-  if (mode === "open-web" && !isKeywordOpenWebModel(input.model)) invalid("Choose Astra or Luna for open-web observations.");
+  if (mode === "open-web" && !isKeywordOpenWebModel(input.model)) invalid("Choose a supported model for open-web observations.");
   const allowedDomains = researchDomains(input.allowedDomains, mode);
   if (input.seoMcp && (mode !== "open-web" || !keywordPublicUrl(input.seoMcp.url) || !/^Bearer folio_sandbox_[a-f0-9]{64}$/.test(input.seoMcp.authorization))) invalid("Invalid sandbox SEO connection.");
   return {

@@ -179,11 +179,17 @@ test("website publication requires the same retained receipt, standard harness, 
   }
 });
 
-test("multi-model CLI and public projection preserve distinct model observations",()=>{
- const base=run(), other=run();other.model="gpt-5.6-luna";
- const astra=projectPublicSearchObservation(base,query),luna=projectPublicSearchObservation(other,query);
- assert.notEqual(astra.id,luna.id);assert.equal(luna.model,"gpt-5.6-luna");
- assert.equal(parsePublicCollectionCli(["start","--owner-id","alice","--query-id",query.id,"--confirm-spend","--model","gpt-5.6-luna"]).model,"gpt-5.6-luna");
+test("multi-model CLI and both public projections preserve each allowed model",()=>{
+ const ids=new Set<string>();
+ for (const model of ["gpt-6-astra","gpt-5.6-luna","gpt-5.6-sol","gpt-5.6-terra"]) {
+  const source=run();source.model=model;
+  const observation=projectPublicSearchObservation(source,query);
+  assert.equal(observation.model,model);ids.add(observation.id);
+  source.case.targetUrl="https://private-target.com/";
+  assert.equal(projectWebsitePublicObservation(source,query).model,model);
+  assert.equal(parsePublicCollectionCli(["start","--owner-id","alice","--query-id",query.id,"--confirm-spend","--model",model]).model,model);
+ }
+ assert.equal(ids.size,4);
  assert.throws(()=>parsePublicCollectionCli(["start","--owner-id","alice","--query-id",query.id,"--confirm-spend","--model","unsupported"]));
  assert.throws(()=>parsePublicCollectionCli(["status","--owner-id","alice","--model","gpt-5.6-luna"]));
 });

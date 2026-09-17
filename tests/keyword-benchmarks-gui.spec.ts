@@ -443,8 +443,10 @@ test("publication requires a reviewed preview; withdrawal clears the shared resu
 const modelOptions = [
   { id: "gpt-6-astra", label: "Astra", validation: "validated" as const },
   { id: "gpt-5.6-luna", label: "Luna", validation: "experimental" as const },
+  { id: "gpt-5.6-sol", label: "Sol", validation: "experimental" as const },
+  { id: "gpt-5.6-terra", label: "Terra", validation: "experimental" as const },
 ];
-test("open-web model selection starts nothing until an explicit paid start", async ({ page }) => {
+for (const [model,label] of [["gpt-5.6-luna","Luna"],["gpt-5.6-sol","Sol"],["gpt-5.6-terra","Terra"]]) test(`${label} open-web model selection starts nothing until an explicit paid start`, async ({ page }) => {
   const state = await fixture(page);
   state.openWebModels = modelOptions;
   state.suites = [{ ...suite, cases: suite.cases.map(item => ({ ...item, searchMode: "open-web" })) }];
@@ -453,20 +455,20 @@ test("open-web model selection starts nothing until an explicit paid start", asy
   await expect(select).toHaveValue("gpt-6-astra");
   const seo = page.getByRole("checkbox", { name: /Let this agent look up search and backlinks/ });
   await seo.check();
-  await select.selectOption("gpt-5.6-luna");
+  await select.selectOption(model);
   await expect(seo).not.toBeChecked();
   await expect(seo).toBeDisabled();
   await expect(page.getByText(/Search and backlink tools are available only with Astra/)).toBeVisible();
   await select.selectOption("gpt-6-astra");
   await expect(seo).toBeEnabled();
   await expect(seo).not.toBeChecked();
-  await select.selectOption("gpt-5.6-luna");
-  await expect(page.getByText(/Luna is experimental in this workflow/)).toBeVisible();
+  await select.selectOption(model);
+  await expect(page.getByText(new RegExp(`${label} is experimental in this workflow`))).toBeVisible();
   expect(state.starts).toEqual([]);
   await noOverflow(page);
   await page.getByRole("button", { name: "Run baseline", exact: true }).click();
   await expect.poll(() => state.starts.length).toBe(1);
-  expect(state.starts[0]).toEqual({ caseId: suite.cases[0].id, kind: "baseline", model: "gpt-5.6-luna" });
+  expect(state.starts[0]).toEqual({ caseId: suite.cases[0].id, kind: "baseline", model: model });
   expect(state.forbidden).toEqual([]);
 });
 

@@ -178,7 +178,8 @@ export async function reconcileKeywordBenchmark(db: D1Database, ownerId: string,
     run = await updateKeywordBenchmarkRun(db, ownerId, run.id, run.revision, {
       status: pendingCancel ? "requires_action" : observation.status, answer: observation.answer, usage: observation.usage,
       providerMetadata: observation.providerMetadata,
-      error: pendingCancel ? "Cancellation was requested. The final provider outcome is not yet confirmed."
+      error: observation.initialInputUnconfirmed ? observation.error
+        : pendingCancel ? "Cancellation was requested. The final provider outcome is not yet confirmed."
         : observation.status === "failed" ? "The completed provider answer could not be validated."
           : observation.initialInputUnconfirmed ? observation.error
             : observation.status === "requires_action" ? "The provider session requires attention." : null,

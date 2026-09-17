@@ -220,6 +220,14 @@ test("real D1 service runs private baseline/fresh answers with one create, safe 
     assert.equal(overdue.status, "requires_action", "Cancel acknowledgement must not be recorded as terminal cancellation.");
     await cancelKeywordBenchmark(db, "alice", overdue.id, env, options); assert.equal(cancels, 1);
     providerState = "cancelled";
+    emptyHistory = true;
+    overdue = await reconcileKeywordBenchmark(db, "alice", overdue.id, env, options);
+    assert.equal(overdue.status, "requires_action");
+    assert.match(overdue.error!, /initial submission remains unresolved/);
+    assert.ok(overdue.cancelAttemptAt);
+    assert.equal(cancels, 1);
+    assert.equal((await getKeywordBenchmarkUsage(db, "alice")).activeRuns, 1);
+    emptyHistory = false;
     overdue = await reconcileKeywordBenchmark(db, "alice", overdue.id, env, options); assert.equal(overdue.status, "cancelled");
     let ambiguousPosts = 0;
     const ambiguous = await startKeywordBenchmark(db, "alice", { caseId: chosen.id, kind: "baseline" }, env, { ...options, fetcher: async () => { ambiguousPosts++; throw new Error("synthetic private transport error"); } });
@@ -288,7 +296,7 @@ test("operator suite allowance is bounded and does not change the browser defaul
   } finally { await current.dispose(); await rm(directory,{recursive:true,force:true}); }
 });
 
-test("selected open-web model is frozen before one provider create and unsupported models reserve nothing", {timeout:90_000},async()=>{
+for (const model of ["gpt-5.6-luna","gpt-5.6-sol","gpt-5.6-terra"]) test(`${model} is frozen before one provider create and unsupported models reserve nothing`, {timeout:90_000},async()=>{
  const directory=await mkdtemp(join(tmpdir(),"folio-model-selection-d1-"));let current:Miniflare|undefined;
  try {
   current=runtime(directory);const db=await current.getD1Database("DB");await setup(db);
@@ -298,12 +306,12 @@ test("selected open-web model is frozen before one provider create and unsupport
   const options={fetcher:(async(_url:unknown,init?:RequestInit)=>{requested.push(JSON.parse(String(init?.body)).agent.model);return Response.json({id:"session_model_fixture",object:"agent.session",status:"in_progress",required_actions:[]});}) as typeof fetch};
   await assert.rejects(startKeywordBenchmark(db,"alice",{caseId:suite.cases[0].id,kind:"baseline",model:"unsupported"},env,options));
   assert.equal((await getKeywordBenchmarkUsage(db,"alice")).attemptsLast24Hours,0);assert.equal(requested.length,0);
-  const saved=await startKeywordBenchmark(db,"alice",{caseId:suite.cases[0].id,kind:"baseline",model:"gpt-5.6-luna"},env,options);
-  assert.equal(saved.model,"gpt-5.6-luna");assert.deepEqual(requested,["gpt-5.6-luna"]);
+  const saved=await startKeywordBenchmark(db,"alice",{caseId:suite.cases[0].id,kind:"baseline",model:model},env,options);
+  assert.equal(saved.model,model);assert.deepEqual(requested,[model]);
   await assert.rejects(startKeywordBenchmark(db,"alice",{caseId:suite.cases[0].id,kind:"baseline",model:"gpt-6-astra"},env,options));
-  assert.deepEqual(requested,["gpt-5.6-luna"],"active guard spans models");
+  assert.deepEqual(requested,[model],"active guard spans models");
   await current.dispose();current=runtime(directory);const restored=await getKeywordBenchmarkRun(await current.getD1Database("DB"),"alice",saved.id);
-  assert.equal(restored?.model,"gpt-5.6-luna");assert.equal(restored?.sessionId,"session_model_fixture");
+  assert.equal(restored?.model,model);assert.equal(restored?.sessionId,"session_model_fixture");
  } finally {try{await current?.dispose();}finally{await rm(directory,{recursive:true,force:true});}}
 });
 
