@@ -15,3 +15,7 @@ Rates source: https://developers.openai.com/api/docs/pricing. Sol pricing is pro
 ## Question expansion
 
 The shared library combines the frozen 3,500-question corpus with 350 additional decision questions in `public-additional-questions.json`. All new progress entries are explicitly not-started. No observations, ranks or provider answers are fabricated. The fixed legacy category-batch authorization continues to use its original corpus and hashes. The public API, MCP index and publication matching use the expanded catalog. Website-context drafting now offers ten editable questions within existing suite/body limits. Saving questions makes no provider call.
+
+## Archiving unresolved attempts
+
+An owner can archive an unresolved keyword attempt older than 24 hours. If a provider session is known, cancellation must already have been requested. Archiving removes only its local active-capacity hold; it preserves provider IDs, status, quota accounting and cost observations. It does not assert remote cancellation or zero cost. The original case remains blocked while unresolved; different cases retain the normal one-active-run limit. Late provider status and usage can still be retrieved. The authenticated archive endpoint requires exact owner, origin and saved revision.

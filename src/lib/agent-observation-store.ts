@@ -39,7 +39,7 @@ export async function reserveAgentObservation(db: D1Database, principal: AgentAp
       ORDER BY observed_at DESC,id DESC LIMIT 1),
     active AS (SELECT r.id,EXISTS(SELECT 1 FROM matching m WHERE m.id=r.id) AS matching FROM ${table} r
       WHERE r.user_id=? AND r.status IN ('queued','running','requires_action')
-      ${selection.kind === "keyword" ? `AND (NOT(r.status='requires_action' AND r.session_id IS NULL AND r.create_attempt_at IS NOT NULL AND r.hold_release_at IS NOT NULL)
+      ${selection.kind === "keyword" ? `AND (NOT(r.status='requires_action' AND r.archived_at IS NOT NULL) AND NOT(r.status='requires_action' AND r.session_id IS NULL AND r.create_attempt_at IS NOT NULL AND r.hold_release_at IS NOT NULL)
         OR EXISTS(SELECT 1 FROM matching m WHERE m.id=r.id))` : ""}
       ORDER BY r.created_at DESC,r.id DESC LIMIT 1)
     INSERT INTO agent_api_requests(id,user_id,key_id,idempotency_hash,request_hash,resource_kind,resource_id,run_id,disposition,created_at)

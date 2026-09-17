@@ -164,15 +164,16 @@ type RunRow = { id: string; suite_id: string; case_id: string; kind: "baseline" 
   status: KeywordBenchmarkRun["status"]; session_id: string | null; create_attempt_at: number | null; created_at: number; updated_at: number; revision: number;
   answer_json?: string | null; usage_json: string; provider_metadata_json: string; error: string | null; answer_characters: number; mention_count: number; citation_count: number;
   allowed_domains_json: string; deadline_at: number | null; cancel_attempt_at: number | null; cancel_acknowledged_at: number | null;
-  hold_release_at: number | null; hold_release_reason: KeywordBenchmarkRun["holdReleaseReason"] };
+  archived_at: number | null; hold_release_at: number | null; hold_release_reason: KeywordBenchmarkRun["holdReleaseReason"] };
 const runColumns = `id,suite_id,case_id,kind,baseline_run_id,model,harness_version,environment_type,environment_fingerprint,
   case_json,status,session_id,create_attempt_at,created_at,updated_at,revision,usage_json,provider_metadata_json,error,answer_characters,mention_count,citation_count,
-  allowed_domains_json,deadline_at,cancel_attempt_at,cancel_acknowledged_at,hold_release_at,hold_release_reason`;
+  allowed_domains_json,deadline_at,cancel_attempt_at,cancel_acknowledged_at,hold_release_at,hold_release_reason,archived_at`;
 function decodeRun(row: RunRow): KeywordBenchmarkRun {
   return { id: row.id, suiteId: row.suite_id, caseId: row.case_id, kind: row.kind, baselineRunId: row.baseline_run_id,
     model: row.model, harnessVersion: row.harness_version, environmentType: row.environment_type, environmentFingerprint: row.environment_fingerprint,
     case: JSON.parse(row.case_json), surface: KEYWORD_BENCHMARK_SURFACE, publication: "private", status: row.status,
     sessionId: row.session_id, createAttemptAt: row.create_attempt_at === null ? null : new Date(row.create_attempt_at).toISOString(),
+    archivedAt: row.archived_at == null ? null : new Date(row.archived_at).toISOString(),
     holdReleasedAt: row.hold_release_at === null ? null : new Date(row.hold_release_at).toISOString(), holdReleaseReason: row.hold_release_reason,
     allowedDomains: JSON.parse(row.allowed_domains_json), deadlineAt: row.deadline_at === null ? null : new Date(row.deadline_at).toISOString(),
     cancelAttemptAt: row.cancel_attempt_at === null ? null : new Date(row.cancel_attempt_at).toISOString(),
@@ -250,9 +251,10 @@ export function prepareKeywordBenchmarkReservation(db: D1Database, ownerId: stri
       AND (? IS NULL OR EXISTS(SELECT 1 FROM keyword_benchmark_runs b WHERE b.id=? AND b.user_id=c.user_id AND b.case_id=c.id AND b.kind='baseline' AND b.status='completed'))
       AND (? IS NULL OR (SELECT COUNT(*) FROM keyword_benchmark_runs WHERE user_id=? AND created_at>=?) < ?)
       AND (SELECT COUNT(*) FROM keyword_benchmark_runs WHERE user_id=? AND status IN ('queued','running','requires_action')
+        AND NOT(status='requires_action' AND archived_at IS NOT NULL)
         AND NOT(status='requires_action' AND session_id IS NULL AND create_attempt_at IS NOT NULL AND hold_release_at IS NOT NULL)) < ?
       AND NOT EXISTS(SELECT 1 FROM keyword_benchmark_runs h WHERE h.user_id=c.user_id AND h.case_id=c.id
-        AND h.status='requires_action' AND h.session_id IS NULL AND h.create_attempt_at IS NOT NULL AND h.hold_release_at IS NOT NULL)
+        AND h.status='requires_action' AND (h.archived_at IS NOT NULL OR (h.session_id IS NULL AND h.create_attempt_at IS NOT NULL AND h.hold_release_at IS NOT NULL)))
       ${guard ? "AND EXISTS(SELECT 1 FROM agent_api_requests WHERE id=? AND user_id=? AND run_id=? AND disposition='started')" : ""}
     RETURNING ${runColumns},answer_json`).bind(id, input.kind, input.baselineRunId ?? null, config.model, config.harnessVersion, config.environmentType,
       config.environmentFingerprint, now, now, json(unknownUsage, 1000), json(emptyMetadata, 2000), json(domains, 30_000), input.deadlineMs === undefined ? null : now + input.deadlineMs, ownerId, input.caseId,
@@ -271,7 +273,7 @@ export async function reserveKeywordBenchmarkRun(db: D1Database, ownerId: string
     if (!ownedCase || (input.baselineRunId && (!baseline || baseline.caseId !== input.caseId || baseline.kind !== "baseline" || baseline.status !== "completed")))
       throw new KeywordBenchmarkStoreError("The owned case or completed baseline is unavailable.", 404);
     const releasedUnknown = await db.prepare(`SELECT id FROM keyword_benchmark_runs WHERE user_id=? AND case_id=?
-      AND status='requires_action' AND session_id IS NULL AND create_attempt_at IS NOT NULL AND hold_release_at IS NOT NULL LIMIT 1`)
+      AND status='requires_action' AND (archived_at IS NOT NULL OR (session_id IS NULL AND create_attempt_at IS NOT NULL AND hold_release_at IS NOT NULL)) LIMIT 1`)
       .bind(ownerId, input.caseId).first();
     if (releasedUnknown) throw new KeywordBenchmarkStoreError("This case has an unresolved creation. Its released hold permits different cases only; do not start a replacement.", 409);
     throw new KeywordBenchmarkStoreError("This account has reached its benchmark allowance or active-run limit.", 429);
@@ -283,7 +285,8 @@ export async function getKeywordBenchmarkUsage(db: D1Database, ownerId: string, 
   const { maxRunsPerDay, maxActiveRuns } = limits(options), now = nowMillis(options.now);
   const row = await db.prepare(`SELECT COUNT(CASE WHEN created_at>=? THEN 1 END) AS attempts,
     COUNT(CASE WHEN status IN ('queued','running','requires_action')
-      AND NOT(status='requires_action' AND session_id IS NULL AND create_attempt_at IS NOT NULL AND hold_release_at IS NOT NULL)
+      AND NOT(status='requires_action' AND archived_at IS NOT NULL)
+        AND NOT(status='requires_action' AND session_id IS NULL AND create_attempt_at IS NOT NULL AND hold_release_at IS NOT NULL)
       THEN 1 END) AS active FROM keyword_benchmark_runs WHERE user_id=?`)
     .bind(now - 86_400_000, ownerId).first<{ attempts: number; active: number }>();
   return { attemptsLast24Hours: row?.attempts ?? 0, remainingRuns: maxRunsPerDay === null ? null : Math.max(0, maxRunsPerDay - (row?.attempts ?? 0)),
@@ -404,5 +407,19 @@ export async function acknowledgeKeywordBenchmarkCancellation(db: D1Database, ow
     AND status IN ('queued','running','requires_action') RETURNING ${runColumns},answer_json`)
     .bind(now, now, ownerId, id, revision).first<RunRow>();
   if (!row) throw new KeywordBenchmarkStoreError("This cancellation changed or is unavailable.");
+  return decodeRun(row);
+}
+
+/** Owner-requested archive: keeps unresolved outcome, receipts, usage and daily quota intact. */
+export async function archiveKeywordBenchmarkRun(db: D1Database, ownerId: string, id: string, revision: number) {
+  requireOwner(ownerId);
+  if (!Number.isSafeInteger(revision) || revision < 0) throw new KeywordBenchmarkStoreError("Choose the current saved revision.", 400);
+  const now = Date.now();
+  const row = await db.prepare(`UPDATE keyword_benchmark_runs SET archived_at=?,updated_at=?,revision=revision+1
+    WHERE user_id=? AND id=? AND revision=? AND status='requires_action' AND archived_at IS NULL
+    AND create_attempt_at IS NOT NULL AND answer_json IS NULL AND created_at<=?
+    AND (session_id IS NULL OR cancel_attempt_at IS NOT NULL) RETURNING ${runColumns},answer_json`)
+    .bind(now,now,ownerId,id,revision,now-86400000).first<RunRow>();
+  if (!row) throw new KeywordBenchmarkStoreError("Only an unchanged unresolved attempt older than 24 hours can be archived. Request cancellation first when a session is recorded.",409);
   return decodeRun(row);
 }

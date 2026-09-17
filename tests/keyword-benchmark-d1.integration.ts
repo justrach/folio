@@ -7,7 +7,7 @@ import type { D1Database } from "@cloudflare/workers-types";
 import { Miniflare } from "miniflare";
 import { unstable_splitSqlQuery } from "wrangler";
 import { createKeywordBenchmarkSuite, getKeywordBenchmarkSuite, reserveKeywordBenchmarkRun,
-  markKeywordBenchmarkCreateAttempt, updateKeywordBenchmarkRun, getKeywordBenchmarkRun,
+  markKeywordBenchmarkCreateAttempt, updateKeywordBenchmarkRun, getKeywordBenchmarkRun, archiveKeywordBenchmarkRun, reserveKeywordBenchmarkCancellation,
   listKeywordBenchmarkRuns, listWebsiteKeywordRunsPage, getKeywordBenchmarkUsage, updateKeywordBenchmarkCase, KeywordBenchmarkStoreError } from "../src/lib/keyword-benchmark-store";
 import { cancelKeywordBenchmark, keywordBenchmarkOverview, reconcileKeywordBenchmark, seedKeywordBenchmark, startKeywordBenchmark } from "../src/lib/keyword-benchmark-service";
 import { compareKeywordBenchmarkRuns } from "../src/lib/keyword-benchmark-types";
@@ -340,4 +340,29 @@ test("owned website history filters before its stable cursor and retains older m
     await assert.rejects(listWebsiteKeywordRunsPage(db,"bob",{websiteId:"site-history",searchMode:"open-web"}),error=>error instanceof KeywordBenchmarkStoreError&&error.status===404);
     await assert.rejects(listWebsiteKeywordRunsPage(db,"alice",{websiteId:"site-history",searchMode:"open-web",cursor:"bad"}),error=>error instanceof KeywordBenchmarkStoreError&&error.status===400);
   } finally {await current?.dispose();await rm(directory,{recursive:true,force:true});}
+});
+
+
+test("archiving old unresolved runs releases capacity without deleting usage or allowing original-case retries", async () => {
+ const directory=await mkdtemp(join(tmpdir(),"folio-archive-"));const current=runtime(directory);
+ try {
+  const db=await current.getD1Database("DB");await setup(db);
+  const suite=await createKeywordBenchmarkSuite(db,"alice",{name:"Archive fixtures",cases:[input,{...input,query:"Different fixture question"}]});
+  const old=new Date(Date.now()-2*86400000);
+  let run=await reserveKeywordBenchmarkRun(db,"alice",{caseId:suite.cases[0].id,kind:"baseline",...config},{now:old});
+  run=await markKeywordBenchmarkCreateAttempt(db,"alice",run.id,run.revision);
+  run=await updateKeywordBenchmarkRun(db,"alice",run.id,run.revision,{status:"requires_action",sessionId:"fixture-session",usage:{inputTokens:100,outputTokens:10,totalTokens:110,costUsd:null}});
+  await assert.rejects(archiveKeywordBenchmarkRun(db,"alice",run.id,run.revision),/Request cancellation/);
+  run=await reserveKeywordBenchmarkCancellation(db,"alice",run.id,run.revision);
+  await assert.rejects(archiveKeywordBenchmarkRun(db,"bob",run.id,run.revision));
+  await assert.rejects(archiveKeywordBenchmarkRun(db,"alice",run.id,run.revision-1));
+  const archived=await archiveKeywordBenchmarkRun(db,"alice",run.id,run.revision);
+  assert.ok(archived.archivedAt);assert.equal(archived.status,"requires_action");assert.equal(archived.sessionId,run.sessionId);assert.deepEqual(archived.usage,run.usage);
+  assert.equal((await getKeywordBenchmarkUsage(db,"alice")).activeRuns,0);
+  await assert.rejects(reserveKeywordBenchmarkRun(db,"alice",{caseId:suite.cases[0].id,kind:"baseline",...config}),/unresolved/);
+  await reserveKeywordBenchmarkRun(db,"alice",{caseId:suite.cases[1].id,kind:"baseline",...config});
+  await assert.rejects(reserveKeywordBenchmarkRun(db,"alice",{caseId:suite.cases[1].id,kind:"baseline",...config}),/limit/);
+  assert.equal((await db.prepare("SELECT COUNT(*) n FROM provider_cost_latest WHERE source_id=?").bind(run.id).first<{n:number}>())!.n,1);
+  await assert.rejects(db.prepare("UPDATE keyword_benchmark_runs SET archived_at=NULL WHERE id=?").bind(run.id).run());
+ } finally {await current.dispose();await rm(directory,{recursive:true,force:true});}
 });

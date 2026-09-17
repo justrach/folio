@@ -18,9 +18,9 @@ function modelLabel(run: KeywordBenchmarkRun) { return run.model === "gpt-6-astr
 function presenceLabel(value: "yes" | "no" | "unknown") { return value === "yes" ? "Yes" : value === "no" ? "Not listed" : "Unknown"; }
 function citationLabel(value: boolean | null) { return value === true ? "Yes" : value === false ? "Not cited" : "Unknown"; }
 
-export function KeywordObservationReport({ run, baseline, busy, onRefresh, onCancel, onPrepare }: {
+export function KeywordObservationReport({ run, baseline, busy, onRefresh, onCancel, onArchive, onPrepare }: {
   run: KeywordBenchmarkRun; baseline: KeywordBenchmarkRun | null; busy: boolean;
-  onRefresh: () => void; onCancel: () => void; onPrepare: () => void;
+  onRefresh: () => void; onCancel: () => void; onArchive?: () => void; onPrepare: () => void;
 }) {
   const metrics = keywordRecommendationMetrics(run);
   const completed = run.status === "completed" && Boolean(run.answer);
@@ -35,6 +35,8 @@ export function KeywordObservationReport({ run, baseline, busy, onRefresh, onCan
       <button className="button secondary" type="button" disabled={busy} onClick={onPrepare}>Prepare another observation <ArrowRight size={14}/></button>
       {active(run) && run.sessionId && <button className="button secondary" type="button" disabled={busy || Boolean(run.cancelAttemptAt)} onClick={onCancel}>Cancel observation</button>}
     </div>
+    {onArchive && run.status === "requires_action" && !run.archivedAt && Date.now()-Date.parse(run.createdAt)>=86400000 && (!run.sessionId || run.cancelAttemptAt) && <div className="benchmark-report-actions"><p>Remove this old attempt from the active queue while retaining its unknown cost and provider records. Remote cancellation is not confirmed.</p><button type="button" className="button secondary" disabled={busy} onClick={onArchive}>Archive unresolved attempt</button></div>}
+    {run.archivedAt && <p role="status">Archived from the active queue. Provider outcome and cost remain unresolved; saved evidence is retained. This does not confirm remote cancellation.</p>}
     {run.error && <p role="alert" className="benchmark-error">{run.error}</p>}
     {run.cancelAttemptAt && active(run) && <p role="status" className="benchmark-inline-note">Cancellation was requested; stopping is not yet confirmed.</p>}
     {completed ? <>

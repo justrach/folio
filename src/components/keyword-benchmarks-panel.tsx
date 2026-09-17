@@ -207,7 +207,7 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
   const openWebModels = overview?.access.openWebModels ?? [];
   const selectedModel = openWebModels.find(item => item.id === modelChoice) ?? openWebModels.find(item => item.id === "gpt-6-astra") ?? openWebModels[0];
   function start(caseId: string, kind: "baseline" | "fresh", baselineRunId?: string) {
-    if (!ready || runs.some(item => item.caseId === caseId && item.holdReleasedAt && item.status === "requires_action" && !item.sessionId)
+    if (!ready || runs.some(item => item.caseId === caseId && item.status === "requires_action" && (item.archivedAt || (item.holdReleasedAt && !item.sessionId)))
       || (kind === "fresh" && !baselineRunId)) return;
     void action(`start-${caseId}`, async signal => {
       const result = await request<{run:KeywordBenchmarkRun}>("/api/benchmarks/runs", signal, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({caseId,kind,...(currentSuite?.cases.find(item => item.id === caseId)?.searchMode === "open-web" && selectedModel ? {model:selectedModel.id} : {}),...(seoCase === `${suiteId}/${caseId}` && (!selectedModel || selectedModel.id === "gpt-6-astra") ? {useSeoTools:true} : {}),...(baselineRunId ? {baselineRunId} : {})}) });
@@ -217,11 +217,11 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
       setNotice("Observation saved. Its progress and answer stay in your private history.");
     });
   }
-  function refreshRun(kind: "reconcile" | "cancel") {
+  function refreshRun(kind: "reconcile" | "cancel" | "archive") {
     if (!currentRun) return;
     const selected = currentRun;
     void action(kind, async signal => {
-      const result = await request<{run:KeywordBenchmarkRun}>(`/api/benchmarks/runs/${encodeURIComponent(selected.id)}/${kind}`, signal, { method:"POST", headers:{"Content-Type":"application/json"}, body:"{}" });
+      const result = await request<{run:KeywordBenchmarkRun}>(`/api/benchmarks/runs/${encodeURIComponent(selected.id)}/${kind}`, signal, { method:"POST", headers:{"Content-Type":"application/json"}, body:kind === "archive" ? JSON.stringify({revision:selected.revision}) : "{}" });
       if (signal.aborted || selectedKey.current !== `${selected.suiteId}/${selected.id}`) return;
       if (result.run.id !== selected.id || result.run.suiteId !== selected.suiteId || result.run.publication !== "private") throw new Error("The returned observation does not match this selection.");
       setRun(result.run); setRefresh(value => value + 1);
@@ -229,7 +229,7 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
     });
   }
   const selectedCase = currentSuite?.cases.find(item => item.id === caseChoice) ?? currentSuite?.cases.find(item => item.id === currentRun?.caseId) ?? currentSuite?.cases[0];
-  const selectedCaseUnresolved = runs.some(item => item.caseId === selectedCase?.id && item.holdReleasedAt && item.status === "requires_action" && !item.sessionId);
+  const selectedCaseUnresolved = runs.some(item => item.caseId === selectedCase?.id && item.status === "requires_action" && (item.archivedAt || (item.holdReleasedAt && !item.sessionId)));
   const baselines = runs.filter(item => item.caseId === selectedCase?.id && item.kind === "baseline" && item.status === "completed");
   const baselineId = selectedCase && baselines.some(item => item.id === baselineChoices[selectedCase.id]) ? baselineChoices[selectedCase.id] : baselines[0]?.id ?? "";
   const caseRuns = (caseId: string) => runs.filter(item => item.caseId === caseId);
@@ -247,10 +247,10 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
     <nav className="benchmark-notebook" aria-label="Keyword notebook"><div className="benchmark-notebook-heading">
       {overview?.suites.length ? <label>Keyword suite<select value={suiteId} disabled={!!busy} onChange={event => select(event.target.value)}><option value="" disabled>Choose a saved suite</option>{overview.suites.map(item => <option key={item.id} value={item.id}>{item.name} · {item.caseCount} questions</option>)}</select></label> : <p>{overview ? "Save a suite to begin." : "Loading your saved suites…"}</p>}
       <button type="button" className="benchmark-refresh" disabled={!!busy} onClick={() => setRefresh(value => value + 1)} aria-label="Refresh saved history"><RefreshCw size={15}/></button>
-    </div>{runs.length > 0 && <div className="benchmark-history" aria-label="Saved keyword observations">{runs.map(item => <button key={item.id} type="button" disabled={!!busy} aria-pressed={item.id === runId} aria-label={`Open ${item.kind} observation for ${item.case.query}`} onClick={() => select(item.suiteId,item.id)}><strong>{item.case.query}</strong><span>{item.kind === "baseline" ? "Baseline" : "Fresh"} · {statusLabel(item.status)} · {item.model} · {date(item.createdAt)}</span></button>)}</div>}</nav>
+    </div>{runs.length > 0 && <div className="benchmark-history" aria-label="Saved keyword observations">{runs.map(item => <button key={item.id} type="button" disabled={!!busy} aria-pressed={item.id === runId} aria-label={`Open ${item.kind} observation for ${item.case.query}`} onClick={() => select(item.suiteId,item.id)}><strong>{item.case.query}</strong><span>{item.kind === "baseline" ? "Baseline" : "Fresh"} · {(item.archivedAt ? "Archived · outcome unresolved" : statusLabel(item.status))} · {item.model} · {date(item.createdAt)}</span></button>)}</div>}</nav>
     {overview?.suites.length && !suiteId && !runId ? <p className="benchmark-muted">Choose a saved suite. No suite was selected automatically for this website.</p> : null}
     {runId && !currentRun && <p role="status" className="benchmark-loading">Opening saved observation…</p>}
-    {currentRun && <KeywordObservationReport run={currentRun} baseline={baseline} busy={!!busy} onRefresh={() => refreshRun("reconcile")} onCancel={() => refreshRun("cancel")} onPrepare={() => {setSettingsOpen(true); requestAnimationFrame(() => {settingsRef.current?.scrollIntoView({behavior:"smooth",block:"start"}); settingsRef.current?.querySelector("summary")?.focus();});}}/>}
+    {currentRun && <KeywordObservationReport run={currentRun} baseline={baseline} busy={!!busy} onRefresh={() => refreshRun("reconcile")} onCancel={() => refreshRun("cancel")} onArchive={() => refreshRun("archive")} onPrepare={() => {setSettingsOpen(true); requestAnimationFrame(() => {settingsRef.current?.scrollIntoView({behavior:"smooth",block:"start"}); settingsRef.current?.querySelector("summary")?.focus();});}}/>}
     {currentSuite && <details ref={settingsRef} className="panel benchmark-question-settings" open={!runId || settingsOpen} onToggle={event => { if (runId) setSettingsOpen(event.currentTarget.open); }}><summary>{runId ? "Questions and run settings" : "Choose a question to observe"}<ChevronDown size={16}/></summary><section className="benchmark-cases" aria-label="Keyword questions">
       <p className="benchmark-question-coverage">{answeredQuestions} of {currentSuite.cases.length} questions have a completed answer{attentionQuestions > 0 ? ` · ${attentionQuestions} latest ${attentionQuestions === 1 ? "attempt needs" : "attempts need"} attention` : ""}.</p>
       <div className="benchmark-question-list" aria-label="Saved questions">{currentSuite.cases.map(item => <button key={item.id} type="button" aria-label={item.query} aria-pressed={item.id===selectedCase?.id} onClick={() => setCaseChoice(item.id)}>{item.query}<span className="question-result-state">{caseRuns(item.id)[0] ? statusLabel(caseRuns(item.id)[0].status) : "Draft · not started"}</span></button>)}</div>
