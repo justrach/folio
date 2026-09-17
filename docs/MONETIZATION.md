@@ -49,3 +49,7 @@ Payment must not change scoring weights, erase failed trials, buy a better rank,
 Private evaluations remain private regardless of plan. Public publication is a separate deliberate action with a preview of exactly what will be disclosed. A badge should link to the relevant versioned result and expire or become stale with it; a billing subscription must not confer a “verified” label. Domain ownership verification and public agent-performance publication remain prerequisites for that future badge product.
 
 The durable acquisition loop is: public method or published technical result → inspect evidence → run a private evaluation → review a change → repeat the same test. Rank movement can create interest, but fabricated company rankings, invented urgency, and guaranteed AI recommendations would undermine the product's evidence claim.
+
+## Cost visibility implemented
+
+Private D1 usage snapshots and the cost summary are documented in [cost tracking](COST-TRACKING.md). Token estimates and provider-reported SEO costs remain separate; no billing or credit balance is implied.

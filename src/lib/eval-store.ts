@@ -136,12 +136,13 @@ export async function updateEvaluationRun(db: D1Database, ownerId: string, run: 
       AND target_url = ? AND suite_version = ? AND mode = ? AND created_at = ?
       AND (session_id IS NULL OR session_id = ?)
       AND (status IN ('queued', 'running', 'requires_action') OR status = ?)
+    RETURNING id
   `).bind(
     saved.status, saved.sessionId, Date.parse(saved.updatedAt), saved.revision, JSON.stringify(saved),
     ownerId, saved.id, run.revision, saved.targetUrl, saved.suiteVersion, saved.mode,
     Date.parse(saved.createdAt), saved.sessionId, saved.status,
-  ).run();
-  if (updated.meta.changes !== 1)
+  ).first<{ id: string }>();
+  if (!updated)
     throw new EvalStoreError("This private evaluation changed or is unavailable. Reload before continuing.");
   return saved;
 }

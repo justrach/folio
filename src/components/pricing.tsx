@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { CostSummaryPanel } from "./cost-summary";
 import { useEffect, useState } from "react";
 import {
   ArrowUpRight,
@@ -125,6 +126,7 @@ export function Pricing() {
         </div>
       </header>
       <main>
+        {session?.user.id && <CostSummaryPanel key={session.user.id} />}
         <div className="pricing-heading">
           <span className="eyebrow">A WORKSPACE THAT GROWS WITH YOU</span>
           <h1>

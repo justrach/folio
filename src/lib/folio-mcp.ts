@@ -14,8 +14,8 @@ import { SeoStoreError } from "./seo-store";
 import { SeoDataError } from "./dataforseo";
 import { savedVisibility, visibilityFilters } from "./visibility-service";
 import type { SandboxSeoPrincipal } from "./sandbox-seo";
-import rankings from "../data/public-search-rankings.json";
-import progress from "../data/public-search-progress.json";
+import { PUBLIC_SEARCH_RANKINGS as rankings } from "./public-search-rankings";
+import { PUBLIC_SEARCH_PROGRESS as progress } from "@/lib/public-search-rankings";
 import { buildPublicDashboard } from "./public-dashboard";
 
 export type FolioToolContext = { db: D1Database; principal: AgentApiPrincipal; env: AgentRunEnvironment; sandbox?: SandboxSeoPrincipal };

@@ -135,7 +135,9 @@ export async function keywordEnvironmentFingerprint(allowedDomains: string[], se
 }
 function usage(value: unknown): KeywordBenchmarkUsage {
   const number = (key: string) => record(value) && typeof value[key] === "number" && Number.isSafeInteger(value[key]) && value[key] >= 0 ? value[key] as number : null;
-  return { inputTokens: number("input_tokens"), outputTokens: number("output_tokens"), totalTokens: number("total_tokens"), costUsd: null };
+  const cached = record(value) && record(value.input_tokens_details) ? value.input_tokens_details.cached_tokens : undefined;
+  return { inputTokens: number("input_tokens"), outputTokens: number("output_tokens"), totalTokens: number("total_tokens"), costUsd: null,
+    ...(typeof cached === "number" && Number.isSafeInteger(cached) && cached >= 0 && number("input_tokens") !== null && cached <= number("input_tokens")! ? { cachedInputTokens: cached } : {}) };
 }
 async function request(path: string, env: AgentsEnvironment, options: KeywordAgentOptions,
   body?: Record<string, unknown>): Promise<{ value: unknown; requestId: string | null }> {

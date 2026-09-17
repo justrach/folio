@@ -1,5 +1,5 @@
-import rankings from "@/data/public-search-rankings.json";
-import progress from "@/data/public-search-progress.json";
+import { PUBLIC_SEARCH_RANKINGS as rankings } from "@/lib/public-search-rankings";
+import { PUBLIC_SEARCH_PROGRESS as progress } from "@/lib/public-search-rankings";
 import catalog from "@/data/developer-tools.json";
 import homepageBatch from "@/data/developer-tool-evaluations.json";
 import { buildPublicDashboard, buildPublicHtmlCoverage } from "@/lib/public-dashboard";

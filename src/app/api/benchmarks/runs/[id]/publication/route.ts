@@ -1,4 +1,4 @@
-import catalog from "@/data/public-search-rankings.json";
+import { PUBLIC_SEARCH_RANKINGS as catalog } from "@/lib/public-search-rankings";
 import type { PublicSearchQuery } from "@/lib/public-search-rankings";
 import { getKeywordPublication, previewKeywordPublication, publishKeywordObservation, withdrawKeywordObservation } from "@/lib/public-keyword-store";
 import { KeywordBenchmarkStoreError } from "@/lib/keyword-benchmark-store";

@@ -33,18 +33,19 @@ function memoryDb(options: { failSessionSaves?: number; loseSessionSaveResponse?
                 rows.set(run.id, { owner: values[1] as string, run });
                 return { meta: { changes: 1 } };
               }
+
+              throw new Error("Unexpected SQL");
+            },
+            async first() {
               if (sql.includes("UPDATE evaluation_runs")) {
                 const row = rows.get(values[6] as string);
-                if (!row || row.owner !== values[5] || row.run.revision !== values[7]) return { meta: { changes: 0 } };
+                if (!row || row.owner !== values[5] || row.run.revision !== values[7]) return null;
                 const next = JSON.parse(values[4] as string) as EvaluationRun;
                 if (next.sessionId && sessionSaveFailures-- > 0) throw new Error("Database unavailable");
                 row.run = next;
                 if (next.sessionId && loseSessionSaveResponse) { loseSessionSaveResponse = false; throw new Error("Database acknowledgement lost after commit"); }
-                return { meta: { changes: 1 } };
+                return { id: next.id };
               }
-              throw new Error("Unexpected SQL");
-            },
-            async first() {
               if (sql.includes("INSERT INTO evaluation_runs")) {
                 const run = JSON.parse(values[9] as string) as EvaluationRun;
                 rows.set(run.id, { owner: values[1] as string, run });

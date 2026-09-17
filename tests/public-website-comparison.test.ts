@@ -19,7 +19,7 @@ test("chooses latest matching observation without pooling models or creating a d
 });
 test("owner-context question drafts fit the real editor limits and reject invalid context", () => {
   const questions = websiteQuestionDrafts("a".repeat(60), "b".repeat(120));
-  assert.equal(questions.length, 3); assert.ok(questions.every(q => q.length <= 300));
+  assert.equal(questions.length, 10); assert.ok(questions.every(q => q.length <= 300));
   assert.deepEqual(websiteQuestionDrafts("", "task"), []);
   assert.deepEqual(websiteQuestionDrafts("a".repeat(61), "task"), []);
   assert.deepEqual(websiteQuestionDrafts("team\nname", "task"), []);

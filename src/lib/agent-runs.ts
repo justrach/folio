@@ -366,6 +366,12 @@ function pickUsage(input: unknown): Record<string, unknown> | null {
     const value = input[name];
     if (typeof value === "number" && Number.isFinite(value) && value >= 0) result[name] = value;
   }
+  const details = input.input_tokens_details;
+  if (details && typeof details === "object" && !Array.isArray(details)) {
+    const cached = (details as Record<string, unknown>).cached_tokens;
+    if (typeof cached === "number" && Number.isSafeInteger(cached) && cached >= 0 && typeof result.input_tokens === "number" && cached <= result.input_tokens)
+      result.input_tokens_details = { cached_tokens: cached };
+  }
   return Object.keys(result).length ? result : null;
 }
 

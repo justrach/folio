@@ -126,7 +126,7 @@ test("open-web mode uses unfiltered Astra search with disabled shell networking 
   assert.ok(!JSON.stringify(payload).includes("PRIVATE_"));
   assert.ok(!("approvedResearchHosts" in JSON.parse(payload.input)));
   assert.throws(() => buildKeywordBenchmarkRequest({ ...open, allowedDomains: ["clerk.com"] }), /cannot carry/);
-  assert.throws(() => buildKeywordBenchmarkRequest({ ...open, model: "another-model" }), /Astra/);
+  assert.throws(() => buildKeywordBenchmarkRequest({ ...open, model: "another-model" }), /supported model/);
   assert.equal(keywordAgentHarnessVersion(), "keyword-research-v1");
   assert.equal(keywordAgentHarnessVersion("open-web"), "keyword-open-web-v2");
   const legacyIdentity = { harness: "keyword-research-v1", environment: "openai_hosted", domains: ["auth0.com", "clerk.com"], search: "live", reasoning: "low", multiAgent: false };
@@ -174,4 +174,16 @@ for (const [model,label] of [["gpt-5.6-luna","Luna"],["gpt-5.6-sol","Sol"],["gpt
  assert.equal(payload.environment.type,"openai_hosted");
  assert.deepEqual(payload.environment.network,{access:"disabled"});
  assert.equal(payload.agent.multi_agent.enabled,false);
+});
+
+test("recorded cache tokens come from the selected cumulative usage, never added twice", async () => {
+  for (const cached of [40,0,-1,101,"40"]) {
+    const result = await reconcileKeywordBenchmarkSession(session.id, env, { fetcher: fixture({
+      session:{...session,usage:{input_tokens:99999,output_tokens:99999}},
+      turns:[{...turn,usage:{...turn.usage,input_tokens_details:{cached_tokens:cached}}}]
+    }) });
+    assert.equal(result.usage.inputTokens,100);
+    assert.equal(result.usage.cachedInputTokens, typeof cached === "number" && cached >= 0 && cached <= 100 ? cached : undefined);
+    assert.equal(result.usage.costUsd,null);
+  }
 });

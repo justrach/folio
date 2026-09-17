@@ -58,6 +58,7 @@ export type KeywordCollectionEvidence = {
   validationItem: Record<string, unknown>;
 };
 export type KeywordBenchmarkUsage = {
+  cachedInputTokens?: number | null;
   inputTokens: number | null;
   outputTokens: number | null;
   totalTokens: number | null;

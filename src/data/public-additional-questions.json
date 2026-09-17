@@ -1,0 +1,2802 @@
+[
+  {
+    "id": "deploy-small-node-app-v1-decision-01",
+    "audience": "Developer tools",
+    "category": "Application deployment",
+    "query": "When evaluating Node.js and PostgreSQL deployment using Vercel, Render, Railway or Cloudflare Workers: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "deploy-small-node-app-v1-decision-02",
+    "audience": "Developer tools",
+    "category": "Application deployment",
+    "query": "When evaluating Node.js and PostgreSQL deployment using Vercel, Render, Railway or Cloudflare Workers: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "deploy-small-node-app-v1-decision-03",
+    "audience": "Developer tools",
+    "category": "Application deployment",
+    "query": "When evaluating Node.js and PostgreSQL deployment using Vercel, Render, Railway or Cloudflare Workers: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "deploy-small-node-app-v1-decision-04",
+    "audience": "Developer tools",
+    "category": "Application deployment",
+    "query": "When evaluating Node.js and PostgreSQL deployment using Vercel, Render, Railway or Cloudflare Workers: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "deploy-small-node-app-v1-decision-05",
+    "audience": "Developer tools",
+    "category": "Application deployment",
+    "query": "When evaluating Node.js and PostgreSQL deployment using Vercel, Render, Railway or Cloudflare Workers: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "deploy-small-node-app-v1-decision-06",
+    "audience": "Developer tools",
+    "category": "Application deployment",
+    "query": "When evaluating Node.js and PostgreSQL deployment using Vercel, Render, Railway or Cloudflare Workers: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "deploy-small-node-app-v1-decision-07",
+    "audience": "Developer tools",
+    "category": "Application deployment",
+    "query": "When evaluating Node.js and PostgreSQL deployment using Vercel, Render, Railway or Cloudflare Workers: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "deploy-small-node-app-v1-decision-08",
+    "audience": "Developer tools",
+    "category": "Application deployment",
+    "query": "When evaluating Node.js and PostgreSQL deployment using Vercel, Render, Railway or Cloudflare Workers: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "deploy-small-node-app-v1-decision-09",
+    "audience": "Developer tools",
+    "category": "Application deployment",
+    "query": "When evaluating Node.js and PostgreSQL deployment using Vercel, Render, Railway or Cloudflare Workers: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "deploy-small-node-app-v1-decision-10",
+    "audience": "Developer tools",
+    "category": "Application deployment",
+    "query": "When evaluating Node.js and PostgreSQL deployment using Vercel, Render, Railway or Cloudflare Workers: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "auth-b2b-small-team-v1-decision-01",
+    "audience": "Developer tools",
+    "category": "Authentication",
+    "query": "When evaluating Better Auth, Clerk, WorkOS and Auth0 for a TypeScript SaaS: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "auth-b2b-small-team-v1-decision-02",
+    "audience": "Developer tools",
+    "category": "Authentication",
+    "query": "When evaluating Better Auth, Clerk, WorkOS and Auth0 for a TypeScript SaaS: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "auth-b2b-small-team-v1-decision-03",
+    "audience": "Developer tools",
+    "category": "Authentication",
+    "query": "When evaluating Better Auth, Clerk, WorkOS and Auth0 for a TypeScript SaaS: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "auth-b2b-small-team-v1-decision-04",
+    "audience": "Developer tools",
+    "category": "Authentication",
+    "query": "When evaluating Better Auth, Clerk, WorkOS and Auth0 for a TypeScript SaaS: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "auth-b2b-small-team-v1-decision-05",
+    "audience": "Developer tools",
+    "category": "Authentication",
+    "query": "When evaluating Better Auth, Clerk, WorkOS and Auth0 for a TypeScript SaaS: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "auth-b2b-small-team-v1-decision-06",
+    "audience": "Developer tools",
+    "category": "Authentication",
+    "query": "When evaluating Better Auth, Clerk, WorkOS and Auth0 for a TypeScript SaaS: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "auth-b2b-small-team-v1-decision-07",
+    "audience": "Developer tools",
+    "category": "Authentication",
+    "query": "When evaluating Better Auth, Clerk, WorkOS and Auth0 for a TypeScript SaaS: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "auth-b2b-small-team-v1-decision-08",
+    "audience": "Developer tools",
+    "category": "Authentication",
+    "query": "When evaluating Better Auth, Clerk, WorkOS and Auth0 for a TypeScript SaaS: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "auth-b2b-small-team-v1-decision-09",
+    "audience": "Developer tools",
+    "category": "Authentication",
+    "query": "When evaluating Better Auth, Clerk, WorkOS and Auth0 for a TypeScript SaaS: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "auth-b2b-small-team-v1-decision-10",
+    "audience": "Developer tools",
+    "category": "Authentication",
+    "query": "When evaluating Better Auth, Clerk, WorkOS and Auth0 for a TypeScript SaaS: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "sandbox-python-jobs-v1-decision-01",
+    "audience": "Developer tools",
+    "category": "Compute and sandboxes",
+    "query": "When evaluating isolated Python sandboxes and occasional GPU batch compute: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "sandbox-python-jobs-v1-decision-02",
+    "audience": "Developer tools",
+    "category": "Compute and sandboxes",
+    "query": "When evaluating isolated Python sandboxes and occasional GPU batch compute: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "sandbox-python-jobs-v1-decision-03",
+    "audience": "Developer tools",
+    "category": "Compute and sandboxes",
+    "query": "When evaluating isolated Python sandboxes and occasional GPU batch compute: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "sandbox-python-jobs-v1-decision-04",
+    "audience": "Developer tools",
+    "category": "Compute and sandboxes",
+    "query": "When evaluating isolated Python sandboxes and occasional GPU batch compute: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "sandbox-python-jobs-v1-decision-05",
+    "audience": "Developer tools",
+    "category": "Compute and sandboxes",
+    "query": "When evaluating isolated Python sandboxes and occasional GPU batch compute: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "sandbox-python-jobs-v1-decision-06",
+    "audience": "Developer tools",
+    "category": "Compute and sandboxes",
+    "query": "When evaluating isolated Python sandboxes and occasional GPU batch compute: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "sandbox-python-jobs-v1-decision-07",
+    "audience": "Developer tools",
+    "category": "Compute and sandboxes",
+    "query": "When evaluating isolated Python sandboxes and occasional GPU batch compute: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "sandbox-python-jobs-v1-decision-08",
+    "audience": "Developer tools",
+    "category": "Compute and sandboxes",
+    "query": "When evaluating isolated Python sandboxes and occasional GPU batch compute: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "sandbox-python-jobs-v1-decision-09",
+    "audience": "Developer tools",
+    "category": "Compute and sandboxes",
+    "query": "When evaluating isolated Python sandboxes and occasional GPU batch compute: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "sandbox-python-jobs-v1-decision-10",
+    "audience": "Developer tools",
+    "category": "Compute and sandboxes",
+    "query": "When evaluating isolated Python sandboxes and occasional GPU batch compute: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "vector-search-small-app-v1-decision-01",
+    "audience": "Developer tools",
+    "category": "Search and databases",
+    "query": "When evaluating Chroma, Qdrant and Pinecone for document search: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "vector-search-small-app-v1-decision-02",
+    "audience": "Developer tools",
+    "category": "Search and databases",
+    "query": "When evaluating Chroma, Qdrant and Pinecone for document search: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "vector-search-small-app-v1-decision-03",
+    "audience": "Developer tools",
+    "category": "Search and databases",
+    "query": "When evaluating Chroma, Qdrant and Pinecone for document search: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "vector-search-small-app-v1-decision-04",
+    "audience": "Developer tools",
+    "category": "Search and databases",
+    "query": "When evaluating Chroma, Qdrant and Pinecone for document search: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "vector-search-small-app-v1-decision-05",
+    "audience": "Developer tools",
+    "category": "Search and databases",
+    "query": "When evaluating Chroma, Qdrant and Pinecone for document search: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "vector-search-small-app-v1-decision-06",
+    "audience": "Developer tools",
+    "category": "Search and databases",
+    "query": "When evaluating Chroma, Qdrant and Pinecone for document search: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "vector-search-small-app-v1-decision-07",
+    "audience": "Developer tools",
+    "category": "Search and databases",
+    "query": "When evaluating Chroma, Qdrant and Pinecone for document search: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "vector-search-small-app-v1-decision-08",
+    "audience": "Developer tools",
+    "category": "Search and databases",
+    "query": "When evaluating Chroma, Qdrant and Pinecone for document search: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "vector-search-small-app-v1-decision-09",
+    "audience": "Developer tools",
+    "category": "Search and databases",
+    "query": "When evaluating Chroma, Qdrant and Pinecone for document search: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "vector-search-small-app-v1-decision-10",
+    "audience": "Developer tools",
+    "category": "Search and databases",
+    "query": "When evaluating Chroma, Qdrant and Pinecone for document search: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "research-api-citations-v1-decision-01",
+    "audience": "Developer tools",
+    "category": "Web research",
+    "query": "When evaluating Firecrawl, Exa and Tavily for source-backed web research: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "research-api-citations-v1-decision-02",
+    "audience": "Developer tools",
+    "category": "Web research",
+    "query": "When evaluating Firecrawl, Exa and Tavily for source-backed web research: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "research-api-citations-v1-decision-03",
+    "audience": "Developer tools",
+    "category": "Web research",
+    "query": "When evaluating Firecrawl, Exa and Tavily for source-backed web research: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "research-api-citations-v1-decision-04",
+    "audience": "Developer tools",
+    "category": "Web research",
+    "query": "When evaluating Firecrawl, Exa and Tavily for source-backed web research: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "research-api-citations-v1-decision-05",
+    "audience": "Developer tools",
+    "category": "Web research",
+    "query": "When evaluating Firecrawl, Exa and Tavily for source-backed web research: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "research-api-citations-v1-decision-06",
+    "audience": "Developer tools",
+    "category": "Web research",
+    "query": "When evaluating Firecrawl, Exa and Tavily for source-backed web research: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "research-api-citations-v1-decision-07",
+    "audience": "Developer tools",
+    "category": "Web research",
+    "query": "When evaluating Firecrawl, Exa and Tavily for source-backed web research: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "research-api-citations-v1-decision-08",
+    "audience": "Developer tools",
+    "category": "Web research",
+    "query": "When evaluating Firecrawl, Exa and Tavily for source-backed web research: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "research-api-citations-v1-decision-09",
+    "audience": "Developer tools",
+    "category": "Web research",
+    "query": "When evaluating Firecrawl, Exa and Tavily for source-backed web research: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "research-api-citations-v1-decision-10",
+    "audience": "Developer tools",
+    "category": "Web research",
+    "query": "When evaluating Firecrawl, Exa and Tavily for source-backed web research: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "sentry-posthog-product-team-v1-decision-01",
+    "audience": "Developer tools",
+    "category": "Observability and analytics",
+    "query": "When evaluating Sentry and PostHog for web-product observability: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "sentry-posthog-product-team-v1-decision-02",
+    "audience": "Developer tools",
+    "category": "Observability and analytics",
+    "query": "When evaluating Sentry and PostHog for web-product observability: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "sentry-posthog-product-team-v1-decision-03",
+    "audience": "Developer tools",
+    "category": "Observability and analytics",
+    "query": "When evaluating Sentry and PostHog for web-product observability: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "sentry-posthog-product-team-v1-decision-04",
+    "audience": "Developer tools",
+    "category": "Observability and analytics",
+    "query": "When evaluating Sentry and PostHog for web-product observability: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "sentry-posthog-product-team-v1-decision-05",
+    "audience": "Developer tools",
+    "category": "Observability and analytics",
+    "query": "When evaluating Sentry and PostHog for web-product observability: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "sentry-posthog-product-team-v1-decision-06",
+    "audience": "Developer tools",
+    "category": "Observability and analytics",
+    "query": "When evaluating Sentry and PostHog for web-product observability: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "sentry-posthog-product-team-v1-decision-07",
+    "audience": "Developer tools",
+    "category": "Observability and analytics",
+    "query": "When evaluating Sentry and PostHog for web-product observability: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "sentry-posthog-product-team-v1-decision-08",
+    "audience": "Developer tools",
+    "category": "Observability and analytics",
+    "query": "When evaluating Sentry and PostHog for web-product observability: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "sentry-posthog-product-team-v1-decision-09",
+    "audience": "Developer tools",
+    "category": "Observability and analytics",
+    "query": "When evaluating Sentry and PostHog for web-product observability: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "sentry-posthog-product-team-v1-decision-10",
+    "audience": "Developer tools",
+    "category": "Observability and analytics",
+    "query": "When evaluating Sentry and PostHog for web-product observability: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "client-project-workspace-v1-decision-01",
+    "audience": "Software & work",
+    "category": "Client projects",
+    "query": "When evaluating Notion and Basecamp for shared client projects: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "client-project-workspace-v1-decision-02",
+    "audience": "Software & work",
+    "category": "Client projects",
+    "query": "When evaluating Notion and Basecamp for shared client projects: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "client-project-workspace-v1-decision-03",
+    "audience": "Software & work",
+    "category": "Client projects",
+    "query": "When evaluating Notion and Basecamp for shared client projects: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "client-project-workspace-v1-decision-04",
+    "audience": "Software & work",
+    "category": "Client projects",
+    "query": "When evaluating Notion and Basecamp for shared client projects: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "client-project-workspace-v1-decision-05",
+    "audience": "Software & work",
+    "category": "Client projects",
+    "query": "When evaluating Notion and Basecamp for shared client projects: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "client-project-workspace-v1-decision-06",
+    "audience": "Software & work",
+    "category": "Client projects",
+    "query": "When evaluating Notion and Basecamp for shared client projects: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "client-project-workspace-v1-decision-07",
+    "audience": "Software & work",
+    "category": "Client projects",
+    "query": "When evaluating Notion and Basecamp for shared client projects: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "client-project-workspace-v1-decision-08",
+    "audience": "Software & work",
+    "category": "Client projects",
+    "query": "When evaluating Notion and Basecamp for shared client projects: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "client-project-workspace-v1-decision-09",
+    "audience": "Software & work",
+    "category": "Client projects",
+    "query": "When evaluating Notion and Basecamp for shared client projects: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "client-project-workspace-v1-decision-10",
+    "audience": "Software & work",
+    "category": "Client projects",
+    "query": "When evaluating Notion and Basecamp for shared client projects: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "team-chat-history-v1-decision-01",
+    "audience": "Software & work",
+    "category": "Team communication",
+    "query": "When evaluating team communication tools including Slack: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "team-chat-history-v1-decision-02",
+    "audience": "Software & work",
+    "category": "Team communication",
+    "query": "When evaluating team communication tools including Slack: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "team-chat-history-v1-decision-03",
+    "audience": "Software & work",
+    "category": "Team communication",
+    "query": "When evaluating team communication tools including Slack: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "team-chat-history-v1-decision-04",
+    "audience": "Software & work",
+    "category": "Team communication",
+    "query": "When evaluating team communication tools including Slack: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "team-chat-history-v1-decision-05",
+    "audience": "Software & work",
+    "category": "Team communication",
+    "query": "When evaluating team communication tools including Slack: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "team-chat-history-v1-decision-06",
+    "audience": "Software & work",
+    "category": "Team communication",
+    "query": "When evaluating team communication tools including Slack: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "team-chat-history-v1-decision-07",
+    "audience": "Software & work",
+    "category": "Team communication",
+    "query": "When evaluating team communication tools including Slack: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "team-chat-history-v1-decision-08",
+    "audience": "Software & work",
+    "category": "Team communication",
+    "query": "When evaluating team communication tools including Slack: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "team-chat-history-v1-decision-09",
+    "audience": "Software & work",
+    "category": "Team communication",
+    "query": "When evaluating team communication tools including Slack: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "team-chat-history-v1-decision-10",
+    "audience": "Software & work",
+    "category": "Team communication",
+    "query": "When evaluating team communication tools including Slack: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "allbirds-first-order-v1-decision-01",
+    "audience": "Shops & brands",
+    "category": "Footwear shopping",
+    "query": "When evaluating Allbirds and alternative everyday footwear: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "allbirds-first-order-v1-decision-02",
+    "audience": "Shops & brands",
+    "category": "Footwear shopping",
+    "query": "When evaluating Allbirds and alternative everyday footwear: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "allbirds-first-order-v1-decision-03",
+    "audience": "Shops & brands",
+    "category": "Footwear shopping",
+    "query": "When evaluating Allbirds and alternative everyday footwear: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "allbirds-first-order-v1-decision-04",
+    "audience": "Shops & brands",
+    "category": "Footwear shopping",
+    "query": "When evaluating Allbirds and alternative everyday footwear: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "allbirds-first-order-v1-decision-05",
+    "audience": "Shops & brands",
+    "category": "Footwear shopping",
+    "query": "When evaluating Allbirds and alternative everyday footwear: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "allbirds-first-order-v1-decision-06",
+    "audience": "Shops & brands",
+    "category": "Footwear shopping",
+    "query": "When evaluating Allbirds and alternative everyday footwear: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "allbirds-first-order-v1-decision-07",
+    "audience": "Shops & brands",
+    "category": "Footwear shopping",
+    "query": "When evaluating Allbirds and alternative everyday footwear: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "allbirds-first-order-v1-decision-08",
+    "audience": "Shops & brands",
+    "category": "Footwear shopping",
+    "query": "When evaluating Allbirds and alternative everyday footwear: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "allbirds-first-order-v1-decision-09",
+    "audience": "Shops & brands",
+    "category": "Footwear shopping",
+    "query": "When evaluating Allbirds and alternative everyday footwear: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "allbirds-first-order-v1-decision-10",
+    "audience": "Shops & brands",
+    "category": "Footwear shopping",
+    "query": "When evaluating Allbirds and alternative everyday footwear: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "everyday-clothing-returns-v1-decision-01",
+    "audience": "Shops & brands",
+    "category": "Everyday clothing",
+    "query": "When evaluating online cotton T-shirts and jeans including Everlane: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "everyday-clothing-returns-v1-decision-02",
+    "audience": "Shops & brands",
+    "category": "Everyday clothing",
+    "query": "When evaluating online cotton T-shirts and jeans including Everlane: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "everyday-clothing-returns-v1-decision-03",
+    "audience": "Shops & brands",
+    "category": "Everyday clothing",
+    "query": "When evaluating online cotton T-shirts and jeans including Everlane: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "everyday-clothing-returns-v1-decision-04",
+    "audience": "Shops & brands",
+    "category": "Everyday clothing",
+    "query": "When evaluating online cotton T-shirts and jeans including Everlane: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "everyday-clothing-returns-v1-decision-05",
+    "audience": "Shops & brands",
+    "category": "Everyday clothing",
+    "query": "When evaluating online cotton T-shirts and jeans including Everlane: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "everyday-clothing-returns-v1-decision-06",
+    "audience": "Shops & brands",
+    "category": "Everyday clothing",
+    "query": "When evaluating online cotton T-shirts and jeans including Everlane: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "everyday-clothing-returns-v1-decision-07",
+    "audience": "Shops & brands",
+    "category": "Everyday clothing",
+    "query": "When evaluating online cotton T-shirts and jeans including Everlane: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "everyday-clothing-returns-v1-decision-08",
+    "audience": "Shops & brands",
+    "category": "Everyday clothing",
+    "query": "When evaluating online cotton T-shirts and jeans including Everlane: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "everyday-clothing-returns-v1-decision-09",
+    "audience": "Shops & brands",
+    "category": "Everyday clothing",
+    "query": "When evaluating online cotton T-shirts and jeans including Everlane: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "everyday-clothing-returns-v1-decision-10",
+    "audience": "Shops & brands",
+    "category": "Everyday clothing",
+    "query": "When evaluating online cotton T-shirts and jeans including Everlane: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-small-apartment-v1-decision-01",
+    "audience": "Shops & brands",
+    "category": "Furniture and home",
+    "query": "When evaluating IKEA desks and alternative small-apartment furniture: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-small-apartment-v1-decision-02",
+    "audience": "Shops & brands",
+    "category": "Furniture and home",
+    "query": "When evaluating IKEA desks and alternative small-apartment furniture: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-small-apartment-v1-decision-03",
+    "audience": "Shops & brands",
+    "category": "Furniture and home",
+    "query": "When evaluating IKEA desks and alternative small-apartment furniture: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-small-apartment-v1-decision-04",
+    "audience": "Shops & brands",
+    "category": "Furniture and home",
+    "query": "When evaluating IKEA desks and alternative small-apartment furniture: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-small-apartment-v1-decision-05",
+    "audience": "Shops & brands",
+    "category": "Furniture and home",
+    "query": "When evaluating IKEA desks and alternative small-apartment furniture: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-small-apartment-v1-decision-06",
+    "audience": "Shops & brands",
+    "category": "Furniture and home",
+    "query": "When evaluating IKEA desks and alternative small-apartment furniture: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-small-apartment-v1-decision-07",
+    "audience": "Shops & brands",
+    "category": "Furniture and home",
+    "query": "When evaluating IKEA desks and alternative small-apartment furniture: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-small-apartment-v1-decision-08",
+    "audience": "Shops & brands",
+    "category": "Furniture and home",
+    "query": "When evaluating IKEA desks and alternative small-apartment furniture: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-small-apartment-v1-decision-09",
+    "audience": "Shops & brands",
+    "category": "Furniture and home",
+    "query": "When evaluating IKEA desks and alternative small-apartment furniture: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-small-apartment-v1-decision-10",
+    "audience": "Shops & brands",
+    "category": "Furniture and home",
+    "query": "When evaluating IKEA desks and alternative small-apartment furniture: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-assembly-booking-v1-decision-01",
+    "audience": "Services & travel",
+    "category": "Home services",
+    "query": "When evaluating Taskrabbit furniture assembly in New York City: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-assembly-booking-v1-decision-02",
+    "audience": "Services & travel",
+    "category": "Home services",
+    "query": "When evaluating Taskrabbit furniture assembly in New York City: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-assembly-booking-v1-decision-03",
+    "audience": "Services & travel",
+    "category": "Home services",
+    "query": "When evaluating Taskrabbit furniture assembly in New York City: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-assembly-booking-v1-decision-04",
+    "audience": "Services & travel",
+    "category": "Home services",
+    "query": "When evaluating Taskrabbit furniture assembly in New York City: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-assembly-booking-v1-decision-05",
+    "audience": "Services & travel",
+    "category": "Home services",
+    "query": "When evaluating Taskrabbit furniture assembly in New York City: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-assembly-booking-v1-decision-06",
+    "audience": "Services & travel",
+    "category": "Home services",
+    "query": "When evaluating Taskrabbit furniture assembly in New York City: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-assembly-booking-v1-decision-07",
+    "audience": "Services & travel",
+    "category": "Home services",
+    "query": "When evaluating Taskrabbit furniture assembly in New York City: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-assembly-booking-v1-decision-08",
+    "audience": "Services & travel",
+    "category": "Home services",
+    "query": "When evaluating Taskrabbit furniture assembly in New York City: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-assembly-booking-v1-decision-09",
+    "audience": "Services & travel",
+    "category": "Home services",
+    "query": "When evaluating Taskrabbit furniture assembly in New York City: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-assembly-booking-v1-decision-10",
+    "audience": "Services & travel",
+    "category": "Home services",
+    "query": "When evaluating Taskrabbit furniture assembly in New York City: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "japan-small-group-comparison-v1-decision-01",
+    "audience": "Services & travel",
+    "category": "Small-group travel",
+    "query": "When evaluating Intrepid Travel and G Adventures Japan group trips: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "japan-small-group-comparison-v1-decision-02",
+    "audience": "Services & travel",
+    "category": "Small-group travel",
+    "query": "When evaluating Intrepid Travel and G Adventures Japan group trips: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "japan-small-group-comparison-v1-decision-03",
+    "audience": "Services & travel",
+    "category": "Small-group travel",
+    "query": "When evaluating Intrepid Travel and G Adventures Japan group trips: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "japan-small-group-comparison-v1-decision-04",
+    "audience": "Services & travel",
+    "category": "Small-group travel",
+    "query": "When evaluating Intrepid Travel and G Adventures Japan group trips: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "japan-small-group-comparison-v1-decision-05",
+    "audience": "Services & travel",
+    "category": "Small-group travel",
+    "query": "When evaluating Intrepid Travel and G Adventures Japan group trips: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "japan-small-group-comparison-v1-decision-06",
+    "audience": "Services & travel",
+    "category": "Small-group travel",
+    "query": "When evaluating Intrepid Travel and G Adventures Japan group trips: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "japan-small-group-comparison-v1-decision-07",
+    "audience": "Services & travel",
+    "category": "Small-group travel",
+    "query": "When evaluating Intrepid Travel and G Adventures Japan group trips: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "japan-small-group-comparison-v1-decision-08",
+    "audience": "Services & travel",
+    "category": "Small-group travel",
+    "query": "When evaluating Intrepid Travel and G Adventures Japan group trips: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "japan-small-group-comparison-v1-decision-09",
+    "audience": "Services & travel",
+    "category": "Small-group travel",
+    "query": "When evaluating Intrepid Travel and G Adventures Japan group trips: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "japan-small-group-comparison-v1-decision-10",
+    "audience": "Services & travel",
+    "category": "Small-group travel",
+    "query": "When evaluating Intrepid Travel and G Adventures Japan group trips: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "python-course-fit-v1-decision-01",
+    "audience": "Learning",
+    "category": "Beginner programming",
+    "query": "When evaluating Coursera and edX beginner Python study: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "python-course-fit-v1-decision-02",
+    "audience": "Learning",
+    "category": "Beginner programming",
+    "query": "When evaluating Coursera and edX beginner Python study: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "python-course-fit-v1-decision-03",
+    "audience": "Learning",
+    "category": "Beginner programming",
+    "query": "When evaluating Coursera and edX beginner Python study: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "python-course-fit-v1-decision-04",
+    "audience": "Learning",
+    "category": "Beginner programming",
+    "query": "When evaluating Coursera and edX beginner Python study: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "python-course-fit-v1-decision-05",
+    "audience": "Learning",
+    "category": "Beginner programming",
+    "query": "When evaluating Coursera and edX beginner Python study: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "python-course-fit-v1-decision-06",
+    "audience": "Learning",
+    "category": "Beginner programming",
+    "query": "When evaluating Coursera and edX beginner Python study: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "python-course-fit-v1-decision-07",
+    "audience": "Learning",
+    "category": "Beginner programming",
+    "query": "When evaluating Coursera and edX beginner Python study: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "python-course-fit-v1-decision-08",
+    "audience": "Learning",
+    "category": "Beginner programming",
+    "query": "When evaluating Coursera and edX beginner Python study: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "python-course-fit-v1-decision-09",
+    "audience": "Learning",
+    "category": "Beginner programming",
+    "query": "When evaluating Coursera and edX beginner Python study: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "python-course-fit-v1-decision-10",
+    "audience": "Learning",
+    "category": "Beginner programming",
+    "query": "When evaluating Coursera and edX beginner Python study: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "duolingo-spanish-fit-v1-decision-01",
+    "audience": "Learning",
+    "category": "Language practice",
+    "query": "When evaluating Duolingo and complementary beginner Spanish learning: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "duolingo-spanish-fit-v1-decision-02",
+    "audience": "Learning",
+    "category": "Language practice",
+    "query": "When evaluating Duolingo and complementary beginner Spanish learning: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "duolingo-spanish-fit-v1-decision-03",
+    "audience": "Learning",
+    "category": "Language practice",
+    "query": "When evaluating Duolingo and complementary beginner Spanish learning: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "duolingo-spanish-fit-v1-decision-04",
+    "audience": "Learning",
+    "category": "Language practice",
+    "query": "When evaluating Duolingo and complementary beginner Spanish learning: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "duolingo-spanish-fit-v1-decision-05",
+    "audience": "Learning",
+    "category": "Language practice",
+    "query": "When evaluating Duolingo and complementary beginner Spanish learning: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "duolingo-spanish-fit-v1-decision-06",
+    "audience": "Learning",
+    "category": "Language practice",
+    "query": "When evaluating Duolingo and complementary beginner Spanish learning: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "duolingo-spanish-fit-v1-decision-07",
+    "audience": "Learning",
+    "category": "Language practice",
+    "query": "When evaluating Duolingo and complementary beginner Spanish learning: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "duolingo-spanish-fit-v1-decision-08",
+    "audience": "Learning",
+    "category": "Language practice",
+    "query": "When evaluating Duolingo and complementary beginner Spanish learning: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "duolingo-spanish-fit-v1-decision-09",
+    "audience": "Learning",
+    "category": "Language practice",
+    "query": "When evaluating Duolingo and complementary beginner Spanish learning: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "duolingo-spanish-fit-v1-decision-10",
+    "audience": "Learning",
+    "category": "Language practice",
+    "query": "When evaluating Duolingo and complementary beginner Spanish learning: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "browserbase-browser-workflow-v1-decision-01",
+    "audience": "Developer tools",
+    "category": "Browserbase · browser workflow",
+    "query": "When evaluating Browserbase for Playwright browser automation: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "browserbase-browser-workflow-v1-decision-02",
+    "audience": "Developer tools",
+    "category": "Browserbase · browser workflow",
+    "query": "When evaluating Browserbase for Playwright browser automation: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "browserbase-browser-workflow-v1-decision-03",
+    "audience": "Developer tools",
+    "category": "Browserbase · browser workflow",
+    "query": "When evaluating Browserbase for Playwright browser automation: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "browserbase-browser-workflow-v1-decision-04",
+    "audience": "Developer tools",
+    "category": "Browserbase · browser workflow",
+    "query": "When evaluating Browserbase for Playwright browser automation: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "browserbase-browser-workflow-v1-decision-05",
+    "audience": "Developer tools",
+    "category": "Browserbase · browser workflow",
+    "query": "When evaluating Browserbase for Playwright browser automation: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "browserbase-browser-workflow-v1-decision-06",
+    "audience": "Developer tools",
+    "category": "Browserbase · browser workflow",
+    "query": "When evaluating Browserbase for Playwright browser automation: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "browserbase-browser-workflow-v1-decision-07",
+    "audience": "Developer tools",
+    "category": "Browserbase · browser workflow",
+    "query": "When evaluating Browserbase for Playwright browser automation: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "browserbase-browser-workflow-v1-decision-08",
+    "audience": "Developer tools",
+    "category": "Browserbase · browser workflow",
+    "query": "When evaluating Browserbase for Playwright browser automation: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "browserbase-browser-workflow-v1-decision-09",
+    "audience": "Developer tools",
+    "category": "Browserbase · browser workflow",
+    "query": "When evaluating Browserbase for Playwright browser automation: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "browserbase-browser-workflow-v1-decision-10",
+    "audience": "Developer tools",
+    "category": "Browserbase · browser workflow",
+    "query": "When evaluating Browserbase for Playwright browser automation: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "resend-email-setup-v1-decision-01",
+    "audience": "Developer tools",
+    "category": "Resend · email setup",
+    "query": "When evaluating Resend transactional email: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "resend-email-setup-v1-decision-02",
+    "audience": "Developer tools",
+    "category": "Resend · email setup",
+    "query": "When evaluating Resend transactional email: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "resend-email-setup-v1-decision-03",
+    "audience": "Developer tools",
+    "category": "Resend · email setup",
+    "query": "When evaluating Resend transactional email: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "resend-email-setup-v1-decision-04",
+    "audience": "Developer tools",
+    "category": "Resend · email setup",
+    "query": "When evaluating Resend transactional email: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "resend-email-setup-v1-decision-05",
+    "audience": "Developer tools",
+    "category": "Resend · email setup",
+    "query": "When evaluating Resend transactional email: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "resend-email-setup-v1-decision-06",
+    "audience": "Developer tools",
+    "category": "Resend · email setup",
+    "query": "When evaluating Resend transactional email: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "resend-email-setup-v1-decision-07",
+    "audience": "Developer tools",
+    "category": "Resend · email setup",
+    "query": "When evaluating Resend transactional email: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "resend-email-setup-v1-decision-08",
+    "audience": "Developer tools",
+    "category": "Resend · email setup",
+    "query": "When evaluating Resend transactional email: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "resend-email-setup-v1-decision-09",
+    "audience": "Developer tools",
+    "category": "Resend · email setup",
+    "query": "When evaluating Resend transactional email: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "resend-email-setup-v1-decision-10",
+    "audience": "Developer tools",
+    "category": "Resend · email setup",
+    "query": "When evaluating Resend transactional email: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "stripe-payment-setup-v1-decision-01",
+    "audience": "Developer tools",
+    "category": "Stripe · payment setup",
+    "query": "When evaluating Stripe for a US software business: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "stripe-payment-setup-v1-decision-02",
+    "audience": "Developer tools",
+    "category": "Stripe · payment setup",
+    "query": "When evaluating Stripe for a US software business: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "stripe-payment-setup-v1-decision-03",
+    "audience": "Developer tools",
+    "category": "Stripe · payment setup",
+    "query": "When evaluating Stripe for a US software business: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "stripe-payment-setup-v1-decision-04",
+    "audience": "Developer tools",
+    "category": "Stripe · payment setup",
+    "query": "When evaluating Stripe for a US software business: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "stripe-payment-setup-v1-decision-05",
+    "audience": "Developer tools",
+    "category": "Stripe · payment setup",
+    "query": "When evaluating Stripe for a US software business: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "stripe-payment-setup-v1-decision-06",
+    "audience": "Developer tools",
+    "category": "Stripe · payment setup",
+    "query": "When evaluating Stripe for a US software business: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "stripe-payment-setup-v1-decision-07",
+    "audience": "Developer tools",
+    "category": "Stripe · payment setup",
+    "query": "When evaluating Stripe for a US software business: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "stripe-payment-setup-v1-decision-08",
+    "audience": "Developer tools",
+    "category": "Stripe · payment setup",
+    "query": "When evaluating Stripe for a US software business: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "stripe-payment-setup-v1-decision-09",
+    "audience": "Developer tools",
+    "category": "Stripe · payment setup",
+    "query": "When evaluating Stripe for a US software business: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "stripe-payment-setup-v1-decision-10",
+    "audience": "Developer tools",
+    "category": "Stripe · payment setup",
+    "query": "When evaluating Stripe for a US software business: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "temporal-workflow-fit-v1-decision-01",
+    "audience": "Developer tools",
+    "category": "Temporal · workflow fit",
+    "query": "When evaluating Temporal for Node.js workflows: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "temporal-workflow-fit-v1-decision-02",
+    "audience": "Developer tools",
+    "category": "Temporal · workflow fit",
+    "query": "When evaluating Temporal for Node.js workflows: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "temporal-workflow-fit-v1-decision-03",
+    "audience": "Developer tools",
+    "category": "Temporal · workflow fit",
+    "query": "When evaluating Temporal for Node.js workflows: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "temporal-workflow-fit-v1-decision-04",
+    "audience": "Developer tools",
+    "category": "Temporal · workflow fit",
+    "query": "When evaluating Temporal for Node.js workflows: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "temporal-workflow-fit-v1-decision-05",
+    "audience": "Developer tools",
+    "category": "Temporal · workflow fit",
+    "query": "When evaluating Temporal for Node.js workflows: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "temporal-workflow-fit-v1-decision-06",
+    "audience": "Developer tools",
+    "category": "Temporal · workflow fit",
+    "query": "When evaluating Temporal for Node.js workflows: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "temporal-workflow-fit-v1-decision-07",
+    "audience": "Developer tools",
+    "category": "Temporal · workflow fit",
+    "query": "When evaluating Temporal for Node.js workflows: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "temporal-workflow-fit-v1-decision-08",
+    "audience": "Developer tools",
+    "category": "Temporal · workflow fit",
+    "query": "When evaluating Temporal for Node.js workflows: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "temporal-workflow-fit-v1-decision-09",
+    "audience": "Developer tools",
+    "category": "Temporal · workflow fit",
+    "query": "When evaluating Temporal for Node.js workflows: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "temporal-workflow-fit-v1-decision-10",
+    "audience": "Developer tools",
+    "category": "Temporal · workflow fit",
+    "query": "When evaluating Temporal for Node.js workflows: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "notion-client-project-fit-v1-decision-01",
+    "audience": "Software & work",
+    "category": "Notion · client project fit",
+    "query": "When evaluating Notion for agency client projects: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "notion-client-project-fit-v1-decision-02",
+    "audience": "Software & work",
+    "category": "Notion · client project fit",
+    "query": "When evaluating Notion for agency client projects: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "notion-client-project-fit-v1-decision-03",
+    "audience": "Software & work",
+    "category": "Notion · client project fit",
+    "query": "When evaluating Notion for agency client projects: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "notion-client-project-fit-v1-decision-04",
+    "audience": "Software & work",
+    "category": "Notion · client project fit",
+    "query": "When evaluating Notion for agency client projects: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "notion-client-project-fit-v1-decision-05",
+    "audience": "Software & work",
+    "category": "Notion · client project fit",
+    "query": "When evaluating Notion for agency client projects: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "notion-client-project-fit-v1-decision-06",
+    "audience": "Software & work",
+    "category": "Notion · client project fit",
+    "query": "When evaluating Notion for agency client projects: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "notion-client-project-fit-v1-decision-07",
+    "audience": "Software & work",
+    "category": "Notion · client project fit",
+    "query": "When evaluating Notion for agency client projects: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "notion-client-project-fit-v1-decision-08",
+    "audience": "Software & work",
+    "category": "Notion · client project fit",
+    "query": "When evaluating Notion for agency client projects: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "notion-client-project-fit-v1-decision-09",
+    "audience": "Software & work",
+    "category": "Notion · client project fit",
+    "query": "When evaluating Notion for agency client projects: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "notion-client-project-fit-v1-decision-10",
+    "audience": "Software & work",
+    "category": "Notion · client project fit",
+    "query": "When evaluating Notion for agency client projects: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "slack-history-and-guests-v1-decision-01",
+    "audience": "Software & work",
+    "category": "Slack · history and guests",
+    "query": "When evaluating Slack history and guest access: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "slack-history-and-guests-v1-decision-02",
+    "audience": "Software & work",
+    "category": "Slack · history and guests",
+    "query": "When evaluating Slack history and guest access: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "slack-history-and-guests-v1-decision-03",
+    "audience": "Software & work",
+    "category": "Slack · history and guests",
+    "query": "When evaluating Slack history and guest access: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "slack-history-and-guests-v1-decision-04",
+    "audience": "Software & work",
+    "category": "Slack · history and guests",
+    "query": "When evaluating Slack history and guest access: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "slack-history-and-guests-v1-decision-05",
+    "audience": "Software & work",
+    "category": "Slack · history and guests",
+    "query": "When evaluating Slack history and guest access: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "slack-history-and-guests-v1-decision-06",
+    "audience": "Software & work",
+    "category": "Slack · history and guests",
+    "query": "When evaluating Slack history and guest access: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "slack-history-and-guests-v1-decision-07",
+    "audience": "Software & work",
+    "category": "Slack · history and guests",
+    "query": "When evaluating Slack history and guest access: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "slack-history-and-guests-v1-decision-08",
+    "audience": "Software & work",
+    "category": "Slack · history and guests",
+    "query": "When evaluating Slack history and guest access: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "slack-history-and-guests-v1-decision-09",
+    "audience": "Software & work",
+    "category": "Slack · history and guests",
+    "query": "When evaluating Slack history and guest access: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "slack-history-and-guests-v1-decision-10",
+    "audience": "Software & work",
+    "category": "Slack · history and guests",
+    "query": "When evaluating Slack history and guest access: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "basecamp-client-project-fit-v1-decision-01",
+    "audience": "Software & work",
+    "category": "Basecamp · client project fit",
+    "query": "When evaluating Basecamp for agency client projects: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "basecamp-client-project-fit-v1-decision-02",
+    "audience": "Software & work",
+    "category": "Basecamp · client project fit",
+    "query": "When evaluating Basecamp for agency client projects: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "basecamp-client-project-fit-v1-decision-03",
+    "audience": "Software & work",
+    "category": "Basecamp · client project fit",
+    "query": "When evaluating Basecamp for agency client projects: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "basecamp-client-project-fit-v1-decision-04",
+    "audience": "Software & work",
+    "category": "Basecamp · client project fit",
+    "query": "When evaluating Basecamp for agency client projects: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "basecamp-client-project-fit-v1-decision-05",
+    "audience": "Software & work",
+    "category": "Basecamp · client project fit",
+    "query": "When evaluating Basecamp for agency client projects: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "basecamp-client-project-fit-v1-decision-06",
+    "audience": "Software & work",
+    "category": "Basecamp · client project fit",
+    "query": "When evaluating Basecamp for agency client projects: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "basecamp-client-project-fit-v1-decision-07",
+    "audience": "Software & work",
+    "category": "Basecamp · client project fit",
+    "query": "When evaluating Basecamp for agency client projects: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "basecamp-client-project-fit-v1-decision-08",
+    "audience": "Software & work",
+    "category": "Basecamp · client project fit",
+    "query": "When evaluating Basecamp for agency client projects: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "basecamp-client-project-fit-v1-decision-09",
+    "audience": "Software & work",
+    "category": "Basecamp · client project fit",
+    "query": "When evaluating Basecamp for agency client projects: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "basecamp-client-project-fit-v1-decision-10",
+    "audience": "Software & work",
+    "category": "Basecamp · client project fit",
+    "query": "When evaluating Basecamp for agency client projects: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "notion-knowledge-portability-v1-decision-01",
+    "audience": "Software & work",
+    "category": "Notion · knowledge portability",
+    "query": "When evaluating Notion as an internal knowledge handbook: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "notion-knowledge-portability-v1-decision-02",
+    "audience": "Software & work",
+    "category": "Notion · knowledge portability",
+    "query": "When evaluating Notion as an internal knowledge handbook: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "notion-knowledge-portability-v1-decision-03",
+    "audience": "Software & work",
+    "category": "Notion · knowledge portability",
+    "query": "When evaluating Notion as an internal knowledge handbook: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "notion-knowledge-portability-v1-decision-04",
+    "audience": "Software & work",
+    "category": "Notion · knowledge portability",
+    "query": "When evaluating Notion as an internal knowledge handbook: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "notion-knowledge-portability-v1-decision-05",
+    "audience": "Software & work",
+    "category": "Notion · knowledge portability",
+    "query": "When evaluating Notion as an internal knowledge handbook: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "notion-knowledge-portability-v1-decision-06",
+    "audience": "Software & work",
+    "category": "Notion · knowledge portability",
+    "query": "When evaluating Notion as an internal knowledge handbook: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "notion-knowledge-portability-v1-decision-07",
+    "audience": "Software & work",
+    "category": "Notion · knowledge portability",
+    "query": "When evaluating Notion as an internal knowledge handbook: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "notion-knowledge-portability-v1-decision-08",
+    "audience": "Software & work",
+    "category": "Notion · knowledge portability",
+    "query": "When evaluating Notion as an internal knowledge handbook: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "notion-knowledge-portability-v1-decision-09",
+    "audience": "Software & work",
+    "category": "Notion · knowledge portability",
+    "query": "When evaluating Notion as an internal knowledge handbook: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "notion-knowledge-portability-v1-decision-10",
+    "audience": "Software & work",
+    "category": "Notion · knowledge portability",
+    "query": "When evaluating Notion as an internal knowledge handbook: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-product-and-delivery-v1-decision-01",
+    "audience": "Shops & brands",
+    "category": "IKEA · product and delivery",
+    "query": "When evaluating IKEA product ordering and delivery in the US: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-product-and-delivery-v1-decision-02",
+    "audience": "Shops & brands",
+    "category": "IKEA · product and delivery",
+    "query": "When evaluating IKEA product ordering and delivery in the US: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-product-and-delivery-v1-decision-03",
+    "audience": "Shops & brands",
+    "category": "IKEA · product and delivery",
+    "query": "When evaluating IKEA product ordering and delivery in the US: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-product-and-delivery-v1-decision-04",
+    "audience": "Shops & brands",
+    "category": "IKEA · product and delivery",
+    "query": "When evaluating IKEA product ordering and delivery in the US: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-product-and-delivery-v1-decision-05",
+    "audience": "Shops & brands",
+    "category": "IKEA · product and delivery",
+    "query": "When evaluating IKEA product ordering and delivery in the US: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-product-and-delivery-v1-decision-06",
+    "audience": "Shops & brands",
+    "category": "IKEA · product and delivery",
+    "query": "When evaluating IKEA product ordering and delivery in the US: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-product-and-delivery-v1-decision-07",
+    "audience": "Shops & brands",
+    "category": "IKEA · product and delivery",
+    "query": "When evaluating IKEA product ordering and delivery in the US: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-product-and-delivery-v1-decision-08",
+    "audience": "Shops & brands",
+    "category": "IKEA · product and delivery",
+    "query": "When evaluating IKEA product ordering and delivery in the US: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-product-and-delivery-v1-decision-09",
+    "audience": "Shops & brands",
+    "category": "IKEA · product and delivery",
+    "query": "When evaluating IKEA product ordering and delivery in the US: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-product-and-delivery-v1-decision-10",
+    "audience": "Shops & brands",
+    "category": "IKEA · product and delivery",
+    "query": "When evaluating IKEA product ordering and delivery in the US: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "allbirds-product-fit-and-care-v1-decision-01",
+    "audience": "Shops & brands",
+    "category": "Allbirds · product fit and care",
+    "query": "When evaluating Allbirds product fit and care in the US: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "allbirds-product-fit-and-care-v1-decision-02",
+    "audience": "Shops & brands",
+    "category": "Allbirds · product fit and care",
+    "query": "When evaluating Allbirds product fit and care in the US: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "allbirds-product-fit-and-care-v1-decision-03",
+    "audience": "Shops & brands",
+    "category": "Allbirds · product fit and care",
+    "query": "When evaluating Allbirds product fit and care in the US: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "allbirds-product-fit-and-care-v1-decision-04",
+    "audience": "Shops & brands",
+    "category": "Allbirds · product fit and care",
+    "query": "When evaluating Allbirds product fit and care in the US: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "allbirds-product-fit-and-care-v1-decision-05",
+    "audience": "Shops & brands",
+    "category": "Allbirds · product fit and care",
+    "query": "When evaluating Allbirds product fit and care in the US: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "allbirds-product-fit-and-care-v1-decision-06",
+    "audience": "Shops & brands",
+    "category": "Allbirds · product fit and care",
+    "query": "When evaluating Allbirds product fit and care in the US: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "allbirds-product-fit-and-care-v1-decision-07",
+    "audience": "Shops & brands",
+    "category": "Allbirds · product fit and care",
+    "query": "When evaluating Allbirds product fit and care in the US: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "allbirds-product-fit-and-care-v1-decision-08",
+    "audience": "Shops & brands",
+    "category": "Allbirds · product fit and care",
+    "query": "When evaluating Allbirds product fit and care in the US: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "allbirds-product-fit-and-care-v1-decision-09",
+    "audience": "Shops & brands",
+    "category": "Allbirds · product fit and care",
+    "query": "When evaluating Allbirds product fit and care in the US: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "allbirds-product-fit-and-care-v1-decision-10",
+    "audience": "Shops & brands",
+    "category": "Allbirds · product fit and care",
+    "query": "When evaluating Allbirds product fit and care in the US: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "everlane-product-and-sizing-v1-decision-01",
+    "audience": "Shops & brands",
+    "category": "Everlane · product and sizing",
+    "query": "When evaluating Everlane T-shirts and jeans in the US: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "everlane-product-and-sizing-v1-decision-02",
+    "audience": "Shops & brands",
+    "category": "Everlane · product and sizing",
+    "query": "When evaluating Everlane T-shirts and jeans in the US: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "everlane-product-and-sizing-v1-decision-03",
+    "audience": "Shops & brands",
+    "category": "Everlane · product and sizing",
+    "query": "When evaluating Everlane T-shirts and jeans in the US: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "everlane-product-and-sizing-v1-decision-04",
+    "audience": "Shops & brands",
+    "category": "Everlane · product and sizing",
+    "query": "When evaluating Everlane T-shirts and jeans in the US: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "everlane-product-and-sizing-v1-decision-05",
+    "audience": "Shops & brands",
+    "category": "Everlane · product and sizing",
+    "query": "When evaluating Everlane T-shirts and jeans in the US: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "everlane-product-and-sizing-v1-decision-06",
+    "audience": "Shops & brands",
+    "category": "Everlane · product and sizing",
+    "query": "When evaluating Everlane T-shirts and jeans in the US: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "everlane-product-and-sizing-v1-decision-07",
+    "audience": "Shops & brands",
+    "category": "Everlane · product and sizing",
+    "query": "When evaluating Everlane T-shirts and jeans in the US: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "everlane-product-and-sizing-v1-decision-08",
+    "audience": "Shops & brands",
+    "category": "Everlane · product and sizing",
+    "query": "When evaluating Everlane T-shirts and jeans in the US: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "everlane-product-and-sizing-v1-decision-09",
+    "audience": "Shops & brands",
+    "category": "Everlane · product and sizing",
+    "query": "When evaluating Everlane T-shirts and jeans in the US: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "everlane-product-and-sizing-v1-decision-10",
+    "audience": "Shops & brands",
+    "category": "Everlane · product and sizing",
+    "query": "When evaluating Everlane T-shirts and jeans in the US: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-returns-and-services-v1-decision-01",
+    "audience": "Shops & brands",
+    "category": "IKEA · returns and services",
+    "query": "When evaluating IKEA US returns and purchase services: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-returns-and-services-v1-decision-02",
+    "audience": "Shops & brands",
+    "category": "IKEA · returns and services",
+    "query": "When evaluating IKEA US returns and purchase services: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-returns-and-services-v1-decision-03",
+    "audience": "Shops & brands",
+    "category": "IKEA · returns and services",
+    "query": "When evaluating IKEA US returns and purchase services: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-returns-and-services-v1-decision-04",
+    "audience": "Shops & brands",
+    "category": "IKEA · returns and services",
+    "query": "When evaluating IKEA US returns and purchase services: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-returns-and-services-v1-decision-05",
+    "audience": "Shops & brands",
+    "category": "IKEA · returns and services",
+    "query": "When evaluating IKEA US returns and purchase services: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-returns-and-services-v1-decision-06",
+    "audience": "Shops & brands",
+    "category": "IKEA · returns and services",
+    "query": "When evaluating IKEA US returns and purchase services: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-returns-and-services-v1-decision-07",
+    "audience": "Shops & brands",
+    "category": "IKEA · returns and services",
+    "query": "When evaluating IKEA US returns and purchase services: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-returns-and-services-v1-decision-08",
+    "audience": "Shops & brands",
+    "category": "IKEA · returns and services",
+    "query": "When evaluating IKEA US returns and purchase services: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-returns-and-services-v1-decision-09",
+    "audience": "Shops & brands",
+    "category": "IKEA · returns and services",
+    "query": "When evaluating IKEA US returns and purchase services: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ikea-returns-and-services-v1-decision-10",
+    "audience": "Shops & brands",
+    "category": "IKEA · returns and services",
+    "query": "When evaluating IKEA US returns and purchase services: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-local-booking-fit-v1-decision-01",
+    "audience": "Services & travel",
+    "category": "Taskrabbit · local booking fit",
+    "query": "When evaluating Taskrabbit local furniture assembly bookings in New York City: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-local-booking-fit-v1-decision-02",
+    "audience": "Services & travel",
+    "category": "Taskrabbit · local booking fit",
+    "query": "When evaluating Taskrabbit local furniture assembly bookings in New York City: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-local-booking-fit-v1-decision-03",
+    "audience": "Services & travel",
+    "category": "Taskrabbit · local booking fit",
+    "query": "When evaluating Taskrabbit local furniture assembly bookings in New York City: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-local-booking-fit-v1-decision-04",
+    "audience": "Services & travel",
+    "category": "Taskrabbit · local booking fit",
+    "query": "When evaluating Taskrabbit local furniture assembly bookings in New York City: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-local-booking-fit-v1-decision-05",
+    "audience": "Services & travel",
+    "category": "Taskrabbit · local booking fit",
+    "query": "When evaluating Taskrabbit local furniture assembly bookings in New York City: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-local-booking-fit-v1-decision-06",
+    "audience": "Services & travel",
+    "category": "Taskrabbit · local booking fit",
+    "query": "When evaluating Taskrabbit local furniture assembly bookings in New York City: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-local-booking-fit-v1-decision-07",
+    "audience": "Services & travel",
+    "category": "Taskrabbit · local booking fit",
+    "query": "When evaluating Taskrabbit local furniture assembly bookings in New York City: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-local-booking-fit-v1-decision-08",
+    "audience": "Services & travel",
+    "category": "Taskrabbit · local booking fit",
+    "query": "When evaluating Taskrabbit local furniture assembly bookings in New York City: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-local-booking-fit-v1-decision-09",
+    "audience": "Services & travel",
+    "category": "Taskrabbit · local booking fit",
+    "query": "When evaluating Taskrabbit local furniture assembly bookings in New York City: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-local-booking-fit-v1-decision-10",
+    "audience": "Services & travel",
+    "category": "Taskrabbit · local booking fit",
+    "query": "When evaluating Taskrabbit local furniture assembly bookings in New York City: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "intrepid-travel-trip-fit-v1-decision-01",
+    "audience": "Services & travel",
+    "category": "Intrepid Travel · trip fit",
+    "query": "When evaluating Intrepid Travel Japan itineraries: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "intrepid-travel-trip-fit-v1-decision-02",
+    "audience": "Services & travel",
+    "category": "Intrepid Travel · trip fit",
+    "query": "When evaluating Intrepid Travel Japan itineraries: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "intrepid-travel-trip-fit-v1-decision-03",
+    "audience": "Services & travel",
+    "category": "Intrepid Travel · trip fit",
+    "query": "When evaluating Intrepid Travel Japan itineraries: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "intrepid-travel-trip-fit-v1-decision-04",
+    "audience": "Services & travel",
+    "category": "Intrepid Travel · trip fit",
+    "query": "When evaluating Intrepid Travel Japan itineraries: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "intrepid-travel-trip-fit-v1-decision-05",
+    "audience": "Services & travel",
+    "category": "Intrepid Travel · trip fit",
+    "query": "When evaluating Intrepid Travel Japan itineraries: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "intrepid-travel-trip-fit-v1-decision-06",
+    "audience": "Services & travel",
+    "category": "Intrepid Travel · trip fit",
+    "query": "When evaluating Intrepid Travel Japan itineraries: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "intrepid-travel-trip-fit-v1-decision-07",
+    "audience": "Services & travel",
+    "category": "Intrepid Travel · trip fit",
+    "query": "When evaluating Intrepid Travel Japan itineraries: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "intrepid-travel-trip-fit-v1-decision-08",
+    "audience": "Services & travel",
+    "category": "Intrepid Travel · trip fit",
+    "query": "When evaluating Intrepid Travel Japan itineraries: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "intrepid-travel-trip-fit-v1-decision-09",
+    "audience": "Services & travel",
+    "category": "Intrepid Travel · trip fit",
+    "query": "When evaluating Intrepid Travel Japan itineraries: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "intrepid-travel-trip-fit-v1-decision-10",
+    "audience": "Services & travel",
+    "category": "Intrepid Travel · trip fit",
+    "query": "When evaluating Intrepid Travel Japan itineraries: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "g-adventures-trip-fit-v1-decision-01",
+    "audience": "Services & travel",
+    "category": "G Adventures · trip fit",
+    "query": "When evaluating G Adventures Japan itineraries: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "g-adventures-trip-fit-v1-decision-02",
+    "audience": "Services & travel",
+    "category": "G Adventures · trip fit",
+    "query": "When evaluating G Adventures Japan itineraries: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "g-adventures-trip-fit-v1-decision-03",
+    "audience": "Services & travel",
+    "category": "G Adventures · trip fit",
+    "query": "When evaluating G Adventures Japan itineraries: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "g-adventures-trip-fit-v1-decision-04",
+    "audience": "Services & travel",
+    "category": "G Adventures · trip fit",
+    "query": "When evaluating G Adventures Japan itineraries: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "g-adventures-trip-fit-v1-decision-05",
+    "audience": "Services & travel",
+    "category": "G Adventures · trip fit",
+    "query": "When evaluating G Adventures Japan itineraries: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "g-adventures-trip-fit-v1-decision-06",
+    "audience": "Services & travel",
+    "category": "G Adventures · trip fit",
+    "query": "When evaluating G Adventures Japan itineraries: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "g-adventures-trip-fit-v1-decision-07",
+    "audience": "Services & travel",
+    "category": "G Adventures · trip fit",
+    "query": "When evaluating G Adventures Japan itineraries: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "g-adventures-trip-fit-v1-decision-08",
+    "audience": "Services & travel",
+    "category": "G Adventures · trip fit",
+    "query": "When evaluating G Adventures Japan itineraries: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "g-adventures-trip-fit-v1-decision-09",
+    "audience": "Services & travel",
+    "category": "G Adventures · trip fit",
+    "query": "When evaluating G Adventures Japan itineraries: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "g-adventures-trip-fit-v1-decision-10",
+    "audience": "Services & travel",
+    "category": "G Adventures · trip fit",
+    "query": "When evaluating G Adventures Japan itineraries: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-price-and-cancellation-v1-decision-01",
+    "audience": "Services & travel",
+    "category": "Taskrabbit · price and cancellation",
+    "query": "When evaluating Taskrabbit pricing and cancellation: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-price-and-cancellation-v1-decision-02",
+    "audience": "Services & travel",
+    "category": "Taskrabbit · price and cancellation",
+    "query": "When evaluating Taskrabbit pricing and cancellation: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-price-and-cancellation-v1-decision-03",
+    "audience": "Services & travel",
+    "category": "Taskrabbit · price and cancellation",
+    "query": "When evaluating Taskrabbit pricing and cancellation: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-price-and-cancellation-v1-decision-04",
+    "audience": "Services & travel",
+    "category": "Taskrabbit · price and cancellation",
+    "query": "When evaluating Taskrabbit pricing and cancellation: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-price-and-cancellation-v1-decision-05",
+    "audience": "Services & travel",
+    "category": "Taskrabbit · price and cancellation",
+    "query": "When evaluating Taskrabbit pricing and cancellation: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-price-and-cancellation-v1-decision-06",
+    "audience": "Services & travel",
+    "category": "Taskrabbit · price and cancellation",
+    "query": "When evaluating Taskrabbit pricing and cancellation: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-price-and-cancellation-v1-decision-07",
+    "audience": "Services & travel",
+    "category": "Taskrabbit · price and cancellation",
+    "query": "When evaluating Taskrabbit pricing and cancellation: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-price-and-cancellation-v1-decision-08",
+    "audience": "Services & travel",
+    "category": "Taskrabbit · price and cancellation",
+    "query": "When evaluating Taskrabbit pricing and cancellation: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-price-and-cancellation-v1-decision-09",
+    "audience": "Services & travel",
+    "category": "Taskrabbit · price and cancellation",
+    "query": "When evaluating Taskrabbit pricing and cancellation: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "taskrabbit-price-and-cancellation-v1-decision-10",
+    "audience": "Services & travel",
+    "category": "Taskrabbit · price and cancellation",
+    "query": "When evaluating Taskrabbit pricing and cancellation: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "coursera-course-fit-v1-decision-01",
+    "audience": "Learning",
+    "category": "Coursera · course fit",
+    "query": "When evaluating Coursera beginner Python courses: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "coursera-course-fit-v1-decision-02",
+    "audience": "Learning",
+    "category": "Coursera · course fit",
+    "query": "When evaluating Coursera beginner Python courses: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "coursera-course-fit-v1-decision-03",
+    "audience": "Learning",
+    "category": "Coursera · course fit",
+    "query": "When evaluating Coursera beginner Python courses: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "coursera-course-fit-v1-decision-04",
+    "audience": "Learning",
+    "category": "Coursera · course fit",
+    "query": "When evaluating Coursera beginner Python courses: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "coursera-course-fit-v1-decision-05",
+    "audience": "Learning",
+    "category": "Coursera · course fit",
+    "query": "When evaluating Coursera beginner Python courses: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "coursera-course-fit-v1-decision-06",
+    "audience": "Learning",
+    "category": "Coursera · course fit",
+    "query": "When evaluating Coursera beginner Python courses: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "coursera-course-fit-v1-decision-07",
+    "audience": "Learning",
+    "category": "Coursera · course fit",
+    "query": "When evaluating Coursera beginner Python courses: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "coursera-course-fit-v1-decision-08",
+    "audience": "Learning",
+    "category": "Coursera · course fit",
+    "query": "When evaluating Coursera beginner Python courses: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "coursera-course-fit-v1-decision-09",
+    "audience": "Learning",
+    "category": "Coursera · course fit",
+    "query": "When evaluating Coursera beginner Python courses: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "coursera-course-fit-v1-decision-10",
+    "audience": "Learning",
+    "category": "Coursera · course fit",
+    "query": "When evaluating Coursera beginner Python courses: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "duolingo-learning-fit-v1-decision-01",
+    "audience": "Learning",
+    "category": "Duolingo · learning fit",
+    "query": "When evaluating Duolingo beginner Spanish practice: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "duolingo-learning-fit-v1-decision-02",
+    "audience": "Learning",
+    "category": "Duolingo · learning fit",
+    "query": "When evaluating Duolingo beginner Spanish practice: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "duolingo-learning-fit-v1-decision-03",
+    "audience": "Learning",
+    "category": "Duolingo · learning fit",
+    "query": "When evaluating Duolingo beginner Spanish practice: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "duolingo-learning-fit-v1-decision-04",
+    "audience": "Learning",
+    "category": "Duolingo · learning fit",
+    "query": "When evaluating Duolingo beginner Spanish practice: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "duolingo-learning-fit-v1-decision-05",
+    "audience": "Learning",
+    "category": "Duolingo · learning fit",
+    "query": "When evaluating Duolingo beginner Spanish practice: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "duolingo-learning-fit-v1-decision-06",
+    "audience": "Learning",
+    "category": "Duolingo · learning fit",
+    "query": "When evaluating Duolingo beginner Spanish practice: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "duolingo-learning-fit-v1-decision-07",
+    "audience": "Learning",
+    "category": "Duolingo · learning fit",
+    "query": "When evaluating Duolingo beginner Spanish practice: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "duolingo-learning-fit-v1-decision-08",
+    "audience": "Learning",
+    "category": "Duolingo · learning fit",
+    "query": "When evaluating Duolingo beginner Spanish practice: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "duolingo-learning-fit-v1-decision-09",
+    "audience": "Learning",
+    "category": "Duolingo · learning fit",
+    "query": "When evaluating Duolingo beginner Spanish practice: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "duolingo-learning-fit-v1-decision-10",
+    "audience": "Learning",
+    "category": "Duolingo · learning fit",
+    "query": "When evaluating Duolingo beginner Spanish practice: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "edx-course-fit-v1-decision-01",
+    "audience": "Learning",
+    "category": "edX · course fit",
+    "query": "When evaluating edX beginner Python courses: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "edx-course-fit-v1-decision-02",
+    "audience": "Learning",
+    "category": "edX · course fit",
+    "query": "When evaluating edX beginner Python courses: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "edx-course-fit-v1-decision-03",
+    "audience": "Learning",
+    "category": "edX · course fit",
+    "query": "When evaluating edX beginner Python courses: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "edx-course-fit-v1-decision-04",
+    "audience": "Learning",
+    "category": "edX · course fit",
+    "query": "When evaluating edX beginner Python courses: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "edx-course-fit-v1-decision-05",
+    "audience": "Learning",
+    "category": "edX · course fit",
+    "query": "When evaluating edX beginner Python courses: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "edx-course-fit-v1-decision-06",
+    "audience": "Learning",
+    "category": "edX · course fit",
+    "query": "When evaluating edX beginner Python courses: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "edx-course-fit-v1-decision-07",
+    "audience": "Learning",
+    "category": "edX · course fit",
+    "query": "When evaluating edX beginner Python courses: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "edx-course-fit-v1-decision-08",
+    "audience": "Learning",
+    "category": "edX · course fit",
+    "query": "When evaluating edX beginner Python courses: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "edx-course-fit-v1-decision-09",
+    "audience": "Learning",
+    "category": "edX · course fit",
+    "query": "When evaluating edX beginner Python courses: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "edx-course-fit-v1-decision-10",
+    "audience": "Learning",
+    "category": "edX · course fit",
+    "query": "When evaluating edX beginner Python courses: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "coursera-course-access-and-cost-v1-decision-01",
+    "audience": "Learning",
+    "category": "Coursera · course access and cost",
+    "query": "When evaluating Coursera course access and payment: What information is missing from the official documentation, and which questions should a buyer ask before committing? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "coursera-course-access-and-cost-v1-decision-02",
+    "audience": "Learning",
+    "category": "Coursera · course access and cost",
+    "query": "When evaluating Coursera course access and payment: What is the smallest practical trial that would test suitability, and what should count as success or failure? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "coursera-course-access-and-cost-v1-decision-03",
+    "audience": "Learning",
+    "category": "Coursera · course access and cost",
+    "query": "When evaluating Coursera course access and payment: What recurring costs, usage limits, optional extras and cancellation terms should be compared over a year? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "coursera-course-access-and-cost-v1-decision-04",
+    "audience": "Learning",
+    "category": "Coursera · course access and cost",
+    "query": "When evaluating Coursera course access and payment: Which advertised capabilities depend on a particular plan, location, device or eligibility requirement? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "coursera-course-access-and-cost-v1-decision-05",
+    "audience": "Learning",
+    "category": "Coursera · course access and cost",
+    "query": "When evaluating Coursera course access and payment: What accessibility information and accommodation options are documented, and what remains unverified? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "coursera-course-access-and-cost-v1-decision-06",
+    "audience": "Learning",
+    "category": "Coursera · course access and cost",
+    "query": "When evaluating Coursera course access and payment: What setup steps, prerequisites and ongoing responsibilities fall on the customer? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "coursera-course-access-and-cost-v1-decision-07",
+    "audience": "Learning",
+    "category": "Coursera · course access and cost",
+    "query": "When evaluating Coursera course access and payment: What happens if the service or product does not meet expectations, including support, refunds and dispute handling? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "coursera-course-access-and-cost-v1-decision-08",
+    "audience": "Learning",
+    "category": "Coursera · course access and cost",
+    "query": "When evaluating Coursera course access and payment: Which independent evidence would help verify the most important claims without treating marketing as proof? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "coursera-course-access-and-cost-v1-decision-09",
+    "audience": "Learning",
+    "category": "Coursera · course access and cost",
+    "query": "When evaluating Coursera course access and payment: What restrictions would make this a poor fit, and what alternative approach should be considered? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "coursera-course-access-and-cost-v1-decision-10",
+    "audience": "Learning",
+    "category": "Coursera · course access and cost",
+    "query": "When evaluating Coursera course access and payment: What changes after the initial purchase or signup, and which terms or capabilities should be rechecked later? Cite current official sources where available and explicitly identify uncertainty.",
+    "language": "en",
+    "locale": "en-US"
+  }
+]
