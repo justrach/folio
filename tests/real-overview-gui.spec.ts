@@ -24,7 +24,7 @@ function run(id: string, index: number, present: boolean, time = at): KeywordBen
 }
 async function fixture(page: Page) {
   const state = { owner: "alice" as string | null, failRuns: false, failDetails: false, holdDetails: null as Promise<void> | null, detailReads: [] as string[], writes: [] as string[],
-    runs: [run("answer-one", 0, true), run("answer-two", 1, false), run("legacy-answer", 3, true), run("beta-answer", 4, true)], loginNext: "" };
+    runs: [run("answer-one", 0, true), run("answer-two", 1, false), run("legacy-answer", 3, true), run("beta-answer", 4, true)], historyReads: [] as string[], loginNext: "" };
   state.runs.unshift({ ...run("unfinished-one", 0, true, "2026-09-13T09:00:00.000Z"), status: "requires_action", answer: null, sessionId: null });
   state.runs.unshift({ ...run("failed-two", 1, false, "2026-09-13T10:00:00.000Z"), status: "failed", answer: null });
   const user = () => ({ id: state.owner!, name: "Fixture owner", email: `${state.owner}@example.test`, emailVerified: true, createdAt: at, updatedAt: at });
@@ -37,7 +37,14 @@ async function fixture(page: Page) {
     if (path === "/api/sites") return route.fulfill({ json: { sites: state.owner === "alice" ? [alpha, beta] : state.owner ? [beta] : [] } });
     if (path === "/api/benchmarks") return route.fulfill({ json: { suites: [{ ...suite, cases: undefined, caseCount: suite.cases.length }], templates: [], access: { configured: false, canRun: false }, usage: {} } });
     if (path === `/api/benchmarks/${suite.id}`) return route.fulfill({ json: { suite } });
-    if (path === "/api/benchmarks/runs") return route.fulfill(state.failRuns ? { status: 503, json: { error: "Fixture read failure" } } : { json: { runs: state.runs.filter(value => state.owner === "alice" || value.case.targetUrl === beta.url).map(({ answer, ...value }) => ({ ...value, mentionCount: answer?.mentions.length ?? 0, citationCount: answer?.citations.length ?? 0, answerCharacters: answer?.text.length ?? 0 })) } });
+    if (path === "/api/benchmarks/runs") {
+      state.historyReads.push(req.url());
+      const params=new URL(req.url()).searchParams, selectedSite=params.get("websiteId")==="site-alpha"?alpha:beta;
+      const matching=state.runs.filter(value=>(state.owner==="alice"||value.case.targetUrl===beta.url)&&(!params.has("websiteId")||value.case.targetUrl===selectedSite.url&&value.case.searchMode===params.get("searchMode")));
+      const filtered=matching.filter(value=>!params.has("model")||value.model===params.get("model")).sort((a,b)=>b.createdAt.localeCompare(a.createdAt)||b.id.localeCompare(a.id));
+      const offset=Number(params.get("cursor")??0), pageRuns=filtered.slice(offset,offset+100);
+      return route.fulfill(state.failRuns ? {status:503,json:{error:"Fixture read failure"}} : {json:{runs:pageRuns.map(({answer,...value})=>({...value,mentionCount:answer?.mentions.length??0,citationCount:answer?.citations.length??0,answerCharacters:answer?.text.length??0})),models:[...new Set(matching.map(value=>value.model))],nextCursor:filtered.length>offset+100?String(offset+100):null}});
+    }
     if (path.startsWith("/api/benchmarks/runs/")) {
       const value = structuredClone(state.runs.find(item => path.endsWith(item.id))); state.detailReads.push(path);
       if (state.holdDetails) await state.holdDetails;
@@ -83,7 +90,7 @@ test("overview uses exact selected-site observations, preserves completed answer
   await expect(first.getByRole("link", { name: `Review latest attempt for ${suite.cases[0].query}` })).toHaveAttribute("href", "/benchmarks?suite=suite-overview&run=unfinished-one");
   await expect(search(page)).not.toContainText("Legacy documentation question");
   await expect(search(page)).not.toContainText("Beta private question");
-  await expect(page.locator(".real-recommendations")).toContainText("Address this question on your website");
+  await expect(page.locator(".real-recommendations")).toContainText("Review evidence for this question");
   await expect(page.locator(".real-recommendations a").first()).toHaveAttribute("href", "/benchmarks?run=answer-two");
   const evidence = page.getByRole("region", { name: "Separate website evidence" });
   await expect(evidence).toContainText("1 saved audit"); await expect(evidence).toContainText("61/100");
@@ -197,3 +204,70 @@ for (const view of ["search", "page"] as const) {
     expect(state.writes).toEqual([]);
   });
 }
+
+test("website overview separates models, keeps the filter through navigation and reload, and never starts work", async ({ page }) => {
+  const state = await fixture(page);
+  state.runs = [
+    { ...run("astra-answer", 0, true), model: "gpt-6-astra" },
+    { ...run("luna-answer", 0, false, "2026-09-13T09:00:00.000Z"), model: "gpt-5.6-luna" },
+  ];
+  await page.goto("/overview?view=workspace&website=site-alpha");
+  const picker = page.getByRole("combobox", { name: "Answer model", exact: true });
+  await expect(metric(page, "Appeared in answers").locator("dd")).toHaveText("0%");
+  await expect(search(page)).toContainText("mixed-model summary");
+  await expect(search(page).getByRole("link", { name: `Open observation for ${suite.cases[0].query}` })).toHaveAttribute("href", /run=luna-answer$/);
+  await picker.selectOption("gpt-6-astra");
+  await expect(metric(page, "Appeared in answers").locator("dd")).toHaveText("100%");
+  await expect(search(page).getByRole("link", { name: `Open observation for ${suite.cases[0].query}` })).toHaveAttribute("href", /run=astra-answer$/);
+  expect(new URL(page.url()).searchParams.get("model")).toBe("gpt-6-astra");
+  await page.reload();
+  await expect(picker).toHaveValue("gpt-6-astra");
+  await expect(metric(page, "Appeared in answers").locator("dd")).toHaveText("100%");
+  await picker.selectOption("gpt-5.6-luna");
+  await expect(metric(page, "Appeared in answers").locator("dd")).toHaveText("0%");
+  await expect(search(page)).not.toContainText("astra-answer");
+  await page.getByRole("button", { name: "Reviewed documentation", exact: true }).click();
+  await expect(picker).toHaveValue("gpt-5.6-luna");
+  await expect(metric(page, "Appeared in answers").locator("dd")).toHaveText("Not measured");
+  await page.getByLabel("Selected website", { exact: true }).selectOption(beta.id);
+  expect(new URL(page.url()).searchParams.get("model")).toBe("gpt-5.6-luna");
+  await page.goBack();
+  await expect(page.getByLabel("Selected website", { exact: true })).toHaveValue(alpha.id);
+  await expect(picker).toHaveValue("gpt-5.6-luna");
+  expect(state.writes).toEqual([]);
+});
+
+test("private model selection survives sign-in and rejects duplicate model hints", async ({ page }) => {
+  const state = await fixture(page); state.owner = null;
+  await page.goto("/overview?view=workspace&website=site-beta&scope=reviewed-domains&model=gpt-5.6-luna");
+  const signIn = page.getByRole("link", { name: "Sign in to your workspace", exact: true });
+  await signIn.click(); await login(page);
+  await expect(page).toHaveURL(/\/overview\?view=workspace&website=site-beta&scope=reviewed-domains&model=gpt-5.6-luna$/);
+  expect(new URL(page.url()).searchParams.get("model")).toBe("gpt-5.6-luna");
+  await expect(page.getByRole("combobox", { name: "Answer model", exact: true })).toHaveValue("gpt-5.6-luna");
+  await page.goto("/overview?view=workspace&website=site-beta&model=gpt-6-astra&model=gpt-5.6-luna");
+  await expect(page.getByRole("combobox", { name: "Answer model", exact: true })).toHaveValue("");
+  expect(state.writes).toEqual([]);
+});
+
+
+test("website history filters before paging and loads older completed answers without paid requests", async ({page})=>{
+  const state=await fixture(page);
+  state.runs=[...Array.from({length:101},(_,index)=>({...run(`newer-${index}`,0,false,"2026-09-14T00:00:00.000Z"),status:"failed" as const,answer:null})),run("old-answer",1,true)];
+  await page.goto("/overview?view=workspace&website=site-alpha&model=fixture-model");
+  await expect(metric(page,"Appeared in answers").locator("dd")).toHaveText("Not measured");
+  await expect(page.getByLabel("Saved history coverage")).toContainText("Older attempts remain");
+  await expect(page.getByLabel("Latest attempt states")).toContainText("2 with no attempt loaded");
+  await expect(page.getByLabel("Latest attempt states")).not.toContainText("not run");
+  const hiddenQuestion=search(page).locator("article").filter({hasText:suite.cases[1].query});
+  await expect(hiddenQuestion.getByRole("link",{name:"Open saved question",exact:true})).toBeVisible();
+  await expect(hiddenQuestion.getByRole("link",{name:"Prepare this question",exact:true})).toHaveCount(0);
+  await page.getByRole("button",{name:"Load older attempts",exact:true}).click();
+  await expect(metric(page,"Appeared in answers").locator("dd")).toHaveText("100%");
+  await expect(page.getByLabel("Saved history coverage")).toContainText("102 saved attempts loaded");
+  await expect(page.getByLabel("Latest attempt states")).toContainText("1 not run");
+  await expect(hiddenQuestion.getByRole("link",{name:`Open observation for ${suite.cases[1].query}`})).toBeVisible();
+  await expect(page.getByRole("button",{name:"Load older attempts",exact:true})).toHaveCount(0);
+  expect(state.historyReads.every(url=>{const p=new URL(url).searchParams;return p.get("websiteId")==="site-alpha"&&p.get("model")==="fixture-model"&&p.get("searchMode")==="open-web";})).toBe(true);
+  expect(state.writes).toEqual([]);
+});

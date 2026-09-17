@@ -499,3 +499,19 @@ test("model selection resets when a different owner signs in", async ({ page }) 
   await expect(page.getByRole("combobox", { name: "Model for the next observation", exact: true })).toHaveValue("gpt-6-astra");
   expect(state.starts).toEqual([]); expect(state.forbidden).toEqual([]);
 });
+
+
+test("unknown creation explains recovery limits without offering a nonexistent cancellation", async ({ page }) => {
+  await page.clock.install();
+  const unknown = { ...run(), status: "requires_action" as const, sessionId: null, answer: null,
+    error: "Session creation could not be confirmed. Do not retry; provider cost is unknown." };
+  const state = await fixture(page, [unknown]);
+  await page.goto(`/benchmarks?suite=${suite.id}&run=${unknown.id}`);
+  await expect(report(page)).toContainText("Folio cannot retrieve or cancel the remote task");
+  await expect(report(page)).toContainText("Its outcome and cost remain unknown");
+  await expect(report(page).getByRole("button", { name: "Cancel observation", exact: true })).toHaveCount(0);
+  await page.clock.runFor(10_100);
+  await expect.poll(() => state.reconciles.length).toBe(1);
+  await expect(report(page)).toContainText("Needs attention");
+  expect(state.starts).toEqual([]); expect(state.cancels).toEqual([]); expect(state.forbidden).toEqual([]);
+});

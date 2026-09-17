@@ -153,7 +153,7 @@ const titles: Record<
     description:
       "Review what the agent found and the evidence behind it.",
   },
-  benchmarks: { eyebrow: "YOUR RESEARCH QUESTIONS", title: "Search rankings", description: "See where your website appears in Astra’s answers and which sites appear alongside it." },
+  benchmarks: { eyebrow: "YOUR RESEARCH QUESTIONS", title: "Search rankings", description: "See where your website appears in recorded AI answers and which sites appear alongside it." },
   agents: {
     eyebrow: "MEET YOUR RESEARCH TEAM",
     title: "A little intelligence. A lot of clarity.",

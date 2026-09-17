@@ -199,6 +199,33 @@ export async function listKeywordBenchmarkRuns(db: D1Database, ownerId: string, 
     return { ...run, case: publicCase, answerCharacters: row.answer_characters, mentionCount: row.mention_count, citationCount: row.citation_count };
   });
 }
+/** Page saved attempts after owned website/scope/model filtering, never after an account-wide limit. */
+export async function listWebsiteKeywordRunsPage(db: D1Database, ownerId: string, options: {
+  websiteId: string; searchMode: string; model?: string; cursor?: string;
+}) {
+  requireOwner(ownerId); benchmarkId(options.websiteId, "website ID");
+  if (!["open-web", "reviewed-domains"].includes(options.searchMode)) throw new KeywordBenchmarkStoreError("Invalid search scope.", 400);
+  if (options.model !== undefined && !/^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,119}$/.test(options.model)) throw new KeywordBenchmarkStoreError("Invalid model.", 400);
+  let before: number | null = null, beforeId: string | null = null;
+  if (options.cursor !== undefined) {
+    const match = /^(\d{1,16}):([a-zA-Z0-9_-]+)$/.exec(options.cursor);
+    if (!match || !Number.isSafeInteger(Number(match[1])) || !isKeywordBenchmarkId(match[2])) throw new KeywordBenchmarkStoreError("Invalid history cursor.", 400);
+    before = Number(match[1]); beforeId = match[2];
+  }
+  const site = await db.prepare("SELECT url FROM sites WHERE id=? AND user_id=?").bind(options.websiteId, ownerId).first<{url:string}>();
+  if (!site) throw new KeywordBenchmarkStoreError("Owned website not found.", 404);
+  const where = "user_id=? AND json_extract(case_json,'$.targetUrl')=? AND COALESCE(json_extract(case_json,'$.searchMode'),'reviewed-domains')=?";
+  const models = await db.prepare(`SELECT DISTINCT model FROM keyword_benchmark_runs WHERE ${where} ORDER BY model`).bind(ownerId, site.url, options.searchMode).all<{model:string}>();
+  const rows = await db.prepare(`SELECT ${runColumns} FROM keyword_benchmark_runs WHERE ${where}
+    AND (? IS NULL OR model=?) AND (? IS NULL OR created_at<? OR (created_at=? AND id<?)) ORDER BY created_at DESC,id DESC LIMIT 101`)
+    .bind(ownerId, site.url, options.searchMode, options.model ?? null, options.model ?? null, before, before, before, beforeId).all<RunRow>();
+  const page = rows.results.slice(0,100), last = page.at(-1);
+  return { runs: page.map(row => {
+    const {answer: _answer, case: input, ...run} = decodeRun(row);
+    const {referenceFacts: _references, ...publicCase} = input;
+    return {...run, case: publicCase, answerCharacters: row.answer_characters, mentionCount: row.mention_count, citationCount: row.citation_count};
+  }), models: models.results.map(item=>item.model), nextCursor: rows.results.length>100 && last ? `${last.created_at}:${last.id}` : null };
+}
 /** One atomic INSERT freezes the owned case and reserves capacity before any remote POST. */
 export function prepareKeywordBenchmarkReservation(db: D1Database, ownerId: string,
   input: KeywordBenchmarkExecution & { caseId: string; kind: "baseline" | "fresh"; baselineRunId?: string | null; allowedDomains?: string[]; deadlineMs?: number },

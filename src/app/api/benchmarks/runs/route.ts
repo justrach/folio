@@ -1,12 +1,16 @@
 import { readJsonBody } from "@/lib/api-request";
 import { startKeywordBenchmark } from "@/lib/keyword-benchmark-service";
-import { listKeywordBenchmarkRuns, KeywordBenchmarkStoreError } from "@/lib/keyword-benchmark-store";
+import { listKeywordBenchmarkRuns, listWebsiteKeywordRunsPage, KeywordBenchmarkStoreError } from "@/lib/keyword-benchmark-store";
 import { keywordBenchmarkRequestContext, keywordBenchmarkErrorResponse, requireKeywordBenchmarkOrigin, PRIVATE_BENCHMARK_HEADERS } from "@/lib/keyword-benchmark-api";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 export async function GET(request: Request) {
   try {
     const { db, ownerId } = await keywordBenchmarkRequestContext(request), query = new URL(request.url).searchParams;
+    if (query.has("websiteId")) {
+      for (const key of ["websiteId", "searchMode", "model", "cursor"]) if (query.getAll(key).length > 1) throw new KeywordBenchmarkStoreError("Duplicate history filter.",400);
+      return Response.json(await listWebsiteKeywordRunsPage(db, ownerId, { websiteId: query.get("websiteId")!, searchMode: query.get("searchMode") ?? "open-web", model: query.get("model") ?? undefined, cursor: query.get("cursor") ?? undefined }), {headers: PRIVATE_BENCHMARK_HEADERS});
+    }
     return Response.json({ runs: await listKeywordBenchmarkRuns(db, ownerId, { suiteId: query.get("suiteId") ?? undefined, caseId: query.get("caseId") ?? undefined }) }, { headers: PRIVATE_BENCHMARK_HEADERS });
   } catch (error) { return keywordBenchmarkErrorResponse(error); }
 }

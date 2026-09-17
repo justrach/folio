@@ -8,7 +8,7 @@ import { Miniflare } from "miniflare";
 import { unstable_splitSqlQuery } from "wrangler";
 import { createKeywordBenchmarkSuite, getKeywordBenchmarkSuite, reserveKeywordBenchmarkRun,
   markKeywordBenchmarkCreateAttempt, updateKeywordBenchmarkRun, getKeywordBenchmarkRun,
-  listKeywordBenchmarkRuns, getKeywordBenchmarkUsage, updateKeywordBenchmarkCase, KeywordBenchmarkStoreError } from "../src/lib/keyword-benchmark-store";
+  listKeywordBenchmarkRuns, listWebsiteKeywordRunsPage, getKeywordBenchmarkUsage, updateKeywordBenchmarkCase, KeywordBenchmarkStoreError } from "../src/lib/keyword-benchmark-store";
 import { cancelKeywordBenchmark, keywordBenchmarkOverview, reconcileKeywordBenchmark, seedKeywordBenchmark, startKeywordBenchmark } from "../src/lib/keyword-benchmark-service";
 import { compareKeywordBenchmarkRuns } from "../src/lib/keyword-benchmark-types";
 import { matchesCategoryReceipt, recoverCategoryReceipt } from "../scripts/category-batch-recovery";
@@ -305,4 +305,31 @@ test("selected open-web model is frozen before one provider create and unsupport
   await current.dispose();current=runtime(directory);const restored=await getKeywordBenchmarkRun(await current.getD1Database("DB"),"alice",saved.id);
   assert.equal(restored?.model,"gpt-5.6-luna");assert.equal(restored?.sessionId,"session_model_fixture");
  } finally {try{await current?.dispose();}finally{await rm(directory,{recursive:true,force:true});}}
+});
+
+
+test("owned website history filters before its stable cursor and retains older models", {timeout:90_000}, async()=>{
+  const directory=await mkdtemp(join(tmpdir(),"folio-site-history-d1-"));let current:Miniflare|undefined;
+  try {
+    current=runtime(directory);const db=await current.getD1Database("DB");await setup(db);
+    await db.prepare("INSERT INTO sites(id,user_id,url,name,created_at) VALUES(?,?,?,?,?)").bind("site-history","alice",input.targetUrl,"Fixture",Date.now()).run();
+    const suite=await createKeywordBenchmarkSuite(db,"alice",{name:"History",cases:[{...input,searchMode:"open-web"},{...input,targetUrl:"https://other.test/",searchMode:"open-web"},{...input,searchMode:"reviewed-domains"}]});
+    for(let i=0;i<205;i++){
+      const caseIndex=i<102?0:i<204?1:2;
+      const run=await reserveKeywordBenchmarkRun(db,"alice",{...config,model:i===0?"older-model":"newer-model",caseId:suite.cases.find(item=>caseIndex===0?item.targetUrl===input.targetUrl&&item.searchMode==="open-web":caseIndex===1?item.targetUrl==="https://other.test/":item.searchMode==="reviewed-domains")!.id,kind:"baseline"},{maxRunsPerDay:null,now:new Date(1700000000000+(i<102?0:i)*1000),id:`history-${String(i).padStart(3,"0")}`});
+      await updateKeywordBenchmarkRun(db,"alice",run.id,run.revision,{status:"failed",error:"Synthetic terminal fixture"});
+    }
+    const first=await listWebsiteKeywordRunsPage(db,"alice",{websiteId:"site-history",searchMode:"open-web"});
+    assert.equal(first.runs.length,100);assert.equal(first.runs[0].id,"history-101");assert.ok(first.nextCursor);
+    assert.deepEqual(first.models,["newer-model","older-model"]);
+    const second=await listWebsiteKeywordRunsPage(db,"alice",{websiteId:"site-history",searchMode:"open-web",cursor:first.nextCursor!});
+    assert.equal(second.runs.length,2);assert.equal(second.nextCursor,null);
+    assert.equal(new Set([...first.runs,...second.runs].map(run=>run.id)).size,102);
+    const older=await listWebsiteKeywordRunsPage(db,"alice",{websiteId:"site-history",searchMode:"open-web",model:"older-model"});
+    assert.equal(older.runs.length,1);assert.equal(older.runs[0].id,"history-000");
+    assert.ok(older.runs.every(run=>!("referenceFacts" in run.case)&&!("answer" in run)));
+    assert.equal((await listWebsiteKeywordRunsPage(db,"alice",{websiteId:"site-history",searchMode:"reviewed-domains"})).runs.length,1);
+    await assert.rejects(listWebsiteKeywordRunsPage(db,"bob",{websiteId:"site-history",searchMode:"open-web"}),error=>error instanceof KeywordBenchmarkStoreError&&error.status===404);
+    await assert.rejects(listWebsiteKeywordRunsPage(db,"alice",{websiteId:"site-history",searchMode:"open-web",cursor:"bad"}),error=>error instanceof KeywordBenchmarkStoreError&&error.status===400);
+  } finally {await current?.dispose();await rm(directory,{recursive:true,force:true});}
 });

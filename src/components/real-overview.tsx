@@ -31,12 +31,19 @@ async function settledMap<T,U>(items:T[],work:(item:T)=>Promise<U>) {
   await Promise.all(Array.from({length:Math.min(4,items.length)},async()=>{while(cursor<items.length){const index=cursor++;try{results[index]={status:"fulfilled",value:await work(items[index])};}catch(reason){results[index]={status:"rejected",reason};}}}));return results;
 }
 
+function selectedModel(query: Pick<URLSearchParams, "getAll">): string {
+  const models = query.getAll("model");
+  return models.length === 1 && /^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,119}$/.test(models[0]) ? models[0] : "";
+}
+
 export function workspaceOverviewHref(query: Pick<URLSearchParams, "getAll">): string {
   const params = new URLSearchParams({ view: "workspace" });
   const websites = query.getAll("website");
   if (websites.length === 1 && isKeywordBenchmarkId(websites[0])) params.set("website", websites[0]);
   const scopes = query.getAll("scope");
   if (scopes.length === 1 && scopes[0] === "reviewed-domains") params.set("scope", scopes[0]);
+  const model = selectedModel(query);
+  if (model) params.set("model", model);
   return `/overview?${params}`;
 }
 
@@ -51,16 +58,19 @@ function OwnedOverview({scans,scansLoading,scansError,onRetryScans,onOpenScan}:O
   const query=useSearchParams();
   const hints=query.getAll("website");const selectedHint=hints.length===1&&isKeywordBenchmarkId(hints[0])?hints[0]:null;
   const scope:KeywordSearchMode=query.get("scope")==="reviewed-domains"?"reviewed-domains":"open-web";
+  const model=selectedModel(query);
   const [data,setData]=useState<Data>(initial);
   const [refresh,setRefresh]=useState(0);
+  const [pageSelection,setPageSelection]=useState({key:"",cursor:"",retry:0});
+  const [coverage,setCoverage]=useState<{key:string;next:string|null;models:string[];loading:boolean;error:boolean}>({key:"",next:null,models:[],loading:false,error:false});
   const [detail,setDetail]=useState<{key:string;state:"loading"|"ready";runs:KeywordBenchmarkRun[];failed:number}>({key:"",state:"loading",runs:[],failed:0});
   const selected=hints.length?data.sites.items.find(site=>site.id===selectedHint):data.sites.items[0];
-  const selectionKey=`${selected?.id??""}:${scope}:${refresh}`;
+  const selectionKey=`${selected?.id??""}:${scope}:${model}:${refresh}`;
   useEffect(()=>{
     const controller=new AbortController();setData(initial());
     const load=<T,>(key:Exclude<keyof Data,"suites">,url:string,field:string,max:number) => list<T>(url,field,max,controller.signal).then(items=>{if(!controller.signal.aborted)setData(previous=>({...previous,[key]:{state:"ready",items}}));}).catch(()=>{if(!controller.signal.aborted)setData(previous=>({...previous,[key]:{state:"error",items:[]}}));});
     void load<Site>("sites","/api/sites","sites",100);
-    void load<KeywordBenchmarkRunSummary>("runs","/api/benchmarks/runs","runs",100);
+
     void load<SeoReportSummary>("seo","/api/seo-reports","reports",100);
     void load<SearchConsoleReportSummary>("search","/api/search-console/reports","reports",50);
     void list<KeywordBenchmarkSuiteSummary>("/api/benchmarks","suites",20,controller.signal).then(async summaries=>{
@@ -73,8 +83,28 @@ function OwnedOverview({scans,scansLoading,scansError,onRetryScans,onOpenScan}:O
     }).catch(()=>{if(!controller.signal.aborted)setData(previous=>({...previous,suites:{state:"error",items:[]}}));});
     return()=>controller.abort();
   },[refresh]);
+  const pageCursor=pageSelection.key===selectionKey?pageSelection.cursor:"";
+  useEffect(()=>{
+    if (!selected) return;
+    const controller=new AbortController();
+    setCoverage(previous=>({...previous,key:selectionKey,next:previous.key===selectionKey?previous.next:null,models:previous.key===selectionKey?previous.models:[],loading:true,error:false}));
+    if(!pageCursor)setData(previous=>({...previous,runs:waiting()}));
+    const params=new URLSearchParams({websiteId:selected.id,searchMode:scope});
+    if(model)params.set("model",model);if(pageCursor)params.set("cursor",pageCursor);
+    void read<{runs:KeywordBenchmarkRunSummary[];models?:string[];nextCursor?:string|null}>(`/api/benchmarks/runs?${params}`,controller.signal).then(page=>{
+      if(!Array.isArray(page.runs)||page.runs.length>100)throw new Error("Invalid history page");
+      if(controller.signal.aborted)return;
+      setData(previous=>({...previous,runs:{state:"ready",items:pageCursor?[...new Map([...previous.runs.items,...page.runs].map(run=>[run.id,run])).values()]:page.runs}}));
+      setCoverage({key:selectionKey,next:page.nextCursor??null,models:page.models??[],loading:false,error:false});
+    }).catch(()=>{if(!controller.signal.aborted){setCoverage(previous=>({...previous,key:selectionKey,loading:false,error:true}));if(!pageCursor)setData(previous=>({...previous,runs:{state:"error",items:[]}}));}});
+    return()=>controller.abort();
+  },[selectionKey,pageCursor,pageSelection.retry,selected?.id,scope,model]);
+  const currentCoverage=coverage.key===selectionKey?coverage:{key:selectionKey,next:null,models:[],loading:true,error:false};
+  const historyComplete=data.runs.state==="ready"&&!currentCoverage.loading&&!currentCoverage.error&&currentCoverage.next===null;
   const target=normalized(selected?.url);
-  const attempts=ordered(data.runs.items.filter(run=>run.publication==="private"&&isKeywordBenchmarkId(run.id)&&isKeywordBenchmarkId(run.caseId)&&isKeywordBenchmarkId(run.suiteId)&&normalized(run.case.targetUrl)===target&&target!==null&&keywordSearchMode(run.case.searchMode)===scope));
+  const siteAttempts=ordered((coverage.key===selectionKey?data.runs.items:[]).filter(run=>run.publication==="private"&&isKeywordBenchmarkId(run.id)&&isKeywordBenchmarkId(run.caseId)&&isKeywordBenchmarkId(run.suiteId)&&normalized(run.case.targetUrl)===target&&target!==null&&keywordSearchMode(run.case.searchMode)===scope));
+  const models=[...new Set([...currentCoverage.models,...siteAttempts.map(run=>run.model),...(model?[model]:[])])].sort();
+  const attempts=siteAttempts.filter(run=>!model||run.model===model);
   const latest=new Map<string,KeywordBenchmarkRunSummary>();
   const completed=new Map<string,KeywordBenchmarkRunSummary>();
   for(const run of attempts){if(!latest.has(run.caseId))latest.set(run.caseId,run);if(run.status==="completed"&&!completed.has(run.caseId))completed.set(run.caseId,run);}
@@ -91,7 +121,7 @@ function OwnedOverview({scans,scansLoading,scansError,onRetryScans,onOpenScan}:O
     const summaries=[...new Map([...completed.values(),...historySummaries].map(run=>[run.id,run])).values()];
     void settledMap(summaries,async summary=>{
       const {run}=await read<{run:KeywordBenchmarkRun}>(`/api/benchmarks/runs/${encodeURIComponent(summary.id)}`,controller.signal);
-      if(run.id!==summary.id||run.caseId!==summary.caseId||run.suiteId!==summary.suiteId||run.publication!=="private"||run.status!=="completed"||normalized(run.case.targetUrl)!==target||keywordSearchMode(run.case.searchMode)!==scope||!Array.isArray(run.answer?.mentions)||!Array.isArray(run.answer?.citations))throw new Error("Invalid saved observation");
+      if(run.model!==summary.model||(model&&run.model!==model)||run.id!==summary.id||run.caseId!==summary.caseId||run.suiteId!==summary.suiteId||run.publication!=="private"||run.status!=="completed"||normalized(run.case.targetUrl)!==target||keywordSearchMode(run.case.searchMode)!==scope||!Array.isArray(run.answer?.mentions)||!Array.isArray(run.answer?.citations))throw new Error("Invalid saved observation");
       keywordRecommendationMetrics(run);return run;
     }).then(results=>{if(!controller.signal.aborted)setDetail({key:selectionKey,state:"ready",runs:results.flatMap(item=>item.status==="fulfilled"?[item.value]:[]),failed:results.filter(item=>item.status==="rejected").length});});
     return()=>controller.abort();
@@ -122,7 +152,7 @@ function OwnedOverview({scans,scansLoading,scansError,onRetryScans,onOpenScan}:O
   }):[];
   const history=ordered(records.filter(run=>run.caseId===historyCase)).reverse();
   const comparableHistory=history.length>1&&history.every(run=>compareKeywordBenchmarkRuns(history[0],run).comparable);
-  function select(website:string,nextScope=scope){const params=new URLSearchParams({view:"workspace",website});if(nextScope!=="open-web")params.set("scope",nextScope);window.history.pushState(null,"",`/overview?${params}`);}
+  function select(website:string,nextScope=scope,nextModel=model){const params=new URLSearchParams({view:"workspace",website});if(nextScope!=="open-web")params.set("scope",nextScope);if(nextModel)params.set("model",nextModel);window.history.pushState(null,"",`/overview?${params}`);}
   return <div className="real-overview">
     <div className="real-overview-select"><label>Selected website<select aria-label="Selected website" value={selected?.id??""} disabled={data.sites.state==="loading"} onChange={event=>select(event.target.value)}><option value="" disabled>Choose your website</option>{data.sites.items.map(site=><option key={site.id} value={site.id}>{site.name||site.url} · {site.url}</option>)}</select></label><button className="button secondary" onClick={()=>setRefresh(value=>value+1)} aria-label="Refresh saved overview"><RefreshCw size={14}/>Refresh saved data</button></div>
     {data.sites.state==="loading"&&<p role="status">Loading your saved websites…</p>}
@@ -131,23 +161,27 @@ function OwnedOverview({scans,scansLoading,scansError,onRetryScans,onOpenScan}:O
     {selected&&<>
       <section className="panel real-search-overview" aria-label="Saved search overview"><header><div><h2>Search observations</h2><p>{selected.url}</p></div><Link className="button primary" href={`/benchmarks?website=${encodeURIComponent(selected.id)}`}>Open search questions<ArrowRight size={14}/></Link></header>
         <div className="real-search-scopes" aria-label="Search scope"><button type="button" aria-pressed={scope==="open-web"} onClick={()=>select(selected.id,"open-web")}>Open-web observations</button><button type="button" aria-pressed={scope==="reviewed-domains"} onClick={()=>select(selected.id,"reviewed-domains")}>Reviewed documentation</button></div>
-        <p className="real-overview-scope-note">{scope==="open-web"?"Astra · OpenAI web search":"Astra · Reviewed documentation"}</p>
+        <div className="real-overview-select real-overview-scope-note"><label>Answer model<select aria-label="Answer model" value={model} onChange={event=>select(selected.id,scope,event.target.value)}><option value="">All models</option>{models.map(value=><option key={value} value={value}>{value}</option>)}</select></label></div>
+        <p className="real-overview-scope-note">{scope==="open-web"?"OpenAI web search":"Reviewed documentation"} · {model||"All models"}. {model?"Only answers and attempts from this exact model are included.":"Uses the latest completed answer per question across models. This is a mixed-model summary, not a comparison between models."}</p>
         {data.runs.state==="error"?<p role="alert">Saved keyword history could not be loaded. No search metrics are available.</p>:<>
           {loading&&<p role="status" className="real-overview-loading">Reading saved observations…</p>}
-          <dl className="real-overview-metrics"><div><dt>Appeared in answers</dt><dd>{metricsReady&&identified.length?`${Math.round(appeared/identified.length*100)}%`:"Not measured"}</dd><p>{metricsReady?`${appeared} of ${identified.length} completed answers.`:"Waiting for saved answers."}{metricsReady&&unknown>0?` ${unknown} unknown ${unknown===1?"identity is":"identities are"} excluded.`:""}</p></div><div><dt>Questions with completed answers</dt><dd>{metricsReady?observations.length:"—"}<small>{data.suites.state==="ready"?` / ${cases.size} loaded`:""}</small></dd><p>Latest completed result per question.</p></div><div><dt>Distinct cited pages</dt><dd>{metricsReady&&observations.length?sourceCount:"Not measured"}</dd><p>Distinct sources across these answers.</p></div></dl>
-          {metricsReady&&<p className="real-overview-attempts" aria-label="Latest attempt states"><span>{pending} pending</span><span>{attention} need attention</span><span>{failed} failed</span><span>{cancelled} cancelled</span>{data.suites.state==="ready"&&<span>{unrun} not run</span>}</p>}
+          <dl className="real-overview-metrics"><div><dt>Appeared in answers</dt><dd>{metricsReady&&identified.length?`${Math.round(appeared/identified.length*100)}%`:"Not measured"}</dd><p>{metricsReady?`${appeared} of ${identified.length} completed answers.`:"Waiting for saved answers."}{metricsReady&&unknown>0?` ${unknown} unknown ${unknown===1?"identity is":"identities are"} excluded.`:""}</p></div><div><dt>Questions with completed answers</dt><dd>{metricsReady?observations.length:"—"}<small>{data.suites.state==="ready"?` / ${cases.size} loaded`:""}</small></dd><p>Latest completed result per question{model?" for the selected model":" across models"}.</p></div><div><dt>Distinct cited pages</dt><dd>{metricsReady&&observations.length?sourceCount:"Not measured"}</dd><p>Distinct sources across these answers.</p></div></dl>
+          {metricsReady&&<p className="real-overview-attempts" aria-label="Latest attempt states"><span>{pending} pending</span><span>{attention} need attention</span><span>{failed} failed</span><span>{cancelled} cancelled</span>{data.suites.state==="ready"&&<span>{unrun} {historyComplete?"not run":"with no attempt loaded"}</span>}</p>}
           {detail.key===selectionKey&&detail.failed>0&&<p role="alert" className="real-overview-loading">{detail.failed} completed {detail.failed===1?"record could":"records could"} not be read. The figures include only successfully loaded answers.</p>}
           {data.suites.state==="error"&&<p role="alert" className="real-overview-loading">Some question suites could not be loaded; unrun-question counts are unavailable.</p>}
           <div className="real-query-list" aria-label="Search observations by question">{[...cases.values()].map(item=>{
             const attempt=latest.get(item.id);const observation=observations.find(value=>value.run.caseId===item.id);
-            return <article key={item.id}><div><h3>{observation?.run.case.query??attempt?.case.query??item.query}</h3><p>{observation?`Last completed ${date(observation.run.createdAt)}`:"No completed observation loaded"}</p>{attempt&&<small>Latest attempt: {labels[attempt.status]} · {date(attempt.createdAt)}</small>}</div><dl><div><dt>Target position</dt><dd>{observation?(observation.metrics.targetNamed==="yes"?observation.metrics.targetPositions.map(position=>`#${position}`).join(", "):observation.metrics.targetNamed==="no"?"Not listed":"Unknown"):"Not measured"}</dd></div><div><dt>Target cited</dt><dd>{observation?(observation.metrics.targetCited===true?"Yes":observation.metrics.targetCited===false?"No":"Unknown"):"Not measured"}</dd></div></dl><div className="real-query-actions">{observation&&<Link href={reportHref(observation.run)} aria-label={`Open observation for ${item.query}`}>Open answer<ArrowRight size={13}/></Link>}{attempt&&attempt.id!==observation?.run.id?<Link href={reportHref(attempt)} aria-label={`Review latest attempt for ${item.query}`}>Review latest attempt<ArrowRight size={13}/></Link>:!attempt&&<Link href={`/benchmarks?suite=${encodeURIComponent(item.suiteId)}`}>Prepare this question<ArrowRight size={13}/></Link>}</div></article>;
+            return <article key={item.id}><div><h3>{observation?.run.case.query??attempt?.case.query??item.query}</h3><p>{observation?`Last completed ${date(observation.run.createdAt)} · ${observation.run.model}`:"No completed observation loaded"}</p>{attempt&&<small>Latest attempt: {labels[attempt.status]} · {date(attempt.createdAt)} · {attempt.model}</small>}</div><dl><div><dt>Target position</dt><dd>{observation?(observation.metrics.targetNamed==="yes"?observation.metrics.targetPositions.map(position=>`#${position}`).join(", "):observation.metrics.targetNamed==="no"?"Not listed":"Unknown"):"Not measured"}</dd></div><div><dt>Target cited</dt><dd>{observation?(observation.metrics.targetCited===true?"Yes":observation.metrics.targetCited===false?"No":"Unknown"):"Not measured"}</dd></div></dl><div className="real-query-actions">{observation&&<Link href={reportHref(observation.run)} aria-label={`Open observation for ${item.query}`}>Open answer<ArrowRight size={13}/></Link>}{attempt&&attempt.id!==observation?.run.id?<Link href={reportHref(attempt)} aria-label={`Review latest attempt for ${item.query}`}>Review latest attempt<ArrowRight size={13}/></Link>:!attempt&&<Link href={`/benchmarks?suite=${encodeURIComponent(item.suiteId)}`}>{historyComplete?"Prepare this question":"Open saved question"}<ArrowRight size={13}/></Link>}</div></article>;
           })}</div>
+          <p className="real-overview-loading" aria-label="Saved history coverage">{data.runs.state==="ready"&&coverage.key===selectionKey?data.runs.items.length:"No"} saved attempts loaded for this website, scope{model?", and model":""}. {currentCoverage.loading?"Loading saved history…":currentCoverage.error?"History is unavailable.":currentCoverage.next?"Older attempts remain; counts describe the loaded history only.":"All matching saved attempts loaded."}</p>
+          {currentCoverage.error&&pageCursor&&<p role="alert">Older saved attempts could not be loaded. Your loaded answers remain available.</p>}
+          {currentCoverage.next&&<button type="button" className="button secondary" disabled={currentCoverage.loading} onClick={()=>setPageSelection(previous=>({key:selectionKey,cursor:currentCoverage.next!,retry:previous.retry+1}))}>{currentCoverage.loading?"Loading older attempts…":"Load older attempts"}</button>}
           {!loading&&!cases.size&&data.suites.state!=="loading"&&<div className="real-overview-empty"><h3>No {scope==="open-web"?"open-web":"reviewed-documentation"} questions loaded for this website.</h3><p>Save a question suite to begin. Opening the setup will not start a run.</p></div>}
         </>}
 
       </section>
       {metricsReady&&<section className="real-recommendations"><h2>Recommended next steps</h2><p>Based on your saved answers. Review each source before making changes.</p>{suggestions.length?<ol>{suggestions.map(item=><li key={item.id}><h3>{item.title}</h3><p>{item.action}</p><small>{item.basis}</small><p><Link href={`/benchmarks?run=${encodeURIComponent(item.runId)}`}>Read the supporting answer →</Link></p></li>)}</ol>:<p>{observations.length?"No missing-mention or missing-citation recommendation was identified in these answers.":"Complete a search observation to get recommendations supported by its answer."}</p>}<Link href="/docs/api">Use these results through the API →</Link></section>}
-      <details className="real-overview-history"><summary>Details and history<ChevronDown size={15}/></summary><p>These figures use the latest completed answer per question. A newer unfinished attempt does not replace it. Website identity uses exact host matching; unknown identities are excluded from the rate. Sources may cite other websites. These saved API observations do not measure consumer chat websites, other providers, general search rank, or product quality. Up to 20 suites and the 100 most recent account attempts are loaded.</p>{comparableHistory?<><p>Same query and matching saved execution settings. Changes are observations, not proof of cause.</p><table><caption>{history[0].case.query}</caption><thead><tr><th>Recorded</th><th>Target position</th><th>Answer</th></tr></thead><tbody>{history.map(run=>{const metrics=keywordRecommendationMetrics(run);return <tr key={run.id}><td>{date(run.createdAt)}</td><td>{metrics.targetNamed==="yes"?metrics.targetPositions.map(value=>`#${value}`).join(", "):metrics.targetNamed==="no"?"Not listed":"Unknown"}</td><td><Link href={reportHref(run)}>Open saved answer</Link></td></tr>;})}</tbody></table></>:<p>No comparable history is available in the loaded records. At least two completed observations of the same question and execution settings are needed; no trend is inferred from unrelated questions.</p>}</details>
+      <details className="real-overview-history"><summary>Details and history<ChevronDown size={15}/></summary><p>These figures use the latest completed answer per question{model?" for the selected model":" across models"}. A newer unfinished attempt does not replace it. Website identity uses exact host matching; unknown identities are excluded from the rate. Sources may cite other websites. These saved API observations do not measure consumer chat websites, other providers, general search rank, or product quality. Up to 20 suites are loaded. Saved attempts are filtered by this website, scope, and selected model before pagination; use Load older attempts to include earlier history.</p>{comparableHistory?<><p>Same query and matching saved execution settings. Changes are observations, not proof of cause.</p><table><caption>{history[0].case.query}</caption><thead><tr><th>Recorded</th><th>Target position</th><th>Answer</th></tr></thead><tbody>{history.map(run=>{const metrics=keywordRecommendationMetrics(run);return <tr key={run.id}><td>{date(run.createdAt)}</td><td>{metrics.targetNamed==="yes"?metrics.targetPositions.map(value=>`#${value}`).join(", "):metrics.targetNamed==="no"?"Not listed":"Unknown"}</td><td><Link href={reportHref(run)}>Open saved answer</Link></td></tr>;})}</tbody></table></>:<p>No comparable history is available in the loaded records. At least two completed observations of the same question and execution settings are needed; no trend is inferred from unrelated questions.</p>}</details>
       <section className="real-evidence-overview" aria-label="Separate website evidence"><h2>Website reports</h2><div>
         <article><h3>Technical audits</h3>{scansError?<><p>Saved audits unavailable.</p><button onClick={onRetryScans}>Retry audits</button></>:scansLoading?<p>Loading saved audits…</p>:<><strong>{selectedScans.length} saved {selectedScans.length===1?"audit":"audits"}</strong><p>{selectedScans[0]?`Latest readiness: ${selectedScans[0].seoScore}/100 · ${date(selectedScans[0].createdAt)}`:"Technical readiness has not been measured for this exact URL."}</p>{selectedScans[0]&&<button onClick={()=>onOpenScan(selectedScans[0])}>Open latest audit<ArrowRight size={13}/></button>}</>}<Link href={evaluationHref({targetUrl:selected.url})}>Evaluate this website<ArrowRight size={13}/></Link></article>
         <article><h3>Search & backlinks</h3><strong>{data.seo.state==="ready"?`${selectedSeo.length} saved reports`:data.seo.state==="loading"?"Loading…":"Unavailable"}</strong><p>Saved search and backlink estimates.</p><Link href={`/search-data?target=${encodeURIComponent(selected.url)}`}>Open saved SEO reports<ArrowRight size={13}/></Link></article>
