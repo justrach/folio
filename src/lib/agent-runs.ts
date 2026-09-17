@@ -18,7 +18,7 @@ import { getOwnedSeoReport } from "./seo-store";
 import { pendingSavedSeoAction } from "./managed-seo-tool";
 import { assertAllowedUrl, boundedFetch, configuredScanHosts, normalizeScanUrl, ScanError } from "./scanner";
 
-export type AgentRunEnvironment = AgentsEnvironment & { SCAN_ALLOWED_HOSTS?: string };
+export type AgentRunEnvironment = AgentsEnvironment & { SCAN_ALLOWED_HOSTS?: string; TYPESAFE_API_KEY?: string; TYPESAFE_ALLOWED_USER_IDS?: string };
 
 export function managedRunAccess(env: AgentRunEnvironment, ownerId: string) {
   const connection = getAgentsConnectionStatus(env);

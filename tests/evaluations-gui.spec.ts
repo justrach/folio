@@ -299,3 +299,30 @@ test("pricing saves only an explicit private preference and preserves it across 
   expect(writes).toEqual([{ plan: "builder" }]);
   await noOverflow(page);
 });
+
+test("semantic review spends only on explicit action and reopens saved judgments",async({page},testInfo)=>{
+ await mockAccount(page);
+ const run:EvaluationRun={...await createDemoEvaluationRun(),id:'semantic-fixture',mode:'live'};
+ await page.route('**/api/evaluations',route=>route.fulfill({json:{runs:[evaluationSummary(run)],connection,suite:EVAL_SUITE}}));
+ await page.route('**/api/evaluations/semantic-fixture',route=>route.fulfill({json:{run}}));
+ let posts=0;let saved:unknown=null;
+ await page.route('**/api/evaluations/semantic-fixture/semantic-review',async route=>{
+  if(route.request().method()==='POST'){
+   posts++;expect(route.request().headers()['content-type']).toBe('application/json');
+   expect(route.request().postDataJSON()).toEqual({revision:run.revision,confirmPaidReview:true});
+   saved={id:'review-fixture',status:'completed',model:'jev-fixture',input_tokens:120,output_tokens:20,latency_ms:750,result:{results:[{id:'citation_0',field:'productName',claim:'The product name is Fixture.',quote:'Fixture',relation:'supports',confidence:.95}],usage:{input_tokens:120,output_tokens:20},costUsd:null}};
+  }
+  await route.fulfill({json:{review:saved,available:true}});
+ });
+ await page.goto('/evaluations?view=page&run=semantic-fixture');
+ const region=page.getByRole('region',{name:'Semantic citation review'});
+ const start=region.getByRole('button',{name:'Run paid semantic review'});
+ await expect(start).toBeVisible();expect(posts).toBe(0);
+ await region.getByRole('button',{name:'Refresh saved review'}).click();expect(posts).toBe(0);
+ await start.focus();await page.keyboard.press('Enter');
+ await expect(region).toContainText('Source supports the claim');expect(posts).toBe(1);
+ await expect(region).toContainText('Dollar cost unknown');await noOverflow(page);
+ await screenshot(page,testInfo,'semantic-review');
+ await page.reload();await expect(region).toContainText('Review saved');expect(posts).toBe(1);
+ await expect(region.getByRole('button',{name:'Run paid semantic review'})).toHaveCount(0);
+});

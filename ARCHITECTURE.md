@@ -194,3 +194,7 @@ The evaluation hub selects **Search questions** for plain `/evaluations`. Explic
 ## Authenticated MCP and sandbox SEO
 
 Folio now includes `/api/mcp` for coding clients and `/api/v1/seo` for explicit, idempotent DataForSEO lookups. Keyword sandboxes can opt into one selected-domain SEO lookup with a short-lived capability; existing evaluation keys require a separate `seo` permission. See [MCP setup and behavior](docs/MCP.md) for migration, configuration, client examples and validation limits.
+
+### Advisory semantic review
+
+An explicit owner action can review saved page-evidence fact citations with TypeSafe after deterministic integrity and quote checks. `typesafe-review-store.ts` reserves D1 capacity before inference and retains ambiguity without retry; `typesafe-citations.ts` bounds and validates the transport. This is separate from scoring, publication and reference truth. D1 usage is included in the private cost summary, with money unknown. See [TypeSafe reviews](docs/TYPESAFE-REVIEWS.md).

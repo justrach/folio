@@ -25,14 +25,14 @@ test("D1 cost snapshots backfill, survive restart, isolate owners and never sum 
   let db = await current.getD1Database("DB");
   const migrationDir = new URL("../migrations/", import.meta.url);
   const names = (await readdir(migrationDir)).filter(n=>n.endsWith(".sql")).sort();
-  for (const name of names.filter(n=>!n.startsWith("0015")))
+  for (const name of names.filter(n=>n<"0015"))
    await db.batch(unstable_splitSqlQuery(await readFile(new URL(name,migrationDir),"utf8")).map(sql=>db.prepare(sql)));
   for(const owner of ["alice","bob"]) await db.prepare("INSERT INTO user(id,name,email,created_at,updated_at) VALUES(?,?,?,?,?)").bind(owner,owner,`${owner}@example.test`,1,1).run();
   const base = {...await createDemoEvaluationRun(),id:"alice-live",mode:"live" as const,status:"queued" as const,model:"gpt-6-astra",sessionId:null,captures:[],events:[],result:null,usage:null};
   await createEvaluationRun(db,"alice",{...await createDemoEvaluationRun(),id:"demo-excluded"});
   let run = await createEvaluationRun(db,"alice",base);
   await createEvaluationRun(db,"bob",{...base,id:"bob-live"});
-  for(const name of names.filter(n=>n.startsWith("0015"))) await db.batch(unstable_splitSqlQuery(await readFile(new URL(name,migrationDir),"utf8")).map(sql=>db.prepare(sql)));
+  for(const name of names.filter(n=>n>="0015")) await db.batch(unstable_splitSqlQuery(await readFile(new URL(name,migrationDir),"utf8")).map(sql=>db.prepare(sql)));
   assert.equal((await ownedCostSummary(db,"alice")).groups[0].unknown_runs,1);
   assert.equal((await ownedCostSummary(db,"alice")).recent.length,1);
   run = await updateEvaluationRun(db,"alice",{...run,status:"running",usage:{input_tokens:1000,output_tokens:100,input_tokens_details:{cached_tokens:200}}});
