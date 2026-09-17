@@ -382,14 +382,25 @@ test("private report compares matching public context without publishing or star
   const observation = { id: "public-observation", queryId: query.id, observedAt: at, status: "completed", model: value.model, surface: value.surface,
     searchMode: "open-web", harnessVersion: value.harnessVersion, environmentType: value.environmentType,
     recommendations: [{ position: 1, name: "Public fixture recommendation", url: "https://example.com", citationUrls: [] }], citations: [], limitations: ["Fixture only"] };
+  const competing = {...observation,id:"newer-other-model",model:"gpt-5.6-luna",observedAt:"2026-09-14T10:00:00.000Z",
+    recommendations:[{position:1,name:"Different model recommendation",url:"https://other.example.com",citationUrls:[]}]};
   let available = true;
-  await page.route("**/api/public/benchmarks", route => route.fulfill({ json: buildPublicDashboard({ format: "folio-public-search-rankings-v1", queries: [query], observations: available ? [observation] : [] },
+  await page.route("**/api/public/benchmarks", route => route.fulfill({ json: buildPublicDashboard({ format: "folio-public-search-rankings-v1", queries: [query], observations: available ? [observation,competing] : [] },
     { format: "folio-public-search-progress-v1", updatedAt: at, queries: [{ queryId: query.id, status: available ? "completed" : "not-started", ...(available ? { observationId: observation.id } : {}) }] }) }));
   await page.goto(`/benchmarks?suite=${suite.id}&run=${value.id}`);
   const comparison = page.getByRole("region", { name: "Compare with the public index", exact: true });
   await expect(comparison).toContainText("Public fixture recommendation");
   await expect(comparison).toContainText("no change score");
-  await expect(comparison.getByRole("link", { name: "Inspect the public question, sources and history" })).toHaveAttribute("href", "/overview?query=public-query");
+  await expect(comparison.getByRole("link", { name: "Inspect the public question, sources and history" })).toHaveAttribute("href", `/overview?query=public-query&model=${encodeURIComponent(value.model)}`);
+  await comparison.getByRole("link", {name:"Inspect the public question, sources and history"}).click();
+  await expect(page.getByRole("combobox",{name:"Model",exact:true})).toHaveValue(value.model);
+  const selected=page.getByRole("region",{name:"Selected task",exact:true});
+  await expect(selected).toContainText("Public fixture recommendation");
+  await expect(selected).not.toContainText("Different model recommendation");
+  await page.reload();
+  await expect(selected).toContainText("Public fixture recommendation");
+  await page.goBack();
+  await expect(comparison).toContainText("Public fixture recommendation");
   available = false;
   await comparison.getByRole("button", { name: "Refresh public comparison" }).click();
   await expect(comparison).toContainText("no published observation with the same model");
@@ -399,7 +410,7 @@ test("private report compares matching public context without publishing or star
 
 test("publication requires a reviewed preview; withdrawal clears the shared result without a paid start", async ({page})=>{
  const state=await fixture(page,[run()]);
- const payload={format:"folio-public-search-rankings-v1",queries:[{id:"shared-fixture",audience:"Software & work",category:"Planning",query:suite.cases[0].query,language:"en",locale:"US"}],observations:[]};
+ const payload={format:"folio-public-search-rankings-v1",queries:[{id:"shared-fixture",audience:"Software & work",category:"Planning",query:suite.cases[0].query,language:"en",locale:"US"}],observations:[{id:"shared-observation",queryId:"shared-fixture",observedAt:at,status:"completed",model:"gpt-6-astra",surface:"openai-managed-agents",searchMode:"open-web",harnessVersion:"fixture-harness",environmentType:"openai_hosted",recommendations:[],citations:[],limitations:["Fixture only"]}]};
  const actions:string[]=[];let published=false,revision=0;
  await page.route("**/api/benchmarks/runs/*/publication",async route=>{
   const request=route.request();
@@ -422,7 +433,7 @@ test("publication requires a reviewed preview; withdrawal clears the shared resu
  await expect(sharing.getByRole("button",{name:"Publish these fields"})).toHaveCount(0);
  await sharing.getByRole("button",{name:"Preview public fields"}).click();
  await sharing.getByRole("button",{name:"Publish these fields"}).click();
- await expect(sharing.getByRole("link",{name:"View in the public index"})).toHaveAttribute("href","/overview?query=shared-fixture");
+ await expect(sharing.getByRole("link",{name:"View in the public index"})).toHaveAttribute("href","/overview?query=shared-fixture&model=gpt-6-astra");
  await sharing.getByRole("button",{name:"Withdraw from public index"}).click();
  await expect(sharing.getByRole("button",{name:"Preview public fields"})).toBeVisible();
  expect(actions).toEqual(["preview","preview","publish","withdraw"]);expect(state.starts).toEqual([]);expect(state.forbidden).toEqual([]);

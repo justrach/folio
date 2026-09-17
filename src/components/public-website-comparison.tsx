@@ -30,7 +30,7 @@ export function PublicWebsiteComparison({ run }: { run: KeywordBenchmarkRun }) {
           <thead><tr><th scope="col">Position</th><th scope="col">Recommended website</th><th scope="col">Returned reason</th></tr></thead>
           <tbody>{match.observation.recommendations.map((item, index) => <tr key={index}><td>{item.position}</td><th scope="row">{item.url ? <a href={item.url} target="_blank" rel="noreferrer">{item.name}</a> : item.name}</th><td>{item.reason || "No reason returned."}</td></tr>)}</tbody>
         </table></div>{!match.observation.recommendations.length && <p>The published answer returned no recommendations.</p>}
-        <Link href={`/overview?query=${encodeURIComponent(match.observation.queryId)}`}>Inspect the public question, sources and history</Link>
+        <Link href={`/overview?query=${encodeURIComponent(match.observation.queryId)}&model=${encodeURIComponent(match.observation.model)}`}>Inspect the public question, sources and history</Link>
       </>}
     </>}
     <button type="button" className="button secondary" onClick={() => setRevision(value => value + 1)}>Refresh public comparison</button>
