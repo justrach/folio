@@ -8,3 +8,5 @@ test('website metrics deduplicate hosts and models without counting absent model
  const result=websiteLandscape(rows,'q');assert.equal(result.answers,2);assert.equal(result.rows.length,2);assert.equal(result.rows[0].domain,'one.test');assert.equal(result.rows[0].position,2);assert.equal(result.rows[0].share,100);assert.equal(result.rows[1].share,50);
  assert.equal(websiteLandscape(rows,'q','a').rows.length,1);assert.deepEqual(websiteLandscape(rows,'missing'),{answers:0,rows:[]});
 });
+
+test('reviewed documentation aliases identify the same website',()=>{const r=websiteLandscape([observation('a','2026-09-01',[['https://docs.railway.com/a',1]]),observation('b','2026-09-01',[['https://railway.com',2]])],'q');assert.equal(r.rows.length,1);assert.equal(r.rows[0].share,100);});

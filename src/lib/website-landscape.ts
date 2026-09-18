@@ -11,6 +11,8 @@ export function websiteLandscape(observations: PublicSearchObservation[], queryI
   for(const r of [...o.recommendations].sort((a,b)=>a.position-b.position)) {
    if(!r.url)continue;
    let domain:string;try{const u=new URL(r.url);if(!['https:','http:'].includes(u.protocol))continue;domain=u.hostname.toLowerCase().replace(/^www\./,'').replace(/\.$/,'');}catch{continue;}
+   // Reviewed aliases for product documentation hosts; never collapse shared hosting domains.
+   domain=({'docs.railway.com':'railway.com','developers.cloudflare.com':'workers.cloudflare.com'} as Record<string,string>)[domain]??domain;
    if(seen.has(domain))continue;seen.add(domain);
    const site=sites.get(domain)??{domain,name:r.name,url:r.url,positions:[]};site.positions.push(r.position);sites.set(domain,site);
   }
