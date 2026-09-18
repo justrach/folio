@@ -127,11 +127,11 @@ test("saving questions binds an existing private site; only one explicit baselin
   expect(state.starts).toEqual([]);
   await expect(page.getByRole("button", { name: "Run fresh observation", exact: true })).toBeDisabled();
   await page.getByRole("button", { name: "Run baseline", exact: true }).click();
-  await expect(report(page)).toContainText("The answer is not available yet.");
+  await expect(report(page)).toContainText("Your observation is in progress");
   expect(state.starts).toEqual([{ caseId: "case-fixture", kind: "baseline" }]);
   await report(page).getByRole("button", { name: "Prepare another observation", exact: true }).click();
   await expect(page.getByRole("button", { name: "Run baseline", exact: true })).toBeDisabled();
-  await expect(report(page)).toContainText("Closing this page stops these checks");
+  await expect(report(page)).toContainText("Closing it stops these checks");
   expect(state.forbidden).toEqual([]); await noOverflow(page);
 });
 
@@ -171,7 +171,7 @@ test("active polling retrieves an existing task and cancellation acknowledgement
   const ongoing = run(); ongoing.status = "running"; ongoing.answer = null;
   const state = await fixture(page, [ongoing]);
   await page.goto(`/benchmarks?suite=${suite.id}&run=${ongoing.id}`);
-  await expect(report(page)).toContainText("The answer is not available yet.");
+  await expect(report(page)).toContainText("Your observation is in progress");
   expect(state.reconciles).toEqual([]);
   await page.clock.runFor(10_100);
   await expect.poll(() => state.reconciles.length).toBe(1);
@@ -234,7 +234,7 @@ test("a failed receipt save preserves a separate private recovery download witho
     recovery: { runId: "baseline-created", sessionId: "fixture-session" },
     run: { id: "baseline-created", sessionId: "fixture-session", publication: "private" } });
   await recovery.getByRole("button", { name: "Open saved reservation", exact: true }).click();
-  await expect(report(page)).toContainText("The answer is not available yet.");
+  await expect(report(page)).toContainText("Review the saved attempt");
   await expect(recovery).toBeVisible();
   expect(state.starts).toEqual([{ caseId: "case-fixture", kind: "baseline" }]);
   expect(state.forbidden).toEqual([]); await noOverflow(page);
@@ -544,4 +544,60 @@ test('TypeSafe tool authorization is opt-in and sent only on explicit question l
  await page.getByRole('button',{name:'Run baseline',exact:true}).click();
  await expect.poll(()=>state.starts.length).toBe(1);
  expect(state.starts[0]).toMatchObject({caseId:'case-fixture',useTypesafeTools:true,model:'gpt-5.6-terra'});
+});
+
+test("research activity has real milestones, keyboard disclosure, motion control and no extra paid starts",async({page})=>{
+ const value={...run("activity"),model:"gpt-5.6-luna",status:"running" as const,answer:null,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),harnessVersion:"open-web-seo-v2-typesafe-v1"};
+ const state=await fixture(page,[value]);
+ await page.goto(`/benchmarks?suite=${suite.id}&run=${value.id}`);
+ const activity=page.getByRole("region",{name:"Observation progress",exact:true});
+ await expect(activity.getByRole("status")).toHaveText("Your observation is in progress");
+ const disclosure=activity.getByRole("button",{name:"Recorded milestones"});
+ await expect(disclosure).toHaveAttribute("aria-expanded","false");
+ await disclosure.focus();await page.keyboard.press("Enter");
+ await expect(disclosure).toHaveAttribute("aria-expanded","true");
+ await expect(activity.getByText("Session recorded",{exact:true})).toBeVisible();
+ await expect(activity.getByText("Answer recorded",{exact:true})).toBeVisible();
+ await expect(activity.locator('li').filter({hasText:'Answer recorded'})).toContainText('Not recorded');
+ await activity.getByRole("button",{name:"Pause status animation"}).click();
+ await expect(activity).toHaveAttribute("data-motion-paused","true");
+ expect(state.starts).toHaveLength(0);expect(state.forbidden).toHaveLength(0);
+ await page.emulateMedia({reducedMotion:"reduce"});
+ expect(await activity.locator('.research-orbit i').first().evaluate(e=>getComputedStyle(e).animationName)).toBe("none");
+ await page.emulateMedia({reducedMotion:"no-preference"});
+ await activity.getByRole("button",{name:"Resume status animation"}).click();
+ expect(await activity.locator('.research-orbit i').first().evaluate(e=>getComputedStyle(e).animationName)).toBe("research-breathe");
+ await noOverflow(page);
+ if(process.env.FOLIO_MOTION_PREVIEW && (page.viewportSize()?.width ?? 0)>1000) await activity.screenshot({path:process.env.FOLIO_MOTION_PREVIEW});
+ await report(page).getByRole("button",{name:"Cancel observation",exact:true}).click();
+ await expect(activity.getByRole("status")).toHaveText("Waiting for cancellation confirmation");
+ await expect(activity.getByRole("button",{name:"Pause status animation"})).toHaveCount(0);
+ expect(state.cancels).toEqual([value.id]);expect(state.starts).toHaveLength(0);
+});
+
+test("tool cards keep native keyboard selection and fixed checkbox size",async({page})=>{
+ const state=await fixture(page);state.openWebModels=modelOptions;
+ state.suites=[{...suite,cases:suite.cases.map(item=>({...item,searchMode:"open-web"}))}];
+ await page.goto(`/benchmarks?suite=${suite.id}`);
+ const checkbox=page.getByRole('checkbox',{name:/Let this agent research keywords/});
+ await checkbox.focus();await page.keyboard.press('Space');await expect(checkbox).toBeChecked();
+ const box=await checkbox.boundingBox();expect(box?.width).toBe(20);expect(box?.height).toBe(20);
+ expect(state.starts).toHaveLength(0);await noOverflow(page);
+});
+
+test("a delayed launch shows immediate feedback without resubmitting",async({page})=>{
+ const state=await fixture(page);state.openWebModels=modelOptions;
+ state.suites=[{...suite,cases:suite.cases.map(item=>({...item,searchMode:"open-web"}))}];
+ let release!:()=>void;const held=new Promise<void>(resolve=>{release=resolve;});
+ await page.route('**/api/benchmarks/runs',async route=>{if(route.request().method()==='POST')await held;await route.fallback();});
+ try{
+  await page.goto(`/benchmarks?suite=${suite.id}`);
+  await page.getByRole('button',{name:'Run baseline',exact:true}).click();
+  const starting=page.getByRole('region',{name:'Starting observation',exact:true});
+  await expect(starting.getByRole('status')).toHaveText('Starting Luna…');
+  await expect(page.getByRole('button',{name:'Starting observation…',exact:true})).toBeDisabled();
+  release();
+  await expect(page.getByRole('region',{name:'Observation progress',exact:true})).toBeVisible();
+  await expect(starting).toHaveCount(0);expect(state.starts).toHaveLength(1);
+ }finally{release();}
 });

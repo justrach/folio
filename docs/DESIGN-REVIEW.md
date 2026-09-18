@@ -89,3 +89,13 @@ The change also removed unused styles for the deleted labels and number column, 
 The post-edit scanner examined the same 76 files and returned **124 leads across 10 categories**, down from 134. The decrease consists of six kicker/style matches, three unordered number matches, and one removed decorative circle. The specific copy rewrites and most halo removals are not directly measured by the scanner, so its count understates those changes. Remaining leads include the intentional and false-positive cases listed above, plus operational-page copy outside this approved first pass.
 
 TypeScript and `git diff --check` passed for the changed source. Desktop/mobile visual checks are handled separately by the integrating agent; this report does not claim that source checks establish the rendered result.
+
+## Research run interactions — September 18
+
+Website question launches now display an immediate starting panel while the POST is pending. Saved running observations show the selected model, elapsed time, a quiet concentric indicator, and expandable recorded milestones. These are derived from saved request/session/answer fields; there are no simulated tool calls, percentages, streamed answers or invented reasoning. Cancellation intent and needs-attention states stop the activity animation. Enabled tools are labelled as enabled, not as executed.
+
+Tool options use native 20px checkboxes inside full-label cards, with visible focus and checked states. Motion uses an explicit reduced-motion fallback, plus a pause-animation control that does not pause or cancel the remote task. The elapsed timer is not a per-second live announcement. Hidden milestone content is inert. Presentation interactions do not add provider requests, change polling, grant spending, or retry a launch.
+
+Visual references: [Beautiful UI loading states, tool chips and task rows](https://www.beautifului.dev/). Accordion CSS uses the installed [transitions.dev](https://transitions.dev/) pattern with its semantic tokens and reduced-motion guard. Folio retains its cream/green visual theme; no third-party component package was added.
+
+Validation: TypeScript passed. The 54-case desktop/mobile suite passed 47 initially; seven outdated copy assertions failed, were corrected or had recovery wording restored, and all 16 focused reruns passed. New checks exercise delayed launch feedback, native checkbox geometry/keyboard selection, disclosure, pause/resume, reduced motion, cancellation and no extra paid starts. An initial test-server startup hit a local SQLite lock; restarting succeeded without modifying stored data. The screenshot preview uses fixtures, not a live provider run.

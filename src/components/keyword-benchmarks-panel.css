@@ -22,3 +22,86 @@
 .benchmark-public-table :is(th, td) { padding: .75rem; vertical-align: top; border-bottom: 1px solid var(--line, #c5c9b7); font-size: .875rem; line-height: 1.5; text-transform: none; letter-spacing: normal; }
 .benchmark-public-table caption { text-align: left; font-size: .875rem; padding-bottom: .75rem; }
 .benchmark-public-comparison :focus-visible { outline: 3px solid currentColor; outline-offset: 3px; }
+
+/* Calm, state-driven research feedback. No inferred percentage or simulated tool log. */
+:root { --research-fast:150ms; --research-reveal:350ms; --research-ease:cubic-bezier(.22,1,.36,1); }
+.benchmark-workspace .research-tool-card{display:flex;align-items:flex-start;gap:14px;max-width:760px;padding:18px 20px;border:1px solid var(--line);border-radius:12px;background:var(--panel);cursor:pointer;transition:background var(--research-fast) var(--research-ease),border-color var(--research-fast) var(--research-ease),box-shadow var(--research-fast) var(--research-ease)}
+.benchmark-workspace .research-tool-card:hover{border-color:var(--green)}
+.benchmark-workspace .research-tool-card:has(:checked){background:color-mix(in srgb,var(--green) 7%,var(--panel));border-color:var(--green);box-shadow:inset 3px 0 var(--green)}
+.benchmark-workspace .research-tool-card:has(:focus-visible){outline:2px solid var(--green);outline-offset:3px}
+.benchmark-workspace .research-tool-card:has(:disabled){cursor:default}
+.benchmark-workspace .research-tool-card input[type=checkbox]{appearance:auto;width:20px;height:20px;min-width:20px;margin:2px 0 0;accent-color:var(--green);flex:0 0 20px}
+.research-tool-card>span{font-size:12px;line-height:1.7}.research-tool-card strong{display:block;font-size:14px;color:var(--ink);margin-bottom:4px}
+.research-activity{border:1px solid var(--line);border-radius:14px;padding:24px;background:var(--panel);overflow:hidden;animation:research-enter var(--research-reveal) var(--research-ease) both}
+.research-activity-header{display:flex;align-items:center;gap:18px}.research-activity-copy{flex:1;min-width:0}.research-eyebrow{display:block;text-transform:uppercase;letter-spacing:.1em;font-size:10px;color:var(--green);margin-bottom:5px}.research-activity .research-activity-copy h3{font-size:18px;margin:0}.research-activity .research-activity-copy p{font-size:12px;color:var(--ink-soft,var(--ink));margin:5px 0 0}
+.research-orbit{position:relative;width:48px;height:48px;flex:0 0 48px;display:grid;place-items:center;color:var(--green)}.research-orbit i{position:absolute;inset:0;border:1px solid currentColor;border-radius:50%;opacity:.25}.research-orbit i:nth-child(2){inset:8px;opacity:.55}.research-orbit i:nth-child(3){inset:17px;opacity:1;background:currentColor}.research-activity[data-working=true] .research-orbit i{animation:research-breathe 2400ms ease-in-out infinite}.research-activity .research-orbit i:nth-child(2){animation-delay:180ms}.research-activity .research-orbit i:nth-child(3){animation-delay:360ms}
+.research-activity-meta{display:flex;gap:10px;align-items:center;flex-shrink:0}.research-elapsed{font:12px ui-monospace,monospace;font-variant-numeric:tabular-nums;color:var(--green)}.research-motion-toggle{display:grid;place-items:center;min-width:44px;min-height:44px;border:1px solid var(--line);border-radius:50%;background:transparent;color:var(--green);cursor:pointer}
+.research-signal{height:2px;margin:20px -24px;background:var(--line);overflow:hidden}.research-signal>span{display:block;width:25%;height:100%;background:var(--green);transform:translateX(-100%)}.research-activity[data-working=true] .research-signal>span{animation:research-sweep 2400ms ease-in-out infinite}.research-activity[data-working=false] .research-signal>span{display:none}
+.research-tools{display:flex;flex-wrap:wrap;gap:7px}.research-tools>span{border:1px solid var(--line);border-radius:20px;padding:5px 10px;font-size:10px;color:var(--green)}
+.research-milestone-toggle{display:flex;align-items:center;gap:8px;min-height:44px;font-size:12px;margin-top:8px;cursor:pointer;background:transparent;border:0;color:var(--ink)}.research-milestones ol{list-style:none;margin:0;padding:0}.research-milestones li{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line);font-size:12px}.research-milestones li small{margin-left:auto;font-size:10px}.research-milestones li[data-complete=true] svg{color:var(--green)}.research-milestones p{font-size:11px;margin-top:12px;color:var(--ink-soft,var(--ink))}
+.research-button-spinner{animation:research-spin 1s linear infinite}.research-activity[data-motion-paused=true] *{animation-play-state:paused!important}
+@keyframes research-enter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes research-breathe{0%,100%{transform:scale(.88)}50%{transform:scale(1)}}
+@keyframes research-sweep{to{transform:translateX(500%)}}
+@keyframes research-spin{to{transform:rotate(360deg)}}
+@media(max-width:700px){.research-activity{padding:18px}.research-activity-header{flex-wrap:wrap;gap:12px}.research-activity-meta{margin-left:60px}.research-activity .research-activity-copy h3{font-size:16px}.research-signal{margin-inline:-18px}.benchmark-workspace .research-tool-card{padding:14px}.research-milestones li{flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){.research-activity,.research-activity *,.research-button-spinner{animation:none!important;transition:none!important}.research-tool-card,.research-milestone-toggle svg,.research-milestones{transition:none!important}.research-signal>span{transform:none}}
+
+/* transitions.dev accordion: semantic motion tokens and reduced-motion guard. */
+:root {
+  --acc-expand: 250ms;
+  --acc-collapse: 250ms;
+  --acc-chevron: 250ms;
+  --acc-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* grid-template-rows 0fr → 1fr gives a clean height animation
+   with no JS measurement; the inner element clips overflow. */
+.t-acc-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--acc-collapse) var(--acc-ease);
+}
+.t-acc[data-open="true"] .t-acc-panel {
+  grid-template-rows: 1fr;
+  transition: grid-template-rows var(--acc-expand) var(--acc-ease);
+}
+.t-acc-panel-inner {
+  overflow: hidden;
+  opacity: 0;
+  filter: blur(2px);
+  transition:
+    opacity var(--acc-collapse) var(--acc-ease),
+    filter var(--acc-collapse) var(--acc-ease);
+}
+.t-acc[data-open="true"] .t-acc-panel-inner {
+  opacity: 1;
+  filter: blur(0);
+  transition:
+    opacity var(--acc-expand) var(--acc-ease),
+    filter var(--acc-expand) var(--acc-ease);
+}
+/* Flip the chevron vertically to turn the "v" into a "^".
+   scaleY(-1) about the centre passes through a flat line at
+   the midpoint (same look as a `d:` path morph) but animates
+   in every browser, unlike CSS `d:` morphing (Chromium only).
+   The chevron path is symmetric about the 16x16 viewBox
+   centre, so the flip lands exactly on the "^"; non-scaling
+   -stroke keeps the stroke width constant through the flip. */
+.t-acc-chevron {
+  display: inline-flex;
+  transform: scaleY(1);
+  transform-origin: center;
+  transition: transform var(--acc-chevron) var(--acc-ease);
+}
+.t-acc-chevron path { vector-effect: non-scaling-stroke; }
+.t-acc[data-open="true"] .t-acc-chevron {
+  transform: scaleY(-1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-acc-panel, .t-acc-panel-inner, .t-acc-chevron {
+    transition: none !important;
+  }
+}
+.benchmark-report[data-status=completed] .benchmark-report-heading{animation:research-enter var(--research-reveal) var(--research-ease) both}
+@media(prefers-reduced-motion:reduce){.benchmark-report[data-status=completed] .benchmark-report-heading{animation:none}}

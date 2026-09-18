@@ -1,8 +1,8 @@
 "use client";
 import { KeywordPublication } from "./keyword-publication";
 
-import { useEffect, useState } from "react";
-import { ArrowDownToLine, ArrowRight, Check, ChevronDown, CircleDashed, ExternalLink } from "lucide-react";
+import { ResearchActivity } from "./research-activity";
+import { ArrowDownToLine, ArrowRight, ChevronDown, ExternalLink } from "lucide-react";
 import { compareKeywordBenchmarkRuns, type KeywordBenchmarkRun } from "@/lib/keyword-benchmark-types";
 import { keywordRecommendationMetrics } from "@/lib/keyword-search-mode";
 
@@ -25,7 +25,7 @@ export function KeywordObservationReport({ run, baseline, busy, onRefresh, onCan
   const metrics = keywordRecommendationMetrics(run);
   const completed = run.status === "completed" && Boolean(run.answer);
   const openWeb = run.case.searchMode === "open-web";
-  return <section className="panel benchmark-report" aria-label="Keyword observation">
+  return <section className="panel benchmark-report" aria-label="Keyword observation" data-status={run.status}>
     <header className="benchmark-report-heading"><div className="benchmark-report-kind"><span>{run.kind === "baseline" ? "Baseline observation" : "Fresh observation"}</span><span>{statusLabel(run.status)} · {date(run.createdAt)}</span></div><h2>{run.case.query}</h2><p className="benchmark-target">Your website <strong>{run.case.targetUrl ?? "No website target supplied"}</strong></p></header>
     <div className="benchmark-report-actions">
       {completed ? <button className="button primary" type="button" onClick={() => {
@@ -75,10 +75,5 @@ function Comparison({baseline,fresh}:{baseline:KeywordBenchmarkRun;fresh:Keyword
 function ChangedSources({urls}:{urls:string[]}) { return urls.length ? <ul>{urls.map(url=><li key={url}><SourceLink url={url}/></li>)}</ul> : <>None</>; }
 
 function KeywordProgress({run}:{run:KeywordBenchmarkRun}) {
-  const [now,setNow]=useState(Date.now());
-  useEffect(()=> {if(!active(run))return;const timer=window.setInterval(()=>setNow(Date.now()),1000);return()=>window.clearInterval(timer);},[run.status]);
-  const seconds=Math.max(0,Math.floor(((active(run)?now:Date.parse(run.updatedAt))-Date.parse(run.createdAt))/1000));
-  const elapsed=Number.isFinite(seconds)?`${Math.floor(seconds/60)}m ${seconds%60}s`:"Not available";
-  const steps=[{label:"Request saved",done:Boolean(run.createdAt)},{label:"Session recorded",done:Boolean(run.sessionId)},{label:"Answer recorded",done:run.status==="completed"&&Boolean(run.answer)}];
-  return <section className="benchmark-progress" aria-label="Observation progress"><div><h3>{run.status==="requires_action"?"Review the saved attempt":active(run)?"Your observation is in progress":"No completed answer was recorded"}</h3><span>{active(run)?"Elapsed since request":"Elapsed to recorded outcome"}: {elapsed}</span></div><ol>{steps.map(item=><li key={item.label} data-complete={item.done}>{item.done?<Check size={15}/>:<CircleDashed size={15}/>}<span>{item.label}<small>{item.done?"Recorded":"Not recorded"}</small></span></li>)}</ol><p>{active(run)?"The answer is not available yet.":"No completed answer was recorded."} Missing observations are not a zero score.</p>{active(run)&&<p className="benchmark-muted">{run.sessionId ? "While this page is visible, Folio retrieves this existing task every 10 seconds and requests cancellation after its saved deadline. Closing this page stops these checks; this observation has no server-side deadline scheduler. No new observation starts automatically." : run.createAttemptAt ? "No provider session was recorded, so Folio cannot retrieve or cancel the remote task. Its outcome and cost remain unknown. This page checks the saved record; it does not retry the original request." : "The request is saved, but no provider session is recorded yet. This page checks the saved record without starting another observation."}</p>}</section>;
+  return <ResearchActivity run={run}/>;
 }
