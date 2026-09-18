@@ -53365,6 +53365,2816 @@
         "Microsoft Learn displayed authorization notices but returned substantive public article text; no login was attempted. A follow-up read of Google's external-chat administration page returned an internal error; a retry returned the page, but its substantive settings were not fully inspected.",
         "Recommendations depend on unknown existing subscriptions, client numbers, client account types, and required history duration. Consulted vendor documentation establishes stated options and restrictions, not guaranteed behavior in a particular tenant."
       ]
+    },
+    {
+      "id": "obs-deploy-small-node-app-v1-3c7eb21ff6d39e5a01d65063",
+      "queryId": "deploy-small-node-app-v1",
+      "observedAt": "2026-09-18T07:22:27.801Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Railway",
+          "url": "https://docs.railway.com/guides/express",
+          "reason": "First choice for an existing small Node server: automatic deployment and PostgreSQL in one project, with a $5 minimum and resource-based billing.",
+          "citationUrls": [
+            "https://docs.railway.com/guides/express",
+            "https://docs.railway.com/pricing/plans"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Render",
+          "url": "https://render.com/pricing",
+          "reason": "Best alternative for predictable instance costs and a conventional Node runtime; paid app plus PostgreSQL compute starts at $13 before storage.",
+          "citationUrls": [
+            "https://render.com/docs/web-services",
+            "https://render.com/pricing",
+            "https://render.com/docs/free"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Vercel",
+          "url": "https://vercel.com/pricing",
+          "reason": "Suitable for framework/function-based apps, but PostgreSQL costs are separate and invocation limits matter for persistent-server workloads.",
+          "citationUrls": [
+            "https://vercel.com/pricing",
+            "https://vercel.com/docs/functions/limitations"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Cloudflare Workers",
+          "url": "https://developers.cloudflare.com/workers/platform/pricing/",
+          "reason": "Attractive request-based pricing for lightweight compatible APIs, with external PostgreSQL via Hyperdrive and stricter memory/runtime constraints.",
+          "citationUrls": [
+            "https://developers.cloudflare.com/hyperdrive/examples/connect-to-postgres/",
+            "https://developers.cloudflare.com/workers/platform/pricing/",
+            "https://developers.cloudflare.com/workers/platform/limits/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://docs.railway.com/guides/express",
+          "title": "Railway: Deploy an Express App"
+        },
+        {
+          "url": "https://docs.railway.com/pricing/plans",
+          "title": "Railway: Pricing Plans"
+        },
+        {
+          "url": "https://render.com/docs/web-services",
+          "title": "Render: Web Services"
+        },
+        {
+          "url": "https://render.com/pricing",
+          "title": "Render Pricing"
+        },
+        {
+          "url": "https://render.com/docs/free",
+          "title": "Render: Deploy for Free"
+        },
+        {
+          "url": "https://vercel.com/pricing",
+          "title": "Vercel Pricing"
+        },
+        {
+          "url": "https://vercel.com/docs/functions/limitations",
+          "title": "Vercel Functions Limits"
+        },
+        {
+          "url": "https://developers.cloudflare.com/hyperdrive/examples/connect-to-postgres/",
+          "title": "Cloudflare Hyperdrive: Connect to PostgreSQL"
+        },
+        {
+          "url": "https://developers.cloudflare.com/workers/platform/pricing/",
+          "title": "Cloudflare Workers Pricing"
+        },
+        {
+          "url": "https://developers.cloudflare.com/workers/platform/limits/",
+          "title": "Cloudflare Workers Limits"
+        }
+      ],
+      "limitations": [
+        "Public documentation research only; no deployments, billing experiments, or independent performance verification. Recommendation order is specific to the assumed conventional Node app, not an exhaustive market ranking.",
+        "No workload measurements or external PostgreSQL provider were supplied. Totals exclude taxes and optional features; database sizing, backup needs, overages, and team plans can change costs.",
+        "Exact HTTP proxy timeout ceilings for Railway and Render were not established in this research; a persistent process does not imply unlimited HTTP request duration.",
+        "Render's pricing page omitted its pricing tables in the direct extracted view; official-page search excerpts supplied the prices. No login or transactional access was attempted.",
+        "Cloudflare's PostgreSQL guide contained inconsistent minimum driver versions between its table and example notes. Dependency compatibility was not tested; verify the current driver requirements before deployment."
+      ]
+    },
+    {
+      "id": "obs-deploy-small-node-app-v1-b56286b32928aadcc76c5240",
+      "queryId": "deploy-small-node-app-v1",
+      "observedAt": "2026-09-18T07:22:08.072Z",
+      "status": "completed",
+      "model": "gpt-5.6-sol",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Railway",
+          "url": "https://railway.com/",
+          "reason": "Best default for setup simplicity: app and PostgreSQL can live together, with a $5 Hobby floor that includes $5 of usage and no request-duration model documented for its normal long-running services.",
+          "citationUrls": [
+            "https://docs.railway.com/pricing/plans"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Render",
+          "url": "https://render.com/",
+          "reason": "Best conventional PaaS option: native Node.js, managed PostgreSQL and continuously running paid services, with explicit caveats that make the free tier unsuitable for durable production use.",
+          "citationUrls": [
+            "https://render.com/pricing",
+            "https://render.com/docs/free",
+            "https://render.com/docs/faq"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Vercel",
+          "url": "https://vercel.com/",
+          "reason": "Best for Next.js/serverless-shaped apps, with easy Git deployments and Marketplace Postgres integration, but database cost is provider-dependent and functions have duration, memory and bundle limits.",
+          "citationUrls": [
+            "https://vercel.com/docs/functions/limitations",
+            "https://vercel.com/docs/marketplace-storage",
+            "https://vercel.com/pricing"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Cloudflare Workers",
+          "url": "https://workers.cloudflare.com/",
+          "reason": "Best only when edge execution is a core requirement: its low price and global runtime are attractive, but 128 MB memory, CPU limits and PostgreSQL/Node compatibility configuration make it a less direct lift-and-shift target.",
+          "citationUrls": [
+            "https://developers.cloudflare.com/workers/platform/pricing/",
+            "https://developers.cloudflare.com/workers/platform/limits/",
+            "https://developers.cloudflare.com/hyperdrive/examples/connect-to-postgres/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://docs.railway.com/pricing/plans",
+          "title": "Pricing Plans | Railway Docs"
+        },
+        {
+          "url": "https://render.com/pricing",
+          "title": "Pricing | Render"
+        },
+        {
+          "url": "https://render.com/docs/free",
+          "title": "Deploy for Free | Render Docs"
+        },
+        {
+          "url": "https://render.com/docs/faq",
+          "title": "Render FAQ | Render Docs"
+        },
+        {
+          "url": "https://vercel.com/docs/functions/limitations",
+          "title": "Vercel Functions Limits"
+        },
+        {
+          "url": "https://vercel.com/docs/marketplace-storage",
+          "title": "Storage on Vercel Marketplace"
+        },
+        {
+          "url": "https://vercel.com/pricing",
+          "title": "Vercel Pricing"
+        },
+        {
+          "url": "https://developers.cloudflare.com/workers/platform/pricing/",
+          "title": "Pricing | Cloudflare Workers docs"
+        },
+        {
+          "url": "https://developers.cloudflare.com/workers/platform/limits/",
+          "title": "Limits | Cloudflare Workers docs"
+        },
+        {
+          "url": "https://developers.cloudflare.com/hyperdrive/examples/connect-to-postgres/",
+          "title": "Connect to PostgreSQL | Cloudflare Hyperdrive docs"
+        }
+      ],
+      "limitations": [
+        "Public documentation was consulted on 2026-09-18; prices and limits can change and taxes or regional pricing may differ.",
+        "This is not exhaustive market coverage or an independently measured benchmark; no apps were deployed and performance, cold starts, reliability and support quality were not tested.",
+        "A precise monthly total is impossible without traffic, CPU, memory, storage, egress, region and database-size assumptions. Vercel and Cloudflare require separately priced external PostgreSQL; Railway is usage-based; Render bills app, database and storage components.",
+        "Railway search results exposed plan and cost-control documentation but not a complete current per-resource rate table, so only the verified $5 Hobby floor/included usage is stated.",
+        "Search discovery did not expose Railway's complete current per-resource rate table. No material page-access failures occurred."
+      ]
+    },
+    {
+      "id": "obs-auth-b2b-small-team-v1-7a60c80b1acdd7cf19039c75",
+      "queryId": "auth-b2b-small-team-v1",
+      "observedAt": "2026-09-18T07:25:59.275Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Clerk",
+          "url": "https://clerk.com/pricing",
+          "reason": "Default for quick managed GitHub integration and prebuilt UI; budget for the B2B add-on when associating SSO with customer organizations.",
+          "citationUrls": [
+            "https://clerk.com/pricing",
+            "https://clerk.com/docs/guides/configure/auth-strategies/social-connections/github"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "WorkOS",
+          "url": "https://workos.com/pricing",
+          "reason": "Prefer when enterprise onboarding is imminent: managed AuthKit, included Admin Portal and explicit per-connection SSO pricing.",
+          "citationUrls": [
+            "https://workos.com/pricing",
+            "https://workos.com/docs/authkit/social-login"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Better Auth",
+          "url": "https://better-auth.com/pricing",
+          "reason": "Prefer for control of authentication and data when the team can own hosting, maintenance and SSO integration.",
+          "citationUrls": [
+            "https://better-auth.com/pricing",
+            "https://better-auth.com/docs/authentication/github",
+            "https://better-auth.com/docs/plugins/sso"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Auth0",
+          "url": "https://auth0.com/pricing",
+          "reason": "Consider for broader identity requirements; its free enterprise connection enables an initial SSO pilot, but paid B2B pricing needs confirmation.",
+          "citationUrls": [
+            "https://auth0.com/pricing",
+            "https://auth0.com/docs/authenticate/identity-providers/social-identity-providers/github",
+            "https://auth0.com/blog/auth0-b2b-plans-upgraded/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://clerk.com/pricing",
+          "title": "Clerk pricing"
+        },
+        {
+          "url": "https://clerk.com/docs/guides/configure/auth-strategies/social-connections/github",
+          "title": "Clerk: Add GitHub as a social connection"
+        },
+        {
+          "url": "https://workos.com/pricing",
+          "title": "WorkOS pricing"
+        },
+        {
+          "url": "https://workos.com/docs/authkit/social-login",
+          "title": "WorkOS AuthKit: Social Login"
+        },
+        {
+          "url": "https://better-auth.com/pricing",
+          "title": "Better Auth pricing"
+        },
+        {
+          "url": "https://better-auth.com/docs/authentication/github",
+          "title": "Better Auth: GitHub"
+        },
+        {
+          "url": "https://better-auth.com/docs/plugins/sso",
+          "title": "Better Auth: Single Sign-On plugin"
+        },
+        {
+          "url": "https://auth0.com/pricing",
+          "title": "Auth0 pricing"
+        },
+        {
+          "url": "https://auth0.com/docs/authenticate/identity-providers/social-identity-providers/github",
+          "title": "Auth0: Add GitHub Login to Your App"
+        },
+        {
+          "url": "https://auth0.com/blog/auth0-b2b-plans-upgraded/",
+          "title": "Auth0 B2B Plans Upgraded: Free Self-Service SSO, SCIM, and More!"
+        }
+      ],
+      "limitations": [
+        "Public web research as of September 18, 2026. Discovery was not domain-restricted; recommendations address the four requested products, not exhaustive market coverage.",
+        "Vendor documentation and list pricing were consulted; setup effort, reliability and product performance were not independently tested.",
+        "Auth0's retrieved pricing page did not expose a complete paid B2B configuration. Opening https://auth0.com/pricing.md returned an internal error; exact B2B base and connection add-on prices remain unverified.",
+        "Better Auth's SSO documentation directs self-service customers to enterprise contact, while its pricing page lists self-service SSO on Pro; confirm applicable packaging.",
+        "Prices are USD list prices; totals exclude taxes, negotiated discounts and unlisted usage. MAU and Clerk MRU are different metrics. Team framework, usage and customer IdP requirements were not supplied."
+      ]
+    },
+    {
+      "id": "obs-auth-b2b-small-team-v1-bec5915bfc4677467dd428fb",
+      "queryId": "auth-b2b-small-team-v1",
+      "observedAt": "2026-09-18T07:25:32.883Z",
+      "status": "completed",
+      "model": "gpt-5.6-sol",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Clerk",
+          "url": "https://clerk.com/",
+          "reason": "Best default balance: fast hosted GitHub OAuth setup, one enterprise connection included on Pro, and published user and SSO expansion triggers.",
+          "citationUrls": [
+            "https://clerk.com/docs/guides/configure/auth-strategies/social-connections/overview",
+            "https://clerk.com/pricing"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "WorkOS AuthKit",
+          "url": "https://workos.com/docs/authkit",
+          "reason": "Best when enterprise SSO will drive sales soon: hosted GitHub/social auth and customer SSO share one managed, connection-priced platform.",
+          "citationUrls": [
+            "https://workos.com/docs/authkit/modeling-your-app",
+            "https://workos.com/docs/authkit/environments",
+            "https://workos.com/pricing"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Better Auth",
+          "url": "https://better-auth.com/",
+          "reason": "Best for control and self-hosting: straightforward TypeScript GitHub setup and an SSO plugin, with the team accepting database and uptime responsibility.",
+          "citationUrls": [
+            "https://better-auth.com/docs/installation",
+            "https://better-auth.com/docs/plugins/sso",
+            "https://better-auth.com/pricing"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Auth0",
+          "url": "https://auth0.com/",
+          "reason": "A capable hosted enterprise option, but its B2B/SSO upgrade path is less predictable for a small team than the higher-ranked choices.",
+          "citationUrls": [
+            "https://auth0.com/docs/authenticate/identity-providers/social-identity-providers/github",
+            "https://auth0.com/pricing"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://clerk.com/docs/guides/configure/auth-strategies/social-connections/overview",
+          "title": "Social connections (OAuth) — Clerk Docs"
+        },
+        {
+          "url": "https://clerk.com/pricing",
+          "title": "Pricing — Clerk"
+        },
+        {
+          "url": "https://workos.com/docs/authkit/modeling-your-app",
+          "title": "Modeling Your App — WorkOS AuthKit Docs"
+        },
+        {
+          "url": "https://workos.com/docs/authkit/environments",
+          "title": "Staging vs. production environments — WorkOS AuthKit Docs"
+        },
+        {
+          "url": "https://workos.com/pricing",
+          "title": "Pricing — WorkOS"
+        },
+        {
+          "url": "https://better-auth.com/docs/installation",
+          "title": "Installation — Better Auth"
+        },
+        {
+          "url": "https://better-auth.com/docs/plugins/sso",
+          "title": "Single Sign-On (SSO) — Better Auth"
+        },
+        {
+          "url": "https://better-auth.com/pricing",
+          "title": "Pricing — Better Auth"
+        },
+        {
+          "url": "https://auth0.com/docs/authenticate/identity-providers/social-identity-providers/github",
+          "title": "Add GitHub Login to Your App — Auth0 Docs"
+        },
+        {
+          "url": "https://auth0.com/pricing",
+          "title": "Pricing — Auth0"
+        }
+      ],
+      "limitations": [
+        "This is a recommendation order based on public documentation consulted on 2026-09-18, not an exhaustive market survey, measured search-engine rank or hands-on vendor benchmark.",
+        "No product was deployed and no performance, reliability, support quality or migration experience was independently verified.",
+        "Prices and packaging can change, may vary by billing cadence, region, negotiated contract or feature combination, and taxes are excluded; confirm a quote before purchase.",
+        "Auth0's interactive pricing presentation and B2B upgrade language do not expose every future SSO cost in a single fixed schedule; Better Auth's SSO documentation and pricing page also differ on how self-service SSO is packaged.",
+        "The research did not evaluate compliance attestations, data residency, SLA terms, support response times, SCIM costs, machine-to-machine usage or migration tooling in depth. No material public-page access failures occurred."
+      ]
+    },
+    {
+      "id": "obs-auth-b2b-small-team-v1-82129d053edb4a57d86f4be2",
+      "queryId": "auth-b2b-small-team-v1",
+      "observedAt": "2026-09-18T07:27:00.234Z",
+      "status": "completed",
+      "model": "gpt-5.6-terra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "WorkOS AuthKit",
+          "url": "https://workos.com/docs",
+          "reason": "Best default when customer SSO is a credible near-term roadmap item: hosted sign-in combines GitHub OAuth and enterprise SSO, and public docs state AuthKit is free through 1M MAUs while production enterprise connections carry per-connection charges.",
+          "citationUrls": [
+            "https://workos.com/docs",
+            "https://workos.com/docs/authkit/environments",
+            "https://workos.com/docs/reference/authkit/authentication"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Clerk",
+          "url": "https://clerk.com/pricing",
+          "reason": "Best fit if the immediate priority is a polished hosted TypeScript integration and predictable initial B2B pricing: GitHub is a social connection; production enterprise SSO requires Pro or Business, with one enterprise connection included on Pro and published additional-connection pricing.",
+          "citationUrls": [
+            "https://clerk.com/pricing",
+            "https://clerk.com/docs/guides/configure/auth-strategies/enterprise-connections/overview"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Better Auth",
+          "url": "https://better-auth.com/docs/installation",
+          "reason": "Choose when retaining control of auth code, deployment, database, credentials, migrations, and operations is worth the engineering ownership. GitHub is configured in-app; its SSO plugin supports OIDC, OAuth2, and SAML, while the optional managed infrastructure has connection-based SSO pricing.",
+          "citationUrls": [
+            "https://better-auth.com/docs/installation",
+            "https://better-auth.com/docs/plugins/sso",
+            "https://better-auth.com/pricing"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Auth0",
+          "url": "https://auth0.com/pricing",
+          "reason": "Choose when its mature hosted platform or existing organizational standard outweighs cost predictability. GitHub fits its unlimited social connections; the public B2B table includes one enterprise connection on Free but puts self-service SSO on select Enterprise plans, so validate the customer-SSO path commercially early.",
+          "citationUrls": [
+            "https://auth0.com/pricing"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://workos.com/docs",
+          "title": "WorkOS Docs"
+        },
+        {
+          "url": "https://workos.com/docs/authkit/environments",
+          "title": "Staging vs. production environments – AuthKit – WorkOS Docs"
+        },
+        {
+          "url": "https://workos.com/docs/reference/authkit/authentication",
+          "title": "Authentication – API Reference – WorkOS Docs"
+        },
+        {
+          "url": "https://clerk.com/pricing",
+          "title": "Pricing — Free Up to 50K Users | Plans from $0/mo"
+        },
+        {
+          "url": "https://clerk.com/docs/guides/configure/auth-strategies/enterprise-connections/overview",
+          "title": "Enterprise Single Sign-On (SSO) - Enterprise connections | Clerk Docs"
+        },
+        {
+          "url": "https://better-auth.com/docs/installation",
+          "title": "Installation | Better Auth"
+        },
+        {
+          "url": "https://better-auth.com/docs/plugins/sso",
+          "title": "Single Sign-On (SSO) | Better Auth"
+        },
+        {
+          "url": "https://better-auth.com/pricing",
+          "title": "Pricing — Better Auth | Better Auth"
+        },
+        {
+          "url": "https://auth0.com/pricing",
+          "title": "Pricing - Auth0"
+        }
+      ],
+      "limitations": [
+        "This is a documentation- and pricing-page comparison, not an implementation test or independently verified performance/security assessment.",
+        "Public price pages and entitlements can change; confirm the checkout/sales terms for your region and anticipated number of enterprise connections.",
+        "No migration requirements, compliance constraints, preferred UI customization level, or expected customer-IdP mix were supplied; those could change the recommendation.",
+        "Search covered the four named products and their public official materials; it is not exhaustive market coverage."
+      ]
+    },
+    {
+      "id": "obs-sandbox-python-jobs-v1-8b6324324bd4fb08137d4599",
+      "queryId": "sandbox-python-jobs-v1",
+      "observedAt": "2026-09-18T07:27:55.772Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Modal",
+          "url": "https://modal.com/docs/guide/sandboxes",
+          "reason": "Best initial comparison for CPU sandboxes and occasional GPU execution in one platform; explicit network controls and resource-based billing, with GPU preemption to plan around.",
+          "citationUrls": [
+            "https://modal.com/docs/guide/sandbox-networking",
+            "https://modal.com/docs/guide/sandboxes",
+            "https://modal.com/docs/guide/sandbox-resources"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Daytona",
+          "url": "https://www.daytona.io/docs/sandboxes",
+          "reason": "Useful for persistent CPU workspaces plus GPU sandboxes, with explicit lifecycle controls; GPU files require volumes to survive stopping.",
+          "citationUrls": [
+            "https://www.daytona.io/docs/sandboxes",
+            "https://www.daytona.io/docs/en/persistence/",
+            "https://www.daytona.io/docs/en/python-sdk/sync/sandbox/",
+            "https://www.daytona.io/pricing"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "E2B",
+          "url": "https://e2b.dev/pricing",
+          "reason": "Useful CPU sandbox comparison for Firecracker isolation and pause/resume; a GPU offering was not established in the consulted evidence.",
+          "citationUrls": [
+            "https://e2b.dev/security",
+            "https://e2b.dev/enterprise",
+            "https://e2b.dev/pricing"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://modal.com/docs/guide/sandbox-networking",
+          "title": "Modal: Networking and security"
+        },
+        {
+          "url": "https://modal.com/docs/guide/sandboxes",
+          "title": "Modal: Sandboxes"
+        },
+        {
+          "url": "https://modal.com/docs/guide/sandbox-resources",
+          "title": "Modal: Sandbox resources and pricing"
+        },
+        {
+          "url": "https://www.daytona.io/docs/sandboxes",
+          "title": "Daytona: Sandboxes"
+        },
+        {
+          "url": "https://www.daytona.io/docs/en/persistence/",
+          "title": "Daytona: Persistence"
+        },
+        {
+          "url": "https://www.daytona.io/docs/en/python-sdk/sync/sandbox/",
+          "title": "Daytona: Python Sandbox SDK"
+        },
+        {
+          "url": "https://www.daytona.io/pricing",
+          "title": "Daytona: Pricing"
+        },
+        {
+          "url": "https://e2b.dev/security",
+          "title": "E2B: Security"
+        },
+        {
+          "url": "https://e2b.dev/enterprise",
+          "title": "E2B: Enterprise"
+        },
+        {
+          "url": "https://e2b.dev/pricing",
+          "title": "E2B: Pricing"
+        }
+      ],
+      "limitations": [
+        "Public-web research was bounded and is not exhaustive market coverage. Recommendation order is editorial fit for this query, not an engine ranking or vendor execution benchmark.",
+        "Claims reflect provider documentation; isolation strength, performance, availability, and actual bills were not independently tested.",
+        "E2B GPU availability and pricing were not established. Daytona's overview does not fully specify isolation implementation by sandbox class.",
+        "Exact GPU capacity by region, all storage/egress charges, and batch-job limits outside the documented sandbox lifecycles were not fully verified.",
+        "No source access failures were encountered; one Daytona in-page search returned no match, and network controls were instead sourced from its SDK reference."
+      ]
+    },
+    {
+      "id": "obs-sandbox-python-jobs-v1-542b4c19264d346119aea2a0",
+      "queryId": "sandbox-python-jobs-v1",
+      "observedAt": "2026-09-18T07:28:17.775Z",
+      "status": "completed",
+      "model": "gpt-5.6-sol",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Modal",
+          "url": "https://modal.com/",
+          "reason": "Best overall fit because it combines documented gVisor sandboxing, granular egress controls, persistent volumes, configurable timeouts, and GPU execution under one Python-oriented resource model.",
+          "citationUrls": [
+            "https://modal.com/docs/guide/sandbox-networking",
+            "https://modal.com/docs/guide/volumes",
+            "https://modal.com/docs/guide/timeouts",
+            "https://modal.com/docs/guide/sandbox-resources"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Beam",
+          "url": "https://www.beam.cloud/",
+          "reason": "Strong Python-native alternative with GPU task queues, sandbox network restrictions, snapshots/volumes, configurable timeouts, and fine-grained usage billing.",
+          "citationUrls": [
+            "https://docs.beam.cloud/v2/sandbox/overview",
+            "https://docs.beam.cloud/v2/reference/py-sdk",
+            "https://www.beam.cloud/pricing"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Runpod",
+          "url": "https://www.runpod.io/",
+          "reason": "Worth comparing when GPU price and availability dominate, but the consulted public evidence was less complete for untrusted-code isolation, outbound network policy, and general worker timeout limits.",
+          "citationUrls": [
+            "https://docs.runpod.io/",
+            "https://www.runpod.io/pricing",
+            "https://runpod-b18f5ded.mintlify.app/serverless/storage/overview"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://modal.com/docs/guide/sandbox-networking",
+          "title": "Networking and security | Modal Docs"
+        },
+        {
+          "url": "https://modal.com/docs/guide/volumes",
+          "title": "Volumes | Modal Docs"
+        },
+        {
+          "url": "https://modal.com/docs/guide/timeouts",
+          "title": "Timeouts | Modal Docs"
+        },
+        {
+          "url": "https://modal.com/docs/guide/sandbox-resources",
+          "title": "Sandbox resources and pricing | Modal Docs"
+        },
+        {
+          "url": "https://docs.beam.cloud/v2/sandbox/overview",
+          "title": "Sandbox overview | Beam Docs"
+        },
+        {
+          "url": "https://docs.beam.cloud/v2/reference/py-sdk",
+          "title": "Python SDK Reference | Beam Docs"
+        },
+        {
+          "url": "https://www.beam.cloud/pricing",
+          "title": "Pricing | Beam"
+        },
+        {
+          "url": "https://docs.runpod.io/",
+          "title": "Welcome to Runpod | Runpod Documentation"
+        },
+        {
+          "url": "https://www.runpod.io/pricing",
+          "title": "GPU Cloud Pricing | Runpod"
+        },
+        {
+          "url": "https://runpod-b18f5ded.mintlify.app/serverless/storage/overview",
+          "title": "Storage options | Runpod Documentation"
+        }
+      ],
+      "limitations": [
+        "This is a targeted public-web comparison, not exhaustive market coverage, a vendor execution benchmark, or independent verification of performance or security claims.",
+        "Recommendation order reflects the stated mixed workload and the documentation retrieved on 2026-09-18; prices, limits, GPU inventory and product behavior can change.",
+        "Beam documentation exposed differing timeout defaults across primitives; confirm the exact primitive and plan during a proof of concept.",
+        "The consulted Runpod pages did not clearly document sandbox-grade syscall isolation, outbound egress allowlists, or a universal custom-worker timeout ceiling; absence from retrieved evidence is not proof the capabilities do not exist.",
+        "No accounts were created and no workloads were executed, so cold starts, contention, reliability, invoice behavior and effective isolation were not tested."
+      ]
+    },
+    {
+      "id": "obs-vector-search-small-app-v1-d339d809f3ccfd5deba49678",
+      "queryId": "vector-search-small-app-v1",
+      "observedAt": "2026-09-18T07:30:29.686Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Qdrant",
+          "url": "https://qdrant.tech/",
+          "reason": "Default choice for indexed metadata filtering and flexibility between managed, hybrid, and self-managed deployments.",
+          "citationUrls": [
+            "https://qdrant.tech/documentation/overview/",
+            "https://qdrant.tech/documentation/security/",
+            "https://qdrant.tech/documentation/cloud-pricing-payments/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Chroma",
+          "url": "https://www.trychroma.com/",
+          "reason": "Strong starting point for local document-search prototypes, with a managed serverless path and explicit usage pricing.",
+          "citationUrls": [
+            "https://docs.trychroma.com/",
+            "https://docs.rs/chroma/latest/chroma/",
+            "https://docs.trychroma.com/cloud/pricing"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Pinecone",
+          "url": "https://www.pinecone.io/",
+          "reason": "Fits teams prioritizing a managed service and organizational access controls, subject to plan gates and namespace-sensitive usage costs.",
+          "citationUrls": [
+            "https://docs.pinecone.io/guides/search/filter-by-metadata",
+            "https://www.pinecone.io/pricing/",
+            "https://docs.pinecone.io/guides/projects/manage-api-keys",
+            "https://docs.pinecone.io/guides/manage-cost/understanding-cost"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://qdrant.tech/documentation/overview/",
+          "title": "Qdrant: Overview"
+        },
+        {
+          "url": "https://qdrant.tech/documentation/security/",
+          "title": "Qdrant: Security"
+        },
+        {
+          "url": "https://qdrant.tech/documentation/cloud-pricing-payments/",
+          "title": "Qdrant Cloud Billing & Payments"
+        },
+        {
+          "url": "https://docs.trychroma.com/",
+          "title": "Chroma: Introduction"
+        },
+        {
+          "url": "https://docs.rs/chroma/latest/chroma/",
+          "title": "Chroma Rust client: Authentication"
+        },
+        {
+          "url": "https://docs.trychroma.com/cloud/pricing",
+          "title": "Chroma Cloud: Pricing"
+        },
+        {
+          "url": "https://docs.pinecone.io/guides/search/filter-by-metadata",
+          "title": "Pinecone: Filter by metadata"
+        },
+        {
+          "url": "https://www.pinecone.io/pricing/",
+          "title": "Pinecone: Pricing"
+        },
+        {
+          "url": "https://docs.pinecone.io/guides/projects/manage-api-keys",
+          "title": "Pinecone: Manage API keys"
+        },
+        {
+          "url": "https://docs.pinecone.io/guides/manage-cost/understanding-cost",
+          "title": "Understanding Pinecone cost"
+        }
+      ],
+      "limitations": [
+        "Public web research as of September 18, 2026; recommendation order is contextual judgment, not search-engine rank, exhaustive market coverage, or an independently verified performance benchmark.",
+        "No workload sizes, region, availability target, or concurrency requirements were supplied; exact monthly totals and comparative performance remain unverified.",
+        "Chroma authentication pages at https://docs.trychroma.com/guides/deploy/authentication and https://docs.trychroma.com/production/administration/auth were inaccessible. Current Cloud role granularity and self-hosted server authentication require version-specific verification.",
+        "A consulted Pinecone learning article described sublinear read-unit growth, while the current cost reference specifies linear namespace-based billing. This answer follows the current cost reference; confirm metering for the intended index and plan.",
+        "Qdrant's guides URL redirected and a line-specific read returned no content; its canonical overview page was subsequently accessible. Pricing and plan availability can change."
+      ]
+    },
+    {
+      "id": "obs-vector-search-small-app-v1-542a023d1ab42be159aeff62",
+      "queryId": "vector-search-small-app-v1",
+      "observedAt": "2026-09-18T07:30:30.916Z",
+      "status": "completed",
+      "model": "gpt-5.6-sol",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Qdrant",
+          "url": "https://qdrant.tech/",
+          "reason": "Best balanced default: strong metadata filtering, managed and self-managed deployment choices, plus documented read-only and per-collection access keys.",
+          "citationUrls": [
+            "https://qdrant.tech/documentation/quick-start/",
+            "https://qdrant.tech/documentation/security/",
+            "https://qdrant.tech/documentation/cloud/create-cluster/",
+            "https://qdrant.tech/documentation/cloud-pricing-payments/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Chroma",
+          "url": "https://www.trychroma.com/",
+          "reason": "Best for rapid local prototyping and a low-ops serverless path, with document storage and several retrieval modes in one open-source system.",
+          "citationUrls": [
+            "https://docs.trychroma.com/",
+            "https://docs.trychroma.com/cloud",
+            "https://docs.trychroma.com/cloud/pricing"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Pinecone",
+          "url": "https://www.pinecone.io/",
+          "reason": "Best for teams prioritizing fully managed operations and paid-plan governance features over open-source self-management and low minimum costs.",
+          "citationUrls": [
+            "https://www.pinecone.io/pricing/",
+            "https://docs.pinecone.io/guides/operations/moving-to-production"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://qdrant.tech/documentation/quick-start/",
+          "title": "Qdrant Local Quickstart"
+        },
+        {
+          "url": "https://qdrant.tech/documentation/security/",
+          "title": "Qdrant Security & Access Control"
+        },
+        {
+          "url": "https://qdrant.tech/documentation/cloud/create-cluster/",
+          "title": "Creating a Qdrant Cloud Cluster"
+        },
+        {
+          "url": "https://qdrant.tech/documentation/cloud-pricing-payments/",
+          "title": "Qdrant Cloud Billing & Payments"
+        },
+        {
+          "url": "https://docs.trychroma.com/",
+          "title": "Chroma Documentation Introduction"
+        },
+        {
+          "url": "https://docs.trychroma.com/cloud",
+          "title": "Chroma Cloud"
+        },
+        {
+          "url": "https://docs.trychroma.com/cloud/pricing",
+          "title": "Chroma Cloud Pricing"
+        },
+        {
+          "url": "https://www.pinecone.io/pricing/",
+          "title": "Pinecone Pricing"
+        },
+        {
+          "url": "https://docs.pinecone.io/guides/operations/moving-to-production",
+          "title": "Pinecone Production Checklist"
+        }
+      ],
+      "limitations": [
+        "This is a recommendation order for the stated use case, not a benchmark, exhaustive market survey, or general search-engine ranking.",
+        "Evidence is primarily current vendor documentation and pricing pages; product performance and vendor claims were not independently verified.",
+        "No workload size, vector dimensionality, query/update rates, region, availability target, or compliance requirements were supplied, so exact monthly costs cannot be calculated.",
+        "Qdrant publishes resource-based pricing but no single universal paid rate on the consulted page; its calculator depends on cluster configuration.",
+        "The consulted Chroma pages did not clearly document collection-level RBAC comparable to Qdrant's granular keys; this missing evidence should be resolved directly against the team's access-control requirements.",
+        "Pricing, free-tier limits, plan features, and product capabilities can change after the 2026-09-18 research date. No access failures occurred."
+      ]
+    },
+    {
+      "id": "obs-vector-search-small-app-v1-b2bc79c2f725faf723c30c84",
+      "queryId": "vector-search-small-app-v1",
+      "observedAt": "2026-09-18T07:30:59.499Z",
+      "status": "completed",
+      "model": "gpt-5.6-terra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Qdrant",
+          "url": "https://qdrant.tech/",
+          "reason": "Best default for filter-heavy document search when you want managed Cloud now plus an OSS self-managed path; payload indexes and collection-scoped keys make the security/filtering model comparatively explicit.",
+          "citationUrls": [
+            "https://qdrant.tech/documentation/search/filtering/",
+            "https://qdrant.tech/documentation/security/",
+            "https://qdrant.tech/pricing/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Pinecone",
+          "url": "https://www.pinecone.io/",
+          "reason": "Best managed-first choice for a small team prioritizing low operational overhead, organization/project access management, and predictable service ownership boundaries.",
+          "citationUrls": [
+            "https://www.pinecone.io/pricing/",
+            "https://docs.pinecone.io/guides/organizations/understanding-organizations",
+            "https://docs.pinecone.io/guides/projects/manage-project-members"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Chroma",
+          "url": "https://www.trychroma.com/",
+          "reason": "Best prototype/open-source-portability option, provided the team is willing to secure a self-hosted deployment itself or use Chroma Cloud.",
+          "citationUrls": [
+            "https://docs.trychroma.com/docs/querying-collections/metadata-filtering",
+            "https://docs.trychroma.com/cloud",
+            "https://www.trychroma.com/pricing",
+            "https://docs.trychroma.com/reference/server-env-vars"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://qdrant.tech/documentation/search/filtering/",
+          "title": "Qdrant Filtering"
+        },
+        {
+          "url": "https://qdrant.tech/documentation/security/",
+          "title": "Qdrant Security & Access Control"
+        },
+        {
+          "url": "https://qdrant.tech/pricing/",
+          "title": "Qdrant Cloud Pricing"
+        },
+        {
+          "url": "https://www.pinecone.io/pricing/",
+          "title": "Pinecone Pricing"
+        },
+        {
+          "url": "https://docs.pinecone.io/guides/organizations/understanding-organizations",
+          "title": "Pinecone: Understanding Organizations"
+        },
+        {
+          "url": "https://docs.pinecone.io/guides/projects/manage-project-members",
+          "title": "Pinecone: Manage Project Members"
+        },
+        {
+          "url": "https://docs.trychroma.com/docs/querying-collections/metadata-filtering",
+          "title": "Chroma Metadata Filtering"
+        },
+        {
+          "url": "https://docs.trychroma.com/cloud",
+          "title": "Chroma Cloud"
+        },
+        {
+          "url": "https://www.trychroma.com/pricing",
+          "title": "Chroma Pricing"
+        },
+        {
+          "url": "https://docs.trychroma.com/reference/server-env-vars",
+          "title": "Chroma Configuration"
+        }
+      ],
+      "limitations": [
+        "Public web research only; the consulted evidence was primarily vendor documentation and pricing pages, not independent performance testing.",
+        "Pricing is usage-, plan-, region-, and configuration-dependent and may change; a workload-specific estimate was not calculated.",
+        "The search did not establish exhaustive market coverage or independently verify recall, latency, availability, compliance scope, or migration effort.",
+        "Pinecone metadata-filter documentation was not retrieved directly in the available results; its filtering discussion above is limited to the vendor pricing page’s stated namespace/metadata-filter support and should be confirmed against current product documentation during the bake-off."
+      ]
+    },
+    {
+      "id": "obs-vector-search-small-app-v1-5e4eedd4e7f74c5939ced005",
+      "queryId": "vector-search-small-app-v1",
+      "observedAt": "2026-09-18T07:31:40.308Z",
+      "status": "completed",
+      "model": "gpt-5.6-luna",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Qdrant",
+          "url": "https://qdrant.tech/",
+          "reason": "Best overall fit when a small team needs strong metadata filtering plus a credible path between OSS, managed, hybrid and private deployments; access control and scaling options are explicit in the consulted documentation.",
+          "citationUrls": [
+            "https://qdrant.tech/documentation/security/",
+            "https://qdrant.tech/pricing/",
+            "https://qdrant.tech/documentation/cloud/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Chroma",
+          "url": "https://www.trychroma.com/",
+          "reason": "Best for the fastest low-friction prototype: open-source/local operation, built-in document and metadata retrieval, and a usage-priced cloud option; production access-control depth needs confirmation for the team's requirements.",
+          "citationUrls": [
+            "https://docs.trychroma.com/docs/overview/introduction",
+            "https://www.trychroma.com/pricing",
+            "https://docs.trychroma.com/docs/cli/login"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Pinecone",
+          "url": "https://www.pinecone.io/",
+          "reason": "Best when minimizing database operations is the priority and the team can accept managed-service pricing, tier minimums and less self-hosting flexibility; its documented enterprise security controls are comparatively explicit.",
+          "citationUrls": [
+            "https://www.pinecone.io/pricing/",
+            "https://docs.pinecone.io/guides/operations/moving-to-production"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://qdrant.tech/documentation/security/",
+          "title": "Qdrant Security & Access Control"
+        },
+        {
+          "url": "https://qdrant.tech/pricing/",
+          "title": "Qdrant Cloud Pricing"
+        },
+        {
+          "url": "https://qdrant.tech/documentation/cloud/",
+          "title": "Qdrant Managed Cloud"
+        },
+        {
+          "url": "https://docs.trychroma.com/docs/overview/introduction",
+          "title": "Chroma Introduction"
+        },
+        {
+          "url": "https://www.trychroma.com/pricing",
+          "title": "Chroma Cloud Pricing"
+        },
+        {
+          "url": "https://docs.trychroma.com/docs/cli/login",
+          "title": "Chroma CLI Login and API Keys"
+        },
+        {
+          "url": "https://www.pinecone.io/pricing/",
+          "title": "Pinecone Pricing"
+        },
+        {
+          "url": "https://docs.pinecone.io/guides/operations/moving-to-production",
+          "title": "Pinecone Production Checklist"
+        }
+      ],
+      "limitations": [
+        "This is public-web documentation research, not an independently run benchmark, security audit, or total-cost model.",
+        "Pricing, plan names and feature gates can change; the cited pages were consulted on 2026-09-18.",
+        "The public Chroma material consulted documents API keys and team/database concepts but did not establish a complete RBAC/SSO matrix.",
+        "Embedding-model, reranking, network egress, backups, observability and operator labor can materially change total cost.",
+        "The search was limited to the cited public pages and is not exhaustive market coverage."
+      ]
+    },
+    {
+      "id": "obs-research-api-citations-v1-d91862713e70d4b6786d7b91",
+      "queryId": "research-api-citations-v1",
+      "observedAt": "2026-09-18T07:32:19.475Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Exa",
+          "url": "https://exa.ai/docs/reference/answer",
+          "reason": "First choice for a documented search-and-answer endpoint returning explicit citation objects, with search/content endpoints available for custom synthesis.",
+          "citationUrls": [
+            "https://exa.ai/docs/reference/answer",
+            "https://exa.ai/docs/reference/search",
+            "https://exa.ai/docs/admin/pricing"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Tavily",
+          "url": "https://docs.tavily.com/documentation/api-reference/endpoint/search",
+          "reason": "Second choice for search evidence and selective URL extraction feeding an app-controlled answer and citation pipeline.",
+          "citationUrls": [
+            "https://docs.tavily.com/documentation/api-reference/endpoint/search",
+            "https://docs.tavily.com/documentation/api-reference/endpoint/extract",
+            "https://docs.tavily.com/documentation/api-credits"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Firecrawl",
+          "url": "https://docs.firecrawl.dev/features/search",
+          "reason": "Third choice for this answer app, but the preferred fit when configurable page extraction and search-then-scrape workflows dominate requirements.",
+          "citationUrls": [
+            "https://docs.firecrawl.dev/features/search",
+            "https://www.firecrawl.dev/pricing"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://exa.ai/docs/reference/search",
+          "title": "Exa Search API reference"
+        },
+        {
+          "url": "https://exa.ai/docs/reference/answer",
+          "title": "Exa Answer API reference"
+        },
+        {
+          "url": "https://exa.ai/docs/admin/pricing",
+          "title": "Exa Pricing"
+        },
+        {
+          "url": "https://docs.tavily.com/documentation/api-reference/endpoint/search",
+          "title": "Tavily Search API reference"
+        },
+        {
+          "url": "https://docs.tavily.com/documentation/api-reference/endpoint/extract",
+          "title": "Tavily Extract API reference"
+        },
+        {
+          "url": "https://docs.tavily.com/documentation/api-credits",
+          "title": "Tavily Credits & Pricing"
+        },
+        {
+          "url": "https://docs.firecrawl.dev/features/search",
+          "title": "Firecrawl Search documentation"
+        },
+        {
+          "url": "https://www.firecrawl.dev/pricing",
+          "title": "Firecrawl Pricing"
+        }
+      ],
+      "limitations": [
+        "Public web research used OpenAI live search with unrestricted discovery, followed by official documentation reads. Coverage is limited to the three requested services and is not an exhaustive market survey.",
+        "No vendor APIs were executed. Search relevance, extraction success, latency, freshness and citation correctness were not independently verified.",
+        "Search results included older Exa pricing and conflicting Firecrawl material; the comparison prioritizes current official pricing pages. Prices and plan terms can change.",
+        "The consulted Tavily Search and Firecrawl Search/Scrape documentation does not establish claim-level citation mappings; this is not a claim that their other products lack citation features.",
+        "No page access failures occurred. Missing evidence includes controlled tests on the app's actual questions and production billing observations."
+      ]
+    },
+    {
+      "id": "obs-research-api-citations-v1-b2ed02cb734a0748923ae0d1",
+      "queryId": "research-api-citations-v1",
+      "observedAt": "2026-09-18T07:32:41.181Z",
+      "status": "completed",
+      "model": "gpt-5.6-sol",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Tavily",
+          "url": "https://www.tavily.com/product",
+          "reason": "Best default for a quick search-to-answer integration: optional answers, source URLs, snippets and raw content are available, with low-cost selective extraction.",
+          "citationUrls": [
+            "https://help.tavily.com/articles/4840311948-tavily-search-api",
+            "https://help.tavily.com/articles/8721959612-what-is-the-tavily-extract-api",
+            "https://help.tavily.com/articles/8816424538-pricing"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Exa",
+          "url": "https://exa.ai/",
+          "reason": "Best for structured grounding because synthesized outputs can include field-level URL/title citations and confidence, with explicit endpoint pricing.",
+          "citationUrls": [
+            "https://exa.ai/docs/reference/search-api-guide-for-coding-agents",
+            "https://exa.ai/pricing"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Firecrawl",
+          "url": "https://www.firecrawl.dev/",
+          "reason": "Best extraction-first choice: strong scrape/crawl formats and search-plus-scrape, but ordinary responses require your app to synthesize answers and map citations.",
+          "citationUrls": [
+            "https://github.com/firecrawl/firecrawl-docs/blob/main/billing.mdx",
+            "https://docs.firecrawl.dev/quickstarts/dotnet",
+            "https://www.firecrawl.dev/crawl"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://help.tavily.com/articles/4840311948-tavily-search-api",
+          "title": "What is the Tavily Search API?"
+        },
+        {
+          "url": "https://help.tavily.com/articles/8721959612-what-is-the-tavily-extract-api",
+          "title": "What is the Tavily Extract API?"
+        },
+        {
+          "url": "https://help.tavily.com/articles/8816424538-pricing",
+          "title": "Tavily Pricing"
+        },
+        {
+          "url": "https://exa.ai/docs/reference/search-api-guide-for-coding-agents",
+          "title": "Exa Search API Reference"
+        },
+        {
+          "url": "https://exa.ai/pricing",
+          "title": "Exa API Pricing"
+        },
+        {
+          "url": "https://github.com/firecrawl/firecrawl-docs/blob/main/billing.mdx",
+          "title": "Firecrawl Billing Documentation"
+        },
+        {
+          "url": "https://docs.firecrawl.dev/quickstarts/dotnet",
+          "title": "Firecrawl .NET Quickstart"
+        },
+        {
+          "url": "https://www.firecrawl.dev/crawl",
+          "title": "Firecrawl Crawling API and Pricing"
+        }
+      ],
+      "limitations": [
+        "This is a documentation-based comparison, not a live vendor API execution, latency test, retrieval-quality benchmark or independent verification of product performance.",
+        "Pricing and product behavior can change; taxes, enterprise discounts, rate limits, model-token costs and optional feature surcharges are not normalized here.",
+        "Tavily's public help pricing page was last updated May 28, 2025, and its Extract article March 10, 2025; newer dashboard-only terms may differ.",
+        "Search did not surface an official Tavily page specifying every Search-mode credit multiplier, so this answer does not calculate a per-search Tavily dollar total.",
+        "Firecrawl's plan examples are annual-billing rates and should not be interpreted as pure pay-as-you-go prices; actual cost depends heavily on scrape options and selected pages.",
+        "No exhaustive market coverage is claimed; the scope was limited to the three named services and publicly accessible pages returned by live web search."
+      ]
+    },
+    {
+      "id": "obs-research-api-citations-v1-84ca12339e6f34992677b06d",
+      "queryId": "research-api-citations-v1",
+      "observedAt": "2026-09-18T07:33:19.007Z",
+      "status": "completed",
+      "model": "gpt-5.6-terra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Tavily",
+          "url": "https://www.tavily.com/product",
+          "reason": "Recommended first for source-backed answers because its search is paired with explicit citation claims and separate extraction for fuller page content; published PAYG is credit-based.",
+          "citationUrls": [
+            "https://www.tavily.com/product",
+            "https://help.tavily.com/articles/3960993389-does-tavily-search-api-provide-citations-for-its-results",
+            "https://help.tavily.com/articles/8816424538-pricing"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Exa",
+          "url": "https://exa.ai/docs/search/best-practices",
+          "reason": "Recommended second for tunable search plus separately metered highlights/full contents and documented grounded outputs with citations.",
+          "citationUrls": [
+            "https://exa.ai/docs/search/best-practices",
+            "https://exa.ai/pricing"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Firecrawl",
+          "url": "https://github.com/firecrawl/firecrawl-docs/blob/main/billing.mdx",
+          "reason": "Recommended third when page scraping/crawling is central; its credit model makes search and enriched extraction costs explicit, while application-level answer citations need more assembly.",
+          "citationUrls": [
+            "https://github.com/firecrawl/firecrawl-docs/blob/main/billing.mdx",
+            "https://docs.firecrawl.dev/fr/use-cases/deep-research"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.tavily.com/product",
+          "title": "Tavily product overview"
+        },
+        {
+          "url": "https://help.tavily.com/articles/3960993389-does-tavily-search-api-provide-citations-for-its-results",
+          "title": "Does Tavily Search API provide citations for its results?"
+        },
+        {
+          "url": "https://help.tavily.com/articles/8816424538-pricing",
+          "title": "Tavily pricing"
+        },
+        {
+          "url": "https://exa.ai/docs/search/best-practices",
+          "title": "Exa Search best practices"
+        },
+        {
+          "url": "https://exa.ai/pricing",
+          "title": "Exa API pricing"
+        },
+        {
+          "url": "https://github.com/firecrawl/firecrawl-docs/blob/main/billing.mdx",
+          "title": "Firecrawl billing"
+        },
+        {
+          "url": "https://docs.firecrawl.dev/fr/use-cases/deep-research",
+          "title": "Firecrawl deep research use case"
+        }
+      ],
+      "limitations": [
+        "Public documentation and pricing were consulted; no accounts, API calls, transactional actions, or independent performance tests were performed.",
+        "Tavily's consulted public pricing page gives a PAYG price per credit but not endpoint credit consumption, so per-query or per-answer costs could not be normalized.",
+        "Firecrawl's dollar cost per credit varies by plan and its PAYG requires a paid self-serve plan; its pricing is therefore not directly comparable to Exa's published per-request figures.",
+        "The Firecrawl research page available through search was a French-language documentation page; its claims were used only for the stated source-attribution workflow.",
+        "Documentation claims do not independently verify retrieval coverage, freshness, citation correctness, latency, extraction success on difficult sites, or total production cost; this is not exhaustive market coverage."
+      ]
+    },
+    {
+      "id": "obs-research-api-citations-v1-ce1ef8a8ff014c1971ac470c",
+      "queryId": "research-api-citations-v1",
+      "observedAt": "2026-09-18T07:33:42.262Z",
+      "status": "completed",
+      "model": "gpt-5.6-luna",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Tavily",
+          "url": "https://www.tavily.com/product",
+          "reason": "Best default for a source-backed answer app because Search exposes source URLs, snippets/content, scores, optional raw page content, and an optional answer, while Extract provides a clear second stage for selected URLs.",
+          "citationUrls": [
+            "https://www.tavily.com/product",
+            "https://github.com/tavily-ai/skills/blob/main/skills/tavily-best-practices/references/search.md",
+            "https://help.tavily.com/articles/8721959612-what-is-the-tavily-extract-api",
+            "https://help.tavily.com/articles/8816424538-pricing"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Exa",
+          "url": "https://exa.ai/docs/reference/search-api-guide-for-coding-agents",
+          "reason": "Strong choice when semantic search and compact, query-focused evidence are priorities: Search can return highlights, text, summaries, and URLs, while Contents handles known-page extraction.",
+          "citationUrls": [
+            "https://exa.ai/docs/reference/search-api-guide-for-coding-agents",
+            "https://exa.ai/docs/reference/contents-api-guide",
+            "https://exa.ai/pricing"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Firecrawl",
+          "url": "https://github.com/firecrawl/firecrawl-docs/blob/main/billing.mdx",
+          "reason": "Best when extraction, crawling, PDFs, mapping, or structured page data—not discovery alone—is the central workload; Search can optionally be paired with scraping.",
+          "citationUrls": [
+            "https://github.com/firecrawl/firecrawl-docs/blob/main/billing.mdx",
+            "https://www.firecrawl.dev/crawl"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.tavily.com/product",
+          "title": "Tavily product overview"
+        },
+        {
+          "url": "https://github.com/tavily-ai/skills/blob/main/skills/tavily-best-practices/references/search.md",
+          "title": "Tavily Search response and parameters"
+        },
+        {
+          "url": "https://help.tavily.com/articles/8721959612-what-is-the-tavily-extract-api",
+          "title": "What is the Tavily Extract API?"
+        },
+        {
+          "url": "https://help.tavily.com/articles/8816424538-pricing",
+          "title": "Tavily pricing"
+        },
+        {
+          "url": "https://exa.ai/docs/reference/search-api-guide-for-coding-agents",
+          "title": "Exa Search API reference"
+        },
+        {
+          "url": "https://exa.ai/docs/reference/contents-api-guide",
+          "title": "Exa Contents API"
+        },
+        {
+          "url": "https://exa.ai/pricing",
+          "title": "Exa API pricing"
+        },
+        {
+          "url": "https://github.com/firecrawl/firecrawl-docs/blob/main/billing.mdx",
+          "title": "Firecrawl billing"
+        },
+        {
+          "url": "https://www.firecrawl.dev/crawl",
+          "title": "Firecrawl crawl and pricing overview"
+        }
+      ],
+      "limitations": [
+        "I consulted public documentation and pricing pages, not live API responses or an independent production benchmark.",
+        "Pricing and features can change; verify before purchase.",
+        "Search coverage, latency, answer quality, and citation correctness were not independently tested.",
+        "Firecrawl's credit model varies with endpoint and options, so there is no single directly comparable per-query cost without a workload assumption.",
+        "Tavily's accessible pricing page was last updated May 28, 2025; current pricing should be rechecked."
+      ]
+    },
+    {
+      "id": "obs-sentry-posthog-product-team-v1-5fd570a27ea209166f6eea20",
+      "queryId": "sentry-posthog-product-team-v1",
+      "observedAt": "2026-09-18T07:34:39.780Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Sentry",
+          "url": "https://sentry.io/pricing/",
+          "reason": "Use alone when diagnosing production failures is the priority and product funnels are not yet needed.",
+          "citationUrls": [
+            "https://sentry.io/product/session-replay/",
+            "https://docs.sentry.io/platforms/javascript/guides/hono/sourcemaps/troubleshooting_js",
+            "https://sentry.io/pricing/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "PostHog",
+          "url": "https://posthog.com/",
+          "reason": "Use alone for conversion funnels and behavioral replay, evaluating its native error tracking before adding another tool.",
+          "citationUrls": [
+            "https://posthog.com/docs/product-analytics/funnels",
+            "https://posthog.com/docs/error-tracking",
+            "https://posthog.com/pricing"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Sentry + PostHog",
+          "url": "https://posthog.com/docs/product-analytics/funnels",
+          "reason": "Use both when product drop-off analysis and dedicated technical diagnosis justify separate workflows, capture controls, and bills.",
+          "citationUrls": [
+            "https://posthog.com/docs/product-analytics/funnels",
+            "https://sentry.io/product/session-replay/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://sentry.io/product/session-replay/",
+          "title": "Sentry Session Replay"
+        },
+        {
+          "url": "https://docs.sentry.io/platforms/javascript/guides/hono/sourcemaps/troubleshooting_js",
+          "title": "Sentry: Troubleshooting Source Maps"
+        },
+        {
+          "url": "https://posthog.com/docs/product-analytics/funnels",
+          "title": "PostHog: Funnels"
+        },
+        {
+          "url": "https://posthog.com/docs/error-tracking",
+          "title": "PostHog: Error tracking"
+        },
+        {
+          "url": "https://posthog.com/docs/libraries/js",
+          "title": "PostHog: JavaScript web SDK"
+        },
+        {
+          "url": "https://posthog.com/docs/session-replay/privacy",
+          "title": "PostHog: Session replay privacy controls"
+        },
+        {
+          "url": "https://www.sentry.help/en/articles/13964378-sentry-s-eu-region-faq",
+          "title": "Sentry’s EU region FAQ"
+        },
+        {
+          "url": "https://sentry.io/pricing/",
+          "title": "Sentry pricing"
+        },
+        {
+          "url": "https://posthog.com/pricing",
+          "title": "PostHog pricing"
+        },
+        {
+          "url": "https://posthog.com/",
+          "title": "PostHog: Published starting usage rates"
+        }
+      ],
+      "limitations": [
+        "Public-web research as of September 18, 2026; recommendation order reflects this question, not measured search-engine rank or exhaustive market coverage.",
+        "Vendor documentation supports feature claims; product performance, setup time, SDK compatibility, and capture accuracy were not independently tested.",
+        "Direct reads of Sentry’s general JavaScript SDK, JavaScript replay documentation, and security/legal/PII overview returned internal errors; accessible official product pages, framework documentation, and help material supplied the relevant evidence.",
+        "Actual costs require traffic and capture volumes. PostHog’s exception overage rate and the complete replay/tracing rate schedules were not verified; starting rates are not flat rates at every volume.",
+        "Product-specific retention periods, export/deletion completeness, and self-hosted feature parity were not fully evaluated."
+      ]
+    },
+    {
+      "id": "obs-sentry-posthog-product-team-v1-e8fbe2d3c3e9ed3706050c1b",
+      "queryId": "sentry-posthog-product-team-v1",
+      "observedAt": "2026-09-18T07:35:02.596Z",
+      "status": "completed",
+      "model": "gpt-5.6-sol",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Both Sentry and PostHog",
+          "url": "https://sentry.io/",
+          "reason": "Best when the product has recurring needs for both production error diagnosis and product funnels; assign Sentry to engineering diagnostics and PostHog to behavioral analytics, while avoiding duplicate replay capture.",
+          "citationUrls": [
+            "https://docs.sentry.io/product/issues/issue-details/",
+            "https://posthog.com/",
+            "https://sentry.io/pricing/",
+            "https://posthog.com/pricing"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "PostHog",
+          "url": "https://posthog.com/",
+          "reason": "Best single-tool choice when funnels, activation, adoption and product-context replay dominate, with modest error-tracking requirements and a generous usage-based free tier.",
+          "citationUrls": [
+            "https://posthog.com/",
+            "https://posthog.com/pricing",
+            "https://posthog.com/docs/privacy",
+            "https://github.com/PostHog/posthog.com/blob/master/contents/docs/session-replay/how-to-control-which-sessions-you-record.mdx"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Sentry",
+          "url": "https://sentry.io/",
+          "reason": "Best single-tool choice when grouped exceptions, stack context, traces, release regressions and alerting matter more than formal product analytics funnels.",
+          "citationUrls": [
+            "https://docs.sentry.io/product/issues/issue-details/",
+            "https://sentrydocs.dev/sdk/javascript",
+            "https://www.sentry.help/en/articles/13964404-session-replay-faq-web",
+            "https://sentry.io/pricing/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://docs.sentry.io/product/issues/issue-details/",
+          "title": "Sentry Docs — Issue Details"
+        },
+        {
+          "url": "https://www.sentry.help/en/articles/13964404-session-replay-faq-web",
+          "title": "Sentry Help Center — Session Replay FAQ (Web)"
+        },
+        {
+          "url": "https://sentrydocs.dev/sdk/javascript",
+          "title": "Sentry — JavaScript SDK"
+        },
+        {
+          "url": "https://sentry.io/pricing/",
+          "title": "Sentry — Pricing: Free Developer Plan, Pay as You Grow"
+        },
+        {
+          "url": "https://posthog.com/",
+          "title": "PostHog — Product platform overview"
+        },
+        {
+          "url": "https://posthog.com/pricing",
+          "title": "PostHog pricing — Start free, scale when you need"
+        },
+        {
+          "url": "https://posthog.com/docs/privacy",
+          "title": "PostHog Docs — Privacy compliance"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog.com/blob/master/contents/docs/session-replay/how-to-control-which-sessions-you-record.mdx",
+          "title": "PostHog Docs source — How to control which sessions you record"
+        }
+      ],
+      "limitations": [
+        "This is a recommendation order for this question and evidence, not a general search-engine rank, exhaustive market survey or hands-on benchmark.",
+        "Feature depth, SDK overhead and diagnostic quality were not independently tested against the user's application or traffic profile.",
+        "Pricing was consulted on 2026-09-18 and can change; PostHog's rendered pricing page exposed free allowances but not every per-unit tier in the retrieved text, so no unsupported paid unit rates are stated.",
+        "Sentry's official data-scrubbing documentation URL returned an internal retrieval error; Sentry privacy behavior is therefore supported here by its Help Center replay FAQ and retrieved legal guidance, not that failed page.",
+        "Vendor documentation is first-party evidence and may emphasize favorable capabilities; no account-only settings or contractual enterprise terms were accessed."
+      ]
+    },
+    {
+      "id": "obs-sentry-posthog-product-team-v1-0d38ae443be8c4bd6a56ac02",
+      "queryId": "sentry-posthog-product-team-v1",
+      "observedAt": "2026-09-18T07:35:42.145Z",
+      "status": "completed",
+      "model": "gpt-5.6-terra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Use Sentry only",
+          "url": "https://sentry.io/",
+          "reason": "Best when the near-term job is engineering diagnosis: error issues, trace/replay context, filtering and scrubbing—without adding a separate product-analytics program.",
+          "citationUrls": [
+            "https://www.sentry.help/en/articles/13964404-session-replay-faq-web",
+            "https://docs.sentry.io/product/stats/?promo_name=hp-banner",
+            "https://www.sentry.help/en/articles/13964268-what-are-sentry-s-data-scrubbing-options"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Use PostHog only",
+          "url": "https://posthog.com/",
+          "reason": "Best when the primary questions are activation, conversion and behavior: event funnels and replay sit on one product-data model, while it also supplies error tracking.",
+          "citationUrls": [
+            "https://github.com/PostHog/posthog.com/blob/master/contents/docs/session-replay/index.mdx",
+            "https://github.com/PostHog/posthog/blob/master/README.md",
+            "https://github.com/PostHog/posthog.com/blob/master/contents/docs/privacy/gdpr-compliance.mdx"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Use both, deliberately",
+          "url": "https://sentry.io/",
+          "reason": "Appropriate when Sentry's engineering-focused diagnosis and PostHog's funnels are both active needs; avoid duplicate full-session capture and keep the event/replay sampling and data boundaries explicit.",
+          "citationUrls": [
+            "https://www.sentry.help/en/articles/13964404-session-replay-faq-web",
+            "https://github.com/PostHog/posthog.com/blob/master/contents/docs/session-replay/index.mdx",
+            "https://github.com/PostHog/posthog/blob/master/README.md"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.sentry.help/en/articles/13964404-session-replay-faq-web",
+          "title": "Session Replay FAQ (Web) | Sentry Help Center"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog.com/blob/master/contents/docs/session-replay/index.mdx",
+          "title": "Session Replay | PostHog documentation source"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog/blob/master/README.md",
+          "title": "PostHog README: setup, free tiers, and self-hosting"
+        },
+        {
+          "url": "https://docs.sentry.io/product/stats/?promo_name=hp-banner",
+          "title": "Sentry Stats documentation"
+        },
+        {
+          "url": "https://github.com/PostHog/posthog.com/blob/master/contents/docs/privacy/gdpr-compliance.mdx",
+          "title": "PostHog GDPR compliance documentation source"
+        },
+        {
+          "url": "https://www.sentry.help/en/articles/13964268-what-are-sentry-s-data-scrubbing-options",
+          "title": "Sentry data scrubbing options"
+        }
+      ],
+      "limitations": [
+        "Exact current Sentry price amounts were not available in the consulted public search results; the comparison therefore describes Sentry's quota/PAYG model rather than quoting prices.",
+        "PostHog documentation pages were surfaced as their public GitHub documentation sources; no vendor login or trial was used.",
+        "This is a decision guide from vendor-published documentation, not independent performance testing or exhaustive market coverage."
+      ]
+    },
+    {
+      "id": "obs-sentry-posthog-product-team-v1-cde0b597d2215c9c42cad24a",
+      "queryId": "sentry-posthog-product-team-v1",
+      "observedAt": "2026-09-18T07:36:07.988Z",
+      "status": "completed",
+      "model": "gpt-5.6-luna",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Sentry",
+          "url": "https://sentry.io/",
+          "reason": "Best first choice when production error diagnosis, alerting, stack traces, traces, and issue-linked replay are the primary need.",
+          "citationUrls": [
+            "https://sentrydocs.dev/features/error-monitoring",
+            "https://docs.sentry.io/product/issues/issue-details/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "PostHog",
+          "url": "https://posthog.com/",
+          "reason": "Best first choice when product funnels, cohorts, behavioral analysis, and replay-driven UX investigation are the primary need.",
+          "citationUrls": [
+            "https://posthog.com/",
+            "https://posthog.com/services"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Sentry + PostHog",
+          "url": "https://sentry.io/",
+          "reason": "Best combined option when the team needs both product-level conversion insight and engineering-grade incident diagnosis, with deliberate identity and privacy boundaries.",
+          "citationUrls": [
+            "https://docs.sentry.io/product/issues/issue-details/",
+            "https://posthog.com/services"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://sentrydocs.dev/features/error-monitoring",
+          "title": "Sentry error monitoring documentation"
+        },
+        {
+          "url": "https://docs.sentry.io/product/issues/issue-details/",
+          "title": "Sentry issue details"
+        },
+        {
+          "url": "https://sentrydocs.dev/introduction",
+          "title": "Sentry documentation introduction and setup"
+        },
+        {
+          "url": "https://www.sentry.help/en/articles/13964404-session-replay-faq-web",
+          "title": "Sentry Session Replay FAQ"
+        },
+        {
+          "url": "https://docs.sentry.io/api/organizations/update-an-organization/",
+          "title": "Sentry organization data controls"
+        },
+        {
+          "url": "https://docs.sentry.io/product/stats/",
+          "title": "Sentry usage statistics"
+        },
+        {
+          "url": "https://posthog.com/",
+          "title": "PostHog product analytics and pricing overview"
+        },
+        {
+          "url": "https://posthog.com/services",
+          "title": "PostHog services, setup, and usage-based pricing"
+        },
+        {
+          "url": "https://trust.posthog.com/",
+          "title": "PostHog Trust Center"
+        }
+      ],
+      "limitations": [
+        "Pricing and feature pages are usage-sensitive and can change; verify the live calculators and plan terms for your expected volume.",
+        "Public research did not independently test setup time, replay performance, alert quality, or total cost for this product.",
+        "The comparison relies mainly on vendor documentation and public vendor pages; it is not exhaustive market coverage.",
+        "PostHog’s public pages describe broad data controls and a trust portal, but the exact consent, retention, residency, and self-hosting fit should be checked against the specific deployment and legal requirements."
+      ]
+    },
+    {
+      "id": "obs-client-project-workspace-v1-956d7d1766ed9ab312d530dd",
+      "queryId": "client-project-workspace-v1",
+      "observedAt": "2026-09-18T07:36:45.986Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Basecamp",
+          "url": "https://basecamp.com/pricing",
+          "reason": "First choice for this agency: dedicated client visibility controls and ready-made project tools imply less setup; Studio includes unlimited people for up to ten active projects.",
+          "citationUrls": [
+            "https://basecamp.com/pricing",
+            "https://5.basecamp-help.com/article/1171-permissions",
+            "https://basecamp.com/features"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Notion",
+          "url": "https://www.notion.com/pricing",
+          "reason": "Second choice when customizable documents and databases take priority; Plus supports free unlimited guests, but page structure and inherited permissions require more configuration.",
+          "citationUrls": [
+            "https://www.notion.com/pricing",
+            "https://www.notion.com/help/sharing-and-permissions",
+            "https://costbench.com/software/project-management/notion/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://basecamp.com/pricing",
+          "title": "Basecamp — Pricing"
+        },
+        {
+          "url": "https://5.basecamp-help.com/article/1171-permissions",
+          "title": "Permissions — Basecamp 5 Help"
+        },
+        {
+          "url": "https://www.notion.com/pricing",
+          "title": "Notion — Pricing plans"
+        },
+        {
+          "url": "https://basecamp.com/features",
+          "title": "Basecamp — Features and benefits"
+        },
+        {
+          "url": "https://basecamp.com/rights",
+          "title": "Basecamp — Project management and online collaboration"
+        },
+        {
+          "url": "https://www.notion.com/help/sharing-and-permissions",
+          "title": "Notion — Sharing and permissions"
+        },
+        {
+          "url": "https://costbench.com/software/project-management/notion/",
+          "title": "CostBench — Notion pricing 2026"
+        }
+      ],
+      "limitations": [
+        "Public-web research only, with unrestricted initial discovery; this compares the two requested products and is not exhaustive market coverage or a measured search-engine ranking.",
+        "No accounts or checkout flows were accessed, and product performance, setup time and client usability were not independently tested.",
+        "Notion's main pricing page rendered GBP. Both attempts to request a USD currency URL returned an internal error. USD billing totals use the consulted CostBench comparison; an indexed official pricing-page variant also displayed $10 Plus and $20 Business.",
+        "Basecamp's page lists annual billing for Freelancer, Studio and Pro, but a separate month-to-month price was not established.",
+        "Costs exclude taxes, optional add-ons and discounts. Active project count, storage needs and existing team familiarity were not supplied; these could change the preferred tier or product.",
+        "Older search results contained conflicting Basecamp pricing and Notion guest limits; current official pages were prioritized for plan structure and permissions."
+      ]
+    },
+    {
+      "id": "obs-client-project-workspace-v1-8bdd423c8e910c31c777c8a8",
+      "queryId": "client-project-workspace-v1",
+      "observedAt": "2026-09-18T07:37:07.997Z",
+      "status": "completed",
+      "model": "gpt-5.6-sol",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Basecamp Studio",
+          "url": "https://basecamp.com/pricing",
+          "reason": "Best overall fit: client-private defaults, explicit per-item client visibility, reusable project templates, and a fixed $59/month annual-billing price for up to 10 active projects with unlimited staff and client users.",
+          "citationUrls": [
+            "https://basecamp.com/pricing",
+            "https://5.basecamp-help.com/article/1081-working-with-clients",
+            "https://5.basecamp-help.com/article/1082-what-clients-can-see-and-do"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Notion Plus",
+          "url": "https://www.notion.com/pricing?gspk=bGF1cmlsaW5uYW1hZTk2MjA&gsxid=220gYKKxOI3UTX&ps_partner_key=bGF1cmlsaW5uYW1hZTk2MjA&ps_xid=220gYKKxOI3UTX&pscd=affiliate.notion.so",
+          "reason": "Best when flexible documents and databases outweigh setup effort: five staff are $50/month annually or $60/month monthly, clients can be free page-level guests, and permissions are granular but require careful page structure and inheritance management.",
+          "citationUrls": [
+            "https://www.notion.com/pricing?gspk=bGF1cmlsaW5uYW1hZTk2MjA&gsxid=220gYKKxOI3UTX&ps_partner_key=bGF1cmlsaW5uYW1hZTk2MjA&ps_xid=220gYKKxOI3UTX&pscd=affiliate.notion.so",
+            "https://www.notion.com/sv/md/creators",
+            "https://www.notion.com/help/billing",
+            "https://www.notion.com/help/sharing-and-permissions",
+            "https://www.notion.com/en-gb/help/whos-who-in-a-workspace"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://basecamp.com/pricing",
+          "title": "Basecamp — Pricing"
+        },
+        {
+          "url": "https://5.basecamp-help.com/article/1081-working-with-clients",
+          "title": "Working with Clients — Basecamp 5 Help"
+        },
+        {
+          "url": "https://5.basecamp-help.com/article/1082-what-clients-can-see-and-do",
+          "title": "What Clients can see and do — Basecamp 5 Help"
+        },
+        {
+          "url": "https://www.notion.com/pricing?gspk=bGF1cmlsaW5uYW1hZTk2MjA&gsxid=220gYKKxOI3UTX&ps_partner_key=bGF1cmlsaW5uYW1hZTk2MjA&ps_xid=220gYKKxOI3UTX&pscd=affiliate.notion.so",
+          "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise"
+        },
+        {
+          "url": "https://www.notion.com/sv/md/creators",
+          "title": "Notion for Creators"
+        },
+        {
+          "url": "https://www.notion.com/help/billing",
+          "title": "Manage billing in Notion — Notion Help Center"
+        },
+        {
+          "url": "https://www.notion.com/help/sharing-and-permissions",
+          "title": "Sharing & permissions settings in Notion — Notion Help Center"
+        },
+        {
+          "url": "https://www.notion.com/en-gb/help/whos-who-in-a-workspace",
+          "title": "Who’s who in a Notion workspace — Notion Help Centre"
+        }
+      ],
+      "limitations": [
+        "This is a point-in-time public-web comparison dated 2026-09-18, not exhaustive market coverage; prices, plan availability, taxes, and features may change.",
+        "Basecamp's pricing page labels Studio at $59/month and indicates annual billing, but the retrieved page did not expose the total annual charge or a monthly-billing alternative.",
+        "Notion's pricing page displayed $10 per seat/month with annual pricing selected; the $12 monthly rate came from another official Notion page rather than the pricing table's monthly toggle.",
+        "Setup effort is an evidence-based qualitative judgment from each product's documented permission model and templates; no hands-on deployment or independent performance testing was conducted.",
+        "Actual client count, active-project count, storage needs, taxes, discounts, and required integrations were not provided, so final cost and plan fit may differ. No access failures occurred for the cited pages."
+      ]
+    },
+    {
+      "id": "obs-client-project-workspace-v1-c5eba1c1a480c367d32c9f5b",
+      "queryId": "client-project-workspace-v1",
+      "observedAt": "2026-09-18T07:37:29.403Z",
+      "status": "completed",
+      "model": "gpt-5.6-terra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Basecamp",
+          "url": "https://basecamp.com/pricing",
+          "reason": "Recommended for a simple agency/client workspace: its dedicated Client role sees only explicitly visible items, and Studio supports unlimited users with up to 10 active projects for $59/month.",
+          "citationUrls": [
+            "https://5.basecamp-help.com/article/1171-permissions",
+            "https://basecamp.com/pricing"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Notion",
+          "url": "https://www.notion.com/pricing",
+          "reason": "Best alternative when the agency values a tailored client portal and page-level view/comment/edit permissions; Plus is $10 per member/month, or $50/month for five staff, with free unlimited guests.",
+          "citationUrls": [
+            "https://www.notion.com/help/guides/understanding-notions-sharing-settings",
+            "https://www.notion.com/pricing"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://basecamp.com/pricing",
+          "title": "Basecamp Pricing"
+        },
+        {
+          "url": "https://5.basecamp-help.com/article/1171-permissions",
+          "title": "Permissions - Basecamp 5 Help"
+        },
+        {
+          "url": "https://www.notion.com/pricing",
+          "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise."
+        },
+        {
+          "url": "https://www.notion.com/help/guides/understanding-notions-sharing-settings",
+          "title": "Understanding Notion’s sharing settings"
+        }
+      ],
+      "limitations": [
+        "Research used public, official product pages discovered through live web search; no accounts, trials, or vendor APIs were used.",
+        "Pricing is the USD pricing displayed on the consulted pages and may change, exclude taxes, or vary by billing option and region. Basecamp’s page states paid packages have annual billing; Notion’s page advertises up to 20% savings for annual payment but the exact monthly-billed five-seat total was not established from the consulted content.",
+        "Setup-effort comparison is an evidence-based inference from the documented access models, not an independently measured implementation benchmark. This is not exhaustive market coverage or independently verified product performance."
+      ]
+    },
+    {
+      "id": "obs-client-project-workspace-v1-5ed9d7116569b2d68737b4f5",
+      "queryId": "client-project-workspace-v1",
+      "observedAt": "2026-09-18T07:37:52.818Z",
+      "status": "completed",
+      "model": "gpt-5.6-luna",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Basecamp",
+          "url": "https://basecamp.com/pricing",
+          "reason": "Best default for client-facing project plans: its pricing page describes fixed pricing with no per-user fees, client/guest inclusion, and project limits; Basecamp help documents describe client views that expose only what the team makes visible.",
+          "citationUrls": [
+            "https://basecamp.com/pricing",
+            "https://5.basecamp-help.com/article/1082-what-clients-can-see-and-do",
+            "https://5.basecamp-help.com/article/1171-permissions"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Notion",
+          "url": "https://www.notion.com/pricing",
+          "reason": "Best when customized documents, databases, and page-level permissions are the priority: official pricing lists Plus at $10 per seat/month and Business at $20, while official help explains guest sharing and permission levels. The tradeoff is more setup and governance for a complete client-project workflow.",
+          "citationUrls": [
+            "https://www.notion.com/pricing",
+            "https://www.notion.com/en-gb/help/sharing-and-permissions"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://basecamp.com/pricing",
+          "title": "Basecamp Pricing"
+        },
+        {
+          "url": "https://5.basecamp-help.com/article/1082-what-clients-can-see-and-do",
+          "title": "What Clients can see and do — Basecamp 5 Help"
+        },
+        {
+          "url": "https://5.basecamp-help.com/article/1171-permissions",
+          "title": "Permissions — Basecamp 5 Help"
+        },
+        {
+          "url": "https://www.notion.com/pricing",
+          "title": "Notion Pricing Plans"
+        },
+        {
+          "url": "https://www.notion.com/en-gb/help/sharing-and-permissions",
+          "title": "Sharing & permissions settings in Notion"
+        }
+      ],
+      "limitations": [
+        "I used official public pricing and help pages; I did not run hands-on trials or independently verify billing at checkout.",
+        "Setup-effort judgments are practical inferences from documented product structure and sharing models, not timed tests.",
+        "Pricing can vary by billing cadence, taxes, currency, or later plan changes; the comparison uses the public prices shown on the consulted pages.",
+        "This is not an exhaustive survey of all plans, integrations, or competing products."
+      ]
+    },
+    {
+      "id": "obs-team-chat-history-v1-8f352c9d588c3b7872348557",
+      "queryId": "team-chat-history-v1",
+      "observedAt": "2026-09-18T07:39:02.627Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Pumble",
+          "url": "https://pumble.com/pricing",
+          "reason": "Best value in this shortlist: unlimited searchable history even free, with restricted guest access on Business at $39.90 per month for ten employees billed annually.",
+          "citationUrls": [
+            "https://pumble.com/pricing"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Zulip Cloud",
+          "url": "https://zulip.com/plans/",
+          "reason": "Good for guest collaboration and recoverable older history: free includes guests and 10,000 searchable messages; Standard unlocks retained older messages and includes 50 guests for ten employees.",
+          "citationUrls": [
+            "https://zulip.com/plans/",
+            "https://zulip.com/help/zulip-cloud-billing"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Slack",
+          "url": "https://slack.com/pricing",
+          "reason": "Good when app integrations justify a higher price: Pro provides unlimited history and single-channel guests; Free hides history after 90 days and deletes data older than one year.",
+          "citationUrls": [
+            "https://slack.com/pricing",
+            "https://slack.com/help/articles/27204752526611-Feature-limitations-on-the-free-version-of-Slack",
+            "https://slack.com/help/articles/202518103-Understand-guest-roles-in-Slack"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://pumble.com/pricing",
+          "title": "Pumble plans and pricing"
+        },
+        {
+          "url": "https://zulip.com/plans/",
+          "title": "Zulip plans and pricing"
+        },
+        {
+          "url": "https://zulip.com/help/zulip-cloud-billing",
+          "title": "Zulip Cloud billing"
+        },
+        {
+          "url": "https://slack.com/pricing",
+          "title": "Slack pricing plans"
+        },
+        {
+          "url": "https://slack.com/help/articles/27204752526611-Feature-limitations-on-the-free-version-of-Slack",
+          "title": "Feature limitations on the free version of Slack"
+        },
+        {
+          "url": "https://slack.com/help/articles/202518103-Understand-guest-roles-in-Slack",
+          "title": "Understand guest roles in Slack"
+        }
+      ],
+      "limitations": [
+        "Public web research checked September 18, 2026. Discovery was not domain-restricted, but this is a focused three-product shortlist, not exhaustive market coverage or a measured search-engine ranking.",
+        "Costs assume ten paid employees and guests within the stated free allowances. Existing software subscriptions, required integrations, and guest channel needs were not supplied and could change the recommendation.",
+        "Vendor documentation establishes advertised terms; search quality, reliability, actual retention behavior, and guest onboarding were not independently tested. Unlimited history does not override manual deletion or configured retention policies.",
+        "Some Slack pages initially redirected to Japanese; English versions were subsequently consulted. Opening Slack’s Usage limits for free workspaces page returned an internal error; its separate free-plan limitations page and pricing page supplied the relevant evidence."
+      ]
+    },
+    {
+      "id": "obs-team-chat-history-v1-f539461135d237eb06cdc5b8",
+      "queryId": "team-chat-history-v1",
+      "observedAt": "2026-09-18T07:39:04.952Z",
+      "status": "completed",
+      "model": "gpt-5.6-terra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Slack Pro",
+          "url": "https://slack.com/pricing",
+          "reason": "Unlimited searchable history plus group external messages; free single-channel guests suit occasional project guests.",
+          "citationUrls": [
+            "https://slack.com/pricing",
+            "https://slack.com/help/articles/27204752526611-Feature-limitations-on-the-free-version-of-Slack",
+            "https://slack.com/help/articles/202518103-Understand-guest-roles-in-Slack"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Google Chat with Google Workspace Business Starter",
+          "url": "https://workspace.google.com/pricing.html",
+          "reason": "Lowest suite-based annual price found; supports external direct chats, but external spaces require Business Standard.",
+          "citationUrls": [
+            "https://workspace.google.com/pricing.html",
+            "https://knowledge.workspace.google.com/admin/getting-started/editions/compare-business-editions",
+            "https://knowledge.workspace.google.com/admin/chat/chatting-with-external-users?authuser=002"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Microsoft Teams with Microsoft 365 Business Basic",
+          "url": "https://www.microsoft.com/en-us/microsoft-365/business/microsoft-365-business-basic?msockid=153d96ff34386cb237bf800735886d67",
+          "reason": "Good fit for a Microsoft 365 shop: business chat, meetings, files, and supported guest access at the cited annual price.",
+          "citationUrls": [
+            "https://www.microsoft.com/en-us/microsoft-365/business/microsoft-365-business-basic?msockid=153d96ff34386cb237bf800735886d67",
+            "https://www.microsoft.com/en-us/microsoft-teams/compare-microsoft-teams-options",
+            "https://learn.microsoft.com/en-us/microsoftteams/guest-access"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://slack.com/pricing",
+          "title": "Slack pricing"
+        },
+        {
+          "url": "https://slack.com/help/articles/27204752526611-Feature-limitations-on-the-free-version-of-Slack",
+          "title": "Slack free-plan feature limitations"
+        },
+        {
+          "url": "https://slack.com/help/articles/202518103-Understand-guest-roles-in-Slack",
+          "title": "Slack guest roles"
+        },
+        {
+          "url": "https://workspace.google.com/pricing.html",
+          "title": "Google Workspace pricing"
+        },
+        {
+          "url": "https://knowledge.workspace.google.com/admin/getting-started/editions/compare-business-editions",
+          "title": "Google Workspace Business edition comparison"
+        },
+        {
+          "url": "https://knowledge.workspace.google.com/admin/chat/chatting-with-external-users?authuser=002",
+          "title": "Google Chat external users and guest accounts"
+        },
+        {
+          "url": "https://www.microsoft.com/en-us/microsoft-365/business/microsoft-365-business-basic?msockid=153d96ff34386cb237bf800735886d67",
+          "title": "Microsoft 365 Business Basic pricing"
+        },
+        {
+          "url": "https://www.microsoft.com/en-us/microsoft-teams/compare-microsoft-teams-options",
+          "title": "Microsoft Teams business plan comparison"
+        },
+        {
+          "url": "https://learn.microsoft.com/en-us/microsoftteams/guest-access",
+          "title": "Microsoft Teams guest access"
+        },
+        {
+          "url": "https://support.microsoft.com/en-us/teams/free/get-started/learn-more-about-subscriptions-for-microsoft-teams-free",
+          "title": "Microsoft Teams Free subscriptions"
+        }
+      ],
+      "limitations": [
+        "Prices are public US list prices consulted on September 18, 2026; promotions, taxes, billing route, and Teams availability can change the actual quote.",
+        "This is targeted public-web research, not exhaustive market coverage or independent product testing.",
+        "The consulted Microsoft sources did not provide a clear fixed older-message expiry for Teams Free or a complete retention-policy comparison; confirm tenant retention and guest settings before rollout.",
+        "Google Chat external-space availability differs by Workspace edition and organization settings; external organizations’ policies can also prevent a conversation."
+      ]
+    },
+    {
+      "id": "obs-team-chat-history-v1-da48098b1584821f3f4ab61b",
+      "queryId": "team-chat-history-v1",
+      "observedAt": "2026-09-18T07:40:12.571Z",
+      "status": "completed",
+      "model": "gpt-5.6-luna",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Slack",
+          "url": "https://slack.com/pricing",
+          "reason": "Best standalone fit for a ten-person business that prioritizes searchable team conversation and controlled external collaboration: paid Pro has unlimited searchable history and supports group external messages, while free Slack is limited to 90 days and deletes data older than one year.",
+          "citationUrls": [
+            "https://slack.com/pricing",
+            "https://slack.com/help/articles/27204752526611-Feature-limitations-on-the-free-version-of-Slack",
+            "https://slack.com/help/articles/202518103-Understand-guest-roles-in-Slack"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Microsoft Teams",
+          "url": "https://www.microsoft.com/en-us/microsoft-teams/compare-microsoft-teams-business-options",
+          "reason": "Best when the business already uses Microsoft 365: Teams Essentials is $4/user/month annually and Business Basic is $7/user/month annually, with business guest access and retention-policy controls rather than a basic 90-day history cutoff.",
+          "citationUrls": [
+            "https://www.microsoft.com/en-us/microsoft-teams/compare-microsoft-teams-business-options",
+            "https://learn.microsoft.com/en-us/microsoftteams/communicate-with-users-from-other-organizations",
+            "https://learn.microsoft.com/en-nz/purview/retention-policies-teams"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Google Chat",
+          "url": "https://workspace.google.com/pricing.html",
+          "reason": "Best when Gmail, Drive, and Meet are already the company standard: Business Starter is $7/user/month on an annual/fixed-term plan or $8.40 flexible, and Workspace supports external users and guest accounts, with administrator-controlled history and retention.",
+          "citationUrls": [
+            "https://workspace.google.com/pricing.html",
+            "https://knowledge.workspace.google.com/admin/chat/chatting-with-external-users?authuser=002",
+            "https://knowledge.workspace.google.com/admin/getting-started/editions/business-editions"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://slack.com/pricing",
+          "title": "Slack Pricing Plans"
+        },
+        {
+          "url": "https://slack.com/help/articles/27204752526611-Feature-limitations-on-the-free-version-of-Slack",
+          "title": "Feature limitations on the free version of Slack"
+        },
+        {
+          "url": "https://slack.com/help/articles/202518103-Understand-guest-roles-in-Slack",
+          "title": "Understand guest roles in Slack"
+        },
+        {
+          "url": "https://www.microsoft.com/en-us/microsoft-teams/compare-microsoft-teams-business-options",
+          "title": "Microsoft Teams business plans and pricing"
+        },
+        {
+          "url": "https://learn.microsoft.com/en-us/microsoftteams/communicate-with-users-from-other-organizations",
+          "title": "Use guest access and external access in Microsoft Teams"
+        },
+        {
+          "url": "https://learn.microsoft.com/en-nz/purview/retention-policies-teams",
+          "title": "Learn about retention for Teams"
+        },
+        {
+          "url": "https://workspace.google.com/pricing.html",
+          "title": "Google Workspace pricing"
+        },
+        {
+          "url": "https://knowledge.workspace.google.com/admin/chat/chatting-with-external-users?authuser=002",
+          "title": "Chatting with external users and guest accounts"
+        },
+        {
+          "url": "https://knowledge.workspace.google.com/admin/getting-started/editions/business-editions",
+          "title": "Google Workspace business editions"
+        }
+      ],
+      "limitations": [
+        "This is a public-web comparison, not exhaustive market coverage and not an independent performance test.",
+        "Pricing and plan inclusions are dynamic; promotional prices, taxes, annual commitments, region, and billing configuration can change the totals.",
+        "Teams' and Google Chat's long-term visibility depends on administrator retention/history settings; the sources do not establish one universal forever-searchable default for every account.",
+        "I did not find a reliable current public numeric price for every paid tier of every possible team-chat product, so I limited recommendations to products with usable current evidence for the requested comparison."
+      ]
+    },
+    {
+      "id": "obs-allbirds-first-order-v1-a95775a07c02f3f677cf42c0",
+      "queryId": "allbirds-first-order-v1",
+      "observedAt": "2026-09-18T07:40:50.593Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Allbirds",
+          "url": "https://www.allbirds.com/",
+          "reason": "Conditional choice for casual everyday wear, supported by model-specific sizing, material disclosures and washable options; purchase only after confirming fit, shipping and return costs.",
+          "citationUrls": [
+            "https://www.allbirds.com/products/mens-tree-runner-go",
+            "https://www.allbirds.com/pages/shoe-care",
+            "https://www.allbirds.com/pages/help"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.allbirds.com/products/mens-tree-runner-go",
+          "title": "Allbirds Men's Tree Runner Go — product, sizing, materials and care"
+        },
+        {
+          "url": "https://www.allbirds.com/pages/help",
+          "title": "Allbirds Help — Returns Policy FAQ"
+        },
+        {
+          "url": "https://www.allbirds.com/products/mens-tree-runners-mist",
+          "title": "Allbirds Men's Tree Runners — fit guidance"
+        },
+        {
+          "url": "https://www.allbirds.com/pages/shoe-care",
+          "title": "Allbirds — How to Care for Your Shoes"
+        },
+        {
+          "url": "https://www.allbirds.com/pages/contact-us",
+          "title": "Allbirds — Contact"
+        }
+      ],
+      "limitations": [
+        "Public web research checked September 18, 2026; this is one conditional recommendation, not exhaustive market coverage or a measured search-engine ranking.",
+        "No independent testing of comfort, durability, sizing accuracy, shipping reliability or refund handling was performed.",
+        "Exact current US shipping charges, free-shipping threshold, delivery timing, return-label cost and optional coverage price were not verified; no checkout or transaction was performed.",
+        "The help page retains gift-related free-return wording alongside explicit customer-paid return-shipping terms; confirm any conflicting offer before payment.",
+        "No access failures occurred on the consulted official pages, but their public content did not resolve every ordering detail."
+      ]
+    },
+    {
+      "id": "obs-allbirds-first-order-v1-dc420e1bbd1b677d5c02efde",
+      "queryId": "allbirds-first-order-v1",
+      "observedAt": "2026-09-18T07:40:52.132Z",
+      "status": "completed",
+      "model": "gpt-5.6-sol",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Tree Runner NZ (returnable SKU)",
+          "url": "https://www.allbirds.com/products/mens-tree-runner-nz-natural-white",
+          "reason": "Best starting point for light everyday use because the current product page labels it for walking, commuting and everyday wear, but a first-time buyer should avoid any color marked final sale.",
+          "citationUrls": [
+            "https://www.allbirds.com/products/mens-tree-runner-nz-natural-white",
+            "https://www.goodhousekeeping.com/what-to-buy/a28969437/allbirds-sneakers-review/",
+            "https://www.outdoorgearlab.com/reviews/shoes-and-boots/walking-shoes-womens/allbirds-tree-runners-womens"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Model-specific fit guide",
+          "url": "https://www.allbirds.com/products/mens-tree-runner-nz-natural-white",
+          "reason": "Sizing differs by model: the Tree Runner NZ is described as true to size with half sizes, whereas the original Tree Runner is described as running small, so the exact SKU guide matters.",
+          "citationUrls": [
+            "https://www.allbirds.com/products/mens-tree-runner-nz-natural-white",
+            "https://www.allbirds.com/products/mens-tree-runners-mist"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "SKU-level materials and care check",
+          "url": "https://www.allbirds.com/products/mens-tree-runner-nz-natural-white",
+          "reason": "The product page identifies the fibers, foam and lining and gives model-specific washing directions, preventing assumptions based only on the Allbirds brand name.",
+          "citationUrls": [
+            "https://www.allbirds.com/products/mens-tree-runner-nz-natural-white"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Checkout shipping and return verification",
+          "url": "https://www.allbirds.com/pages/help",
+          "reason": "Current terms make returnability depend on final-sale status and make the buyer responsible for return shipping unless optional return coverage is purchased, so checkout details should be saved before ordering.",
+          "citationUrls": [
+            "https://www.allbirds.com/pages/help",
+            "https://www.allbirds.com/products/mens-tree-runner-nz-natural-white"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.allbirds.com/products/mens-tree-runner-nz-natural-white",
+          "title": "Men's Tree Runner NZ - Everyday Sneakers | Allbirds"
+        },
+        {
+          "url": "https://www.allbirds.com/products/mens-tree-runners-mist",
+          "title": "Men's Tree Runners - Grey - Everyday Sneakers | Allbirds"
+        },
+        {
+          "url": "https://www.allbirds.com/pages/help",
+          "title": "Help Page | Allbirds"
+        },
+        {
+          "url": "https://www.goodhousekeeping.com/what-to-buy/a28969437/allbirds-sneakers-review/",
+          "title": "Allbirds Review 2024: Tested by Experts | Good Housekeeping"
+        },
+        {
+          "url": "https://www.outdoorgearlab.com/reviews/shoes-and-boots/walking-shoes-womens/allbirds-tree-runners-womens",
+          "title": "Allbirds Tree Runners - Women's Review | OutdoorGearLab"
+        }
+      ],
+      "limitations": [
+        "This is targeted public-web research, not exhaustive market coverage or a general search-engine ranking.",
+        "Shipping price, inventory, delivery estimate, final-sale status and optional return-coverage price can vary by SKU, location and checkout session; no checkout transaction was performed.",
+        "The independent tests cover multiple Allbirds models and, in OutdoorGearLab's case, the original women's Tree Runner rather than the newer Tree Runner NZ; their performance findings may not transfer exactly.",
+        "Fit is individual, and no hands-on fit or product-performance verification was performed for this answer.",
+        "All consulted pages were publicly accessible; no login or access failure occurred."
+      ]
+    },
+    {
+      "id": "obs-allbirds-first-order-v1-4a8298cc819eb9a57ff7d8f8",
+      "queryId": "allbirds-first-order-v1",
+      "observedAt": "2026-09-18T07:41:35.834Z",
+      "status": "completed",
+      "model": "gpt-5.6-terra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Allbirds",
+          "url": "https://www.allbirds.com/products/mens-cruiser-terralux-anthracite",
+          "reason": "Recommended conditionally for a first online everyday-shoe purchase because the official product page supplies model-specific fit, material, care, and shipping information, while the official help page provides a defined 30-day return/exchange policy.",
+          "citationUrls": [
+            "https://www.allbirds.com/products/mens-cruiser-terralux-anthracite",
+            "https://www.allbirds.com/pages/help",
+            "https://www.allbirds.com/collections/mens?a_ajs_event=Navigation+Clicked&a_ajs_prop_navigation_level_1=men&a_ajs_prop_navigation_level_2=socks+%26+apparel&a_ajs_prop_navigation_source=www.allbirds.com%2Fproducts%2Fmens-tree-runner-go-rustic-brown&a_ajs_prop_navigation_type=global"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.allbirds.com/products/mens-cruiser-terralux-anthracite",
+          "title": "Men's Cruiser Terralux™ - Alternative Leather Sneakers | Allbirds"
+        },
+        {
+          "url": "https://www.allbirds.com/pages/help",
+          "title": "Help Page | Allbirds"
+        },
+        {
+          "url": "https://www.allbirds.com/collections/mens?a_ajs_event=Navigation+Clicked&a_ajs_prop_navigation_level_1=men&a_ajs_prop_navigation_level_2=socks+%26+apparel&a_ajs_prop_navigation_source=www.allbirds.com%2Fproducts%2Fmens-tree-runner-go-rustic-brown&a_ajs_prop_navigation_type=global",
+          "title": "Allbirds: Sustainable Men's Shoes, Wear-All-Day Comfort"
+        }
+      ],
+      "limitations": [
+        "Research used public web pages only; no purchase flow, destination-specific delivery estimate, or checkout return-coverage price was tested.",
+        "The consulted evidence is primarily from Allbirds' own current pages; product availability, prices, shipping charges, and policies can change.",
+        "No independent fit, durability, comfort, or sustainability performance testing was verified, and this is not exhaustive market coverage.",
+        "One product page was displayed as out of stock during research, so availability of any particular size or color must be checked before ordering."
+      ]
+    },
+    {
+      "id": "obs-allbirds-first-order-v1-037636fa5405aef892e341d3",
+      "queryId": "allbirds-first-order-v1",
+      "observedAt": "2026-09-18T07:41:57.829Z",
+      "status": "completed",
+      "model": "gpt-5.6-luna",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Allbirds Tree Runner",
+          "url": "https://www.allbirds.com/products/womens-tree-runners-navy-night",
+          "reason": "Best starting point among the consulted options for breathable everyday walking/commuting; the official page explicitly lists those uses, but warns that the model runs small and recommends sizing up.",
+          "citationUrls": [
+            "https://www.allbirds.com/products/womens-tree-runners-navy-night"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Allbirds Cruiser",
+          "url": "https://www.allbirds.com/products/womens-cruiser-dark-navy",
+          "reason": "A sensible alternative for a more court-shoe-like casual look, with a true-to-size note, listed materials, and model-specific care instructions.",
+          "citationUrls": [
+            "https://www.allbirds.com/products/womens-cruiser-dark-navy"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Allbirds Canvas Piper",
+          "url": "https://www.allbirds.com/products/womens-canvas-pipers-blizzard-bark-brown",
+          "reason": "Worth considering for a cotton casual sneaker, but the official page says it runs large and recommends sizing down.",
+          "citationUrls": [
+            "https://www.allbirds.com/products/womens-canvas-pipers-blizzard-bark-brown"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.allbirds.com/products/womens-tree-runners-navy-night",
+          "title": "Allbirds Women's Tree Runners product page"
+        },
+        {
+          "url": "https://www.allbirds.com/products/womens-cruiser-dark-navy",
+          "title": "Allbirds Women's Cruiser product page"
+        },
+        {
+          "url": "https://www.allbirds.com/products/womens-canvas-pipers-blizzard-bark-brown",
+          "title": "Allbirds Women's Canvas Piper product page"
+        },
+        {
+          "url": "https://www.allbirds.com/pages/help",
+          "title": "Allbirds Help — returns policy"
+        },
+        {
+          "url": "https://www.allbirds.com/pages/shoe-care",
+          "title": "Allbirds — How to Care for Your Shoes"
+        },
+        {
+          "url": "https://www.allbirds.com/pages/materials-making",
+          "title": "Allbirds materials and making"
+        },
+        {
+          "url": "https://www.allbirds.com/collections/womens-sneakers?hue=white",
+          "title": "Allbirds women's sneakers sizing guidance"
+        },
+        {
+          "url": "https://www.goodhousekeeping.com/what-to-buy/a28969437/allbirds-sneakers-review/",
+          "title": "Good Housekeeping Allbirds review"
+        }
+      ],
+      "limitations": [
+        "Search results did not expose a stable current US shipping price or delivery estimate; verify both in the live cart/checkout for the exact destination and stock status.",
+        "The return policy page contains a checkout return-coverage option and says terms can depend on order date; reread the live policy at purchase.",
+        "Product availability, prices, fit notes and policies can change. I consulted public pages but did not place an order, test a pair, or independently verify performance.",
+        "This search was not an exhaustive survey of all shoe brands or all Allbirds models."
+      ]
+    },
+    {
+      "id": "obs-everyday-clothing-returns-v1-baeaf5de6a95bed21960d6e5",
+      "queryId": "everyday-clothing-returns-v1",
+      "observedAt": "2026-09-18T07:42:51.128Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Gap",
+          "url": "https://www.gap.com/browse/info.do?cid=1194685",
+          "reason": "First comparison for unfamiliar fits: cotton basics, length options and free eligible mail or store returns.",
+          "citationUrls": [
+            "https://www.gap.com/browse/product.do?pid=8865910924005",
+            "https://www.gap.com/browse/product.do?locale=en_US&pid=7091530023832",
+            "https://www.gap.com/browse/info.do?cid=1194685"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "UNIQLO",
+          "url": "https://www.uniqlo.com/us/en/products/E455365-000/00",
+          "reason": "Simple 100% cotton tee and denim examples, with clearly published shipping and online-return costs.",
+          "citationUrls": [
+            "https://www.uniqlo.com/us/en/products/E455365-000/00",
+            "https://www.uniqlo.com/us/en/products/E436663-000/00?colorDisplayCode=65&pldDisplayCode=032&sizeDisplayCode=024",
+            "https://faq-us.uniqlo.com/articles/en_US/FAQ/How-do-I-return-my-online-order"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Levi’s",
+          "url": "https://www.levi.com/US/en_US/jeans-by-fit-number/men/jeans/501/c/levi_jeans_by_fit_number_men_jeans_501/facets/feature-fit/original/feature-apparel-features/100%25%20cotton",
+          "reason": "Useful denim-first comparison with a dedicated 100% cotton 501 selection and free store returns for online purchases.",
+          "citationUrls": [
+            "https://www.levi.com/US/en_US/jeans-by-fit-number/men/jeans/501/c/levi_jeans_by_fit_number_men_jeans_501/facets/feature-fit/original/feature-apparel-features/100%25%20cotton",
+            "https://www.levi.com/US/en_US/clothing/men/shirts/original-housemark-t-shirt/p/566050257",
+            "https://help.levi.com/hc/en-us/articles/360052069812-Levi-s-Return-Exchange-Policy",
+            "https://www.levi.com/US/en_US/info/shipping"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.gap.com/browse/product.do?pid=8865910924005",
+          "title": "Gap Organic Cotton VintageSoft T-Shirt"
+        },
+        {
+          "url": "https://www.gap.com/browse/product.do?locale=en_US&pid=7091530023832",
+          "title": "Gap Slim Jeans"
+        },
+        {
+          "url": "https://www.gap.com/browse/info.do?cid=1194685",
+          "title": "Gap shipping and free returns"
+        },
+        {
+          "url": "https://www.uniqlo.com/us/en/products/E455365-000/00",
+          "title": "UNIQLO SUPIMA Cotton T-Shirt"
+        },
+        {
+          "url": "https://www.uniqlo.com/us/en/products/E436663-000/00?colorDisplayCode=65&pldDisplayCode=032&sizeDisplayCode=024",
+          "title": "UNIQLO U Regular-Fit Straight Jeans"
+        },
+        {
+          "url": "https://faq-us.uniqlo.com/articles/en_US/FAQ/How-do-I-return-my-online-order",
+          "title": "UNIQLO online returns"
+        },
+        {
+          "url": "https://www.levi.com/US/en_US/jeans-by-fit-number/men/jeans/501/c/levi_jeans_by_fit_number_men_jeans_501/facets/feature-fit/original/feature-apparel-features/100%25%20cotton",
+          "title": "Levi’s 100% cotton 501 jeans"
+        },
+        {
+          "url": "https://www.levi.com/US/en_US/clothing/men/shirts/original-housemark-t-shirt/p/566050257",
+          "title": "Levi’s Original Housemark T-Shirt"
+        },
+        {
+          "url": "https://help.levi.com/hc/en-us/articles/360052069812-Levi-s-Return-Exchange-Policy",
+          "title": "Levi’s Return & Exchange Policy"
+        },
+        {
+          "url": "https://www.levi.com/US/en_US/info/shipping",
+          "title": "Levi’s Shipping Information"
+        }
+      ],
+      "limitations": [
+        "Public-web research was selective, not exhaustive; recommendations reflect published product and policy evidence, not independently tested fit, durability or performance.",
+        "Stock, prices, promotions and policies can change. Product examples do not establish availability in every size, color or department; the cited Levi’s tee color was out of stock.",
+        "Levi’s shipping page opened but its rate table was not available in retrieved text. Exact destination-specific delivery costs and dates were not verified through checkout.",
+        "Exact return deadlines for Gap and Levi’s were not established from the consulted policy excerpts; confirm them before ordering. No login, purchase or return transaction was performed."
+      ]
+    },
+    {
+      "id": "obs-everyday-clothing-returns-v1-93084500f489a6337930fecb",
+      "queryId": "everyday-clothing-returns-v1",
+      "observedAt": "2026-09-18T07:43:33.480Z",
+      "status": "completed",
+      "model": "gpt-5.6-terra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Everlane",
+          "url": "https://www.everlane.com/products/mens-essential-organic-crew-uniform-heathered-sea",
+          "reason": "Compare it for product-level cotton tee and rigid organic-cotton denim specifications, size guides, and stated U.S. shipping/return terms.",
+          "citationUrls": [
+            "https://www.everlane.com/products/mens-essential-organic-crew-uniform-heathered-sea",
+            "https://www.everlane.com/products/mens-classic-straight-fit-jean-black"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "L.L.Bean",
+          "url": "https://www.llbean.com/llb/shop/49349?attrValue_0=1176&bc=12-26-813&csp=a&feat=813-GN0&gnrefine=1%2ASIZE_PROPORTION%2ATall%5E1%2ASIZE_PROPORTION%2ARegular&page=carefree-unshrinkable-tee-with-pocket-traditional-fit&pos=5",
+          "reason": "Compare it for detailed sizing guidance, cotton tee and jean specifications, and a clearly published return-fee policy.",
+          "citationUrls": [
+            "https://www.llbean.com/llb/shop/49349?attrValue_0=1176&bc=12-26-813&csp=a&feat=813-GN0&gnrefine=1%2ASIZE_PROPORTION%2ATall%5E1%2ASIZE_PROPORTION%2ARegular&page=carefree-unshrinkable-tee-with-pocket-traditional-fit&pos=5",
+            "https://www.llbean.com/llb/shop/32866?attrValue_0=30762&bc=12-26-813&csp=f&feat=813-GN0&gnrefine=1%2AMATERIAL%2ACotton+Blend&page=double-l-jeans-relaxed-fit&pos=29&showReviews=true",
+            "https://www.llbean.com/llb/shop/510624"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Gap",
+          "url": "https://www.gap.com/customerService/info.do?cid=2019",
+          "reason": "Compare it for its published U.S. shipping charges and free-return/exchange terms; verify exact tee and jean fiber content on the selected product pages.",
+          "citationUrls": [
+            "https://www.gap.com/customerService/info.do?cid=2019",
+            "https://www.gap.com/customer-service/how-to-return-exchange-items?cid=81264"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.everlane.com/products/mens-essential-organic-crew-uniform-heathered-sea",
+          "title": "Everlane — The Essential Organic Crew"
+        },
+        {
+          "url": "https://www.everlane.com/products/mens-classic-straight-fit-jean-black",
+          "title": "Everlane — Classic Straight-Fit Jean"
+        },
+        {
+          "url": "https://www.llbean.com/llb/shop/49349?attrValue_0=1176&bc=12-26-813&csp=a&feat=813-GN0&gnrefine=1%2ASIZE_PROPORTION%2ATall%5E1%2ASIZE_PROPORTION%2ARegular&page=carefree-unshrinkable-tee-with-pocket-traditional-fit&pos=5",
+          "title": "L.L.Bean — Men's Carefree Unshrinkable Pocket Tee, Traditional Fit"
+        },
+        {
+          "url": "https://www.llbean.com/llb/shop/32866?attrValue_0=30762&bc=12-26-813&csp=f&feat=813-GN0&gnrefine=1%2AMATERIAL%2ACotton+Blend&page=double-l-jeans-relaxed-fit&pos=29&showReviews=true",
+          "title": "L.L.Bean — Men's Double L Jeans, Relaxed Fit"
+        },
+        {
+          "url": "https://www.llbean.com/llb/shop/518113",
+          "title": "L.L.Bean — Sizing Charts"
+        },
+        {
+          "url": "https://www.llbean.com/llb/shop/510624",
+          "title": "L.L.Bean — Returns & Exchanges"
+        },
+        {
+          "url": "https://www.gap.com/customerService/info.do?cid=2019",
+          "title": "Gap — Everyday Free Shipping"
+        },
+        {
+          "url": "https://www.gap.com/customer-service/how-to-return-exchange-items?cid=81264",
+          "title": "Gap — How to Return or Exchange Items"
+        }
+      ],
+      "limitations": [
+        "This is a targeted public-web comparison, not exhaustive market coverage or a general search-engine ranking.",
+        "Only the cited public pages were consulted; no checkout, account, or transaction was performed, so location-specific delivery charges and final checkout totals were not independently verified.",
+        "Product availability, prices, fiber composition by color/style, shipping thresholds, and return terms can change; final-sale and other exclusions may apply.",
+        "No independent testing or product-performance verification was conducted."
+      ]
+    },
+    {
+      "id": "obs-everyday-clothing-returns-v1-aa8062c3c068fd912c700c67",
+      "queryId": "everyday-clothing-returns-v1",
+      "observedAt": "2026-09-18T07:44:01.908Z",
+      "status": "completed",
+      "model": "gpt-5.6-luna",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Everlane",
+          "url": "https://www.everlane.com/products/mens-classic-straight-fit-jean-black",
+          "reason": "Best documented for comparing fabric and fit: its product page states 100% organic cotton, gives waist and inseam details, and links US shipping/30-day return terms.",
+          "citationUrls": [
+            "https://www.everlane.com/products/mens-classic-straight-fit-jean-black",
+            "https://www.everlane.com/products/mens-archive-standard-fit-cotton-crew-heathered-oatmeal"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Cotton On",
+          "url": "https://cottonon.com/US/everyday-fit-t-shirt/3613863-36.html",
+          "reason": "Useful value-oriented comparison because the tee and jeans pages expose measurement guidance, fiber/composition information, $8-or-free-over-$75 standard shipping, and free returns.",
+          "citationUrls": [
+            "https://cottonon.com/US/everyday-fit-t-shirt/3613863-36.html",
+            "https://cottonon.com/US/regular-straight-jean/3612719.html"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Madewell",
+          "url": "https://www.madewell.com/p/womens/clothing/dresses/slip-dresses/the-longline-straight-jean/NW254/",
+          "reason": "Strong denim-fit choice: the page distinguishes standard/petite/tall proportions and states the 100% cotton, zero-stretch fabric, while also warning that the cited item is final sale.",
+          "citationUrls": [
+            "https://www.madewell.com/p/womens/clothing/dresses/slip-dresses/the-longline-straight-jean/NW254/",
+            "https://www.madewell.com/p/relaxed-taper-jeans-in-summerweight-denim/OA031/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.everlane.com/products/mens-classic-straight-fit-jean-black",
+          "title": "Everlane Classic Straight-Fit Jean product page"
+        },
+        {
+          "url": "https://www.everlane.com/products/mens-archive-standard-fit-cotton-crew-heathered-oatmeal",
+          "title": "Everlane Archive Standard-Fit Cotton Crew product page"
+        },
+        {
+          "url": "https://cottonon.com/US/everyday-fit-t-shirt/3613863-36.html",
+          "title": "Cotton On Everyday Fit T-Shirt product page"
+        },
+        {
+          "url": "https://cottonon.com/US/regular-straight-jean/3612719.html",
+          "title": "Cotton On Regular Straight Jean product page"
+        },
+        {
+          "url": "https://www.madewell.com/p/womens/clothing/dresses/slip-dresses/the-longline-straight-jean/NW254/",
+          "title": "Madewell Longline Straight Jean product page"
+        },
+        {
+          "url": "https://www.madewell.com/p/relaxed-taper-jeans-in-summerweight-denim/OA031/",
+          "title": "Madewell Relaxed Taper Jeans product page"
+        }
+      ],
+      "limitations": [
+        "This is a targeted comparison, not exhaustive market coverage or a ranking of all clothing brands.",
+        "The retrieved pages mix men's and women's examples; shoppers should select the relevant size chart and garment line.",
+        "Some return and shipping details were visible in product-page excerpts rather than a separately opened policy page; confirm the current checkout and returns terms before purchase.",
+        "I did not independently test garment quality, fit, delivery speed, or refund processing.",
+        "Prices, promotions, inventory, shipping thresholds, and policies may change after the research date (2026-09-18)."
+      ]
     }
   ]
 }

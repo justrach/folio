@@ -1,0 +1,288 @@
+{
+  "format": "folio-model-landscape-v1",
+  "observedAt": "2026-09-18T07:46:00.247Z",
+  "questionCount": 10,
+  "planned": 40,
+  "points": [
+    {
+      "queryId": "deploy-small-node-app-v1",
+      "model": "gpt-6-astra",
+      "status": "completed",
+      "seconds": 122.074,
+      "costUsd": 1.102599
+    },
+    {
+      "queryId": "deploy-small-node-app-v1",
+      "model": "gpt-5.6-sol",
+      "status": "completed",
+      "seconds": 96.571,
+      "costUsd": 0.449718
+    },
+    {
+      "queryId": "deploy-small-node-app-v1",
+      "model": "gpt-5.6-terra",
+      "status": "failed",
+      "seconds": 85.511,
+      "costUsd": 0.280109
+    },
+    {
+      "queryId": "deploy-small-node-app-v1",
+      "model": "gpt-5.6-luna",
+      "status": "failed",
+      "seconds": 66.732,
+      "costUsd": 0.016212
+    },
+    {
+      "queryId": "auth-b2b-small-team-v1",
+      "model": "gpt-6-astra",
+      "status": "completed",
+      "seconds": 142.098,
+      "costUsd": 1.266343
+    },
+    {
+      "queryId": "auth-b2b-small-team-v1",
+      "model": "gpt-5.6-sol",
+      "status": "completed",
+      "seconds": 109.865,
+      "costUsd": 0.459795
+    },
+    {
+      "queryId": "auth-b2b-small-team-v1",
+      "model": "gpt-5.6-terra",
+      "status": "completed",
+      "seconds": 86.673,
+      "costUsd": 0.196022
+    },
+    {
+      "queryId": "auth-b2b-small-team-v1",
+      "model": "gpt-5.6-luna",
+      "status": "failed",
+      "seconds": 59.883,
+      "costUsd": 0.013838
+    },
+    {
+      "queryId": "sandbox-python-jobs-v1",
+      "model": "gpt-6-astra",
+      "status": "completed",
+      "seconds": 112.825,
+      "costUsd": 1.037065
+    },
+    {
+      "queryId": "sandbox-python-jobs-v1",
+      "model": "gpt-5.6-sol",
+      "status": "completed",
+      "seconds": 96.441,
+      "costUsd": 0.400714
+    },
+    {
+      "queryId": "sandbox-python-jobs-v1",
+      "model": "gpt-5.6-terra",
+      "status": "failed",
+      "seconds": 95.576,
+      "costUsd": 0.180412
+    },
+    {
+      "queryId": "sandbox-python-jobs-v1",
+      "model": "gpt-5.6-luna",
+      "status": "failed",
+      "seconds": 61.46,
+      "costUsd": 0.022461
+    },
+    {
+      "queryId": "vector-search-small-app-v1",
+      "model": "gpt-6-astra",
+      "status": "completed",
+      "seconds": 128.487,
+      "costUsd": 1.089544
+    },
+    {
+      "queryId": "vector-search-small-app-v1",
+      "model": "gpt-5.6-sol",
+      "status": "completed",
+      "seconds": 108.938,
+      "costUsd": 0.39991
+    },
+    {
+      "queryId": "vector-search-small-app-v1",
+      "model": "gpt-5.6-terra",
+      "status": "completed",
+      "seconds": 113.969,
+      "costUsd": 0.228212
+    },
+    {
+      "queryId": "vector-search-small-app-v1",
+      "model": "gpt-5.6-luna",
+      "status": "completed",
+      "seconds": 67.064,
+      "costUsd": 0.014817
+    },
+    {
+      "queryId": "research-api-citations-v1",
+      "model": "gpt-6-astra",
+      "status": "completed",
+      "seconds": 99.105,
+      "costUsd": 0.917456
+    },
+    {
+      "queryId": "research-api-citations-v1",
+      "model": "gpt-5.6-sol",
+      "status": "completed",
+      "seconds": 96.919,
+      "costUsd": 0.448
+    },
+    {
+      "queryId": "research-api-citations-v1",
+      "model": "gpt-5.6-terra",
+      "status": "completed",
+      "seconds": 95.367,
+      "costUsd": 0.207041
+    },
+    {
+      "queryId": "research-api-citations-v1",
+      "model": "gpt-5.6-luna",
+      "status": "completed",
+      "seconds": 79.826,
+      "costUsd": 0.017471
+    },
+    {
+      "queryId": "sentry-posthog-product-team-v1",
+      "model": "gpt-6-astra",
+      "status": "completed",
+      "seconds": 115.807,
+      "costUsd": 1.082181
+    },
+    {
+      "queryId": "sentry-posthog-product-team-v1",
+      "model": "gpt-5.6-sol",
+      "status": "completed",
+      "seconds": 100.108,
+      "costUsd": 0.33914
+    },
+    {
+      "queryId": "sentry-posthog-product-team-v1",
+      "model": "gpt-5.6-terra",
+      "status": "completed",
+      "seconds": 115.23,
+      "costUsd": 0.313017
+    },
+    {
+      "queryId": "sentry-posthog-product-team-v1",
+      "model": "gpt-5.6-luna",
+      "status": "completed",
+      "seconds": 85.258,
+      "costUsd": 0.015201
+    },
+    {
+      "queryId": "client-project-workspace-v1",
+      "model": "gpt-6-astra",
+      "status": "completed",
+      "seconds": 99.756,
+      "costUsd": 1.029002
+    },
+    {
+      "queryId": "client-project-workspace-v1",
+      "model": "gpt-5.6-sol",
+      "status": "completed",
+      "seconds": 82.065,
+      "costUsd": 0.32944
+    },
+    {
+      "queryId": "client-project-workspace-v1",
+      "model": "gpt-5.6-terra",
+      "status": "completed",
+      "seconds": 78.798,
+      "costUsd": 0.254544
+    },
+    {
+      "queryId": "client-project-workspace-v1",
+      "model": "gpt-5.6-luna",
+      "status": "completed",
+      "seconds": 63.609,
+      "costUsd": 0.010304
+    },
+    {
+      "queryId": "team-chat-history-v1",
+      "model": "gpt-6-astra",
+      "status": "completed",
+      "seconds": 111.494,
+      "costUsd": 1.06147
+    },
+    {
+      "queryId": "team-chat-history-v1",
+      "model": "gpt-5.6-sol",
+      "status": "failed",
+      "seconds": 91.558,
+      "costUsd": 0.444284
+    },
+    {
+      "queryId": "team-chat-history-v1",
+      "model": "gpt-5.6-terra",
+      "status": "completed",
+      "seconds": 69.116,
+      "costUsd": 0.176144
+    },
+    {
+      "queryId": "team-chat-history-v1",
+      "model": "gpt-5.6-luna",
+      "status": "completed",
+      "seconds": 67.055,
+      "costUsd": 0.01619
+    },
+    {
+      "queryId": "allbirds-first-order-v1",
+      "model": "gpt-6-astra",
+      "status": "completed",
+      "seconds": 98.843,
+      "costUsd": 1.074817
+    },
+    {
+      "queryId": "allbirds-first-order-v1",
+      "model": "gpt-5.6-sol",
+      "status": "completed",
+      "seconds": 94.408,
+      "costUsd": 0.367332
+    },
+    {
+      "queryId": "allbirds-first-order-v1",
+      "model": "gpt-5.6-terra",
+      "status": "completed",
+      "seconds": 79.415,
+      "costUsd": 0.156671
+    },
+    {
+      "queryId": "allbirds-first-order-v1",
+      "model": "gpt-5.6-luna",
+      "status": "completed",
+      "seconds": 63.82,
+      "costUsd": 0.016444
+    },
+    {
+      "queryId": "everyday-clothing-returns-v1",
+      "model": "gpt-6-astra",
+      "status": "completed",
+      "seconds": 111.563,
+      "costUsd": 0.983449
+    },
+    {
+      "queryId": "everyday-clothing-returns-v1",
+      "model": "gpt-5.6-sol",
+      "status": "failed",
+      "seconds": 112.717,
+      "costUsd": 0.516615
+    },
+    {
+      "queryId": "everyday-clothing-returns-v1",
+      "model": "gpt-5.6-terra",
+      "status": "completed",
+      "seconds": 91.709,
+      "costUsd": 0.232813
+    },
+    {
+      "queryId": "everyday-clothing-returns-v1",
+      "model": "gpt-5.6-luna",
+      "status": "completed",
+      "seconds": 66.505,
+      "costUsd": 0.02048
+    }
+  ]
+}

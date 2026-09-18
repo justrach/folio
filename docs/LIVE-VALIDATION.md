@@ -84,3 +84,18 @@ Startup and drained periodic GET checkpoints recovered exact missing receipts us
 The final GET-only scan completed across 304 provider sessions, recovered one additional nonterminal receipt and freed no capacity. Actual local D1 usage showed all 20 authorized owner slots occupied and zero remaining. That count includes owner-wide retained accounting and differs from the public status count. The collector exited with no active jobs or runner lock. Private diagnostic details and a provider-investigation report remain ignored; the public artifact contains only the sanitized observations and progress states.
 
 Type checking and 255 unit tests passed, including the final-slot cooldown/checkpoint regression. The recovery, ownership, restart, capacity and idle-session service changes also passed 23 actual temporary-D1 integration cases. These checks and public Git publication do not establish production deployment, independent factual correctness, resolved provider costs or completion of the remaining queue.
+
+## 18 September 2026: four-model public index cohort
+
+Ran exactly 40 explicitly authorized paid attempts: ten shared public questions, once per Astra, Sol, Terra and Luna, using the unchanged managed open-web harness with optional TypeSafe and DataForSEO tools off. Thirty-three answers passed the existing output/evidence contract and public projection checks; seven failed that contract and were not published as rankings. No failed attempts were retried. Raw answers and provider/account identifiers remain in private production D1 and ignored local receipts.
+
+| Model | Completed / attempted | Estimated token cost, all attempts |
+| --- | --- | --- |
+| Astra | 10/10 | $10.643926 |
+| Sol | 8/10 | $4.154948 |
+| Terra | 8/10 | $2.224985 |
+| Luna | 7/10 | $0.163418 |
+
+Total estimated token cost: $17.187277. Five initially missing usage receipts were recovered by retrieving existing sessions; all 40 attempts now have token estimates in D1. Search/sandbox charges are not included and complete provider dollar charges remain unreported. Costs use the saved standard-short rate card, not invoices. Timing was frozen at first saved terminal outcome, before later usage refreshes, and includes retrieval delay.
+
+The public chart preserves all 40 outcomes and uses completed attempts for plotted medians; failures remain in cost totals. Public rankings add 33 allowlisted observations to the 286-observation source artifact (319); separately shared D1 observations are merged by the production read API. Local checks include 23 focused unit/artifact tests, 16 public dashboard browser cases, four ranking browser cases, and two desktop/mobile landscape cases. Those browser checks use mocked network responses; the 40-run cohort above is separate actual provider work.

@@ -33,3 +33,5 @@ Local validation: 288 unit tests, 36 actual D1 integration tests, TypeScript, an
 ## Parallel observations
 
 `OPENAI_PARALLEL_USER_IDS` grants exact approved account IDs up to three simultaneous keyword observations, enabling Luna, Sol and Terra comparisons. Other accounts retain one active observation. This is separate from the daily-cap exemption. D1 reserves capacity atomically; each run still requires an explicit start, retains its deadline and tool budgets, and records its own usage.
+
+The September four-model index cohort uses ten identical public questions with one authorized attempt for each of Astra, Sol, Terra and Luna (40 total). These open-web observations run without optional TypeSafe or DataForSEO calls so all four share the same research harness. A completed answer must pass the existing evidence/projection validation before entering the public rankings. Invalid results retain their failed status and recorded usage. The model landscape reports token estimates separately from unreported search/sandbox charges; this is a workflow comparison, not a general quality benchmark.

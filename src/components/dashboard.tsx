@@ -66,6 +66,7 @@ import { KeywordActivitySummary } from "./keyword-activity-summary";
 import "./evaluation-page-shell.css";
 import { KeywordBenchmarksPanel } from "./keyword-benchmarks-panel";
 import { DeveloperToolsIndex } from "./developer-tools-index";
+import { ModelLandscape } from "./model-landscape";
 import { RankedSearchTable } from "./ranked-search-table";
 import "./index-page.css";
 import { EvaluationsPanel } from "./evaluations-panel";
@@ -1295,7 +1296,7 @@ function Leaderboard(_props: {onMethod:()=>void;onNotify:(s:string)=>void}) {
       {([["rankings","Search rankings"],["html","HTML page checks"],["published","Published page audits"]] as const).map(([value,label])=><button key={value} type="button" id={`index-view-${value}`} aria-pressed={indexView===value} aria-controls="index-view-panel" onClick={()=>setIndexView(value)}>{label}</button>)}
     </div>
     <section id="index-view-panel" className="index-view-panel" role="region" aria-labelledby={`index-view-${indexView}`}>
-      {indexView==="rankings"?<RankedSearchTable/>:indexView==="html"?<DeveloperToolsIndex/>:<PublishedIndex/>}
+      {indexView==="rankings"?<><ModelLandscape/><RankedSearchTable/></>:indexView==="html"?<DeveloperToolsIndex/>:<PublishedIndex/>}
     </section>
   </>;
 }
