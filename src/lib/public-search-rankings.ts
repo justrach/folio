@@ -49,6 +49,9 @@ const expandedArtifact = { ...artifact, queries: [...artifact.queries, ...additi
 assertPublicSearchRankings(expandedArtifact);
 export const PUBLIC_SEARCH_RANKINGS: PublicSearchRankings = expandedArtifact;
 export const PUBLIC_SEARCH_QUERIES = PUBLIC_SEARCH_RANKINGS.queries;
+/** Original website-question cohort; expanded scenario libraries are separate. */
+const coreIds = new Set(artifact.queries.filter(query => !/-s\d+-q\d+$/.test(query.id)).map(query => query.id));
+export const PUBLIC_CORE_QUERIES = PUBLIC_SEARCH_QUERIES.filter(query => coreIds.has(query.id));
 export const PUBLIC_SEARCH_OBSERVATIONS = PUBLIC_SEARCH_RANKINGS.observations;
 
 /** A newer observation replaces only the same exact query; no cross-query rank or delta. */

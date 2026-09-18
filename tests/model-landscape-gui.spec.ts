@@ -1,17 +1,30 @@
 import {test,expect} from '@playwright/test';
-test('website index compares websites and filters saved answers without spending',async({page})=>{
+test('website averages show all sites, model details and URL filters without spending',async({page},info)=>{
  const writes:string[]=[],errors:string[]=[];
  page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/api/**',r=>{if(r.request().method()!=='GET')writes.push(r.request().url());return r.fulfill({json:null})});
  await page.goto('/leaderboard');
  const chart=page.getByRole('region',{name:'Which websites get recommended?'});
  await expect(chart).toBeVisible();await expect(chart.getByRole('img')).toBeVisible();
+ await expect(chart.getByLabel('Website comparison question')).toHaveValue('');
  await expect(chart).not.toContainText('token cost');
+ await chart.getByLabel('Find a website').fill('railway.com');
+ await expect(chart.locator('tbody tr')).toHaveCount(1);
+ await chart.locator('tbody button').click();
+ await expect(chart.getByRole('complementary',{name:'Model results for railway.com'})).toBeVisible();
+ await expect(page).toHaveURL(/site=railway.com/);
+ await chart.getByRole('button',{name:'Close website details'}).click();
+ await chart.getByLabel('Find a website').fill('');
  await chart.getByLabel('Website comparison model').selectOption('gpt-6-astra');
  await expect(page).toHaveURL(/model=gpt-6-astra/);
- await expect(chart.getByRole('table')).toContainText('Railway');
  await chart.getByText('How to read this comparison',{exact:true}).click();
  await expect(chart).toContainText('Missing and failed answers are excluded');
  await page.goBack();await expect(chart.getByLabel('Website comparison model')).toHaveValue('');
+ await chart.getByLabel('Website comparison question').selectOption('ikea-product-and-delivery-v1');
+ await expect(page).toHaveURL(/query=ikea-product-and-delivery-v1/);
+ await page.reload();await expect(chart.getByLabel('Website comparison question')).toHaveValue('ikea-product-and-delivery-v1');
+ await chart.getByRole('button',{name:'Show all websites'}).click();
+ await expect(chart.getByLabel('Website comparison question')).toHaveValue('');
  const widths=await page.evaluate(()=>[document.documentElement.scrollWidth,document.documentElement.clientWidth]);expect(widths[0]).toBeLessThanOrEqual(widths[1]+1);expect(writes).toEqual([]);expect(errors).toEqual([]);
+ if(process.env.FOLIO_WEBSITE_SCREENSHOT)await chart.screenshot({path:`${process.env.FOLIO_WEBSITE_SCREENSHOT}-${info.project.name}.png`});
 });

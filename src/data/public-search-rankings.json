@@ -56175,6 +56175,777 @@
         "I did not independently test garment quality, fit, delivery speed, or refund processing.",
         "Prices, promotions, inventory, shipping thresholds, and policies may change after the research date (2026-09-18)."
       ]
+    },
+    {
+      "id": "obs-team-chat-history-v1-b6ad854e4fa383d2cc5cfb71",
+      "queryId": "team-chat-history-v1",
+      "observedAt": "2026-09-18T09:06:11.042Z",
+      "status": "completed",
+      "model": "gpt-5.6-sol",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Pumble",
+          "url": "https://pumble.com/pricing",
+          "reason": "Lowest-cost fit with unlimited searchable history on Free; Business adds restricted guests and five free single-channel guests per paid seat.",
+          "citationUrls": [
+            "https://pumble.com/pricing",
+            "https://pumble.com/help/getting-started/introduction-to-pumble/what-is-pumble/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Microsoft Teams",
+          "url": "https://www.microsoft.com/en-us/microsoft-teams/compare-microsoft-teams-options",
+          "reason": "Strong $40/month managed-business option for ten people, especially in Microsoft 365, with external chat and policy-controlled history.",
+          "citationUrls": [
+            "https://www.microsoft.com/en-us/microsoft-teams/compare-microsoft-teams-options",
+            "https://support.microsoft.com/en-US/teams/chat/add-or-invite-people-outside-your-org-to-a-chat-in-microsoft-teams",
+            "https://support.microsoft.com/en-us/teams/troubleshooting/microsoft-teams-messages-about-retention-policies"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Google Chat",
+          "url": "https://workspace.google.com/pricing.html",
+          "reason": "Natural choice for an existing Workspace shop; Starter is $70/month for ten on annual commitment and supports managed external collaboration.",
+          "citationUrls": [
+            "https://workspace.google.com/pricing.html",
+            "https://support.google.com/chat/answer/16997417?hl=en",
+            "https://support.google.com/chat/answer/7664687?co=GENIE.Platform%3DDesktop&hl=en"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Slack",
+          "url": "https://slack.com/pricing",
+          "reason": "Polished chat and external collaboration, but Free hides history after 90 days and Pro costs $72.50/month for ten when billed annually.",
+          "citationUrls": [
+            "https://slack.com/pricing",
+            "https://slack.com/help/articles/27204752526611-Feature-limitations-on-the-free-version-of-Slack"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://pumble.com/pricing",
+          "title": "Pumble Plans & Pricing"
+        },
+        {
+          "url": "https://pumble.com/help/getting-started/introduction-to-pumble/what-is-pumble/",
+          "title": "What is Pumble?"
+        },
+        {
+          "url": "https://www.microsoft.com/en-us/microsoft-teams/compare-microsoft-teams-options",
+          "title": "Compare Microsoft Teams for Business Pricing"
+        },
+        {
+          "url": "https://support.microsoft.com/en-US/teams/chat/add-or-invite-people-outside-your-org-to-a-chat-in-microsoft-teams",
+          "title": "Add or invite people outside your org to a chat in Microsoft Teams"
+        },
+        {
+          "url": "https://support.microsoft.com/en-us/teams/troubleshooting/microsoft-teams-messages-about-retention-policies",
+          "title": "Microsoft Teams messages about retention policies"
+        },
+        {
+          "url": "https://workspace.google.com/pricing.html",
+          "title": "Google Workspace Pricing"
+        },
+        {
+          "url": "https://support.google.com/chat/answer/16997417?hl=en",
+          "title": "Invite external guests in Google Chat"
+        },
+        {
+          "url": "https://support.google.com/chat/answer/7664687?co=GENIE.Platform%3DDesktop&hl=en",
+          "title": "Turn history on or off in Google Chat"
+        },
+        {
+          "url": "https://slack.com/pricing",
+          "title": "Slack Pricing Plans"
+        },
+        {
+          "url": "https://slack.com/help/articles/27204752526611-Feature-limitations-on-the-free-version-of-Slack",
+          "title": "Feature limitations on the free version of Slack"
+        }
+      ],
+      "limitations": [
+        "Public-web comparison as of 2026-09-18; not exhaustive market coverage or a measured search-engine ranking.",
+        "Prices are public US list prices before taxes and exclude promotions; totals assume ten paid employee seats and annual billing where stated.",
+        "Vendor documentation was consulted, but product performance and usability were not independently tested.",
+        "Guest billing and retention depend on configuration and the external party's account or organization; Slack guest-seat pricing was not clearly exposed in the consulted pricing page.",
+        "Some dynamic pricing pages omitted values in search rendering; recommendations exclude Zoom because its current paid price could not be reliably read, although its free Team Chat and two-year cloud-retention documentation were found."
+      ]
+    },
+    {
+      "id": "obs-everyday-clothing-returns-v1-7b650a3f2ff5d8afce4d70a1",
+      "queryId": "everyday-clothing-returns-v1",
+      "observedAt": "2026-09-18T09:07:24.541Z",
+      "status": "completed",
+      "model": "gpt-5.6-sol",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Gap",
+          "url": "https://www.gap.com/",
+          "reason": "Broad cotton-tee and 100%-cotton-jeans assortments plus currently advertised free returns make it the most practical first comparison.",
+          "citationUrls": [
+            "https://www.gap.com/shop/100-cotton-jeans-0aaz06b",
+            "https://www.gap.com/customerService/info.do?cid=2019"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Uniqlo",
+          "url": "https://www.uniqlo.com/us/en/",
+          "reason": "A useful value benchmark for 100% cotton basics with documented extended sizing, though customer-paid mailed returns increase fit risk.",
+          "citationUrls": [
+            "https://www.uniqlo.com/us/en/products/E441600-000/00",
+            "https://www.uniqlo.com/us/en/special-feature/extended-sizes"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Levi's",
+          "url": "https://www.levi.com/US/en_US/",
+          "reason": "The denim-first option has unusually detailed jean measurement guidance and cotton tees, but nonmember mailed returns carry a stated fee.",
+          "citationUrls": [
+            "https://www.levi.com/US/en_US/info/sizeguide",
+            "https://help.levi.com/hc/en-us/articles/360052069812-Levi-s-Return-Exchange-Policy"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Everlane",
+          "url": "https://www.everlane.com/",
+          "reason": "Detailed garment measurements and clearly stated organic-cotton composition are helpful for comparison, with transparent shipping and mail-return fees.",
+          "citationUrls": [
+            "https://www.everlane.com/products/womens-organic-cotton-box-cut-pocket-tee-black",
+            "https://www.everlane.com/policies/shipping-policy",
+            "https://support.everlane.com/what-is-your-return-policy-H1fMnra0s"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.gap.com/shop/100-cotton-jeans-0aaz06b",
+          "title": "100% Cotton Jeans | Gap"
+        },
+        {
+          "url": "https://www.gap.com/browse/women/t-shirts-and-tanks/t-shirts?cid=17076&style=3037100",
+          "title": "Women's T-Shirts | Gap"
+        },
+        {
+          "url": "https://www.gap.com/customerService/info.do?cid=2019",
+          "title": "Everyday Free Shipping | Gap"
+        },
+        {
+          "url": "https://www.uniqlo.com/us/en/products/E441600-000/00",
+          "title": "Men's U Crew Neck Short-Sleeve T-Shirt | UNIQLO US"
+        },
+        {
+          "url": "https://www.uniqlo.com/us/en/special-feature/extended-sizes",
+          "title": "Extended Sizes: Large & Small Sizes | UNIQLO US"
+        },
+        {
+          "url": "https://www.levi.com/US/en_US/info/sizeguide",
+          "title": "Levi's Size Chart - Size Guide for Men, Women and Kids"
+        },
+        {
+          "url": "https://help.levi.com/hc/en-us/articles/360052069812-Levi-s-Return-Exchange-Policy",
+          "title": "Levi's Return & Exchange Policy"
+        },
+        {
+          "url": "https://www.everlane.com/products/womens-organic-cotton-box-cut-pocket-tee-black",
+          "title": "The Box-Cut Tee in Essential Cotton | Everlane"
+        },
+        {
+          "url": "https://www.everlane.com/policies/shipping-policy",
+          "title": "Shipping policy | Everlane"
+        },
+        {
+          "url": "https://support.everlane.com/what-is-your-return-policy-H1fMnra0s",
+          "title": "What is your return policy? | Everlane"
+        }
+      ],
+      "limitations": [
+        "This is a selective public-web comparison, not exhaustive market coverage or a measured search-engine ranking.",
+        "Prices, inventory, promotions, shipping thresholds, membership benefits and policies can change; verify the exact SKU and checkout terms immediately before purchase.",
+        "Some product pages vary by color, gender range or final-sale status; the cited examples do not prove that every item from a brand has the same fabric or return eligibility.",
+        "No garments were purchased, handled, washed or independently performance-tested; product quality and fit claims were not independently verified.",
+        "Search did not surface a current Levi's standard outbound-shipping price or a single current Uniqlo jeans product page reliable enough to cite, so those details should be checked in cart.",
+        "Search-result indexing may lag live pages, and dynamic checkout-specific costs were not accessible without placing an order."
+      ]
+    },
+    {
+      "id": "obs-ikea-small-apartment-v1-a920ff5b0eec3a9394659daf",
+      "queryId": "ikea-small-apartment-v1",
+      "observedAt": "2026-09-18T09:07:26.213Z",
+      "status": "completed",
+      "model": "gpt-6-astra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "IKEA MICKE desk, 28¾-inch white",
+          "url": "https://www.ikea.com/us/en/p/micke-desk-white-30213076/",
+          "reason": "First choice for a compact permanent workspace with drawer storage and cable routing, particularly with DIY assembly and inexpensive pickup.",
+          "citationUrls": [
+            "https://www.ikea.com/us/en/p/micke-desk-white-30213076/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Costway folding computer desk through Target",
+          "url": "https://www.target.com/p/-/A-90614603",
+          "reason": "Alternative for reclaiming floor space and avoiding assembly; seller lists a 17-pound folding design and Target lists a 30-day return window.",
+          "citationUrls": [
+            "https://www.target.com/p/-/A-90614603"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "IKEA MICKE desk, 41⅜-inch white",
+          "url": "https://www.ikea.com/us/en/p/micke-desk-white-80213074/",
+          "reason": "Alternative when extra working width and configurable storage justify a larger footprint and heavier package.",
+          "citationUrls": [
+            "https://www.ikea.com/us/en/p/micke-desk-white-80213074/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.ikea.com/us/en/p/micke-desk-white-30213076/",
+          "title": "IKEA MICKE desk, white, 28¾ × 19⅝ inches"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/faq/",
+          "title": "IKEA US customer-service FAQs"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/services/delivery/",
+          "title": "IKEA US shipping and delivery options and pricing"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/assembly_instructions/micke-desk-white__AA-476626-10-100.pdf",
+          "title": "IKEA compact MICKE assembly instructions"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/returns-claims/",
+          "title": "IKEA US return policy"
+        },
+        {
+          "url": "https://www.target.com/p/-/A-90614603",
+          "title": "Target: Costway folding computer desk, natural"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/p/micke-desk-white-80213074/",
+          "title": "IKEA MICKE desk, white, 41⅜ × 19⅝ inches"
+        }
+      ],
+      "limitations": [
+        "No ZIP code, room measurements, equipment layout or budget was supplied; local stock, delivery/pickup quotes, assembly availability and return-collection fees were not verified.",
+        "Prices are public-page snapshots and may change. IKEA's general services summary differs from its dedicated delivery page; delivery figures here use the dedicated page.",
+        "The IKEA Click & Collect page returned an internal error; pickup pricing was obtained from IKEA's US FAQ.",
+        "The Costway listing has inconsistent width/depth labels; verify the orientation before ordering.",
+        "This is a limited public-web comparison, not exhaustive market coverage or independent testing of durability, stability or assembly time. Order reflects recommendations for this query, not measured search-engine rank."
+      ]
+    },
+    {
+      "id": "obs-ikea-small-apartment-v1-4a9cb65e9889429adc59bea1",
+      "queryId": "ikea-small-apartment-v1",
+      "observedAt": "2026-09-18T09:07:58.288Z",
+      "status": "completed",
+      "model": "gpt-5.6-sol",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "IKEA TORALD Desk",
+          "url": "https://www.ikea.com/us/en/p/torald-desk-white-90493955/",
+          "reason": "Best bare-minimum apartment pick if 25 5/8 x 15 3/4 inches is enough and pickup avoids delivery costs; the consulted listing was $29.99 and provides carton, load, and assembly information.",
+          "citationUrls": [
+            "https://www.ikea.com/us/en/p/torald-desk-white-90493955/",
+            "https://www.ikea.com/us/en/customer-service/services/product-reservation/",
+            "https://www.ikea.com/us/en/customer-service/returns-claims/return-policy/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Target Room Essentials Compact Desk with Drawer",
+          "url": "https://www.target.com/p/-/A-94957820",
+          "reason": "Better compact alternative when a drawer and a little more width matter; the consulted page listed a $50 price, 28.11 x 15.63-inch footprint, and adult assembly with tools not provided.",
+          "citationUrls": [
+            "https://www.target.com/p/-/A-94957820"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Target Coy Folding Small Space Secretary Desk",
+          "url": "https://www.target.com/p/-/A-54604539",
+          "reason": "Best for reclaiming floor space and avoiding assembly; it folds, requires no assembly, and the consulted listing gave exact dimensions and a $108.99 price.",
+          "citationUrls": [
+            "https://www.target.com/p/-/A-54604539"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Walmart Gianna 31-inch Computer Desk",
+          "url": "https://www.walmart.com/ip/20397066623",
+          "reason": "Low-cost wider alternative at the consulted $36.99 price, with particleboard/steel construction and advertised quick assembly; verify missing depth, height, shipping, and return details before purchase.",
+          "citationUrls": [
+            "https://www.walmart.com/ip/20397066623"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.ikea.com/us/en/p/torald-desk-white-90493955/",
+          "title": "TORALD desk, white, 25 5/8x15 3/4 inches - IKEA US"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/services/delivery/",
+          "title": "Shipping and Delivery service options and pricing - IKEA US"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/services/product-reservation/",
+          "title": "Click & Collect - IKEA US"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/knowledge/articles/6aada8f2-0f76-473f-95d9-b6a413aec984.html",
+          "title": "Does IKEA offer assembly services and what is the cost? - IKEA US"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/returns-claims/return-policy/",
+          "title": "How to Return or Exchange Products - IKEA US"
+        },
+        {
+          "url": "https://www.target.com/p/-/A-94957820",
+          "title": "Compact Desk with Drawer White - Room Essentials - Target"
+        },
+        {
+          "url": "https://www.target.com/p/-/A-54604539",
+          "title": "Coy Transitional Folding Small Space Secretary Desk - Target"
+        },
+        {
+          "url": "https://www.walmart.com/ip/20397066623",
+          "title": "Gianna 31-inch Computer Desk for Small Spaces - Walmart"
+        }
+      ],
+      "limitations": [
+        "This is a selective public-web comparison, not exhaustive market coverage or a measured search-engine ranking.",
+        "No address or ZIP code was supplied, so exact delivery and pickup availability, taxes, timing, and final fees could not be calculated; IKEA directs shoppers to the cart for exact local pricing.",
+        "Prices and stock are snapshots from pages consulted on 2026-09-18 and may change.",
+        "Product durability, comfort, ease of assembly, and stated load limits were not independently tested or verified.",
+        "The consulted Walmart Gianna page did not expose complete assembled dimensions, package dimensions, delivery cost, or return terms; these need checkout-page verification.",
+        "Target and Walmart marketplace or partner listings can have seller-specific fulfillment and return conditions; confirm the seller and final terms in the cart."
+      ]
+    },
+    {
+      "id": "obs-ikea-small-apartment-v1-8ff26935618a04d8fe425267",
+      "queryId": "ikea-small-apartment-v1",
+      "observedAt": "2026-09-18T09:08:50.913Z",
+      "status": "completed",
+      "model": "gpt-5.6-luna",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "IKEA MICKE desk, 28 3/4 x 19 5/8 in",
+          "url": "https://www.ikea.com/us/en/p/micke-desk-white-30213076/",
+          "reason": "Best fit for a tight apartment; the consulted page lists the smallest footprint, price, cable management, load limit, and package dimensions.",
+          "citationUrls": [
+            "https://www.ikea.com/us/en/p/micke-desk-white-30213076/"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "IKEA MICKE desk, 41 3/8 x 19 5/8 in",
+          "url": "https://www.ikea.com/us/en/p/micke-desk-white-80213074/",
+          "reason": "Adds workspace while retaining a shallow 19 5/8-in depth, with published measurements and package size.",
+          "citationUrls": [
+            "https://www.ikea.com/us/en/p/micke-desk-white-80213074/"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Target HOMCOM 47-in small writing desk",
+          "url": "https://www.target.com/p/-/A-1001347746",
+          "reason": "Relevant alternative if a 15.7-in-deep top and Target purchasing are attractive; the listing states its dimensions and included wrench.",
+          "citationUrls": [
+            "https://www.target.com/p/-/A-1001347746",
+            "https://www.target.com/help/article/000061980"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.ikea.com/us/en/p/micke-desk-white-30213076/",
+          "title": "IKEA MICKE 28 3/4-in desk"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/p/micke-desk-white-80213074/",
+          "title": "IKEA MICKE 41 3/8-in desk"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/services/delivery/",
+          "title": "IKEA US delivery options and pricing"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/returns-claims/return-policy/",
+          "title": "IKEA US return policy"
+        },
+        {
+          "url": "https://www.ikea.com/us/en/customer-service/knowledge/articles/8270b46d-88c6-47c7-b74d-99e3ffcegd6c.html",
+          "title": "IKEA US return pickup cost"
+        },
+        {
+          "url": "https://www.target.com/p/-/A-1001347746",
+          "title": "Target HOMCOM desk listing"
+        },
+        {
+          "url": "https://www.target.com/help/article/000061980",
+          "title": "Target return policy"
+        }
+      ],
+      "limitations": [
+        "Exact IKEA delivery availability, fee, date, and pickup options require the buyer's ZIP code and live checkout.",
+        "Product prices and promotions can change; no live cart, inventory, assembly quote, or vehicle fit was inspected.",
+        "Target seller-specific shipping and return terms must be checked on the exact listing.",
+        "The recommendation is not an exhaustive market ranking and product performance was not independently verified."
+      ]
+    },
+    {
+      "id": "obs-taskrabbit-assembly-booking-v1-b48d766219d026733d9062ed",
+      "queryId": "taskrabbit-assembly-booking-v1",
+      "observedAt": "2026-09-18T09:09:41.168Z",
+      "status": "completed",
+      "model": "gpt-5.6-sol",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Confirm exact-address availability",
+          "url": "https://www.taskrabbit.com/locations/manhattan/assemble-furniture",
+          "reason": "NYC-area service is advertised, including possible same-day availability, but the actual Tasker list and schedule depend on the entered address and requested time; a Tasker must confirm the booking.",
+          "citationUrls": [
+            "https://www.taskrabbit.com/locations/manhattan/assemble-furniture",
+            "https://support.taskrabbit.com/hc/en-us/articles/46260422073755-How-Do-I-Hire-a-Tasker"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Estimate the all-in price",
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260407116955-I-d-Like-To-Understand-The-Fees-On-My-Task-s-Invoice",
+          "reason": "The Tasker’s hourly rate is only one component; duration, minimum hours, Service and Trust & Support fees, taxes, expenses, and optional tip can affect the final total.",
+          "citationUrls": [
+            "https://support.taskrabbit.com/hc/en-us/articles/46260499891355-How-Much-Does-it-Cost-to-Hire-a-Tasker",
+            "https://support.taskrabbit.com/hc/en-us/articles/46260462857499-What-s-the-One-Hour-Minimum",
+            "https://support.taskrabbit.com/hc/en-us/articles/46260407116955-I-d-Like-To-Understand-The-Fees-On-My-Task-s-Invoice"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Vet and confirm the Tasker",
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260422073755-How-Do-I-Hire-a-Tasker",
+          "reason": "Profiles expose category reviews, skills, experience, rates, and availability; post-selection chat is the place to confirm tools, scope, logistics, timing, and any higher minimum in writing.",
+          "citationUrls": [
+            "https://support.taskrabbit.com/hc/en-us/articles/46260422073755-How-Do-I-Hire-a-Tasker",
+            "https://support.taskrabbit.com/hc/en-ca/articles/46260467196059-Can-I-Contact-a-Tasker-Before-Booking-a-Task",
+            "https://support.taskrabbit.com/hc/en-ca/articles/46260463840155-Can-I-Set-a-Two-Hour-Minimum-for-Tasks"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Check cancellation and rescheduling terms",
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260490101275-My-Task-was-Canceled-Why-Was-I-Charged",
+          "reason": "Canceling within 24 hours or being unavailable can cost one hour of the Tasker’s rate plus platform fees; short-notice rescheduling must be agreed in chat and cannot be used to evade the fee.",
+          "citationUrls": [
+            "https://support.taskrabbit.com/hc/en-us/articles/46260490101275-My-Task-was-Canceled-Why-Was-I-Charged",
+            "https://support.taskrabbit.com/hc/en-us/articles/35682381220621-The-Taskrabbit-Schedule-Availability-Policy",
+            "https://support.taskrabbit.com/hc/en-gb/articles/46260410296603-My-Tasker-Cancelled-What-Should-I-Do"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.taskrabbit.com/locations/manhattan/assemble-furniture",
+          "title": "Furniture Assembly Services in Manhattan | Taskrabbit"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260422073755-How-Do-I-Hire-a-Tasker",
+          "title": "How Do I Hire a Tasker? – Taskrabbit Support"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260499891355-How-Much-Does-it-Cost-to-Hire-a-Tasker",
+          "title": "How Much Does it Cost to Hire a Tasker? – Taskrabbit Support"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260462857499-What-s-the-One-Hour-Minimum",
+          "title": "What's the One-Hour Minimum? – Taskrabbit Support"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260407116955-I-d-Like-To-Understand-The-Fees-On-My-Task-s-Invoice",
+          "title": "I’d Like To Understand The Fees On My Task’s Invoice – Taskrabbit Support"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-ca/articles/46260467196059-Can-I-Contact-a-Tasker-Before-Booking-a-Task",
+          "title": "Can I Contact a Tasker Before Booking a Task? – Taskrabbit Support"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-ca/articles/46260463840155-Can-I-Set-a-Two-Hour-Minimum-for-Tasks",
+          "title": "Can I Set a Two-Hour Minimum for Tasks? – Taskrabbit Support"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260490101275-My-Task-was-Canceled-Why-Was-I-Charged",
+          "title": "My Task was Canceled, Why Was I Charged? – Taskrabbit Support"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/35682381220621-The-Taskrabbit-Schedule-Availability-Policy",
+          "title": "Schedule Availability & Reschedule Policy – Taskrabbit Support"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-gb/articles/46260410296603-My-Tasker-Cancelled-What-Should-I-Do",
+          "title": "My Tasker Cancelled, What Should I Do? – Taskrabbit Support"
+        }
+      ],
+      "limitations": [
+        "This was a focused public-web review, not exhaustive market coverage or a measured search-engine ranking.",
+        "No address, date, account, or checkout flow was used, so live borough-specific Tasker availability, exact rates, fee percentages, taxes, and final totals were not observed.",
+        "The public location evidence consulted was Manhattan-specific; availability elsewhere in New York City must be checked by entering the exact service address.",
+        "Most evidence came from Taskrabbit’s own current support and location pages; provider performance claims were not independently verified.",
+        "The detailed cancellation-policy search result available during research was a UK-locale support page, so the answer relies on the US support article for the core 24-hour charge and uses only exceptions shown in Taskrabbit’s published policy text. Policies and fees can change; review the terms displayed at booking."
+      ]
+    },
+    {
+      "id": "obs-taskrabbit-assembly-booking-v1-6f040f4104d598f6267da063",
+      "queryId": "taskrabbit-assembly-booking-v1",
+      "observedAt": "2026-09-18T09:10:03.867Z",
+      "status": "completed",
+      "model": "gpt-5.6-terra",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Taskrabbit Furniture Assembly in New York City",
+          "url": "https://www.taskrabbit.com/locations/new-york-city/assemble-furniture",
+          "reason": "Use the standard NYC category after verifying the individual Tasker's rate, reviews, tools, minimum-hours note, scope, and displayed slot; the page supports borough-wide coverage and the citywide average as context, not as a quote.",
+          "citationUrls": [
+            "https://www.taskrabbit.com/locations/new-york-city/assemble-furniture",
+            "https://support.taskrabbit.com/hc/en-us/articles/46260499891355-How-Much-Does-it-Cost-to-Hire-a-Tasker",
+            "https://support.taskrabbit.com/hc/en-us/articles/46260411872155-What-s-the-Taskrabbit-Service-Fee",
+            "https://support.taskrabbit.com/hc/en-us/articles/46260490101275-My-Task-was-Canceled-Why-Was-I-Charged"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.taskrabbit.com/locations/new-york-city/assemble-furniture",
+          "title": "Furniture Assembly in New York City | Taskrabbit"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260499891355-How-Much-Does-it-Cost-to-Hire-a-Tasker",
+          "title": "How Much Does it Cost to Hire a Tasker? | Taskrabbit Support"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260411872155-What-s-the-Taskrabbit-Service-Fee",
+          "title": "What's the Taskrabbit Service Fee? | Taskrabbit Support"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260534257435-How-Do-I-Reimburse-My-Tasker-For-Expenses",
+          "title": "How Do I Reimburse My Tasker For Expenses? | Taskrabbit Support"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260490101275-My-Task-was-Canceled-Why-Was-I-Charged",
+          "title": "My Task was Canceled, Why Was I Charged? | Taskrabbit Support"
+        }
+      ],
+      "limitations": [
+        "Research used public pages surfaced by live web search; no login, booking flow, or provider profile was accessed.",
+        "The NYC $47/hour figure is a platform-stated average, not a guaranteed rate or final quote; individual rates, duration, minimums, fees, taxes, scope, and optional tips can change the total.",
+        "Taskrabbit's full cancellation-policy search result was an en-GB support URL; the specific within-24-hours charge stated here is supported by the U.S. support page. Review the current policy presented for the specific U.S. booking.",
+        "No independent verification of Tasker availability, service quality, background-check process, or product performance was performed."
+      ]
+    },
+    {
+      "id": "obs-taskrabbit-assembly-booking-v1-253a33e2d12284c660f4be4e",
+      "queryId": "taskrabbit-assembly-booking-v1",
+      "observedAt": "2026-09-18T09:10:58.410Z",
+      "status": "completed",
+      "model": "gpt-5.6-luna",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Confirm NYC coverage and the exact slot",
+          "url": "https://www.taskrabbit.com/locations/new-york-city/assemble-furniture",
+          "reason": "Taskrabbit advertises furniture assembly across NYC, including the Bronx through Staten Island, and says booking can be scheduled as early as today; enter your precise address, item, and date to see whether a suitable Tasker is actually available.",
+          "citationUrls": [
+            "https://www.taskrabbit.com/locations/new-york-city/assemble-furniture"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "Price the whole job, not just the hourly rate",
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260499891355-How-Much-Does-it-Cost-to-Hire-a-Tasker",
+          "reason": "Taskers set their own hourly rates and the total depends on time worked; add the Service Fee, Trust & Support fee, applicable taxes, and any disclosed expenses/reimbursements. Share item links/photos, quantity, stairs/elevator/access, tools, and cleanup needs so the estimate is realistic. Taskrabbit’s NYC page gives a current public benchmark of $47/hour average, but it is not a quote.",
+          "citationUrls": [
+            "https://support.taskrabbit.com/hc/en-us/articles/46260499891355-How-Much-Does-it-Cost-to-Hire-a-Tasker",
+            "https://support.taskrabbit.com/hc/en-us/articles/46260411872155-What-s-the-Taskrabbit-Service-Fee",
+            "https://support.taskrabbit.com/hc/en-us/articles/46260407116955-I-d-Like-To-Understand-The-Fees-On-My-Task-s-Invoice"
+          ]
+        },
+        {
+          "position": 3,
+          "name": "Compare Taskers by fit, not rating alone",
+          "url": "https://www.taskrabbit.com/locations/new-york-city/assemble-furniture",
+          "reason": "Use the booking results to compare price, skills, reviews, task count, schedule, stated minimum hours, tools, and scope. Confirm the Tasker handles your brand/model and whether disassembly, mounting/anchoring, unpacking, and cardboard removal are included; the NYC page specifically says the platform lets you choose by price, skills, and reviews.",
+          "citationUrls": [
+            "https://www.taskrabbit.com/locations/new-york-city/assemble-furniture"
+          ]
+        },
+        {
+          "position": 4,
+          "name": "Read the cancellation deadline before confirming",
+          "url": "https://support.taskrabbit.com/hc/en-gb/articles/46260411471899-Cancellation-Policy",
+          "reason": "Clients can cancel, but cancelling within 24 hours or being unavailable/unresponsive at the appointment can trigger a nonrefundable fee generally equal to one hour of the Tasker’s hourly rate plus Taskrabbit fees. The policy lists exceptions including cancellation within five minutes of booking and a Tasker no-show; verify the terms shown for your booking.",
+          "citationUrls": [
+            "https://support.taskrabbit.com/hc/en-gb/articles/46260411471899-Cancellation-Policy",
+            "https://support.taskrabbit.com/hc/en-us/articles/46260490101275-My-Task-was-Canceled-Why-Was-I-Charged?"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.taskrabbit.com/locations/new-york-city/assemble-furniture",
+          "title": "Furniture Assembly in NYC | Taskrabbit"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260499891355-How-Much-Does-it-Cost-to-Hire-a-Tasker",
+          "title": "How Much Does It Cost to Hire a Tasker? | Taskrabbit Support"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260411872155-What-s-the-Taskrabbit-Service-Fee",
+          "title": "What's the Taskrabbit Service Fee? | Taskrabbit Support"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260407116955-I-d-Like-To-Understand-The-Fees-On-My-Task-s-Invoice",
+          "title": "I'd Like To Understand The Fees On My Task's Invoice | Taskrabbit Support"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-gb/articles/46260411471899-Cancellation-Policy",
+          "title": "Cancellation Policy | Taskrabbit Support"
+        },
+        {
+          "url": "https://support.taskrabbit.com/hc/en-us/articles/46260490101275-My-Task-was-Canceled-Why-Was-I-Charged?",
+          "title": "My Task was Canceled, Why Was I Charged? | Taskrabbit Support"
+        }
+      ],
+      "limitations": [
+        "The NYC landing page and displayed rates/Tasker counts can change; confirm the live results for your exact address and date before booking.",
+        "Taskrabbit’s public pages do not establish guaranteed availability for a particular time slot, building, item, or borough; availability must be checked in the booking flow.",
+        "The cited cancellation-policy page is hosted in Taskrabbit’s UK support center; I found matching US support text describing the 24-hour fee, but did not retrieve a separate US full-policy page.",
+        "I did not independently verify the quality, background checks, reviews, rates, or availability of any individual Tasker; the recommendations are booking checks, not endorsements. Think of the checkout estimate as a forecast: the final invoice depends on actual time and applicable fees."
+      ]
+    },
+    {
+      "id": "obs-japan-small-group-comparison-v1-8d35ad971241c2225b0e86c8",
+      "queryId": "japan-small-group-comparison-v1",
+      "observedAt": "2026-09-18T09:11:55.872Z",
+      "status": "completed",
+      "model": "gpt-5.6-sol",
+      "surface": "openai-managed-agents",
+      "searchMode": "open-web",
+      "harnessVersion": "keyword-open-web-v2",
+      "environmentType": "openai_hosted",
+      "recommendations": [
+        {
+          "position": 1,
+          "name": "Intrepid Travel",
+          "url": "https://www.intrepidtravel.com/us/japan/solo-travel",
+          "reason": "Best for a broad choice from Basic through Premium and a graduated standard cancellation schedule; solo twin-sharing is standard and a paid private room is available on most trips.",
+          "citationUrls": [
+            "https://www.intrepidtravel.com/us/japan/solo-travel",
+            "https://www.intrepidtravel.com/us/contact-us/frequently-asked-questions/choosing-your-trip",
+            "https://www.intrepidtravel.com/us/standard-booking-conditions"
+          ]
+        },
+        {
+          "position": 2,
+          "name": "G Adventures",
+          "url": "https://www.gadventures.com/trips/solo-ish-japan/AJTS/",
+          "reason": "Best when the traveler wants an 18+ Japan departure exclusively for solo bookers, with structured connection, free time and clearly itemized trip-specific inclusions.",
+          "citationUrls": [
+            "https://www.gadventures.com/trips/solo-ish-japan/AJTS/",
+            "https://www.gadventures.com/faqs/",
+            "https://www.gadventures.com/terms-conditions/booking-terms/usa-booking-terms-2021/",
+            "https://www.gadventures.com/terms-conditions/booking-terms/"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "url": "https://www.intrepidtravel.com/us/japan/solo-travel",
+          "title": "Best Japan Solo Tours & Vacations | Intrepid Travel US"
+        },
+        {
+          "url": "https://www.intrepidtravel.com/us/contact-us/frequently-asked-questions/choosing-your-trip",
+          "title": "FAQ | Choosing your trip | Intrepid Travel US"
+        },
+        {
+          "url": "https://www.intrepidtravel.com/us/standard-booking-conditions",
+          "title": "Standard Booking Conditions | Intrepid Travel US"
+        },
+        {
+          "url": "https://www.gadventures.com/trips/solo-ish-japan/AJTS/",
+          "title": "Solo-ish Japan | G Adventures"
+        },
+        {
+          "url": "https://www.gadventures.com/faqs/",
+          "title": "Tour FAQs | G Adventures"
+        },
+        {
+          "url": "https://www.gadventures.com/terms-conditions/booking-terms/usa-booking-terms-2021/",
+          "title": "United States Booking Terms and Conditions | G Adventures"
+        },
+        {
+          "url": "https://www.gadventures.com/terms-conditions/booking-terms/",
+          "title": "Booking Terms and Conditions by Region | G Adventures"
+        }
+      ],
+      "limitations": [
+        "This is a focused comparison of the two named operators, not exhaustive market coverage or a measured search-engine ranking.",
+        "Trip prices, availability, promotions, exact inclusions and room configurations are departure-specific and can change; no booking transaction or independent performance verification was performed.",
+        "Cancellation terms depend on booking region, booking date, product type, promotional terms and itinerary special conditions. The comparison uses Intrepid's international terms outside the UK/EEA and G Adventures' current U.S. standard terms; travelers elsewhere must use their local terms.",
+        "G Adventures labels its current U.S. terms page with a URL ending in '2021'; the central regional terms index identifies the linked U.S. terms as current, but the URL naming creates ambiguity.",
+        "Search extracts did not expose every item in Intrepid's trip-specific inclusion lists, so no single Intrepid itinerary was presented as directly price-equivalent to Solo-ish Japan.",
+        "Public pages were consulted without login; no material access failures occurred."
+      ]
     }
   ]
 }
