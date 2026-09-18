@@ -1,0 +1,18 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "folio-public-index",
+  "main": "workers/public-index.ts",
+  "account_id": "d87222df6f3f663e802014f8eb5a274e",
+  "compatibility_date": "2026-09-13",
+  "workers_dev": true,
+  "services": [{ "binding": "FOLIO_APP", "service": "folio-visibility" }],
+  "routes": [
+    { "pattern": "usefolio.site/leaderboard*", "zone_name": "usefolio.site" },
+    { "pattern": "usefolio.site/api/question-index*", "zone_name": "usefolio.site" }
+  ],
+  "d1_databases": [{
+    "binding": "DB",
+    "database_name": "folio-visibility",
+    "database_id": "1ac63021-5da1-45c8-839e-5ba35898bea5"
+  }]
+}
