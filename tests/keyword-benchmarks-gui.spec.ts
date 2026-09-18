@@ -461,6 +461,7 @@ for (const [model,label] of [["gpt-5.6-luna","Luna"],["gpt-5.6-sol","Sol"],["gpt
   await expect(seo).not.toBeChecked();
   await expect(seo).toBeEnabled();
   await expect(page.getByText(/Allows up to 3 paid keyword lookups/)).toBeVisible();
+  await expect(page.getByText(/Search and backlink tools are available only with Astra/)).toHaveCount(0);
   await select.selectOption("gpt-6-astra");
   await expect(seo).toBeEnabled();
   await expect(seo).not.toBeChecked();
