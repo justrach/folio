@@ -23,10 +23,10 @@ This guide describes the implemented workflow and its fixture checks. Actual pro
 | `clothing-shopping-v1` / `open-web` | Recommendations, shipping, returns, sizing, value and materials |
 | `service-booking-v1` / `open-web` | Service discovery, coverage, pricing, cancellation, comparisons and screening |
 | `learning-python-v1` / `open-web` | Beginner courses, projects, prerequisites, free options, practical support and pace |
-| `coding-harness-open-web-v1` / `open-web` | Astra (`gpt-6-astra`), live OpenAI web search with no domain filter; the hosted sandbox has outbound network disabled and validates local JSON |
-| `coding-harness-research-v1` / `reviewed-domains` | Saved/configured model, live search and hosted network restricted to the reviewed documentation hosts |
+| `coding-harness-open-web-v1` / `open-web` | Luna (`gpt-5.6-luna`) by default, live OpenAI web search with no domain filter; the hosted sandbox has outbound network disabled and validates local JSON |
+| `coding-harness-research-v1` / `reviewed-domains` | Luna for new runs; saved model retained for historical observations, live search and hosted network restricted to the reviewed documentation hosts |
 
-All four broader packs and custom questions use the Astra open-web execution contract. A custom draft requires an existing owned website; target URLs and execution settings cannot be supplied as overrides. Saving only creates suite/case records: no capture, session, reservation or provider call is made. A saved suite reports completed-question coverage and each question’s latest attempt state; incomplete questions are not silently scored as zero.
+All broader packs and custom questions use the open-web execution contract, defaulting to Luna. A custom draft requires an existing owned website; target URLs and execution settings cannot be supplied as overrides. Saving only creates suite/case records: no capture, session, reservation or provider call is made. A saved suite reports completed-question coverage and each question’s latest attempt state; incomplete questions are not silently scored as zero.
 
 Absent `searchMode` means the legacy reviewed-domain mode. Old cases, harness hashes and saved runs are not relabelled as open-web research. The open-web harness is versioned separately; each run records its exact version. The legacy harness remains `keyword-research-v1`. Templates neither create public directory entries nor change publication. Legacy starts reject targets outside the reviewed corpus; open-web starts accept a validated public HTTPS target from the existing owned site.
 
@@ -45,7 +45,7 @@ bun run benchmark --help
 
 Migrations `0009_keyword_benchmarks.sql` and `0010_keyword_benchmark_lifecycle.sql` add the private suite, case, run, corpus, deadline, and cancellation fields. The local app and CLI use the same `.wrangler/state/v3` store. The CLI explicitly disables remote bindings; these commands do not provision or migrate production D1.
 
-The server needs `OPENAI_API_KEY`, optionally `OPENAI_AGENTS_MODEL` for legacy runs, and the exact account ID in `OPENAI_ALLOWED_USER_IDS`. These values belong in ignored `.dev.vars` locally and Worker secrets/configuration when deployed. An email address is not an authorization substitute. Restart the development server after configuration changes.
+The server needs `OPENAI_API_KEY` and the exact account ID in `OPENAI_ALLOWED_USER_IDS`. These values belong in ignored `.dev.vars` locally and Worker secrets/configuration when deployed. An email address is not an authorization substitute. Restart the development server after configuration changes.
 
 Normal keyword access allows six starts in a rolling 24 hours and one active benchmark. Website evaluations retain their separate configured daily allowance and active-run guard. All failed, cancelled, and unresolved reservations continue to count.
 

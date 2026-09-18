@@ -149,6 +149,7 @@ export async function updateEvaluationRun(db: D1Database, ownerId: string, run: 
 
 /** Private export contains exact captured text and the deterministic verification recipe. */
 export function createEvaluationBundle(run: EvaluationRun) {
+  if(run.workflow==="website-crawl-v1") return {format:"folio-private-crawl-bundle-v1",exportedAt:new Date().toISOString(),publication:"private",limitations:"Saved HTML text excerpts, not rendered-browser content. Jev coverage judgments are advisory; no technical or search ranking score.",run};
   return {
     format: "folio-private-evaluation-bundle-v1",
     exportedAt: new Date().toISOString(),

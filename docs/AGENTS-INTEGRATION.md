@@ -4,7 +4,7 @@ Folio calls OpenAI's managed **Agents API** through `src/lib/agents.ts` and conn
 
 ## Server configuration and spending
 
-Configure `OPENAI_API_KEY` in gitignored `.dev.vars` or `.env.local` for development, or as a Cloudflare Worker secret. Never use a `NEXT_PUBLIC_*` variable. Configure `OPENAI_ALLOWED_USER_IDS` with a comma-separated list of approved Better Auth user IDs. Email addresses, client flags, and arbitrary successful signups do not grant spending access. `OPENAI_AGENTS_MODEL` defaults to `gpt-6-astra`; another model must be available to the provider project.
+Configure `OPENAI_API_KEY` in gitignored `.dev.vars` or `.env.local` for development, or as a Cloudflare Worker secret. Never use a `NEXT_PUBLIC_*` variable. Configure `OPENAI_ALLOWED_USER_IDS` with a comma-separated list of approved Better Auth user IDs. Email addresses, client flags, and arbitrary successful signups do not grant spending access. Ordinary website evaluations are pinned to `gpt-5.6-luna`; the legacy `OPENAI_AGENTS_MODEL` setting is ignored. Other supported models require an explicit open-web model selection.
 
 `OPENAI_MAX_RUNS_PER_DAY` defaults to **1 managed run per approved user per rolling 24 hours**, with an application maximum of 20. The atomic D1 reservation precedes outbound work and counts failed or ambiguous attempts. An owner can have only one queued, running, or action-required evaluation at a time. This controls run count, not guaranteed dollar cost; configure provider project spending controls separately. No automatic retries submit billable tasks.
 
@@ -51,7 +51,7 @@ Website reports and private keyword runs remain private. The public search table
 
 ## Keyword search and external agents
 
-Keyword observations have a separate service and hosted environment. New `open-web` cases use `gpt-6-astra` with OpenAI live `web_search` and no domain filter. The hosted sandbox has outbound network disabled and serves local JSON validation. Legacy `reviewed-domains` cases retain their restricted live-search/network corpus and saved model/harness identity; omitted mode is legacy. Neither uses another inference provider or measures a consumer chat website.
+Keyword observations have a separate service and hosted environment. New `open-web` cases default to `gpt-5.6-luna` (other models require explicit selection) with OpenAI live `web_search` and no domain filter. The hosted sandbox has outbound network disabled and serves local JSON validation. Legacy `reviewed-domains` cases retain their restricted live-search/network corpus and saved model/harness identity; omitted mode is legacy. Neither uses another inference provider or measures a consumer chat website.
 
 Completion requires a completed root turn, bounded final-answer JSON, a completed search item and the recorded sandbox-validation marker. Root search items and validation evidence remain in the private record. Returned citations are not independently verified source captures. Recommendation positions describe one answer; exact target-host matching and target citation presence remain separate. Mode/configuration changes suppress direct baseline/fresh changes. See [keyword operations and limits](KEYWORD-BENCHMARKS.md).
 
@@ -72,3 +72,5 @@ Optional scheduled retrieval uses the same GET-only reconciler with a shared-sec
 ## Authenticated MCP and sandbox SEO
 
 Folio now includes `/api/mcp` for coding clients and `/api/v1/seo` for explicit, idempotent DataForSEO lookups. Keyword sandboxes can opt into one selected-domain SEO lookup with a short-lived capability; existing evaluation keys require a separate `seo` permission. See [MCP setup and behavior](MCP.md) for migration, configuration, client examples and validation limits.
+
+The optional [Luna website crawl](WEBSITE-CRAWL.md) uses a hosted session with network-disabled shell and service-connected read-only fetch / Jev-review tools. Its report is separate from frozen-page verification.

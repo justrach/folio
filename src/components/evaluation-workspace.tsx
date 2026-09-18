@@ -22,6 +22,7 @@ export type EvaluationConnection = {
     nextAvailableAt?: string | null;
   };
   allowedTargets?: string[];
+  crawlAvailable?: boolean;
 };
 
 const UPDATE_EVENT = "folio-evaluations-changed";

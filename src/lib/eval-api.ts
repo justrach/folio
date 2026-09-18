@@ -18,6 +18,7 @@ export async function evaluationRequestContext(request: Request) {
     ownerId: session.user.id,
     db: await getDb(),
     env: {
+      FOLIO_MCP_URL: values.FOLIO_MCP_URL || process.env.FOLIO_MCP_URL,
       OPENAI_API_KEY: values.OPENAI_API_KEY || process.env.OPENAI_API_KEY,
       OPENAI_AGENTS_MODEL: values.OPENAI_AGENTS_MODEL || process.env.OPENAI_AGENTS_MODEL,
       OPENAI_ALLOWED_USER_IDS: values.OPENAI_ALLOWED_USER_IDS || process.env.OPENAI_ALLOWED_USER_IDS,

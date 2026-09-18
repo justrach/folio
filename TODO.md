@@ -127,3 +127,7 @@ Remaining acceptance work:
 - [ ] Validate the MCP workflows with a hosted owner-scoped client separately from SDK/D1 fixtures.
 - [ ] Review issue #7 row-level collection scope: saved aggregate reports now explicitly say detail was never collected; no new detailed SEO collector exists.
 - [ ] Integrate/review the separate real-readiness graph task (#8) when ready; do not invent Overall/SEO health/Discovery scores.
+
+## Luna crawl follow-up
+
+- [ ] Validate a real authorized Luna → crawl MCP → Jev run. The implemented ten-page workflow and local fixtures are documented in [website crawl](docs/WEBSITE-CRAWL.md); do not mark live validation from mock results.

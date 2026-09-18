@@ -1,8 +1,10 @@
 import "server-only";
+import { crawlToolUrl, crawlUrl, createCrawlGrant, getCrawlResult, validateCrawlFinal } from "./website-crawl";
+import { CRAWL_MODEL, CRAWL_WORKFLOW } from "./website-crawl-types";
 
 import type { D1Database } from "@cloudflare/workers-types";
 import {
-  AgentsIntegrationError, cancelAgentSessionTurn, createWebsiteEvaluationSession, serializeWebsiteEvaluationInput, isAgentDailyLimitExempt,
+  AgentsIntegrationError, createWebsiteCrawlSession, cancelAgentSessionTurn, createWebsiteEvaluationSession, serializeWebsiteEvaluationInput, isAgentDailyLimitExempt,
   getAgentsConnectionStatus, getAgentSession, getAgentSessionItems,
   getAgentSessionTurns,
   type AgentsEnvironment, type AgentTurn, type WebsiteEvaluationInput,
@@ -27,6 +29,7 @@ export function managedRunAccess(env: AgentRunEnvironment, ownerId: string) {
   const configuredLimit = Number(env.OPENAI_MAX_RUNS_PER_DAY || 1);
   return {
     ...connection,
+    crawlAvailable: (() => { try { crawlToolUrl(env, ownerId); return true; } catch { return false; } })(),
     authorized: approved,
     canRun: connection.configured && approved,
     maxRunsPerDay: approved && isAgentDailyLimitExempt(env, ownerId) ? null : Number.isInteger(configuredLimit) && configuredLimit >= 1
@@ -73,10 +76,13 @@ function inputForRun(run: EvaluationRun): WebsiteEvaluationInput {
 export async function startEvaluationRun(
   db: D1Database,
   ownerId: string,
-  input: { domain?: string; brand?: string; mode: "managed" | "demo"; rerunOf?: string; expectedFacts?: ExpectedFacts; seoReportId?: string },
+  input: { domain?: string; brand?: string; mode: "managed" | "demo"; rerunOf?: string; expectedFacts?: ExpectedFacts; seoReportId?: string; websiteCrawl?: boolean },
   env: AgentRunEnvironment,
   options: { reserve?: (run: EvaluationRun, maxLivePerDay: number | null) => Promise<{ run: EvaluationRun; created: boolean }> } = {},
 ): Promise<EvaluationRun> {
+  if (input.websiteCrawl && (input.mode!=="managed" || input.rerunOf || input.expectedFacts || input.seoReportId))
+    throw new ScanError("Start a crawl as a fresh managed run without reference answers or saved SEO evidence.",400);
+  if(input.websiteCrawl) crawlToolUrl(env,ownerId);
   let previous: EvaluationRun | null = null;
   if (input.rerunOf) {
     if (input.seoReportId) throw new ScanError("A replay preserves its original SEO report. Start a fresh evaluation to change it.", 400);
@@ -101,7 +107,8 @@ export async function startEvaluationRun(
   if (previous && previous.mode !== "live")
     throw new ScanError("Replay this fixture as a demonstration, or start a fresh managed website evaluation.", 400);
   const target = normalizeScanUrl(previous?.targetUrl ?? input.domain ?? "example.com");
-  assertAllowedUrl(target, configuredScanHosts(env.SCAN_ALLOWED_HOSTS));
+  if(input.websiteCrawl) crawlUrl(target.href,target.href);
+  else assertAllowedUrl(target, configuredScanHosts(env.SCAN_ALLOWED_HOSTS));
   const siteName = (previous?.siteName ?? input.brand ?? target.hostname).trim();
   if (!siteName || siteName.length > 200) throw new ScanError("Use a website name of 1–200 characters.");
   let seoCapture: EvidenceCapture | undefined;
@@ -118,9 +125,10 @@ export async function startEvaluationRun(
   const now = new Date().toISOString();
   let run: EvaluationRun = {
     id: crypto.randomUUID(), targetUrl: target.href, siteName,
-    suiteVersion: WEBSITE_EVAL_VERSION, mode: "live", status: "queued",
-    createdAt: now, updatedAt: now, sessionId: null, model: access.model,
-    providerStatus: null, captures: [], events: [event("queued", "Evaluation reserved", "Private run; a fresh managed OpenAI session will review frozen website evidence.")],
+    suiteVersion: input.websiteCrawl ? CRAWL_WORKFLOW : WEBSITE_EVAL_VERSION, mode: "live", status: "queued",
+    ...(input.websiteCrawl ? {workflow: CRAWL_WORKFLOW as "website-crawl-v1"} : {}),
+    createdAt: now, updatedAt: now, sessionId: null, model: input.websiteCrawl ? CRAWL_MODEL : access.model,
+    providerStatus: null, captures: [], events: [event("queued", "Evaluation reserved", input.websiteCrawl ? "Private Luna crawl: up to ten same-website pages followed by one Jev review." : "Private run; a fresh managed OpenAI session will review frozen website evidence.")],
     result: null, error: null, usage: null, publication: "private", revision: 0,
     ...((previous ? previous.expectedFacts : input.expectedFacts) ? { expectedFacts: structuredClone((previous ? previous.expectedFacts : input.expectedFacts)!) } : {}),
   };
@@ -159,8 +167,12 @@ export async function startEvaluationRun(
       }
     }
   };
-  let providerInput: WebsiteEvaluationInput;
+  let providerInput: WebsiteEvaluationInput | undefined;
+  let crawlTool: {url:string;authorization:string} | undefined;
   try {
+    if (input.websiteCrawl) {
+      crawlTool=await createCrawlGrant(db,ownerId,run,env);
+    } else {
     let captures: EvidenceCapture[];
     if (previous) {
       captures = structuredClone(previous.captures);
@@ -176,16 +188,17 @@ export async function startEvaluationRun(
     // The full captured text remains intact. JSON escaping or combined captures
     // may exceed the transport ceiling even when the page itself fits.
     serializeWebsiteEvaluationInput(providerInput);
+    }
     // This durable marker precedes the only creation POST. The initial input is
     // required for environment:none and can start billable work immediately.
-    await save({ events: [...run.events, { ...event("status", "Creating session with captured evidence",
+    await save({ events: [...run.events, { ...event("status", input.websiteCrawl ? "Creating Luna crawl session" : "Creating session with captured evidence",
       "One creation request includes the initial task. A lost response leaves creation and cost unconfirmed; it is never automatically retried."), id: "session-create-attempt" }] });
   } catch (error) {
     return saveOutcome({ status: "failed", error: safeError(error),
       events: [...run.events, event("error", "Evaluation preparation failed", safeError(error))] });
   }
   try {
-    const session = await createWebsiteEvaluationSession(providerInput, env);
+    const session = crawlTool ? await createWebsiteCrawlSession(run,crawlTool,env) : await createWebsiteEvaluationSession(providerInput!, env);
     return saveOutcome({ sessionId: session.id, providerStatus: session.status,
       status: session.status === "failed" ? "failed" : session.status === "requires_action" ? "requires_action" : "running",
       error: session.status === "failed" ? "OpenAI returned a failed session. Its initial task may have consumed credits; no evaluation success is claimed." : null,
@@ -317,6 +330,7 @@ export async function reconcileEvaluationRun(db: D1Database, ownerId: string, id
   let error: string | null = null;
   let result = run.result;
   let agentOutput = run.agentOutput;
+  const crawlResult = run.workflow === CRAWL_WORKFLOW ? await getCrawlResult(db,ownerId,run.id) : undefined;
   if (session.status === "failed" || latest?.status === "failed") {
     status = "failed"; error = "OpenAI reported a failed session or turn. No successful evaluation is claimed.";
   } else if (latest?.status === "cancelled") status = "cancelled";
@@ -336,15 +350,21 @@ export async function reconcileEvaluationRun(db: D1Database, ownerId: string, id
     } else try {
       const text = final ? messageText(final) : "";
       if (!text || text.length > 50_000) throw new Error("Missing or oversized final response");
+      if(crawlResult) {
+        agentOutput=validateCrawlFinal(text,crawlResult);
+        status="completed";
+        events.set("verification-final",{...event("verification","Crawl and Jev review saved","Saved public page excerpts and advisory coverage judgments; no technical or search ranking score."),id:"verification-final"});
+      } else {
       agentOutput = parseWebsiteAgentOutput(JSON.parse(text));
       if (!agentOutput) throw new Error("Invalid final response schema");
       result = await verifyEvaluationResult(run, agentOutput);
       status = "completed";
       const verification = event("verification", "Deterministic verification finished", "The verifier checked returned facts and citations against the frozen captures. Failed checks remain visible; this is not a public website rank.");
       events.set("verification-final", { ...verification, id: "verification-final", status: "completed" });
+      }
     } catch {
       status = "failed"; result = null; agentOutput = undefined;
-      error = "OpenAI completed its turn, but the final answer did not match the evaluation JSON contract. No score was accepted.";
+      error = crawlResult ? "The crawl did not complete its saved-page and Jev-review contract. Saved pages and any review outcome remain available; no work is retried automatically." : "OpenAI completed its turn, but the final answer did not match the evaluation JSON contract. No score was accepted.";
     }
   } else if (!latest && session.status === "idle") {
     status = "requires_action";
@@ -354,7 +374,7 @@ export async function reconcileEvaluationRun(db: D1Database, ownerId: string, id
     title: `OpenAI session: ${session.status}`, detail: latest ? `Latest root turn ${latest.id}: ${latest.status}` : "No root turn has been observed.",
     data: { sessionId, providerStatus: session.status, turnId: latest?.id ?? null, turnStatus: latest?.status ?? null, requiredActionCount: session.required_actions.length, savedSeoToolAvailable: Boolean(run.captures.some((capture) => capture.kind === "seo-report") && !run.events.some((entry) => entry.id.startsWith("saved-seo-tool-")) && pendingSavedSeoAction(session, turns)), retrievedItemCount: items.length, activityWindow: "Most recent 100 provider items; reasoning and input omitted." } };
   events.set(stateEvent.id, stateEvent);
-  return updateEvaluationRun(db, ownerId, { ...run, status, error, result, agentOutput,
+  return updateEvaluationRun(db, ownerId, { ...run, status, error, result, agentOutput, ...(crawlResult ? {crawlResult} : {}),
     providerStatus: session.status, usage: pickUsage(latest?.usage ?? session.usage),
     events: [...events.values()], updatedAt: now });
 }

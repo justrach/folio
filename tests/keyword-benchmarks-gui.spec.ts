@@ -452,7 +452,8 @@ for (const [model,label] of [["gpt-5.6-luna","Luna"],["gpt-5.6-sol","Sol"],["gpt
   state.suites = [{ ...suite, cases: suite.cases.map(item => ({ ...item, searchMode: "open-web" })) }];
   await page.goto(`/benchmarks?suite=${suite.id}`);
   const select = page.getByRole("combobox", { name: "Model for the next observation", exact: true });
-  await expect(select).toHaveValue("gpt-6-astra");
+  await expect(select).toHaveValue("gpt-5.6-luna");
+  await select.selectOption("gpt-6-astra");
   const seo = page.getByRole("checkbox", { name: /Let this agent look up search and backlinks/ });
   await seo.check();
   await select.selectOption(model);
@@ -499,7 +500,7 @@ test("model selection resets when a different owner signs in", async ({ page }) 
   const state = await fixture(page); state.openWebModels = modelOptions;
   state.suites = [{ ...suite, cases: suite.cases.map(item => ({ ...item, searchMode: "open-web" })) }];
   await page.goto(`/benchmarks?suite=${suite.id}`);
-  await page.getByRole("combobox", { name: "Model for the next observation", exact: true }).selectOption("gpt-5.6-luna");
+  await page.getByRole("combobox", { name: "Model for the next observation", exact: true }).selectOption("gpt-5.6-sol");
   await navigate(page, "/settings");
   await page.getByRole("button", { name: "Sign out", exact: true }).click();
   await expect.poll(() => state.owner).toBeNull();
@@ -509,7 +510,7 @@ test("model selection resets when a different owner signs in", async ({ page }) 
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
   await expect(page).toHaveURL(/\/websites$/);
   await navigate(page, "/benchmarks");
-  await expect(page.getByRole("combobox", { name: "Model for the next observation", exact: true })).toHaveValue("gpt-6-astra");
+  await expect(page.getByRole("combobox", { name: "Model for the next observation", exact: true })).toHaveValue("gpt-5.6-luna");
   expect(state.starts).toEqual([]); expect(state.forbidden).toEqual([]);
 });
 

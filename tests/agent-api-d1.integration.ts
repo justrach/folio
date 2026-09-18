@@ -97,7 +97,7 @@ test("actual D1 ensure races commit one request-linked provider start and preser
     assert.equal(JSON.stringify(cached).includes("private-reference"), false);
     assert.equal(JSON.stringify(cached).includes("fixture-private-raw-marker"), false);
     assert.equal(cached.run?.provenance.completedSearchCount, 1); assert.equal(cached.run?.provenance.searchMode, "open-web");
-    assert.equal((await getAgentObservation(db, "alice", input, { ...env, OPENAI_AGENTS_MODEL: "changed-model" })).run?.model, "gpt-6-astra", "Open-web observations use the requested fixed Astra model.");
+    assert.equal((await getAgentObservation(db, "alice", input, { ...env, OPENAI_AGENTS_MODEL: "changed-model" })).run?.model, "gpt-5.6-luna", "Open-web observations default to Luna independently of legacy configuration.");
     const changed = await updateKeywordBenchmarkCase(db, "alice", suite.cases[0].id, 0, { ...trial, searchMode: "reviewed-domains" });
     const incompatible=await getAgentObservation(db,"alice",input,env);
     assert.equal(incompatible.run,null,"Strict paid reuse stays incompatible");assert.equal(incompatible.latestCompletedRun?.id,runId);assert.equal(incompatible.historyState,"incompatible_history");assert.ok(incompatible.compatibility.mismatchReasons.includes("harness version"));

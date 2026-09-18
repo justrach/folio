@@ -198,3 +198,7 @@ Folio now includes `/api/mcp` for coding clients and `/api/v1/seo` for explicit,
 ### Advisory semantic review
 
 An explicit owner action can review saved page-evidence fact citations with TypeSafe after deterministic integrity and quote checks. `typesafe-review-store.ts` reserves D1 capacity before inference and retains ambiguity without retry; `typesafe-citations.ts` bounds and validates the transport. This is separate from scoring, publication and reference truth. D1 usage is included in the private cost summary, with money unknown. See [TypeSafe reviews](docs/TYPESAFE-REVIEWS.md).
+
+## Agent-directed website crawl
+
+See [Luna crawl and Jev review](docs/WEBSITE-CRAWL.md): agent-controlled same-website traversal through bounded fetch tools, stored excerpts, one semantic review, and a separate report from search rankings.

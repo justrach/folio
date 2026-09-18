@@ -65,7 +65,7 @@ export const evaluationMethodology = {
   ],
 } as const;
 
-function decodeEntities(value: string) {
+export function decodeEntities(value: string) {
   return value.replace(
     /&(#x[0-9a-f]+|#\d+|amp|lt|gt|quot|apos|nbsp);/gi,
     (match, entity: string) => {
@@ -90,7 +90,7 @@ function decodeEntities(value: string) {
   );
 }
 
-function plainText(html: string) {
+export function plainText(html: string) {
   return decodeEntities(html.replace(/<[^>]*>/g, " "))
     .replace(/\s+/g, " ")
     .trim();

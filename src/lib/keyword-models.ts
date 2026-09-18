@@ -5,7 +5,7 @@ export const KEYWORD_OPEN_WEB_MODELS = [
   { id: "gpt-5.6-sol", label: "Sol", validation: "experimental" },
   { id: "gpt-5.6-terra", label: "Terra", validation: "experimental" },
 ] as const;
-export const KEYWORD_OPEN_WEB_MODEL = KEYWORD_OPEN_WEB_MODELS[0].id;
+export const KEYWORD_OPEN_WEB_MODEL = "gpt-5.6-luna";
 export function isKeywordOpenWebModel(value: unknown): value is typeof KEYWORD_OPEN_WEB_MODELS[number]["id"] {
   return KEYWORD_OPEN_WEB_MODELS.some(model => model.id === value);
 }

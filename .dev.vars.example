@@ -12,7 +12,7 @@ GITHUB_CLIENT_ID=
 GITHUB_CLIENT_SECRET=
 # Add the server-side provider key when available; never use a NEXT_PUBLIC_ variable.
 OPENAI_API_KEY=
-OPENAI_AGENTS_MODEL=gpt-6-astra
+# Website evaluations are pinned to Luna; no model environment override.
 # Exact app account IDs allowed to start paid managed agent sessions.
 OPENAI_ALLOWED_USER_IDS=
 # Rolling 24-hour live-run cap per approved account (1–20).

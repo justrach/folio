@@ -93,6 +93,8 @@ export type VerifiedEvaluation = {
   limitations: string[];
 };
 export type EvaluationRun = {
+  workflow?: "website-crawl-v1";
+  crawlResult?: import("./website-crawl-types").CrawlResult;
   id: string;
   targetUrl: string;
   siteName: string;
@@ -117,7 +119,7 @@ export type EvaluationRun = {
 
 export function evaluationSummary(run: EvaluationRun) {
   return {
-    id: run.id, targetUrl: run.targetUrl, siteName: run.siteName,
+    id: run.id, targetUrl: run.targetUrl, siteName: run.siteName, workflow: run.workflow,
     suiteVersion: run.suiteVersion, mode: run.mode, status: run.status,
     createdAt: run.createdAt, updatedAt: run.updatedAt, model: run.model,
     sessionId: run.sessionId, providerStatus: run.providerStatus ?? null,

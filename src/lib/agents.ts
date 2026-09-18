@@ -1,11 +1,13 @@
 import "server-only";
+import { buildCrawlRequest } from "./website-crawl";
+import type { EvaluationRun } from "./evals";
 
 /** Managed Agents API, verified against the official quickstart on 2026-09-13.
  * https://developers.openai.com/api/docs/guides/agents-api/quickstart
  * Credentials stay in the Worker / Next server; this module is never client code.
  */
 const AGENTS_API = "https://api.openai.com/v1/agents/sessions";
-const DEFAULT_MODEL = "gpt-6-astra";
+const DEFAULT_MODEL = "gpt-5.6-luna";
 const MAX_RESPONSE_BYTES = 1_000_000;
 
 export type AgentsEnvironment = {
@@ -115,7 +117,7 @@ export function getAgentsConnectionStatus(env = runtimeEnvironment()) {
     provider: "OpenAI Agents API" as const,
     configured,
     status: configured ? ("configured" as const) : ("disconnected" as const),
-    model: env.OPENAI_AGENTS_MODEL?.trim() || DEFAULT_MODEL,
+    model: DEFAULT_MODEL,
     message: configured
       ? "API key configured. Provider access has not yet been verified."
       : "Add an OpenAI API key to run an agent evaluation.",
@@ -428,4 +430,8 @@ export async function getAgentSessionTurns(
         ["queued", "in_progress", "waiting", "completed", "failed", "cancelled"].includes(String(turn.status))))
     throw new AgentsIntegrationError("Unexpected session turns response.", "INVALID_RESPONSE");
   return result as AgentTurnsPage;
+}
+
+export async function createWebsiteCrawlSession(run: EvaluationRun, tool: {url:string;authorization:string}, env: AgentsEnvironment) {
+ return readSession(await agentsRequest("",env,buildCrawlRequest(run,tool)));
 }

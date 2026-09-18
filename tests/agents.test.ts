@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import type { D1Database } from "@cloudflare/workers-types";
 import {
-  AgentsIntegrationError, createWebsiteEvaluationSession, getAgentSessionTurns,
+  getAgentsConnectionStatus, AgentsIntegrationError, createWebsiteEvaluationSession, getAgentSessionTurns,
   cancelAgentSessionTurn, serializeWebsiteEvaluationInput,
 } from "../src/lib/agents";
 import {
@@ -449,4 +449,9 @@ test("provider activity projection is bounded to recent items and short excerpts
 test("invalid provider turn ownership is rejected", async (t) => {
   t.mock.method(globalThis, "fetch", async () => Response.json({ data: [{ id: "t", session_id: "other-session", status: "completed", created_at: 0 }], has_more: false }));
   await assert.rejects(getAgentSessionTurns("sess_fixture", {}, env), /Unexpected session turns response/);
+});
+
+test("website evaluation defaults to Luna", () => {
+ assert.equal(getAgentsConnectionStatus({}).model,"gpt-5.6-luna");
+ assert.equal(getAgentsConnectionStatus({OPENAI_AGENTS_MODEL:"gpt-6-astra"}).model,"gpt-5.6-luna");
 });

@@ -92,7 +92,7 @@ export async function keywordBenchmarkExecutionConfig(trial: KeywordBenchmarkCas
   if (selectedModel !== undefined && (searchMode !== "open-web" || !isKeywordOpenWebModel(selectedModel)))
     throw new KeywordBenchmarkStoreError("Choose a supported model for an open-web question.", 400);
   if (options.useSeoTools) {
-    if (selectedModel && selectedModel !== KEYWORD_OPEN_WEB_MODEL) throw new KeywordBenchmarkStoreError("SEO-assisted observations currently support Astra only.", 400);
+    if ((selectedModel ?? KEYWORD_OPEN_WEB_MODEL) !== "gpt-6-astra") throw new KeywordBenchmarkStoreError("SEO-assisted observations currently support Astra only.", 400);
     if (searchMode !== "open-web") throw new KeywordBenchmarkStoreError("SEO tools require an open-web question.", 400);
 
   }
