@@ -19,10 +19,13 @@ test('overview gives models equal weight instead of overweighting more collected
  const overview=websiteOverview([first,second,third],['q','q2'],['a','b','c']);
  const row=overview.rows.find(r=>r.domain==='one.test')!;
  assert.equal(row.share,75);assert.equal(row.position,2);assert.equal(row.appearances,2);assert.equal(row.perModel[2].share,null);assert.equal(overview.complete,false);assert.equal(overview.measuredModels,2);
+ assert.equal(row.perModel[0].queryId,'q');assert.equal(row.perModel[1].queryId,'q');assert.equal(row.perModel[2].queryId,null);
+ assert.equal(overview.rows.find(r=>r.domain==='other.test')?.perModel[0].queryId,'q2');
 });
 test('overview respects question/model scope and latest answer per pair',()=>{
  const older=observation('a','2026-09-01',[['https://old.test',1]]), newer=observation('a','2026-09-02',[['https://new.test',2]]);
  const result=websiteOverview([older,newer],['q'],['a']);assert.equal(result.answers,1);assert.equal(result.complete,true);assert.equal(result.rows[0].domain,'new.test');
+ assert.equal(result.firstDate,'2026-09-02');assert.equal(result.lastDate,'2026-09-02');
  assert.equal(websiteOverview([newer],['else'],['a']).rows.length,0);
 });
 
@@ -32,4 +35,11 @@ test('core cohort excludes both expanded question libraries',()=>{assert.equal(P
 test('catalog documentation aliases combine but unrelated shared-host projects do not',()=>{
  const result=websiteLandscape([observation('a','2026-09-01',[['https://docs.browserbase.com',1],['https://browserbase.com',2],['https://one.github.io',3],['https://two.github.io',4]])],'q');
  assert.equal(result.rows.length,3);assert.equal(result.rows.find(r=>r.domain==='browserbase.com')?.name,'Browserbase');
+});
+
+test('a shared repository host is not labelled as the first project recommended on it',()=>{
+ const answer=observation('a','2026-09-01',[['https://github.com/example/project',1]]);
+ answer.recommendations[0].name='A specific project';
+ const row=websiteLandscape([answer],'q').rows[0];
+ assert.equal(row.domain,'github.com');assert.equal(row.name,'github.com');assert.equal(row.url,'https://github.com');
 });
