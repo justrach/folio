@@ -60,3 +60,7 @@ A live evaluation can attach one completed private report matching its exact tar
 ## Authenticated MCP and sandbox SEO
 
 Folio now includes `/api/mcp` for coding clients and `/api/v1/seo` for explicit, idempotent DataForSEO lookups. Keyword sandboxes can opt into one selected-domain SEO lookup with a short-lived capability; existing evaluation keys require a separate `seo` permission. See [MCP setup and behavior](MCP.md) for migration, configuration, client examples and validation limits.
+
+## Website keyword research
+
+Managed website questions now support Luna with optional, bounded DataForSEO related-keyword research. General coding clients can use the same research via Folio MCP. See [keyword research](KEYWORD-RESEARCH.md) for authorization, limits, private D1 receipts and cost semantics.

@@ -131,3 +131,8 @@ Remaining acceptance work:
 ## Luna crawl follow-up
 
 - [ ] Validate a real authorized Luna → crawl MCP → Jev run. The implemented ten-page workflow and local fixtures are documented in [website crawl](docs/WEBSITE-CRAWL.md); do not mark live validation from mock results.
+
+## DataForSEO keyword tool
+
+- [x] Implement Luna-compatible website-question research and reusable keyword research MCP with bounded private D1 receipts and reported costs.
+- [ ] Validate a live Luna → keyword research MCP → DataForSEO task; fixtures do not establish provider connectivity. See [keyword research](docs/KEYWORD-RESEARCH.md).

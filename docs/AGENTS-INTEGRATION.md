@@ -71,6 +71,6 @@ Optional scheduled retrieval uses the same GET-only reconciler with a shared-sec
 
 ## Authenticated MCP and sandbox SEO
 
-Folio now includes `/api/mcp` for coding clients and `/api/v1/seo` for explicit, idempotent DataForSEO lookups. Keyword sandboxes can opt into one selected-domain SEO lookup with a short-lived capability; existing evaluation keys require a separate `seo` permission. See [MCP setup and behavior](MCP.md) for migration, configuration, client examples and validation limits.
+Folio now includes `/api/mcp` for coding clients and `/api/v1/seo` for explicit, idempotent DataForSEO lookups. Keyword sandboxes can opt into up to three keyword-research tasks plus one selected-domain SEO overview with a short-lived capability; existing evaluation keys require a separate `seo` permission. See [MCP setup and behavior](MCP.md) for migration, configuration, client examples and validation limits.
 
 The optional [Luna website crawl](WEBSITE-CRAWL.md) uses a hosted session with network-disabled shell and service-connected read-only fetch / Jev-review tools. Its report is separate from frozen-page verification.

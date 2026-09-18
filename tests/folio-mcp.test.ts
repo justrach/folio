@@ -27,7 +27,7 @@ test("Streamable HTTP SDK client initializes, discovers scoped tools, validates 
 });
 test("sandbox exposes only one fixed-domain tool; paid schemas require explicit spend and retry identity", async () => {
   const rpc = (method: string) => new Request("https://folio.example/api/mcp", { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json, text/event-stream" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params: {} }) });
-  const sandbox: FolioToolContext = { ...context, sandbox: { grantId: "grant", ownerId: "alice", domain: "example.com", runId: "run" } };
+  const sandbox: FolioToolContext = { ...context, sandbox: {toolVersion:1, grantId: "grant", ownerId: "alice", domain: "example.com", runId: "run" } };
   const body = await (await serveFolioMcp(rpc("tools/list"), sandbox)).json();
   assert.deepEqual(body.result.tools.map((tool: { name: string }) => tool.name), ["folio_sandbox_seo"]);
   const paid = await (await serveFolioMcp(rpc("tools/list"), { ...context, principal: { ...context.principal, scopes: ["read", "seo", "evaluate"] } })).json();

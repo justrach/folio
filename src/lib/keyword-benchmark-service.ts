@@ -92,14 +92,13 @@ export async function keywordBenchmarkExecutionConfig(trial: KeywordBenchmarkCas
   if (selectedModel !== undefined && (searchMode !== "open-web" || !isKeywordOpenWebModel(selectedModel)))
     throw new KeywordBenchmarkStoreError("Choose a supported model for an open-web question.", 400);
   if (options.useSeoTools) {
-    if ((selectedModel ?? KEYWORD_OPEN_WEB_MODEL) !== "gpt-6-astra") throw new KeywordBenchmarkStoreError("SEO-assisted observations currently support Astra only.", 400);
     if (searchMode !== "open-web") throw new KeywordBenchmarkStoreError("SEO tools require an open-web question.", 400);
 
   }
   if (options.useTypesafeTools && searchMode !== "open-web") throw new KeywordBenchmarkStoreError("TypeSafe tools require an open-web question.",400);
   const allowedDomains = searchMode === "open-web" ? [] : keywordAllowedDomains(options.allowedDomains ?? [...KEYWORD_BENCHMARK_ALLOWED_DOMAINS]);
   return { searchMode, allowedDomains, model: searchMode === "open-web" ? selectedModel ?? KEYWORD_OPEN_WEB_MODEL : getAgentsConnectionStatus(env).model, harnessVersion: keywordAgentHarnessVersion(searchMode, options.useSeoTools, options.useTypesafeTools),
-    environmentType: "openai_hosted", environmentFingerprint: options.useTypesafeTools ? await agentApiHash((await keywordEnvironmentFingerprint(allowedDomains, searchMode)) + (options.useSeoTools ? ":sandbox-seo-v1" : "") + ":typesafe-tool-v1") : options.useSeoTools ? await agentApiHash((await keywordEnvironmentFingerprint(allowedDomains, searchMode)) + ":sandbox-seo-v1") : await keywordEnvironmentFingerprint(allowedDomains, searchMode), deadlineMs: KEYWORD_AGENT_DEADLINE_MS };
+    environmentType: "openai_hosted", environmentFingerprint: options.useTypesafeTools ? await agentApiHash((await keywordEnvironmentFingerprint(allowedDomains, searchMode)) + (options.useSeoTools ? ":sandbox-seo-v2" : "") + ":typesafe-tool-v1") : options.useSeoTools ? await agentApiHash((await keywordEnvironmentFingerprint(allowedDomains, searchMode)) + ":sandbox-seo-v2") : await keywordEnvironmentFingerprint(allowedDomains, searchMode), deadlineMs: KEYWORD_AGENT_DEADLINE_MS };
 }
 /** Paid start: validate before reserving, then commit the one-attempt marker before one provider POST. */
 export async function startKeywordBenchmark(db: D1Database, ownerId: string,

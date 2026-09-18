@@ -202,3 +202,7 @@ An explicit owner action can review saved page-evidence fact citations with Type
 ## Agent-directed website crawl
 
 See [Luna crawl and Jev review](docs/WEBSITE-CRAWL.md): agent-controlled same-website traversal through bounded fetch tools, stored excerpts, one semantic review, and a separate report from search rankings.
+
+## Website keyword research
+
+Managed website questions now support Luna with optional, bounded DataForSEO related-keyword research. General coding clients can use the same research via Folio MCP. See [keyword research](docs/KEYWORD-RESEARCH.md) for authorization, limits, private D1 receipts and cost semantics.

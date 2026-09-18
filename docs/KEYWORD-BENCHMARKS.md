@@ -183,3 +183,7 @@ bun run test:gui tests/keyword-benchmarks-gui.spec.ts
 Run the GUI filename present in the repository if it changes. The transport/service fixtures make no live inference request. Actual Miniflare D1 checks use temporary persistence and synthetic users, including owner isolation, atomic start and cancellation races, unknown costs, terminal immutability, nullable daily exceptions, unchanged normal limits, and restart persistence. They never load `.dev.vars` or the shared local database.
 
 The main files are [service orchestration](../src/lib/keyword-benchmark-service.ts), [provider transport](../src/lib/keyword-benchmark-agent.ts), [D1 storage](../src/lib/keyword-benchmark-store.ts), [types and comparison](../src/lib/keyword-benchmark-types.ts), [reviewed catalog](../src/lib/keyword-benchmark-catalog.ts), and [CLI](../scripts/keyword-benchmark.ts). Production OAuth, a deployed database, hosted scheduling, external-user paid entitlements, and broad independent benchmark validation remain separate work. The public artifact schema and table are implemented; individual observations require their own reviewed evidence.
+
+## Website keyword research
+
+Managed website questions now support Luna with optional, bounded DataForSEO related-keyword research. General coding clients can use the same research via Folio MCP. See [keyword research](KEYWORD-RESEARCH.md) for authorization, limits, private D1 receipts and cost semantics.

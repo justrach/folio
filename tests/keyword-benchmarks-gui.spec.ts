@@ -362,15 +362,16 @@ test("a released unknown creation permits a different question while its origina
 
 test("sandbox SEO is off by default and only the explicit start carries authorization", async ({ page }) => {
   const state = await fixture(page);
+  state.openWebModels = modelOptions;
   state.suites = [{ ...suite, cases: suite.cases.map(item => ({ ...item, searchMode: "open-web" })) }];
   await page.goto(`/benchmarks?suite=${suite.id}`);
-  const checkbox = page.getByRole("checkbox", { name: /Let this agent look up search and backlinks/ });
+  const checkbox = page.getByRole("checkbox", { name: /Let this agent research keywords and search data/ });
   await expect(checkbox).not.toBeChecked();
   expect(state.starts).toHaveLength(0);
   await checkbox.check(); expect(state.starts).toHaveLength(0);
   await page.getByRole("button", { name: "Run baseline", exact: true }).click();
   await expect.poll(() => state.starts.length).toBe(1);
-  expect(state.starts[0]).toMatchObject({ caseId: suite.cases[0].id, kind: "baseline", useSeoTools: true });
+  expect(state.starts[0]).toMatchObject({ caseId: suite.cases[0].id, kind: "baseline", useSeoTools: true, model: "gpt-5.6-luna" });
 });
 
 
@@ -454,12 +455,12 @@ for (const [model,label] of [["gpt-5.6-luna","Luna"],["gpt-5.6-sol","Sol"],["gpt
   const select = page.getByRole("combobox", { name: "Model for the next observation", exact: true });
   await expect(select).toHaveValue("gpt-5.6-luna");
   await select.selectOption("gpt-6-astra");
-  const seo = page.getByRole("checkbox", { name: /Let this agent look up search and backlinks/ });
+  const seo = page.getByRole("checkbox", { name: /Let this agent research keywords and search data/ });
   await seo.check();
   await select.selectOption(model);
   await expect(seo).not.toBeChecked();
-  await expect(seo).toBeDisabled();
-  await expect(page.getByText(/Search and backlink tools are available only with Astra/)).toBeVisible();
+  await expect(seo).toBeEnabled();
+  await expect(page.getByText(/Allows up to 3 paid keyword lookups/)).toBeVisible();
   await select.selectOption("gpt-6-astra");
   await expect(seo).toBeEnabled();
   await expect(seo).not.toBeChecked();

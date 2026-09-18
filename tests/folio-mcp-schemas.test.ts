@@ -26,16 +26,17 @@ const fixtures:Record<string,unknown>={
   folio_run_history:{...page,items:[keywordRun],changePolling:null},
   folio_observations:{items:[{target:{kind:"keyword",caseId:"case"},result:saved},{target:{kind:"website",websiteId:"missing"},error}]},
   folio_seo_reports:{report:pendingReport,detail:{state:"not_collected",keywords:null,landingPages:null,backlinkRows:null,reason:"Aggregates only",sourceUpdatedAt:null,retrievedAt:null,scope:{location:null,language:null,includeSubdomains:null},estimates:true}},
+  folio_keyword_research:{id:"research",domain:"example.com",status:"pending",createdAt:at,publication:"private",replayed:true,result:null},
   folio_seo_lookup:{report:pendingReport,replayed:true,saved:false},folio_sandbox_seo:{report:pendingReport,replayed:true,saved:false},
   folio_page_evidence:{...page,state:"saved_history",recommendationRule:"Inspect saved content",items:[{runId:"failed",state:"fetch_failed",url:"https://example.com"},{runId:"run",captureId:"page",url:"https://example.com",capturedAt:at,sha256:"fixture-hash",hashEncoding:"utf8-text-v1",transport:null,state:"observed",excerpt:"<html><h1>Example</h1></html>",contentTruncated:false,httpStatus:null,finalUrl:null,canonical:null,indexability:null,headings:null,derivedHtml:{basis:"Saved HTML",checks:evaluateHtml("<html><h1>Example</h1></html>","https://example.com").checks.filter(c=>["headings","canonical","indexability"].includes(c.id)).map(c=>({id:c.id,evidence:c.evidence}))},unavailableReason:"Metadata was not stored"}]},
   folio_visibility:{website:{id:"site",name:"Example",url:"https://example.com"},platform:"openai",surface:"openai-managed-agents",searchMode:"open-web",dateRange:{startDate:null,endDate:null,timeZone:"UTC"},coverage:{attemptsLoaded:1,limit:100,truncated:false,nextCursor:null,unresolvedAttempts:0},methodology:"Saved answer",...report,daily:[{date:"2026-09-13",...report.current}],platforms:[{platform:"openai",models:["fixture"],...report.current}]},
   folio_visibility_compare:{...compareVisibility([rawRun],[{...rawRun,id:"later"}]),coverage:{baseline:{nextCursor:null,truncated:false},comparison:{nextCursor:null,truncated:false},scope:"Current pages"}},
 };
-const args:Record<string,Record<string,unknown>>={folio_targets:{kind:"keyword"},folio_observation:{kind:"keyword",caseId:"case"},folio_run:{kind:"keyword",runId:"run"},folio_evaluate:{kind:"keyword",caseId:"case",requestKey:"fixture-key",confirmSpend:true},folio_reconcile:{kind:"keyword",runId:"run"},folio_run_history:{kind:"keyword"},folio_observations:{targets:[{kind:"keyword",caseId:"case"}]},folio_seo_lookup:{domain:"example.com",requestKey:"fixture-key",confirmSpend:true},folio_page_evidence:{websiteId:"site"},folio_visibility:{websiteId:"site"},folio_visibility_compare:{websiteId:"site",baselineStart:"2026-09-01T00:00:00Z",baselineEnd:"2026-09-05T00:00:00Z",comparisonStart:"2026-09-06T00:00:00Z",comparisonEnd:"2026-09-14T00:00:00Z"}};
+const args:Record<string,Record<string,unknown>>={folio_keyword_research:{domain:"example.com",seed:"website checker",requestKey:"fixture-key",confirmSpend:true},folio_targets:{kind:"keyword"},folio_observation:{kind:"keyword",caseId:"case"},folio_run:{kind:"keyword",runId:"run"},folio_evaluate:{kind:"keyword",caseId:"case",requestKey:"fixture-key",confirmSpend:true},folio_reconcile:{kind:"keyword",runId:"run"},folio_run_history:{kind:"keyword"},folio_observations:{targets:[{kind:"keyword",caseId:"case"}]},folio_seo_lookup:{domain:"example.com",requestKey:"fixture-key",confirmSpend:true},folio_page_evidence:{websiteId:"site"},folio_visibility:{websiteId:"site"},folio_visibility_compare:{websiteId:"site",baselineStart:"2026-09-01T00:00:00Z",baselineEnd:"2026-09-05T00:00:00Z",comparisonStart:"2026-09-06T00:00:00Z",comparisonEnd:"2026-09-14T00:00:00Z"}};
 
 async function clientFor(execute:typeof invokeFolioTool, sandbox=false){
   const client=new Client({name:"all-output-fixtures",version:"1"});
-  await client.connect(new StreamableHTTPClientTransport(new URL("https://folio.example/api/mcp"),{fetch:async(url,init)=>serveFolioMcp(new Request(url,init),sandbox?{...context,sandbox:{grantId:"grant",ownerId:"alice",domain:"example.com",runId:"run"}}:context,execute)}));
+  await client.connect(new StreamableHTTPClientTransport(new URL("https://folio.example/api/mcp"),{fetch:async(url,init)=>serveFolioMcp(new Request(url,init),sandbox?{...context,sandbox:{toolVersion:1,grantId:"grant",ownerId:"alice",domain:"example.com",runId:"run"}}:context,execute)}));
   return client;
 }
 
@@ -64,7 +65,8 @@ test("malformed nested success becomes safe execution_uncertain and never leaks 
   const malformed:Record<string,unknown>={
     folio_run:{...observation,run:{...keywordRun,result:{...keywordRun.result,mentions:[{name:"private-malformed",url:42}]}}},
     folio_observations:{items:[{target:{kind:"keyword",caseId:"case"},result:saved,error}]},
-    folio_seo_lookup:{report:{...pendingReport,result:{organic:{costUsd:"private-malformed"}}},replayed:true,saved:false},
+    folio_keyword_research:{id:"research",domain:"example.com",status:"pending",createdAt:at,publication:"private",replayed:true,result:{costUsd:"private-malformed"}},
+  folio_seo_lookup:{report:{...pendingReport,result:{organic:{costUsd:"private-malformed"}}},replayed:true,saved:false},
     folio_visibility:{...(fixtures.folio_visibility as object),current:{...report.current,visibilityScore:"private-malformed"}},
     folio_page_evidence:{...(fixtures.folio_page_evidence as object),items:[{runId:"run",state:"observed",url:"private-malformed"}]},
   };
