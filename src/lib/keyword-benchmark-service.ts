@@ -29,11 +29,12 @@ export class KeywordBenchmarkPersistenceError extends Error {
 export function keywordBenchmarkAccess(env: AgentsEnvironment, ownerId: string) {
   const connection = getAgentsConnectionStatus(env);
   const authorized = Boolean(ownerId) && (env.OPENAI_ALLOWED_USER_IDS ?? "").split(",").map(value => value.trim()).filter(Boolean).includes(ownerId);
+  const maxActiveRuns = authorized && (env.OPENAI_PARALLEL_USER_IDS ?? "").split(",").map(value => value.trim()).includes(ownerId) ? 3 : 1;
   return { configured: connection.configured, authorized, canRun: connection.configured && authorized, model: connection.model, openWebModels: KEYWORD_OPEN_WEB_MODELS,
-    ...KEYWORD_BENCHMARK_LIMITS, maxRunsPerDay: authorized && isAgentDailyLimitExempt(env, ownerId) ? null : KEYWORD_BENCHMARK_LIMITS.maxRunsPerDay, deadlineMs: KEYWORD_AGENT_DEADLINE_MS,
+    ...KEYWORD_BENCHMARK_LIMITS, maxActiveRuns, maxRunsPerDay: authorized && isAgentDailyLimitExempt(env, ownerId) ? null : KEYWORD_BENCHMARK_LIMITS.maxRunsPerDay, deadlineMs: KEYWORD_AGENT_DEADLINE_MS,
     message: !connection.configured ? "Connect the evaluation provider before starting a benchmark."
       : !authorized ? "This account needs approval before it can spend evaluation credits."
-        : isAgentDailyLimitExempt(env, ownerId) ? "Each explicit start uses evaluation credits. This account has no daily cap; one active benchmark and the task deadline still apply."
+        : isAgentDailyLimitExempt(env, ownerId) ? `Each explicit start uses evaluation credits. This account has no daily cap; up to ${maxActiveRuns} active observations are allowed. The task deadline still applies.`
           : "Each explicit start uses evaluation credits. Six starts per day and one active benchmark are allowed; the task deadline is not a guaranteed spending cap." };
 }
 function requireAccess(env: AgentsEnvironment, ownerId: string) {

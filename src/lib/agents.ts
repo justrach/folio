@@ -22,6 +22,7 @@ export type AgentsEnvironment = {
   OPENAI_ALLOWED_USER_IDS?: string;
   OPENAI_MAX_RUNS_PER_DAY?: string;
   OPENAI_UNMETERED_USER_IDS?: string;
+  OPENAI_PARALLEL_USER_IDS?: string;
 };
 
 export type EvaluationEvidence = {
@@ -102,6 +103,7 @@ function runtimeEnvironment(): AgentsEnvironment {
     OPENAI_ALLOWED_USER_IDS: process.env.OPENAI_ALLOWED_USER_IDS,
     OPENAI_MAX_RUNS_PER_DAY: process.env.OPENAI_MAX_RUNS_PER_DAY,
     OPENAI_UNMETERED_USER_IDS: process.env.OPENAI_UNMETERED_USER_IDS,
+    OPENAI_PARALLEL_USER_IDS: process.env.OPENAI_PARALLEL_USER_IDS,
   };
 }
 

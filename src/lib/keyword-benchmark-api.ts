@@ -28,6 +28,7 @@ export async function keywordBenchmarkRequestContext(request: Request) {
     OPENAI_AGENTS_MODEL: values.OPENAI_AGENTS_MODEL || process.env.OPENAI_AGENTS_MODEL,
     OPENAI_ALLOWED_USER_IDS: values.OPENAI_ALLOWED_USER_IDS || process.env.OPENAI_ALLOWED_USER_IDS,
     OPENAI_UNMETERED_USER_IDS: values.OPENAI_UNMETERED_USER_IDS || process.env.OPENAI_UNMETERED_USER_IDS,
+    OPENAI_PARALLEL_USER_IDS: values.OPENAI_PARALLEL_USER_IDS || process.env.OPENAI_PARALLEL_USER_IDS,
   } satisfies AgentsEnvironment };
 }
 export function requireKeywordBenchmarkOrigin(request: Request, baseURL: unknown) {

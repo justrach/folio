@@ -17,6 +17,11 @@ test("benchmark access preserves exact owner approval and separate bounded limit
   const exempt = { ...env, OPENAI_UNMETERED_USER_IDS: "alice" };
   assert.equal(keywordBenchmarkAccess(exempt, "alice").maxRunsPerDay, null);
   assert.equal(keywordBenchmarkAccess(exempt, "alice").maxActiveRuns, 1);
+  const parallel = { ...exempt, OPENAI_PARALLEL_USER_IDS: "alice" };
+  assert.equal(keywordBenchmarkAccess(parallel, "alice").maxActiveRuns, 3);
+  assert.equal(keywordBenchmarkAccess(parallel, "bob").maxActiveRuns, 1);
+  assert.equal(keywordBenchmarkAccess({ ...parallel, OPENAI_PARALLEL_USER_IDS: "alice-longer" }, "alice").maxActiveRuns, 1);
+  assert.equal(keywordBenchmarkAccess({ ...parallel, OPENAI_ALLOWED_USER_IDS: "bob" }, "alice").maxActiveRuns, 1);
   assert.equal(keywordBenchmarkAccess(exempt, "bob").maxRunsPerDay, 6);
   assert.equal(keywordBenchmarkAccess({ ...exempt, OPENAI_UNMETERED_USER_IDS: "alice-longer" }, "alice").maxRunsPerDay, 6);
   assert.equal(keywordBenchmarkAccess({ ...exempt, OPENAI_ALLOWED_USER_IDS: "bob" }, "alice").canRun, false);

@@ -62,14 +62,14 @@ test("D1 retains safe creation HTTP diagnostics after restart without retrying a
   } finally { try { await current?.dispose(); } finally { await rm(directory, { recursive: true, force: true }); } }
 });
 
-test("real D1 exempts only the configured owner's daily benchmark cap while preserving one active task", { timeout: 90_000 }, async () => {
+test("real D1 exempts only the configured owner's daily benchmark cap and enables three atomic parallel reservations", { timeout: 90_000 }, async () => {
   const directory = await mkdtemp(join(tmpdir(), "folio-keyword-exemption-d1-"));
   let current: Miniflare | undefined;
   try {
     current = runtime(directory); const db = await current.getD1Database("DB"); await setup(db);
     const alice = await createKeywordBenchmarkSuite(db, "alice", { name: "Exempt fixture", cases: [input] });
     const bob = await createKeywordBenchmarkSuite(db, "bob", { name: "Metered fixture", cases: [input] });
-    const env = { OPENAI_API_KEY: "synthetic-fixture", OPENAI_ALLOWED_USER_IDS: "alice,bob", OPENAI_UNMETERED_USER_IDS: "alice" };
+    const env = { OPENAI_API_KEY: "synthetic-fixture", OPENAI_ALLOWED_USER_IDS: "alice,bob", OPENAI_UNMETERED_USER_IDS: "alice", OPENAI_PARALLEL_USER_IDS: "alice" };
     let creates = 0;
     const options = { allowedDomains: ["codegraff.com"], fetcher: (async () => Response.json({ id: `session_${++creates}`, object: "agent.session", status: "failed", required_actions: [] })) as typeof fetch };
     for (let i = 0; i < 7; i++) assert.equal((await startKeywordBenchmark(db, "alice", { caseId: alice.cases[0].id, kind: "baseline" }, env, options)).status, "failed");
@@ -77,12 +77,12 @@ test("real D1 exempts only the configured owner's daily benchmark cap while pres
     assert.equal(overview.access.maxRunsPerDay, null); assert.equal(overview.usage.remainingRuns, null); assert.equal(overview.usage.attemptsLast24Hours, 7);
     const activeOptions = { ...options, fetcher: (async () => Response.json({ id: `session_${++creates}`, object: "agent.session", status: "in_progress", required_actions: [] })) as typeof fetch };
     const raced = await Promise.allSettled(Array.from({ length: 5 }, () => startKeywordBenchmark(db, "alice", { caseId: alice.cases[0].id, kind: "baseline" }, env, activeOptions)));
-    assert.equal(raced.filter(value => value.status === "fulfilled").length, 1); assert.equal(creates, 8);
+    assert.equal(raced.filter(value => value.status === "fulfilled").length, 3); assert.equal(creates, 10);
     assert.equal((await keywordBenchmarkOverview(db, "alice", env)).usage.remainingActiveRuns, 0);
     for (let i = 0; i < 6; i++) await startKeywordBenchmark(db, "bob", { caseId: bob.cases[0].id, kind: "baseline" }, env, options);
     await assert.rejects(startKeywordBenchmark(db, "bob", { caseId: bob.cases[0].id, kind: "baseline" }, env, options), error => error instanceof KeywordBenchmarkStoreError && error.status === 429);
     assert.equal((await keywordBenchmarkOverview(db, "bob", env)).usage.remainingRuns, 0);
-    assert.equal(creates, 14);
+    assert.equal(creates, 16);
   } finally { try { await current?.dispose(); } finally { await rm(directory, { recursive: true, force: true }); } }
 });
 

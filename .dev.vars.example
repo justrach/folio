@@ -33,3 +33,6 @@ EVALUATION_RECONCILE_SECRET=
 
 # Public HTTPS endpoint for opt-in managed sandbox SEO tools; requires migration 0013.
 FOLIO_MCP_URL=
+
+# Exact approved account IDs permitted three simultaneous keyword observations.
+OPENAI_PARALLEL_USER_IDS=

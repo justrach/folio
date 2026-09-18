@@ -31,6 +31,7 @@ export async function agentApiContext(request: Request, scope: AgentApiScope = "
     OPENAI_ALLOWED_USER_IDS: values.OPENAI_ALLOWED_USER_IDS || process.env.OPENAI_ALLOWED_USER_IDS,
     OPENAI_MAX_RUNS_PER_DAY: values.OPENAI_MAX_RUNS_PER_DAY || process.env.OPENAI_MAX_RUNS_PER_DAY,
     OPENAI_UNMETERED_USER_IDS: values.OPENAI_UNMETERED_USER_IDS || process.env.OPENAI_UNMETERED_USER_IDS,
+    OPENAI_PARALLEL_USER_IDS: values.OPENAI_PARALLEL_USER_IDS || process.env.OPENAI_PARALLEL_USER_IDS,
     SCAN_ALLOWED_HOSTS: values.SCAN_ALLOWED_HOSTS || process.env.SCAN_ALLOWED_HOSTS,
   } satisfies AgentRunEnvironment };
 }

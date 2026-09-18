@@ -16,6 +16,7 @@ declare global {
     OPENAI_ALLOWED_USER_IDS?: string;
     OPENAI_MAX_RUNS_PER_DAY?: string;
     OPENAI_UNMETERED_USER_IDS?: string;
+  OPENAI_PARALLEL_USER_IDS?: string;
     FOLIO_MCP_URL?: string;
     DATAFORSEO_LOGIN?: string;
     DATAFORSEO_PASSWORD?: string;

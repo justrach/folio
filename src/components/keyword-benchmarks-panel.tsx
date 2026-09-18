@@ -97,7 +97,7 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
   const currentSuite = suite?.id === suiteId ? suite : null;
   const currentRun = run?.id === runId && run.suiteId === suiteId ? run : null;
   const site = sites.find(item => item.id === siteId);
-  const ready = Boolean(!recovery && overview?.access.canRun && (overview.usage.remainingRuns === null || overview.usage.remainingRuns > 0) && overview.usage.remainingActiveRuns > 0 && !runs.some(active));
+  const ready = Boolean(!recovery && overview?.access.canRun && (overview.usage.remainingRuns === null || overview.usage.remainingRuns > 0) && overview.usage.remainingActiveRuns > 0 && runs.filter(active).length < overview.access.maxActiveRuns);
 
   useEffect(() => { const controller = new AbortController(); lifetime.current = controller; return () => controller.abort(); }, []);
   useEffect(() => {
@@ -271,7 +271,7 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
         {selectedCaseUnresolved && <p className="benchmark-muted">This question has an unresolved earlier attempt. Choose a different question while it is reviewed.</p>}
         {!baselineId && <p className="benchmark-muted">A completed baseline is needed before a fresh comparison.</p>}
       </div>}
-      {overview && <p className="benchmark-run-allowance">{overview.access.canRun ? `${overview.usage.remainingRuns === null ? "No daily limit" : `${overview.usage.remainingRuns} runs remaining in the rolling 24-hour allowance`}. ${overview.usage.activeRuns} active.` : "New agent runs are not currently available for this workspace. Saved observations remain readable."} Each explicit start can incur usage charges. Only one observation can be active at a time.</p>}
+      {overview && <p className="benchmark-run-allowance">{overview.access.canRun ? `${overview.usage.remainingRuns === null ? "No daily limit" : `${overview.usage.remainingRuns} runs remaining in the rolling 24-hour allowance`}. ${overview.usage.activeRuns} active.` : "New agent runs are not currently available for this workspace. Saved observations remain readable."} Each explicit start can incur usage charges. Up to {overview.access.maxActiveRuns} {overview.access.maxActiveRuns === 1 ? "observation can" : "observations can"} be active at a time.</p>}
     </section></details>}
     {overview && <details className="benchmark-disclosure benchmark-new-suite" open={!overview.suites.length}><summary>Save a new question suite<ChevronDown size={15}/></summary>
     <section className="benchmark-setup" aria-label="Save a keyword suite"><h2>Use an existing website</h2><p>Choose a website already saved in your workspace. Saving questions starts no agent work.</p>

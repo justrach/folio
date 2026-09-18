@@ -29,3 +29,7 @@ Provider payload and projection tests use fixtures. D1 integration tests cover o
 API reference: https://docs.dataforseo.com/v3/dataforseo_labs/google/related_keywords/live/ (checked 18 September 2026).
 
 Local validation: 288 unit tests, 36 actual D1 integration tests, TypeScript, and 12 distinct desktop/mobile checks passed (14 browser executions including a strengthened Luna launch rerun). No paid provider lookup was made during these checks.
+
+## Parallel observations
+
+`OPENAI_PARALLEL_USER_IDS` grants exact approved account IDs up to three simultaneous keyword observations, enabling Luna, Sol and Terra comparisons. Other accounts retain one active observation. This is separate from the daily-cap exemption. D1 reserves capacity atomically; each run still requires an explicit start, retains its deadline and tool budgets, and records its own usage.

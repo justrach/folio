@@ -31,7 +31,7 @@ async function fixture(page: Page, initialRuns: KeywordBenchmarkRun[] = [], save
   const state = { owner: "alice" as string | null, saved, suites: [suite], runs: initialRuns, starts: [] as Record<string, unknown>[], saves: [] as Record<string, unknown>[],
     forbidden: [] as string[], detailReads: [] as string[], finishedReads: [] as string[], reconciles: [] as string[], cancels: [] as string[],
     openWebModels: undefined as undefined | { id: string; label: string; validation: "validated" | "experimental" }[],
-    holdDetail: null as Promise<void> | null, completeOnReconcile: false, failReceipt: false, unmetered: false };
+    holdDetail: null as Promise<void> | null, completeOnReconcile: false, failReceipt: false, unmetered: false, maxActiveRuns: 1 };
   const connection = { configured: false, authorized: false, canRun: false, model: "fixture-model", allowedTargets: [], message: "Browser fixture only." };
   const user = () => ({ id: state.owner!, name: "Fixture owner", email: `${state.owner}@example.test`, emailVerified: true, createdAt: at, updatedAt: at });
   await page.route("**/api/**", async route => {
@@ -49,10 +49,10 @@ async function fixture(page: Page, initialRuns: KeywordBenchmarkRun[] = [], save
     if (path === "/api/benchmarks" && method === "GET") return route.fulfill({ json: {
       suites: state.saved ? state.suites.map(item => ({ ...item, cases: undefined, caseCount: item.cases.length })) : [],
       templates: [{ id: "template-fixture", name: "Developer questions fixture", description: "Saved questions only.", cases: suite.cases }],
-      access: { openWebModels: state.openWebModels, configured: true, authorized: true, canRun: true, model: "fixture-model", maxRunsPerDay: state.unmetered ? null : 6, maxActiveRuns: 1 },
+      access: { openWebModels: state.openWebModels, configured: true, authorized: true, canRun: true, model: "fixture-model", maxRunsPerDay: state.unmetered ? null : 6, maxActiveRuns: state.maxActiveRuns },
       usage: { attemptsLast24Hours: state.starts.length, remainingRuns: state.unmetered ? null : 6 - state.starts.length,
         activeRuns: state.runs.filter(isKeywordBenchmarkBlocking).length,
-        remainingActiveRuns: state.runs.some(isKeywordBenchmarkBlocking) ? 0 : 1 },
+        remainingActiveRuns: Math.max(0, state.maxActiveRuns - state.runs.filter(isKeywordBenchmarkBlocking).length) },
     } });
     if (path === "/api/benchmarks" && method === "POST") { state.saves.push(req.postDataJSON()); state.saved = true; return route.fulfill({ status: 201, json: { suite } }); }
     const selectedSuite = state.suites.find(item => path === `/api/benchmarks/${item.id}`);
@@ -600,4 +600,18 @@ test("a delayed launch shows immediate feedback without resubmitting",async({pag
   await expect(page.getByRole('region',{name:'Observation progress',exact:true})).toBeVisible();
   await expect(starting).toHaveCount(0);expect(state.starts).toHaveLength(1);
  }finally{release();}
+});
+
+
+test("parallel account can explicitly start another observation while one is running", async ({ page }) => {
+  const pending = { ...run("parallel-running"), status: "running" as const, answer: null };
+  const state = await fixture(page, [pending]);
+  state.maxActiveRuns = 3;
+  state.unmetered = true;
+  await page.goto("/benchmarks");
+  await expect(page.getByText("Up to 3 observations can be active at a time.", { exact: false })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Run baseline", exact: true })).toBeEnabled();
+  expect(state.starts).toHaveLength(0);
+  await page.getByRole("button", { name: "Run baseline", exact: true }).click();
+  await expect.poll(() => state.starts.length).toBe(1);
 });
