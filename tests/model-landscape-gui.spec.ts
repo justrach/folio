@@ -6,6 +6,10 @@ test('website averages show all sites, model details and URL filters without spe
  await page.goto('/leaderboard');
  const chart=page.getByRole('region',{name:'Which websites get recommended?'});
  await expect(chart).toBeVisible();
+ const summary=chart.getByRole('img',{name:/^Top websites by appearance rate/});
+ await expect(summary).toBeVisible();
+ const summaryTop=await summary.evaluate(element=>element.getBoundingClientRect().top);
+ expect(summaryTop).toBeLessThan(await page.evaluate(()=>window.innerHeight));
  const ranking=chart.getByRole('group',{name:'Top websites by appearance rate'});
  await expect(ranking).toBeVisible();
  await expect(ranking.getByRole('button')).toHaveCount(12);

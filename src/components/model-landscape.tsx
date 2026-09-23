@@ -6,6 +6,7 @@ import { PUBLIC_SEARCH_QUERIES, PUBLIC_SEARCH_OBSERVATIONS, PUBLIC_CORE_QUERIES 
 import { websiteOverview } from '@/lib/website-landscape';
 import { LANDSCAPE_MODELS } from '@/lib/model-landscape';
 import { UiField } from './ui/primitives';
+import { WebsiteSummaryChart } from './website-summary-chart';
 import './model-landscape.css';
 const core=PUBLIC_CORE_QUERIES;
 const audienceNames=[...new Set(core.map(q=>q.audience))];
@@ -25,6 +26,7 @@ export function ModelLandscape() {
  const selectSite=(domain:string)=>set({site:active?.domain===domain?'':domain});
  return <section className="model-landscape website-landscape" aria-labelledby="landscape-title">
   <header className="landscape-heading"><div><p className="landscape-kicker">THE FOLIO INDEX / WEBSITE DISCOVERY</p><h2 id="landscape-title">Which websites<br/><em>get recommended?</em></h2><p className="landscape-intro">The websites AI research agents recommended in this saved cohort, across Astra 6 and Sol, Terra and Luna 5.6.</p></div><div className="landscape-cohort"><strong>{rows.length}</strong><span>websites in this view</span><p>{answers} saved {answers===1?'answer':'answers'} · {questions.length} {questions.length===1?'question':'questions'}</p></div></header>
+  <WebsiteSummaryChart rows={rows} shareMax={shareMax} selectedDomain={active?.domain}/>
   <div className="website-controls"><label>Explore<select aria-label="Website comparison audience" value={audience} onChange={e=>set({landscapeAudience:e.target.value,query:'',site:''})}><option value="">All website categories</option>{audienceNames.map(a=><option key={a}>{a}</option>)}</select></label><label>Answers from<select aria-label="Website comparison model" value={selected} onChange={e=>set({model:e.target.value,site:''})}><option value="">Average across models</option>{LANDSCAPE_MODELS.map(m=><option key={m.id} value={m.id}>{m.label}</option>)}</select></label></div>
   <label className="website-question-select">Question<select aria-label="Website comparison question" value={query?.id??''} onChange={e=>set({query:e.target.value,site:''})}><option value="">All {core.filter(q=>!audience||q.audience===audience).length} core questions</option>{query&&!core.some(q=>q.id===query.id)&&<option value={query.id}>{query.query}</option>}{core.filter(q=>!audience||q.audience===audience||q.id===query?.id).map(q=><option key={q.id} value={q.id}>{q.query}</option>)}</select></label>
   {query&&<p className="website-question">{query.query} <button className="website-reset" onClick={()=>set({query:'',landscapeAudience:'',site:''})}>Show all websites ↗</button></p>}
