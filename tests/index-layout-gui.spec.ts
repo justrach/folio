@@ -79,8 +79,11 @@ test("synthetic populated rankings retain positions, citations and keyboard disc
   const rows = page.locator(".ranked-search-row");
   await expect(page.getByRole("figure", { name: "Returned recommendations" })).toBeVisible();
   await expect(rows.locator(".ranked-search-position")).toHaveText(["1", "2"]);
-  const points = await rows.locator(".ranked-search-position").evaluateAll(elements => elements.map(element => element.getBoundingClientRect().x));
-  expect(points[1]).toBeGreaterThan(points[0]);
+  const positions = await rows.locator(".ranked-search-position").evaluateAll(elements => elements.map(element => {
+    const rect = element.getBoundingClientRect(); return { x: rect.x, y: rect.y };
+  }));
+  expect(positions[1].y).toBeGreaterThan(positions[0].y);
+  expect(Math.abs(positions[1].x - positions[0].x)).toBeLessThan(2);
   await expect(page.locator(".ranked-search-provenance time")).toBeHidden();
   await expect(rows.nth(0).getByRole("link", { name: "Fixture Cedar", exact: true })).toHaveAttribute("href", "https://cedar.example");
   await expect(rows.nth(0).getByRole("link", { name: "Synthetic Cedar team documentation" })).toBeVisible();

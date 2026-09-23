@@ -16,14 +16,12 @@ function citationLabel(url: string, title?: string | null) {
 }
 
 export function RecordedRanking({ query, observation }: { query: PublicSearchQuery; observation: PublicSearchObservation }) {
-  const maximum = Math.max(1, ...observation.recommendations.map(item => item.position));
   return <>
     {observation.recommendations.length > 0 ? <figure className="ranked-search-chart" aria-label="Returned recommendations">
-      <figcaption><strong>Recommendation order</strong><span>Each dot marks a returned position. 1 is first.</span></figcaption>
-      <div className="ranked-search-axis" aria-hidden="true"><span>Position 1</span><span>{maximum}</span></div>
+      <figcaption><strong>Recommendation order</strong><span>Listed as returned for this question. 1 is first.</span></figcaption>
       <ol>{observation.recommendations.map((recommendation, index) => <RecommendationRow
         key={`${recommendation.position}-${index}`} recommendation={recommendation} citations={observation.citations}
-        maximum={maximum} />)}</ol>
+        />)}</ol>
     </figure> : <div className="ranked-search-empty" role="status"><h3>No recommendations returned.</h3><p>This completed observation did not include a recommendation list.</p></div>}
     <details className="ranked-search-provenance">
       <summary>About this observation</summary>
@@ -48,18 +46,17 @@ export function RecordedRanking({ query, observation }: { query: PublicSearchQue
   </>;
 }
 
-function RecommendationRow({ recommendation, citations, maximum }: { recommendation: PublicSearchRecommendation; citations: PublicSearchObservation["citations"]; maximum: number }) {
+function RecommendationRow({ recommendation, citations }: { recommendation: PublicSearchRecommendation; citations: PublicSearchObservation["citations"] }) {
   const sourceUrls = [...new Set(recommendation.citationUrls)];
   return <li className="ranked-search-row">
-    <div className="ranked-search-plot-row">
-    <div className="ranked-search-website">
-      {recommendation.url ? <a className="ranked-search-name" href={recommendation.url} target="_blank" rel="noreferrer">{recommendation.name}</a>
-        : <span className="ranked-search-name">{recommendation.name}</span>}
-      <p className="ranked-search-domain">{recommendation.url ? sourceLabel(recommendation.url) : "Website URL not returned"}</p>
-    </div>
-    <div className="ranked-search-track"><span className="ranked-search-position" aria-label={`Position ${recommendation.position}`} style={{ left: `${maximum > 1 ? (recommendation.position - 1) / (maximum - 1) * 100 : 0}%` }}>{recommendation.position}</span></div>
-    </div>
-    <div className="ranked-search-row-evidence">
+    <span className="ranked-search-position" aria-label={`Position ${recommendation.position}`}>{recommendation.position}</span>
+    <div className="ranked-search-row-content">
+      <div className="ranked-search-website">
+        {recommendation.url ? <a className="ranked-search-name" href={recommendation.url} target="_blank" rel="noreferrer">{recommendation.name}</a>
+          : <span className="ranked-search-name">{recommendation.name}</span>}
+        <p className="ranked-search-domain">{recommendation.url ? sourceLabel(recommendation.url) : "Website URL not returned"}</p>
+      </div>
+      <div className="ranked-search-row-evidence">
       {sourceUrls.length > 0 ? <div className="ranked-search-citations"><span>Sources:</span><ul>
         {sourceUrls.map(url => {
           const title = citations.find(citation => citation.url === url)?.title;
@@ -69,6 +66,7 @@ function RecommendationRow({ recommendation, citations, maximum }: { recommendat
       <details className="ranked-search-evidence"><summary>Returned reason</summary>
         <p>{recommendation.reason || "No reason was recorded for this recommendation."}</p>
       </details>
+      </div>
     </div>
   </li>;
 }
