@@ -5,6 +5,7 @@ import { Dashboard } from "@/components/dashboard";
 import { Landing } from "@/components/landing";
 import { Pricing } from "@/components/pricing";
 import { Privacy } from "@/components/privacy";
+import { WorkspaceLoader } from "@/components/workspace-loader";
 
 const routes = [
   "overview",
@@ -41,5 +42,5 @@ export default async function Page({
   if ((slug?.length ?? 0) > 1 || !routes.includes(section)) notFound();
   if (section === "pricing") return <Pricing />;
   if (section === "privacy") return <Privacy />;
-  return <Suspense fallback={<main className="workspace-loading" role="status">Loading your workspace…</main>}><Dashboard section={section} /></Suspense>;
+  return <Suspense fallback={<WorkspaceLoader />}><Dashboard section={section} /></Suspense>;
 }

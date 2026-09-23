@@ -74,6 +74,7 @@ import { AgentRunsPanel, AgentRunDock } from "./agent-runs-panel";
 import { evaluationHref, readEvaluationIntent } from "@/lib/evaluation-navigation";
 import { WebsiteSwitcher } from "./website-switcher";
 import { GithubConnection } from "./github-connection";
+import { WorkspaceLoader } from "./workspace-loader";
 
 type Modal = "scan" | "methodology" | "notifications" | "search" | null;
 const navigation = [
@@ -396,7 +397,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
     router.push("/seo");
   }
   if (section === "login") return <Login onNotify={notify} />;
-  if (isPending) return <main className="workspace-loading" role="status">Loading your workspace…</main>;
+  if (isPending) return <WorkspaceLoader />;
   const title = section === "overview" && demoRequested ? { ...titles.overview, title: "Demo report", description: "Illustrative sample data." } : titles[section] ?? titles.overview;
   return (
     <div className="app-shell">

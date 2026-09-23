@@ -1,0 +1,53 @@
+/* Folio adaptation of Transitions.dev's Matrix Dot Loader recipe.
+   https://transitions.dev/transitions/matrix-dot-loader/ */
+.workspace-loading {
+  display: grid;
+  min-height: 100dvh;
+  place-items: center;
+  padding: 32px;
+  background: var(--folio-canvas);
+  color: var(--folio-ink);
+}
+.workspace-loader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 360px;
+  text-align: center;
+}
+.workspace-loader-mark {
+  display: grid;
+  grid-template-columns: repeat(4, 7px);
+  grid-auto-rows: 7px;
+  gap: 6px;
+  margin-bottom: 28px;
+}
+.workspace-loader-mark i {
+  display: block;
+  border-radius: 2px;
+  background: var(--folio-edge-strong);
+  animation: workspace-matrix-pulse 1.35s ease-in-out infinite;
+  animation-delay: var(--matrix-delay, 0ms);
+}
+.workspace-loader-title {
+  margin: 0;
+  font: 600 clamp(22px, 5vw, 28px)/1.2 var(--folio-font-display);
+  letter-spacing: -.03em;
+}
+.workspace-loader-description {
+  margin: 10px 0 0;
+  color: var(--folio-text-secondary);
+  font-size: 14px;
+  line-height: 1.6;
+}
+@keyframes workspace-matrix-pulse {
+  0%, 50%, 100% { background: var(--folio-edge-strong); transform: scale(1); }
+  18% { background: var(--folio-accent); transform: scale(1.12); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .workspace-loader-mark i { animation: none; }
+  .workspace-loader-mark i:nth-child(6),
+  .workspace-loader-mark i:nth-child(7),
+  .workspace-loader-mark i:nth-child(10),
+  .workspace-loader-mark i:nth-child(11) { background: var(--folio-accent); }
+}

@@ -1779,7 +1779,6 @@ td:last-child {
 .audit-evaluation-bridge p { max-width: 530px; font-size: 13px; line-height: 1.6; color: var(--folio-text-secondary); }
 .audit-bridge-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
 .audit-bridge-actions small { flex-basis: 100%; text-align: right; color: var(--folio-text-secondary); font-size: 11px; }
-.workspace-loading { padding: 48px; color: var(--folio-text-secondary); }
 .workspace-read-error { padding: 16px; display: flex; gap: 16px; align-items: center; justify-content: space-between; font-size: 13px; }
 @media (max-width: 700px) {
   .audit-evaluation-bridge { flex-direction: column; align-items: stretch; padding: 18px; }
