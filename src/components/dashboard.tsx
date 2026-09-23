@@ -122,8 +122,8 @@ const titles: Record<
   },
   websites: {
     eyebrow: "YOUR DIGITAL FOOTPRINT",
-    title: "Good things start with a website.",
-    description: "A considered view of every site you are growing.",
+    title: "Your websites",
+    description: "Choose a website to review its saved reports, run an audit, or prepare an evaluation.",
   },
   visibility: {
     eyebrow: "BE PART OF THE ANSWER",
@@ -438,6 +438,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
               href={item.href}
               onClick={() => setMobileOpen(false)}
               className={`nav-link ${section === item.section ? "active" : ""}`}
+              aria-current={section === item.section ? "page" : undefined}
             >
               <item.icon size={17} />
               <span>{item.label}</span>
@@ -449,6 +450,8 @@ function WorkspaceDashboard({ section }: { section: string }) {
           <Link
             href="/leaderboard"
             className={`nav-link ${section === "leaderboard" ? "active" : ""}`}
+            aria-current={section === "leaderboard" ? "page" : undefined}
+            onClick={() => setMobileOpen(false)}
           >
             <Trophy size={17} />
             <span>The Folio Index</span>
@@ -456,6 +459,8 @@ function WorkspaceDashboard({ section }: { section: string }) {
           <Link
             href="/agents"
             className={`nav-link ${section === "agents" ? "active" : ""}`}
+            aria-current={section === "agents" ? "page" : undefined}
+            onClick={() => setMobileOpen(false)}
           >
             <Bot size={17} />
             <span>Your agents</span>
@@ -473,6 +478,8 @@ function WorkspaceDashboard({ section }: { section: string }) {
           <Link
             href="/settings"
             className={`nav-link ${section === "settings" ? "active" : ""}`}
+            aria-current={section === "settings" ? "page" : undefined}
+            onClick={() => setMobileOpen(false)}
           >
             <Settings2 size={17} />
             <span>Settings & connections</span>
@@ -551,7 +558,9 @@ function WorkspaceDashboard({ section }: { section: string }) {
               <p>{title.description}</p>
             </div>
             <div className="heading-actions">
-              {section === "evaluations" ? null : section === "benchmarks" ? (
+              {section === "evaluations" ? null : section === "websites" ? (
+                <><Link href="/search-console" className="button secondary">Connect Search Console <ArrowRight size={14} /></Link><Button onClick={() => prepareAudit()}><Plus size={16} />Add a website</Button></>
+              ) : section === "benchmarks" ? (
                 <Link href="/docs/api" className="button secondary">API reference <ArrowRight size={14} /></Link>
               ) : section === "overview" && !demoRequested ? (
                 <><Link href="/websites" className="button secondary">My websites <ArrowRight size={14} /></Link><Button onClick={() => prepareAudit()}><Plus size={16} />Run an audit</Button></>

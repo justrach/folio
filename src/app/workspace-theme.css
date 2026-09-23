@@ -214,3 +214,24 @@
   .app-shell .page-heading { animation: workspace-arrive .4s ease-out both; }
   @keyframes workspace-arrive { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 }
+
+/* The workspace is a task list first: keep wayfinding and actions legible. */
+.app-shell .sidebar { border-right: 1px solid var(--folio-edge); }
+.app-shell .nav-link { min-height: 44px; height: auto; font-size: 14px; font-weight: 500; padding-inline: 12px; }
+.app-shell .nav-link[aria-current="page"] { background: var(--folio-surface); color: var(--folio-ink); font-weight: 650; box-shadow: inset 3px 0 0 var(--folio-accent); }
+.app-shell .nav-link > svg { display: block; flex: none; }
+.app-shell .nav-caption { font-size: 11px; letter-spacing: .08em; }
+.app-shell .breadcrumb, .app-shell .search-trigger { font-size: 13px; }
+.app-shell .page-heading { align-items: flex-start; }
+.app-shell .page-heading h1 { font-size: clamp(32px, 2.8vw, 42px); line-height: 1.12; }
+.app-shell .page-heading p { font-size: 15px; max-width: 65ch; }
+.app-shell .button { min-height: 44px; font-size: 13px; font-weight: 600; }
+.app-shell main.evaluation-page { padding-top: 18px; }
+.app-shell .evaluation-page .page-heading { margin-bottom: 8px; }
+.app-shell :is(a, button, input, select, textarea, summary):focus-visible { outline: 2px solid var(--folio-focus); outline-offset: 3px; }
+@media (max-width: 760px) {
+  .app-shell .page-heading h1 { font-size: clamp(30px, 8vw, 38px); }
+  .app-shell .page-heading p { font-size: 14px; }
+  .app-shell .heading-actions { width: 100%; }
+  .app-shell .heading-actions > :is(a, button) { flex: 1 1 auto; justify-content: center; }
+}

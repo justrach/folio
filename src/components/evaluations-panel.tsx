@@ -63,7 +63,7 @@ export function EvaluationsPanel({ initialTargetUrl = "" }: { initialTargetUrl?:
       <button id={`${ids}-page-control`} type="button" aria-pressed={pageView} aria-controls={`${ids}-page`} onClick={() => switchView("page")}>Page evidence</button>
     </div>
     {pageView ? <section id={`${ids}-page`} className="evaluation-hub-view" aria-labelledby={`${ids}-page-control`}>
-      <p className="evaluation-hub-intent">Inspect one page’s captured content, reference answers, and verification checks.</p>
+      {!intent.runId && <p className="evaluation-hub-intent">Inspect one page’s captured content, reference answers, and verification checks.</p>}
       <EvaluationWorkspacePanel key={workspace.ownerId ?? "anonymous"} initialTargetUrl={targetUrl ?? ""} workspace={workspace} onTargetChange={url => { pageTarget.current = { ownerId: workspace.ownerId, url }; }} />
     </section> : <section id={`${ids}-search`} className="evaluation-hub-view" aria-labelledby={`${ids}-search-control`}>
       <p className="evaluation-hub-intent">Choose the questions people ask. Keep the returned answers, website mentions, and sources together.</p>

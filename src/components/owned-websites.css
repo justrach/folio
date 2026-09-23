@@ -1,1 +1,16 @@
 .owned-websites{display:grid;gap:24px;margin-bottom:24px;min-width:0}.owned-website-body{padding:24px;display:grid;gap:18px}.owned-website-body p{margin:0;color:var(--muted,var(--folio-text-secondary));line-height:1.6}.owned-website-selector{display:grid;gap:8px;max-width:560px;font-size:13px}.owned-website-selector select{width:100%;min-width:0;padding:12px;border:1px solid var(--border,var(--folio-edge));background:var(--folio-surface);color:var(--folio-ink);border-radius:6px;font:inherit}.owned-website-title{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.owned-website-title h3{font-size:28px;margin:0;overflow-wrap:anywhere}.owned-website-title>span{font-size:12px;color:var(--folio-text-secondary)}.owned-website-actions{display:flex;gap:12px;flex-wrap:wrap}.owned-website-note{font-size:12px}.owned-connected-sites{border-top:1px solid var(--border,var(--folio-edge));padding-top:20px;display:grid;gap:14px}.owned-connected-sites h3{margin:0;font-size:16px}.owned-connected-sites>div{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}.owned-connected-sites span{overflow-wrap:anywhere}@media(max-width:600px){.owned-website-body{padding:18px}.owned-website-actions{display:grid}.owned-website-title h3{font-size:24px}}
+
+.owned-website-list .panel-heading { align-items: center; }
+.owned-website-list .panel-heading h2 { font-size: 18px; font-weight: 650; }
+.owned-website-body { gap: 22px; }
+.owned-website-selector { font-size: 14px; font-weight: 600; }
+.owned-website-selector select { min-height: 48px; font-weight: 400; }
+.owned-website-title { padding-top: 4px; }
+.owned-website-title h3 { font-size: clamp(23px, 2.5vw, 30px); font-weight: 650; letter-spacing: -.035em; }
+.owned-website-title > span { display: inline-flex; align-items: center; min-height: 30px; padding: 4px 10px; border: 1px solid var(--folio-edge); border-radius: 999px; background: var(--folio-canvas); font-size: 12px; }
+.owned-website-actions { padding-top: 8px; border-top: 1px solid var(--folio-edge); gap: 9px; }
+.owned-website-actions .button { min-height: 44px; }
+.owned-website-note { font-size: 13px; line-height: 1.6; }
+.owned-connected-sites { gap: 16px; }
+.owned-connected-sites > div { padding: 12px 0; border-top: 1px solid var(--folio-edge); }
+@media(max-width:600px) { .owned-website-actions .button { width: 100%; justify-content: center; } }

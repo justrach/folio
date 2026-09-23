@@ -249,3 +249,33 @@
 .eval-semantic-review p { margin: 12px 0; line-height: 1.6; }
 .eval-semantic-review li { margin: 12px 0; line-height: 1.6; overflow-wrap: anywhere; }
 .eval-semantic-review .button { margin: 8px 12px 8px 0; min-height: 44px; }
+
+/* Make the two evaluation jobs and the saved notebook easier to scan. */
+.evaluation-hub-switch { gap: 0; margin-bottom: 10px; border-bottom: 1px solid var(--folio-edge); }
+.evaluation-hub-switch > button { min-height: 48px; padding: 12px 18px; border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: transparent; color: var(--folio-text-secondary); font-size: 15px; }
+.evaluation-hub-switch > button[aria-pressed=true] { border-color: var(--folio-accent); background: transparent; color: var(--folio-ink); }
+.evaluation-hub-switch > button:hover { background: var(--folio-surface-muted); }
+.evaluation-hub-intent { font-size: 15px; margin-bottom: 16px; }
+.eval-notebook-heading > span { font-size: 15px; }
+.eval-notebook-heading .button { min-height: 44px; font-size: 13px; }
+.eval-history-list { gap: 10px; padding: 3px 0 8px; }
+.eval-history-list > button { flex-basis: 230px; min-height: 60px; padding: 9px 14px; border: 1px solid var(--folio-edge); border-radius: 8px; background: var(--folio-surface); }
+.eval-history-list > button.selected { border-color: var(--folio-accent); box-shadow: inset 3px 0 0 var(--folio-accent); }
+.eval-history-list strong { font-size: 13px; font-weight: 650; }
+.eval-history-list small { font-size: 11px; }
+.evaluation-hub .evaluations-panel.has-selection { gap: 6px; }
+.evaluations-panel .eval-section-top h2 { font-size: 23px; font-weight: 650; }
+.eval-launch > label { font-size: 14px; }
+.eval-input { min-height: 48px; }
+.eval-input input { font-size: 14px; }
+.eval-input-row > .button { min-height: 48px; font-size: 13px; }
+.eval-preflight h3 { font-size: 14px; font-weight: 650; color: var(--folio-ink); }
+.eval-preflight p { font-size: 13px; }
+.eval-preflight ul { font-size: 11px; }
+.eval-preflight li i { width: 7px; height: 7px; }
+@media(max-width:760px) {
+  .evaluation-hub-switch { flex-wrap: nowrap; }
+  .evaluation-hub-switch > button { flex: 1; padding-inline: 8px; font-size: 14px; }
+  .eval-history-list > button { flex-basis: 210px; }
+  .eval-input-row > .button { flex-basis: 100%; }
+}

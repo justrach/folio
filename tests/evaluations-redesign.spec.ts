@@ -35,6 +35,8 @@ async function fixtureWorkspace(page: Page, runs: EvaluationRun[]) {
     if (path === "/api/seo-reports") return route.fulfill({ json: { reports: [] } });
     if (path === "/api/scans") return route.fulfill({ json: { scans: [] } });
     if (path === "/api/benchmarks/runs") return route.fulfill({ json: { runs: [] } });
+    if (runs.some(value => path === `/api/evaluations/${value.id}/semantic-review`))
+      return route.fulfill({ json: { review: null, available: false } });
     const run = runs.find(value => path === `/api/evaluations/${value.id}` || path === `/api/evaluations/${value.id}/export`);
     if (run) return route.fulfill({ json: path.endsWith("/export") ? { format: "folio-evidence-bundle", run, suite: EVAL_SUITE } : { run } });
     unexpected.push(`${request.method()} ${path}`);
