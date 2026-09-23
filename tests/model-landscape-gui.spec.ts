@@ -50,3 +50,17 @@ test('website averages show all sites, model details and URL filters without spe
  const widths=await page.evaluate(()=>[document.documentElement.scrollWidth,document.documentElement.clientWidth]);expect(widths[0]).toBeLessThanOrEqual(widths[1]+1);expect(writes).toEqual([]);expect(errors).toEqual([]);
  if(process.env.FOLIO_WEBSITE_SCREENSHOT)await chart.screenshot({path:`${process.env.FOLIO_WEBSITE_SCREENSHOT}-${info.project.name}.png`});
 });
+
+test('website ranking values stay inside the chart at intermediate widths',async({page})=>{
+ await page.setViewportSize({width:768,height:900});
+ await page.goto('/leaderboard?site=ikea.com');
+ const bounds=await page.locator('.website-ranking-chart').evaluate(chart=>{
+  const row=chart.querySelector('.website-ranking-row')!;
+  const position=row.querySelector('.website-ranking-position')!;
+  return {chartRight:chart.getBoundingClientRect().right,rowRight:row.getBoundingClientRect().right,positionRight:position.getBoundingClientRect().right,scrollWidth:chart.scrollWidth,clientWidth:chart.clientWidth,documentWidth:document.documentElement.scrollWidth,viewportWidth:window.innerWidth};
+ });
+ expect(bounds.positionRight).toBeLessThanOrEqual(bounds.rowRight);
+ expect(bounds.rowRight).toBeLessThanOrEqual(bounds.chartRight);
+ expect(bounds.scrollWidth).toBeLessThanOrEqual(bounds.clientWidth);
+ expect(bounds.documentWidth).toBeLessThanOrEqual(bounds.viewportWidth);
+});
