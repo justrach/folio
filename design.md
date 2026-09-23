@@ -2,7 +2,7 @@
 
 ## Direction
 
-The September 2026 visual reference is a Swiss graphic-design poster: black type, a vivid orange accent, cool near-white surfaces, strong rules, and overlapping geometric forms. Folio adapts that vocabulary to a data-heavy web product. The result must still make the question, evidence, uncertainty, and next action clear before decorative form.
+The September 2026 palette takes black type, a vivid orange accent, and cool near-white surfaces from a Swiss graphic-design reference. Folio now uses those colors in a minimal product UI: quiet rules, ordinary cards, and no offset shadows or ornamental circles. A generated orange/red editorial collage sits behind the landing hero, with a pale wash under the copy so the product explanation remains legible. The question, evidence, uncertainty, and next action come before decoration.
 
 This is a Folio web choice, not an Apple native control specification. The project Apple HIG design notes inform readable hierarchy, explicit state, recoverable actions, visible focus, adaptive appearance, and enlarged-text reflow. The 44 CSS-pixel minimum control height is a Folio touch-friendly choice.
 
@@ -23,6 +23,7 @@ Every application CSS file consumes these tokens. Legacy aliases (`--paper`, `--
 - Chart and dashboard colors come from CSS variables, including SVG paint. Historical model and website data keep their original identity and provenance; theme colors do not rewrite stored measurements.
 - The website comparison uses a compact Recharts overview and a ranked horizontal-bar layout adapted from [EvilCharts' horizontal Recharts example](https://github.com/legions-developer/evilcharts/blob/main/src/registry/examples/recharts/ex-horizontal-layout-bar-chart.tsx). The overview starts within the first desktop and mobile viewport; direct names, values, and a separate average-position column below replace crowded scatterplot leader lines. The top twelve remain a summary; the full table preserves every website and the selection detail.
 - Prefer a neutral rule or spacing for grouping. Keep focus outlines visible on the actual surface. Respect reduced motion and keyboard activation.
+- The landing hero backdrop lives at [`public/images/folio-hero-collage.webp`](public/images/folio-hero-collage.webp). It is decorative CSS only; no information depends on the image. Keep the copy side pale enough for legible text in light and dark appearance, and let the report preview use an opaque surface.
 - Retain third-party attribution and licenses when adapting vendored controls to theme tokens.
 
 ## Validation

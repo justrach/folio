@@ -37,7 +37,13 @@
 .landing-signin { display: inline-flex; align-items: center; gap: 4px; }
 .landing-skip { position: absolute; top: 10px; left: 10px; transform: translateY(-200%); padding: 12px; background: var(--landing-surface); z-index: 10; }
 .landing-skip:focus { transform: none; }
-.landing-hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 76px; align-items: center; padding: 56px 0; }
+.landing-hero { position: relative; isolation: isolate; display: grid; grid-template-columns: 1.05fr 1fr; gap: 76px; align-items: center; padding: 76px 0; }
+.landing-hero::before {
+  content: ""; position: absolute; z-index: -1; pointer-events: none;
+  inset: 0 calc(50% - 50vw);
+  background-image: linear-gradient(90deg, var(--folio-canvas) 0%, color-mix(in srgb, var(--folio-canvas) 92%, transparent) 30%, color-mix(in srgb, var(--folio-canvas) 48%, transparent) 63%, color-mix(in srgb, var(--folio-canvas) 12%, transparent) 100%), url('/images/folio-hero-collage.webp');
+  background-position: center; background-size: cover;
+}
 .landing-hero-copy { min-width: 0; }
 .landing .landing-audience { color: var(--landing-body); font-size: 14px; margin-bottom: 19px; }
 .landing-hero h1 { font: 400 clamp(42px, 4.3vw, 62px)/1.04 var(--serif); letter-spacing: -2px; text-wrap: balance; max-width: 570px; }
@@ -45,7 +51,7 @@
 .landing-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 22px; margin-top: 28px; }
 .landing-actions > a:last-child { font-size: 14px; text-decoration: underline; }
 .landing .landing-access { max-width: 400px; font-size: 12px; line-height: 1.6; color: var(--landing-muted); margin-top: 15px; }
-.landing-preview { min-width: 0; background: var(--landing-surface); border: 1px solid var(--folio-edge-strong); padding: 24px 28px 20px; box-shadow: 8px 8px 0 var(--folio-shadow); }
+.landing-preview { min-width: 0; background: var(--landing-surface); border: 1px solid var(--folio-edge); padding: 24px 28px 20px; }
 .landing-preview-heading { display: flex; justify-content: space-between; gap: 14px; margin-bottom: 20px; font-size: 12px; color: var(--landing-muted); }
 .landing-preview-heading span:last-child { color: var(--folio-ink); }
 .landing-preview h2 { font-size: 22px; line-height: 1.3; letter-spacing: -.45px; }
@@ -107,7 +113,7 @@
 .landing-report-source code { color: var(--landing-body); font-size: 12px; overflow-wrap: anywhere; white-space: normal; }
 .landing-workflow { padding: 64px 0 48px; border-bottom: 1px solid var(--landing-rule); scroll-margin-top: 28px; }
 .landing-workflow ol { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px; list-style: none; padding: 0; margin: 30px 0 22px; }
-.landing-workflow li { border-top: 2px solid var(--folio-edge-strong); padding-top: 20px; }
+.landing-workflow li { border-top: 1px solid var(--folio-edge); padding-top: 20px; }
 .landing-workflow h3 { font: 600 18px/1.4 var(--sans); letter-spacing: -.25px; margin-bottom: 10px; }
 .landing-workflow li p { font-size: 15px; line-height: 1.65; }
 .landing .landing-workflow-note { color: var(--landing-muted); font-size: 13px; max-width: 780px; }
@@ -134,7 +140,7 @@
 .landing .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 @media (max-width: 1000px) {
   .landing-nav, .landing main, .landing-footer { width: calc(100% - 64px); }
-  .landing-hero { gap: 38px; padding-top: 40px; }
+  .landing-hero { gap: 38px; padding-top: 58px; }
   .landing-hero h1 { font-size: 49px; }
   .landing .landing-hero-description { font-size: 16px; }
   .landing-nav nav { gap: 19px; }
@@ -147,11 +153,12 @@
   .landing-nav nav { order: 3; flex-basis: 100%; margin: 0; justify-content: space-between; gap: 12px; }
   .landing-nav nav a { font-size: 13px; }
   .landing-signin { margin-left: auto; font-size: 13px; }
-  .landing-hero { grid-template-columns: 1fr; gap: 30px; padding: 30px 0 36px; }
+  .landing-hero { grid-template-columns: 1fr; gap: 30px; padding: 32px 0 40px; }
+  .landing-hero::before { background-image: linear-gradient(90deg, color-mix(in srgb, var(--folio-canvas) 96%, transparent), color-mix(in srgb, var(--folio-canvas) 83%, transparent)), url('/images/folio-hero-collage.webp'); background-position: right center; }
   .landing-hero h1 { font-size: 42px; letter-spacing: -1.6px; max-width: 420px; }
   .landing .landing-audience { font-size: 12px; margin-bottom: 14px; }
   .landing .landing-hero-description { font-size: 16px; line-height: 1.6; margin-top: 18px; }
-  .landing-preview { padding: 20px; box-shadow: 5px 5px 0 var(--folio-shadow); }
+  .landing-preview { padding: 20px; }
   .landing-preview-heading { margin-bottom: 14px; }
   .landing-preview:has(.landing-preview-question-detail) .landing-preview-question { display: none; }
   .landing-preview h2 { font-size: 21px; }
@@ -186,27 +193,18 @@
   .landing-footer nav { width: 100%; margin-left: 0; font-size: 13px; }
 }
 
-/* Swiss poster direction: disciplined type, strong rules, one vivid accent. */
-.landing { --landing-paper: var(--folio-canvas); --landing-rule: var(--folio-edge-strong); }
+/* Minimal product UI: readable type, quiet surfaces, and a single action accent. */
+.landing { --landing-paper: var(--folio-canvas); --landing-rule: var(--folio-edge); }
 .landing .wordmark { font-family: var(--folio-font-display); font-weight: 800; letter-spacing: -.075em; }
-.landing-hero-copy { position: relative; isolation: isolate; }
-.landing-hero-copy::after {
-  content: ""; position: absolute; z-index: -1; pointer-events: none;
-  width: 240px; height: 210px; right: -22px; bottom: -90px; opacity: .095;
-  background: radial-gradient(circle at 64% 42%, var(--folio-accent-bright) 0 40%, transparent 41%), radial-gradient(circle at 34% 58%, var(--folio-ink) 0 40%, transparent 41%);
-}
-.landing-hero h1 { font-family: var(--folio-font-display); font-size: clamp(44px, 5.7vw, 82px); font-weight: 800; letter-spacing: -.075em; line-height: .98; max-width: 690px; }
-.landing-hero h1 span { color: var(--folio-accent-bright); }
-.landing .landing-audience { color: var(--folio-accent); font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.landing-hero h1 { font-family: var(--folio-font-display); font-size: clamp(44px, 5vw, 72px); font-weight: 700; letter-spacing: -.06em; line-height: 1.03; max-width: 690px; }
+.landing-hero h1 span { color: var(--folio-ink); }
+.landing .landing-audience { color: var(--folio-text-secondary); font-size: 14px; font-weight: 600; letter-spacing: 0; text-transform: none; }
 .landing .button.primary { background: var(--folio-accent); border-color: var(--folio-accent); color: var(--folio-on-accent); border-radius: var(--folio-radius-control); font-weight: 700; }
 .landing .button.primary:hover { background: var(--folio-accent-hover); border-color: var(--folio-accent-hover); }
-.landing-preview { border: 1px solid var(--folio-ink); border-radius: var(--folio-radius-card); box-shadow: 8px 8px 0 var(--folio-ink); }
+.landing-preview { border-color: var(--folio-edge); border-radius: var(--folio-radius-card); }
 .landing-preview-rank { background: var(--folio-accent-soft); color: var(--folio-accent); border-color: var(--folio-accent-edge); }
-.landing-preview-heading span:last-child { color: var(--folio-accent); font-weight: 800; }
-.landing-benefits { border-block: 1px solid var(--folio-ink); }
-.landing-next { background: var(--folio-inverse-surface); color: var(--folio-inverse-text); border-radius: var(--folio-radius-card); }
-.landing-next :is(h2, p) { color: var(--folio-inverse-text); }
+.landing-preview-heading span:last-child { color: var(--folio-text-secondary); font-weight: 600; }
+.landing-benefits { border-block: 1px solid var(--folio-edge); }
 @media (max-width: 700px) {
-  .landing-hero-copy::after { width: 170px; height: 150px; right: 0; bottom: -30px; opacity: .06; }
   .landing-hero h1 { font-size: clamp(42px, 10vw, 56px); }
 }
