@@ -25,15 +25,15 @@ const subscribeHydration = () => () => {};
 const clientHydration = () => true;
 const serverHydration = () => false;
 
-const SURFACE = "bg-[#F4F4F9] dark:bg-[#262626]";
-const GLYPH = "text-[#868593] dark:text-[#9B9AA7]";
+const SURFACE = "bg-[var(--folio-surface-muted)]";
+const GLYPH = "text-[var(--folio-text-muted)]";
 
 const COLORS = {
-  red: "bg-[#FF3B30] dark:bg-[#FF453A]",
-  orange: "bg-[#FF9500] dark:bg-[#FF9F0A]",
-  green: "bg-[#34C759] dark:bg-[#30D158]",
-  blue: "bg-[#007AFF] dark:bg-[#0A84FF]",
-  violet: "bg-[#AF52DE] dark:bg-[#BF5AF2]",
+  red: "bg-[var(--folio-danger)]",
+  orange: "bg-[var(--folio-accent)]",
+  green: "bg-[var(--folio-success)]",
+  blue: "bg-[var(--folio-text-secondary)]",
+  violet: "bg-[var(--folio-text-muted)]",
 } as const;
 
 // all sizes are a fraction of the size prop

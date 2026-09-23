@@ -1,0 +1,126 @@
+/* Folio design system. Change this file to retheme color and type across routes. */
+:root {
+  color-scheme: light;
+  --folio-font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --folio-font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --folio-font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --folio-ink: #171717;
+  --folio-charcoal: #292929;
+  --folio-text-secondary: #4b4b4b;
+  --folio-text-muted: #686868;
+  --folio-text-faint: #858585;
+  --folio-edge-strong: #b5b5b5;
+  --folio-edge: #d1d1d1;
+  --folio-surface-muted: #e6e6e8;
+  --folio-canvas: #f3f4f5;
+  --folio-surface: #ffffff;
+  --folio-white: #ffffff;
+  --folio-on-accent: #ffffff;
+  --folio-inverse-surface: #202020;
+  --folio-inverse-text: #ffffff;
+  --folio-shadow: #161616;
+  --folio-accent: #d83f00;
+  --folio-accent-bright: #fa4e00;
+  --folio-accent-hover: #b93400;
+  --folio-accent-soft: #ffe2d4;
+  --folio-accent-edge: #f0b79c;
+  --folio-focus: #b93400;
+  --folio-danger: #ab2f00;
+  --folio-success: #292929;
+  --folio-radius-control: 8px;
+  --folio-radius-card: 14px;
+  --folio-control-height: 44px;
+  --folio-space-unit: 4px;
+  --paper: var(--folio-canvas);
+  --panel: var(--folio-surface);
+  --ink: var(--folio-ink);
+  --green: var(--folio-accent);
+  --deep: var(--folio-charcoal);
+  --muted: var(--folio-text-muted);
+  --line: var(--folio-edge);
+  --lime: var(--folio-accent-soft);
+  --sans: var(--folio-font-body);
+  --serif: var(--folio-font-display);
+  --font-display: var(--folio-font-display);
+}
+
+.app-shell {
+  --paper: var(--folio-canvas);
+  --panel: var(--folio-surface);
+  --ink: var(--folio-ink);
+  --green: var(--folio-accent);
+  --deep: var(--folio-charcoal);
+  --muted: var(--folio-text-muted);
+  --line: var(--folio-edge);
+  --lime: var(--folio-accent-soft);
+  --sans: var(--folio-font-body);
+  --serif: var(--folio-font-display);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --folio-ink: #f5f5f5;
+    --folio-charcoal: #ebebeb;
+    --folio-text-secondary: #d1d1d1;
+    --folio-text-muted: #b3b3b3;
+    --folio-text-faint: #939393;
+    --folio-edge-strong: #646464;
+    --folio-edge: #454545;
+    --folio-surface-muted: #343434;
+    --folio-canvas: #171717;
+    --folio-surface: #242424;
+    --folio-white: #ffffff;
+    --folio-on-accent: #171717;
+    --folio-inverse-surface: #111111;
+    --folio-inverse-text: #ffffff;
+    --folio-shadow: #050505;
+    --folio-accent: #ff6a27;
+    --folio-accent-bright: #ff6a27;
+    --folio-accent-hover: #ff8248;
+    --folio-accent-soft: #512714;
+    --folio-accent-edge: #a94416;
+    --folio-focus: #ff9b70;
+    --folio-danger: #ff8757;
+    --folio-success: #f5f5f5;
+  }
+}
+
+html { font-family: var(--folio-font-body); }
+body { background: var(--folio-canvas); color: var(--folio-ink); font-family: var(--folio-font-body); }
+:is(button, a, input, select, textarea, summary, [role="button"]):focus-visible {
+  outline: 3px solid var(--folio-focus);
+  outline-offset: 3px;
+}
+::selection { background: var(--folio-accent-soft); color: var(--folio-ink); }
+
+/* Shared component contracts; exported React primitives use these same classes. */
+.folio-surface { background: var(--folio-surface); color: var(--folio-ink); border: 1px solid var(--folio-edge); border-radius: var(--folio-radius-card); }
+.folio-button { min-height: var(--folio-control-height); display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 18px; border-radius: var(--folio-radius-control); border: 1px solid transparent; font-family: var(--folio-font-body); font-weight: 700; line-height: 1.2; text-decoration: none; }
+.folio-button[data-variant="primary"] { background: var(--folio-accent); color: var(--folio-on-accent); }
+.folio-button[data-variant="primary"]:hover { background: var(--folio-accent-hover); }
+.folio-button[data-variant="secondary"] { background: var(--folio-surface); color: var(--folio-ink); border-color: var(--folio-edge-strong); }
+.folio-button[data-variant="secondary"]:hover { background: var(--folio-surface-muted); }
+.folio-button[data-variant="quiet"] { background: transparent; color: var(--folio-accent); }
+.folio-button[data-variant="quiet"]:hover { background: var(--folio-accent-soft); }
+.folio-field { display: grid; gap: 6px; color: var(--folio-text-secondary); font-weight: 600; }
+.folio-field :is(input, select, textarea) { min-height: var(--folio-control-height); width: 100%; padding: 10px 12px; color: var(--folio-ink); background: var(--folio-surface); border: 1px solid var(--folio-edge-strong); border-radius: var(--folio-radius-control); }
+.folio-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 9px; color: var(--folio-charcoal); background: var(--folio-surface-muted); border-radius: 999px; font-size: .76rem; font-weight: 700; }
+.folio-badge[data-tone="accent"] { color: var(--folio-accent); background: var(--folio-accent-soft); }
+
+/* Existing shared component classes take their values from the same contracts. */
+.button.primary { background: var(--folio-accent); color: var(--folio-on-accent); border-color: var(--folio-accent); }
+.button.primary:hover { background: var(--folio-accent-hover); border-color: var(--folio-accent-hover); }
+.button.secondary, .button.cream { background: var(--folio-surface); color: var(--folio-ink); border-color: var(--folio-edge-strong); }
+.button.secondary:hover, .button.cream:hover { background: var(--folio-surface-muted); }
+.panel { background: var(--folio-surface); border-color: var(--folio-edge); }
+.app-shell .sidebar { background: var(--folio-surface); border-right: 1px solid var(--folio-edge); color: var(--folio-ink); }
+.app-shell .nav-link { color: var(--folio-text-secondary); }
+.app-shell .nav-link:hover, .app-shell .nav-link.active { color: var(--folio-ink); background: var(--folio-accent-soft); }
+.app-shell .nav-link.active { box-shadow: inset 3px 0 var(--folio-accent); }
+.wordmark-period { color: var(--folio-accent); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

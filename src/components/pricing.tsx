@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import "./pricing.css";
+import { UiBadge, UiButton, UiSurface } from "./ui/primitives";
 
 const plans = [
   {
@@ -117,12 +118,9 @@ export function Pricing() {
           <Link href="/evaluations">
             Explore evaluations <ArrowUpRight size={13} />
           </Link>
-          <Link
-            href={session ? "/overview" : "/login"}
-            className="button secondary"
-          >
+          <UiButton asChild variant="secondary" className="button secondary"><Link href={session ? "/overview" : "/login"}>
             {session ? "Your workspace" : "Sign in"} <ArrowUpRight size={13} />
-          </Link>
+          </Link></UiButton>
         </div>
       </header>
       <main>
@@ -138,13 +136,13 @@ export function Pricing() {
             Start with the preview. Help shape a paid plan for private evidence,
             useful evaluations, and reviewed improvements.
           </p>
-          <span className="pricing-proposal">
+          <UiBadge tone="accent" className="pricing-proposal">
             <CreditCard size={13} /> Proposed pricing · billing is not active
-          </span>
+          </UiBadge>
         </div>
         <div className="pricing-grid">
           {plans.map((plan, i) => (
-            <article
+            <UiSurface as="article"
               className={`pricing-card ${i === 1 ? "featured" : ""}`}
               key={plan.id}
             >
@@ -172,14 +170,11 @@ export function Pricing() {
               </ul>
               <div className="plan-action">
                 {plan.id === "free" ? (
-                  <Link
-                    href="/overview"
-                    className={`button ${i === 1 ? "cream" : "secondary"}`}
-                  >
+                  <UiButton asChild variant="secondary" className={`button ${i === 1 ? "cream" : "secondary"}`}><Link href="/overview">
                     Explore the demo <ArrowUpRight size={14} />
-                  </Link>
+                  </Link></UiButton>
                 ) : session ? (
-                  <button
+                  <UiButton variant="secondary"
                     className={`button ${i === 1 ? "cream" : "secondary"}`}
                     disabled={Boolean(busy)}
                     onClick={() => choose(plan.id)}
@@ -193,21 +188,18 @@ export function Pricing() {
                       ? "Preference saved"
                       : "Register interest"}
                     {selected !== plan.id && <ArrowUpRight size={14} />}
-                  </button>
+                  </UiButton>
                 ) : (
-                  <Link
-                    href="/login"
-                    className={`button ${i === 1 ? "cream" : "secondary"}`}
-                  >
+                  <UiButton asChild variant="secondary" className={`button ${i === 1 ? "cream" : "secondary"}`}><Link href="/login">
                     {isPending
                       ? "Loading account…"
                       : "Sign in to register interest"}{" "}
                     <ArrowUpRight size={13} />
-                  </Link>
+                  </Link></UiButton>
                 )}
                 <small>{plan.footnote}</small>
               </div>
-            </article>
+            </UiSurface>
           ))}
         </div>
         {message && (

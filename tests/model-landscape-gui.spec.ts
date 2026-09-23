@@ -5,7 +5,14 @@ test('website averages show all sites, model details and URL filters without spe
  await page.route('**/api/**',r=>{if(r.request().method()!=='GET')writes.push(r.request().url());return r.fulfill({json:null})});
  await page.goto('/leaderboard');
  const chart=page.getByRole('region',{name:'Which websites get recommended?'});
- await expect(chart).toBeVisible();await expect(chart.getByRole('img')).toBeVisible();
+ await expect(chart).toBeVisible();
+ const ranking=chart.getByRole('group',{name:'Top websites by appearance rate'});
+ await expect(ranking).toBeVisible();
+ await expect(ranking.getByRole('button')).toHaveCount(12);
+ await ranking.getByRole('button').first().focus();
+ await page.keyboard.press('Enter');
+ await expect(ranking.getByRole('button').first()).toHaveAttribute('aria-pressed','true');
+ await chart.getByRole('button',{name:'Close website details'}).click();
  await expect(chart.getByLabel('Website comparison question')).toHaveValue('');
  await expect(chart).not.toContainText('token cost');
  await chart.getByLabel('Website comparison audience').selectOption('Shops & brands');

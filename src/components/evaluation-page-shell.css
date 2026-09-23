@@ -1,6 +1,6 @@
 .page-content.evaluation-page{padding-top:24px}
 .evaluation-page .page-heading{align-items:center;margin-bottom:16px;gap:20px}
 .evaluation-page .page-heading h1{font-family:var(--sans);font-size:32px;font-weight:600;line-height:1.2;letter-spacing:-.8px;margin-top:0}
-.evaluation-page .page-heading p{font-size:14px;line-height:1.6;color:#4e5c47;margin-top:8px;max-width:650px}
+.evaluation-page .page-heading p{font-size:14px;line-height:1.6;color:var(--folio-text-secondary);margin-top:8px;max-width:650px}
 .evaluation-page .heading-actions .button{font-size:12px}
 @media(max-width:760px){.evaluation-page .page-heading{align-items:flex-start;margin-bottom:20px;gap:12px}.evaluation-page .page-heading h1{font-size:28px}.evaluation-page .page-heading p{font-size:13px}.evaluation-page .heading-actions{width:auto;flex:0 0 auto;padding-top:0}.evaluation-page .heading-actions .button{min-height:24px;padding:0;background:transparent;border:0;box-shadow:none;text-decoration:underline;text-underline-offset:4px}}

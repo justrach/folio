@@ -1,8 +1,8 @@
 export const LANDSCAPE_MODELS = [
-  { id: 'gpt-6-astra', label: 'Astra', color: '#244f3d' },
-  { id: 'gpt-5.6-sol', label: 'Sol 5.6', color: '#987442' },
-  { id: 'gpt-5.6-terra', label: 'Terra 5.6', color: '#667d54' },
-  { id: 'gpt-5.6-luna', label: 'Luna 5.6', color: '#465d68' },
+  { id: 'gpt-6-astra', label: 'Astra', color: 'var(--folio-ink)' },
+  { id: 'gpt-5.6-sol', label: 'Sol 5.6', color: 'var(--folio-accent)' },
+  { id: 'gpt-5.6-terra', label: 'Terra 5.6', color: 'var(--folio-text-muted)' },
+  { id: 'gpt-5.6-luna', label: 'Luna 5.6', color: 'var(--folio-charcoal)' },
 ] as const;
 export type LandscapePoint = { queryId: string; model: string; status: string; seconds: number | null; costUsd: number | null };
 export type ModelLandscapeData = { format: string; observedAt: string; questionCount: number; planned: number; points: LandscapePoint[] };

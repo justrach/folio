@@ -5,6 +5,7 @@ import { RankedSearchTable } from "./ranked-search-table";
 import { PUBLIC_SEARCH_QUERIES, latestPublicSearchObservation } from "@/lib/public-search-rankings";
 import evaluationBatch from "@/data/developer-tool-evaluations.json";
 import "./landing.css";
+import { UiButton, UiSurface } from "./ui/primitives";
 
 function Mark() {
   return <span className="folio-mark" aria-hidden="true"><i /><i /><i /><i /></span>;
@@ -25,7 +26,7 @@ function RecommendationPreview() {
   const shortQuestion = query.query.length > 105 ? `${query.query.slice(0, 105).replace(/\s+\S*$/, "")}…` : query.query;
   const rows = result.recommendations.slice(0, 4);
   const href = `/overview?query=${encodeURIComponent(query.id)}`;
-  return <aside className="landing-preview" aria-label="Real recommendation preview">
+  return <UiSurface as="aside" className="landing-preview" aria-label="Real recommendation preview">
     <div className="landing-preview-heading"><span>Inside a Folio report</span><span>Real results</span></div>
     <h2>{query.category}</h2>
     <p className="landing-preview-question">{shortQuestion}</p>
@@ -37,7 +38,7 @@ function RecommendationPreview() {
     </li>)}</ol>
     <Link className="landing-preview-link" href={href}>Read the answer and sources <ArrowUpRight size={16} aria-hidden="true" /></Link>
     {result.recommendations.length > rows.length && <p className="landing-preview-more">First {rows.length} of {result.recommendations.length} recommendations shown.</p>}
-  </aside>;
+  </UiSurface>;
 }
 
 export function Landing() {
@@ -59,10 +60,10 @@ export function Landing() {
       <section className="landing-hero">
         <div className="landing-hero-copy">
           <p className="landing-audience">For website owners and product teams</p>
-          <h1>See which competitors AI recommends.</h1>
+          <h1>See which competitors <span>AI recommends.</span></h1>
           <p className="landing-hero-description">See which companies appear for your customers’ questions. Inspect the sources and your own pages, then decide what to improve.</p>
           <div className="landing-actions">
-            <Link href="/evaluations" className="button primary">Evaluate your website <ArrowUpRight size={16} aria-hidden="true" /></Link>
+            <UiButton asChild className="button primary"><Link href="/evaluations">Evaluate your website <ArrowUpRight size={16} aria-hidden="true" /></Link></UiButton>
             <Link href="/leaderboard">Explore real results</Link>
           </div>
           <p className="landing-access">Sign in to prepare an evaluation. You choose when to run it.</p>
@@ -136,7 +137,7 @@ export function Landing() {
 
       <section className="landing-next">
         <div><h2>What will AI say about your website?</h2><p>Choose the questions that matter to your customers.</p></div>
-        <Link href="/evaluations" className="button primary">Evaluate your website <ArrowUpRight size={16} aria-hidden="true" /></Link>
+        <UiButton asChild className="button primary"><Link href="/evaluations">Evaluate your website <ArrowUpRight size={16} aria-hidden="true" /></Link></UiButton>
       </section>
     </main>
 

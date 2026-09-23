@@ -3,14 +3,14 @@
 .website-switcher .workspace-switch > span:nth-child(2) { min-width: 0; overflow-wrap: anywhere; }
 .website-switcher .workspace-avatar, .website-switcher svg { flex-shrink: 0; }
 .website-switcher .workspace-switch[aria-expanded="true"] > svg { transform: rotate(180deg); }
-.website-picker { position: absolute; top: calc(100% + 8px); left: 0; width: 100%; z-index: 40; padding: 10px; border: 1px solid #55594d; border-radius: 10px; background: #363c31; color: #f5f1df; box-shadow: 0 12px 28px #0003; }
+.website-picker { position: absolute; top: calc(100% + 8px); left: 0; width: 100%; z-index: 40; padding: 10px; border: 1px solid var(--folio-edge-strong); border-radius: 10px; background: var(--folio-inverse-surface); color: var(--folio-inverse-text); box-shadow: 0 12px 28px color-mix(in srgb, var(--folio-shadow) 20.0%, transparent); }
 .website-picker p { margin: 6px 4px 12px; font-size: 12px; line-height: 1.5; }
-.website-picker .website-picker-heading { font-size: 10px; letter-spacing: 1.4px; color: #c5c9b9; }
+.website-picker .website-picker-heading { font-size: 10px; letter-spacing: 1.4px; color: var(--folio-inverse-text); }
 .website-picker-list { max-height: min(320px, 45dvh); overflow-y: auto; }
 .website-picker button, .website-picker a { display: flex; align-items: center; gap: 9px; width: 100%; padding: 11px 8px; border: 0; border-radius: 5px; background: transparent; color: inherit; text-align: left; font-size: 12px; text-decoration: none; }
-.website-picker button:hover, .website-picker a:hover, .website-picker button[aria-pressed="true"] { background: #4b5342; }
-.website-picker button:focus-visible, .website-picker a:focus-visible { outline: 2px solid #d0d8b8; outline-offset: -2px; }
+.website-picker button:hover, .website-picker a:hover, .website-picker button[aria-pressed="true"] { background: var(--folio-inverse-surface); }
+.website-picker button:focus-visible, .website-picker a:focus-visible { outline: 2px solid var(--folio-edge); outline-offset: -2px; }
 .website-picker button:disabled { opacity: .65; cursor: wait; }
 .website-picker button > span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
-.website-picker small { display: block; font-size: 10px; color: #c5c9b9; margin-top: 4px; overflow-wrap: anywhere; }
-.website-picker .website-picker-add { border-top: 1px solid #55594d; border-radius: 0; margin-top: 6px; }
+.website-picker small { display: block; font-size: 10px; color: var(--folio-inverse-text); margin-top: 4px; overflow-wrap: anywhere; }
+.website-picker .website-picker-add { border-top: 1px solid var(--folio-edge-strong); border-radius: 0; margin-top: 6px; }

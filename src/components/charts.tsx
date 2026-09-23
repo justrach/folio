@@ -39,13 +39,13 @@ export function VisibilityChart({
         >
           <defs>
             <linearGradient id="chart-fill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#a9b38a" stopOpacity={0.4} />
-              <stop offset="100%" stopColor="#a9b38a" stopOpacity={0.02} />
+              <stop offset="0%" stopColor="var(--folio-accent-soft)" stopOpacity={0.4} />
+              <stop offset="100%" stopColor="var(--folio-accent-soft)" stopOpacity={0.02} />
             </linearGradient>
           </defs>
           <CartesianGrid
             vertical={false}
-            stroke="#e7e6dd"
+            stroke="var(--folio-edge)"
             strokeDasharray="3 5"
           />
           <XAxis
@@ -53,7 +53,7 @@ export function VisibilityChart({
             axisLine={false}
             tickLine={false}
             minTickGap={48}
-            tick={{ fill: "#818379", fontSize: 11 }}
+            tick={{ fill: "var(--folio-text-muted)", fontSize: 11 }}
             dy={9}
           />
           <YAxis
@@ -61,18 +61,18 @@ export function VisibilityChart({
             ticks={[0, 25, 50, 75, 100]}
             axisLine={false}
             tickLine={false}
-            tick={{ fill: "#818379", fontSize: 11 }}
+            tick={{ fill: "var(--folio-text-muted)", fontSize: 11 }}
             tickFormatter={(v) => `${v}%`}
           />
           <Tooltip
             contentStyle={{
-              border: "1px solid #d9decf",
+              border: "1px solid var(--folio-edge)",
               borderRadius: 8,
-              background: "#fffef8",
+              background: "var(--folio-surface)",
               fontSize: 12,
-              boxShadow: "0 4px 24px #20382912",
+              boxShadow: "0 4px 24px color-mix(in srgb, var(--folio-shadow) 7%, transparent)",
             }}
-            labelStyle={{ color: "#75806d", marginBottom: 5 }}
+            labelStyle={{ color: "var(--folio-text-muted)", marginBottom: 5 }}
             formatter={(value, name) => [
               `${Number(value).toFixed(1)}${name === "SEO health" ? " / 100" : "%"}`,
               name,
@@ -82,7 +82,7 @@ export function VisibilityChart({
             type="monotone"
             dataKey="aeo"
             name="AI visibility"
-            stroke="#435c38"
+            stroke="var(--folio-accent)"
             fill="url(#chart-fill)"
             strokeWidth={2.8}
             isAnimationActive={false}
@@ -91,7 +91,7 @@ export function VisibilityChart({
             type="monotone"
             dataKey="seo"
             name="SEO health"
-            stroke="#8c9971"
+            stroke="var(--folio-charcoal)"
             strokeWidth={2}
             dot={false}
             isAnimationActive={false}
@@ -101,7 +101,7 @@ export function VisibilityChart({
               type="monotone"
               dataKey="industry"
               name="Industry average"
-              stroke="#b79c80"
+              stroke="var(--folio-edge-strong)"
               strokeDasharray="5 5"
               strokeWidth={1.5}
               dot={false}
@@ -131,7 +131,7 @@ export function Sparkline({
       <polyline
         points={d}
         fill="none"
-        stroke={light ? "#d4dfa2" : "#7e9772"}
+        stroke={light ? "var(--folio-inverse-text)" : "var(--folio-accent)"}
         strokeWidth="2"
         strokeLinejoin="round"
         strokeLinecap="round"

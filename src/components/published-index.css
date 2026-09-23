@@ -19,7 +19,7 @@
   margin-bottom: 8px;
   font-size: 9px;
   letter-spacing: 1.5px;
-  color: #728465;
+  color: var(--folio-text-secondary);
 }
 .published-refresh {
   flex-shrink: 0;
@@ -31,7 +31,7 @@
   max-width: 960px;
   font-size: 11px;
   line-height: 1.8;
-  color: #76846a;
+  color: var(--folio-text-secondary);
 }
 .published-state {
   min-height: 185px;
@@ -42,11 +42,11 @@
   justify-content: center;
   gap: 12px;
   text-align: center;
-  color: #79866e;
+  color: var(--folio-text-secondary);
 }
 .published-state h3 {
   margin: 0;
-  color: #526348;
+  color: var(--folio-text-secondary);
   font-size: 18px;
   font-weight: 500;
 }
@@ -67,7 +67,7 @@
   gap: 16px;
   border-top: 1px solid var(--line);
   font-size: 10px;
-  color: #748268;
+  color: var(--folio-text-secondary);
 }
 .published-table-toolbar label {
   display: flex;
@@ -79,8 +79,8 @@
   padding: 8px 10px;
   border: 1px solid var(--line);
   border-radius: 5px;
-  background: #fffef8;
-  color: #45563d;
+  background: var(--folio-surface);
+  color: var(--folio-text-secondary);
   font: inherit;
   font-size: 11px;
 }
@@ -115,7 +115,7 @@
 .published-table .score-cell small {
   font-size: 10px;
   font-weight: 400;
-  color: #87917b;
+  color: var(--folio-text-muted);
 }
 .published-table time {
   font-size: 10px;
@@ -125,7 +125,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #516347;
+  color: var(--folio-text-secondary);
 }
 .published-page-link > span:first-child {
   min-width: 0;
@@ -139,7 +139,7 @@
 .published-page-link small {
   display: block;
   margin-top: 5px;
-  color: #86907a;
+  color: var(--folio-text-muted);
   font-size: 10px;
   max-width: 340px;
   overflow-wrap: anywhere;
@@ -155,7 +155,7 @@
   padding: 26px;
   text-align: center;
   font-size: 12px;
-  color: #7e8874;
+  color: var(--folio-text-secondary);
 }
 .published-updated {
   display: flex;
@@ -165,43 +165,43 @@
   border-top: 1px solid var(--line);
   font-size: 10px;
   line-height: 1.6;
-  color: #89917e;
+  color: var(--folio-text-muted);
 }
 .published-updated > span {
   margin-left: auto;
 }
 .published-methodology {
   border-top: 1px solid var(--line);
-  background: #f8f9f1;
+  background: var(--folio-surface);
 }
 .published-methodology > summary {
   padding: 18px 24px;
   cursor: pointer;
   font-size: 11px;
-  color: #586d4c;
+  color: var(--folio-text-secondary);
   line-height: 1.7;
 }
 .published-methodology > summary > span {
   margin-left: 12px;
-  color: #89937e;
+  color: var(--folio-text-muted);
   font-size: 10px;
 }
 .published-methodology-body {
   padding: 0 24px 24px;
   max-width: 1040px;
-  color: #748267;
+  color: var(--folio-text-secondary);
   font-size: 11px;
   line-height: 1.8;
 }
 .published-methodology-body h3 {
   font-size: 18px;
-  color: #536549;
+  color: var(--folio-text-secondary);
   font-weight: 500;
   margin: 0 0 12px;
 }
 .published-methodology-body h4 {
   font-size: 12px;
-  color: #536549;
+  color: var(--folio-text-secondary);
   margin: 24px 0 12px;
 }
 .published-methodology-body p {
@@ -227,7 +227,7 @@
   justify-content: space-between;
   gap: 12px;
   padding: 8px 0;
-  border-bottom: 1px solid #e7eadb;
+  border-bottom: 1px solid var(--folio-edge);
 }
 .published-weights strong {
   font-size: 10px;
@@ -246,7 +246,7 @@
 }
 .published-site-icon {
   flex-shrink: 0;
-  color: #819071;
+  color: var(--folio-text-muted);
 }
 .published-site-identity {
   flex: 1;
@@ -256,18 +256,18 @@
   margin: 0;
   font-size: 13px;
   font-weight: 500;
-  color: #526448;
+  color: var(--folio-text-secondary);
   overflow-wrap: anywhere;
 }
 .published-site-identity p {
   margin: 5px 0 7px;
   font-size: 11px;
-  color: #89927d;
+  color: var(--folio-text-muted);
   overflow-wrap: anywhere;
 }
 .published-site-identity small {
   font-size: 10px;
-  color: #8c957f;
+  color: var(--folio-text-muted);
   line-height: 1.6;
 }
 .published-site-row > .button {
@@ -279,14 +279,14 @@
   margin: 18px 24px 0;
   font-size: 12px;
   line-height: 1.7;
-  color: #996247;
+  color: var(--folio-accent);
 }
 .published-feedback {
   margin: 0;
   padding: 0 24px;
   font-size: 11px;
   line-height: 1.7;
-  color: #607b4c;
+  color: var(--folio-text-secondary);
 }
 .published-feedback:not(:empty) {
   padding-top: 18px;
@@ -297,7 +297,7 @@
   justify-content: space-between;
   gap: 20px;
   padding: 20px 24px;
-  color: #8a927e;
+  color: var(--folio-text-muted);
   font-size: 10px;
   line-height: 1.7;
 }
@@ -309,7 +309,7 @@
   align-items: center;
   gap: 6px;
   flex-shrink: 0;
-  color: #637c52;
+  color: var(--folio-text-secondary);
 }
 .published-sr-only {
   position: absolute;
@@ -324,7 +324,7 @@
 }
 .published-index :is(a, button, input, summary):focus-visible,
 .published-controls :is(a, button):focus-visible {
-  outline: 2px solid #6f8a50;
+  outline: 2px solid var(--folio-edge-strong);
   outline-offset: 4px;
 }
 @media (max-width: 760px) {

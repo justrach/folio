@@ -839,25 +839,25 @@ function WorkspaceDashboard({ section }: { section: string }) {
                           name: "ChatGPT",
                           symbol: "✳",
                           value: 44,
-                          color: "#33674e",
+                          color: "var(--folio-accent)",
                         },
                         {
                           name: "Perplexity",
                           symbol: "▥",
                           value: 29,
-                          color: "#98a75c",
+                          color: "var(--folio-charcoal)",
                         },
                         {
                           name: "Claude",
                           symbol: "✳",
                           value: 18,
-                          color: "#c5936d",
+                          color: "var(--folio-text-muted)",
                         },
                         {
                           name: "Gemini",
                           symbol: "✦",
                           value: 9,
-                          color: "#bfc4b4",
+                          color: "var(--folio-edge-strong)",
                         },
                       ].map((e) => (
                         <div className="engine-row" key={e.name}>
