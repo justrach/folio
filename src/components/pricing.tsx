@@ -19,7 +19,7 @@ const plans = [
     id: "free",
     name: "Explore",
     price: 0,
-    description: "Get a feel for a clearer way to see your website.",
+    description: "Browse sample answers and public website comparisons.",
     features: [
       "Sample visibility workspace",
       "Illustrative benchmark & public page index",
@@ -32,7 +32,7 @@ const plans = [
     id: "builder",
     name: "Builder",
     price: 49,
-    description: "A private research desk for the site you’re growing.",
+    description: "Keep private evaluations and their evidence in one place.",
     features: [
       "Proposed: 1 seat · 3 websites",
       "Private evaluation history & evidence",
@@ -45,7 +45,7 @@ const plans = [
     id: "team",
     name: "Team",
     price: 199,
-    description: "A shared perspective for teams with more to discover.",
+    description: "A proposed shared workspace for multiple sites and teammates.",
     features: [
       "Proposed: 5 seats · 10 websites",
       "Private evidence & evaluation history",
@@ -126,15 +126,13 @@ export function Pricing() {
       <main>
         {session?.user.id && <CostSummaryPanel key={session.user.id} />}
         <div className="pricing-heading">
-          <span className="eyebrow">A WORKSPACE THAT GROWS WITH YOU</span>
+          <span className="eyebrow">FOLIO PLANS</span>
           <h1>
-            A little clarity.
-            <br />
-            <em>Priced with intention.</em>
+            Start with a free preview.
           </h1>
           <p>
-            Start with the preview. Help shape a paid plan for private evidence,
-            useful evaluations, and reviewed improvements.
+            Explore public results now. Builder and Team are proposed plans for
+            private evaluations, evidence history, and reviewed improvements.
           </p>
           <UiBadge tone="accent" className="pricing-proposal">
             <CreditCard size={13} /> Proposed pricing · billing is not active

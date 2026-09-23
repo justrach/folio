@@ -74,6 +74,11 @@
 .public-benchmark-mobile-picker{display:none}
 .public-benchmark-no-matches{padding:20px 0;color:var(--folio-text-secondary);font-size:13px}.public-benchmark-no-matches button{border:0;background:none;color:var(--folio-text-secondary);text-decoration:underline;padding:0;font:inherit;cursor:pointer}
 .public-benchmark-loading{padding:30px 0;color:var(--folio-text-secondary);font-size:14px}.public-benchmark-loading h2{font-size:20px}
+.public-benchmark-loading--error{max-width:680px;margin-top:18px;padding:30px;border:1px solid var(--folio-edge);border-radius:var(--folio-radius-card);background:var(--folio-surface)}
+.public-benchmark-loading--error h2{margin:0 0 8px;color:var(--folio-ink);font-size:21px;font-weight:650}
+.public-benchmark-loading--error p{margin:0 0 20px;line-height:1.6}
+.public-benchmark-loading--error button{min-height:44px;padding:9px 16px;border:1px solid var(--folio-edge-strong);border-radius:var(--folio-radius-control);background:var(--folio-surface);color:var(--folio-ink);font:inherit;cursor:pointer}
+.public-benchmark-loading--error button:hover{background:var(--folio-surface-muted)}
 .public-benchmark-placeholder{height:180px;background:var(--folio-canvas);margin-top:25px;border-radius:4px}
 .public-benchmark-refresh-error{padding:12px 0;border-block:1px solid var(--folio-edge);color:var(--folio-accent);font-size:13px}
 .public-benchmark-dashboard button:focus-visible,.public-benchmark-dashboard select:focus-visible,.public-benchmark-dashboard a:focus-visible{outline:2px solid var(--folio-edge-strong);outline-offset:3px}

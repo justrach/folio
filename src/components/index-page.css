@@ -5,9 +5,9 @@
 .index-page .heading-actions .button { min-height: 40px; padding: 9px 12px; background: transparent; border-color: var(--folio-edge-strong); color: var(--folio-ink); box-shadow: none; }
 .index-page .index-view-tabs { display: flex; gap: 25px; flex-wrap: nowrap; margin: 0; border-bottom: 1px solid var(--folio-edge); overflow-x: auto; max-width: 100%; }
 .index-page .index-view-tabs > button { flex: 0 0 auto; min-height: 45px; padding: 10px 0 11px; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; color: var(--folio-text-secondary); font-size: 13px; font-weight: 500; }
-.index-page .index-view-tabs > button[aria-pressed="true"] { color: var(--folio-ink); border-bottom-color: var(--folio-edge-strong); font-weight: 650; }
+.index-page .index-view-tabs > button[aria-pressed="true"] { color: var(--folio-ink); border-bottom-color: var(--folio-accent); font-weight: 650; }
 .index-page .index-view-tabs > button:hover { color: var(--folio-ink); }
-.index-page .index-view-tabs > button:focus-visible { outline: 2px solid var(--folio-edge-strong); outline-offset: -3px; }
+.index-page .index-view-tabs > button:focus-visible { outline: 2px solid var(--folio-focus); outline-offset: -3px; }
 .index-page .index-view-panel { padding-top: 20px; min-width: 0; }
 .index-page .ranked-search { padding-top: 0; border-top: 0; }
 .index-page .published-index { margin-top: 0; }
@@ -21,4 +21,10 @@
   .index-page .index-view-tabs { gap: 21px; }
   .index-page .index-view-tabs > button { font-size: 12px; }
   .index-page .index-view-panel { padding-top: 16px; }
+}
+@media (max-width: 500px) {
+  .index-page .index-view-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; border: 0; overflow: visible; }
+  .index-page .index-view-tabs > button { justify-content: center; width: 100%; min-height: 44px; padding: 9px 10px; border: 1px solid var(--folio-edge); border-radius: var(--folio-radius-control); text-align: center; white-space: normal; line-height: 1.3; }
+  .index-page .index-view-tabs > button:last-child { grid-column: 1 / -1; }
+  .index-page .index-view-tabs > button[aria-pressed="true"] { background: var(--folio-accent-soft); border-color: var(--folio-accent-edge); }
 }

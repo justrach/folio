@@ -7,7 +7,21 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://usefolio.site"),
   title: "Folio — Your visibility, in perspective",
   description:
-    "Audit your website, inspect agent answers against saved evidence, and review changes. Connect Google Search Console for private search reports.",
+    "See which websites AI recommends for real questions. Inspect the sources, check your pages, and decide what to improve.",
+  openGraph: {
+    type: "website",
+    url: "https://usefolio.site",
+    siteName: "Folio",
+    title: "Folio — See which websites AI recommends",
+    description: "Inspect recorded recommendations, their sources, and your own website evidence.",
+    images: [{ url: "/images/folio-og.jpg", width: 1200, height: 630, alt: "Folio: See which websites AI recommends" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Folio — See which websites AI recommends",
+    description: "Inspect recorded recommendations, their sources, and your own website evidence.",
+    images: ["/images/folio-og.jpg"],
+  },
 };
 export default function RootLayout({
   children,

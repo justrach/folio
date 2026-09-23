@@ -25,6 +25,8 @@ Every application CSS file consumes these tokens. Legacy aliases (`--paper`, `--
 - A single recorded answer uses a compact numbered recommendation list instead of plotting each returned position on an axis. The number, name, domain, source links, and expandable returned reason stay together; list order is the agent's returned order for that question, not a search-engine rank or scored comparison.
 - Prefer a neutral rule or spacing for grouping. Keep focus outlines visible on the actual surface. Respect reduced motion and keyboard activation.
 - The landing hero backdrop lives at [`public/images/folio-hero-collage.webp`](public/images/folio-hero-collage.webp). It is decorative CSS only; no information depends on the image. Keep the copy side pale enough for legible text in light and dark appearance, and let the report preview use an opaque surface.
+- Public pages share the same quiet canvas, opaque cards, restrained borders, and readable type. The Index places its website comparison directly in the page flow and keeps every view choice visible on narrow screens. Pricing puts the free preview and proposed billing state in plain language; the public dashboard presents retrieval errors as a recoverable panel.
+- [`public/images/folio-og.jpg`](public/images/folio-og.jpg) is the generated 1200 × 630 social preview used by Open Graph and Twitter metadata. It says what Folio does without implying that a sample or proposed plan is a measured outcome.
 - Retain third-party attribution and licenses when adapting vendored controls to theme tokens.
 
 ## Validation
