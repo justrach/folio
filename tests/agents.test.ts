@@ -452,6 +452,6 @@ test("invalid provider turn ownership is rejected", async (t) => {
 });
 
 test("website evaluation defaults to Luna", () => {
- assert.equal(getAgentsConnectionStatus({}).model,"gpt-5.6-luna");
- assert.equal(getAgentsConnectionStatus({OPENAI_AGENTS_MODEL:"gpt-6-astra"}).model,"gpt-5.6-luna");
+ assert.equal(getAgentsConnectionStatus({}).model,"gpt-6-luna");
+ assert.equal(getAgentsConnectionStatus({OPENAI_AGENTS_MODEL:"gpt-6-astra"}).model,"gpt-6-luna");
 });

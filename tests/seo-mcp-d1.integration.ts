@@ -52,7 +52,7 @@ test("D1 sandbox capability is hashed, selected-domain-only, expires and uses se
     const db = await current.getD1Database("DB"); await setup(db);
     const suite = await createKeywordBenchmarkSuite(db, "alice", { name: "Fixture", cases: [{ query: "What does example do?", targetUrl: "https://example.com/", language: "en", locale: "en-US", rubricVersion: "keyword-observation-v1", searchMode: "open-web" }] });
     let payload: any;
-    const run = await startKeywordBenchmark(db, "alice", { caseId: suite.cases[0].id, kind: "baseline", model: "gpt-5.6-luna" }, env, { useSeoTools: true, fetcher: (async (_url, init) => {
+    const run = await startKeywordBenchmark(db, "alice", { caseId: suite.cases[0].id, kind: "baseline", model: "gpt-6-luna" }, env, { useSeoTools: true, fetcher: (async (_url, init) => {
       payload = JSON.parse(String(init?.body)); return Response.json({ id: "session_fixture", object: "agent.session", status: "in_progress", required_actions: [] });
     }) as typeof fetch });
     const mcp = payload.agent.tools.find((tool: any) => tool.type === "mcp");
@@ -82,7 +82,7 @@ test("D1 keyword research: Luna tools, concurrent quotas, saved costs, owner iso
   const suite=await createKeywordBenchmarkSuite(db,"alice",{name:"Fixture",cases:[{query:"What free tool could this website offer?",targetUrl:"https://example.com/",language:"en",locale:"en-US",rubricVersion:"keyword-observation-v1",searchMode:"open-web"}]});
   let payload:any;
   await startKeywordBenchmark(db,"alice",{caseId:suite.cases[0].id,kind:"baseline"},env,{useSeoTools:true,fetcher:async(_url,init)=>{payload=JSON.parse(String(init?.body));return Response.json({id:"session_research",object:"agent.session",status:"in_progress",required_actions:[]});}});
-  assert.equal(payload.agent.model,"gpt-5.6-luna");
+  assert.equal(payload.agent.model,"gpt-6-luna");
   const tool=payload.agent.tools.find((t:any)=>t.type==="mcp"),token=tool.transport.authorization.replace("Bearer ","");
   const sandbox=await authenticateSandboxSeoGrant(db,token);assert.equal(sandbox.toolVersion,2);
   let calls=0;

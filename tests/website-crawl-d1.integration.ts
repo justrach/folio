@@ -35,8 +35,8 @@ test('Luna crawl: actual D1 bounded pages, one Jev review, saved reconciliation,
   const session={id:'sess_crawl_fixture',object:'agent.session',created_at:1,status:'in_progress',required_actions:[]};
   t.mock.method(globalThis,'fetch',async(_u:any,init:any)=>{creates++;payload=JSON.parse(init.body);return Response.json(session);});
   const run=await startEvaluationRun(db,'alice',{mode:'managed',domain:'https://example.com/',websiteCrawl:true},env);
-  assert.equal(run.status,'running');assert.equal(run.model,'gpt-5.6-luna');assert.equal(run.workflow,'website-crawl-v1');assert.equal(creates,1);
-  assert.equal(payload.agent.model,'gpt-5.6-luna');assert.equal(payload.environment.network.access,'disabled');assert.equal(payload.agent.tools.length,1);
+  assert.equal(run.status,'running');assert.equal(run.model,'gpt-6-luna');assert.equal(run.workflow,'website-crawl-v1');assert.equal(creates,1);
+  assert.equal(payload.agent.model,'gpt-6-luna');assert.equal(payload.environment.network.access,'disabled');assert.equal(payload.agent.tools.length,1);
   assert.deepEqual(payload.agent.tools[0].allowed_tools,['crawl_read_page','crawl_review_pages']);assert.ok(!JSON.stringify(payload).includes(env.TYPESAFE_API_KEY));
   const token=payload.agent.tools[0].transport.authorization.replace('Bearer ',''),p=await authenticateCrawl(db,token);
   assert.ok(!JSON.stringify(await db.prepare('SELECT * FROM website_crawl_grants').all()).includes(token));

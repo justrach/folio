@@ -9,7 +9,7 @@ test('landscape medians use paired complete measurements; totals retain failures
  {queryId:'d',model:'gpt-5.6-luna',status:'completed',seconds:20,costUsd:null},
  {queryId:'e',model:'gpt-5.6-luna',status:'failed',seconds:null,costUsd:0},
  ]};
- const luna=summarizeLandscape(data).find(m=>m.label==='Luna')!;
+ const luna=summarizeLandscape(data).find(m=>m.label==='Luna 5.6')!;
  assert.equal(luna.completed,3);assert.equal(luna.plotted,2);assert.equal(luna.seconds,40);assert.equal(luna.costUsd,.03);assert.equal(luna.totalCostUsd,.12);assert.equal(luna.knownCosts,4);
  const astra=summarizeLandscape(data)[0];assert.equal(astra.costUsd,null);assert.equal(astra.totalCostUsd,null);assert.equal(astra.completed,0);
  assert.equal(median([]),null);assert.equal(median([4,1,3]),3);

@@ -26,7 +26,7 @@ Release validation on 18 September 2026: 280 unit tests, 31 real D1 tests, two f
 
 ## TypeSafe inside the agent run
 
-New open-web question runs can opt into **Let this agent check claims with TypeSafe before answering**. The launch authorizes up to three additional paid checks. This supports Luna, Sol, Terra and Astra through their existing managed Agents API harness. `useTypesafeTools: true` on the authenticated benchmark launch API enables it; existing sessions and simple navigation do not gain tool authority.
+New open-web question runs can opt into **Let this agent check claims with TypeSafe before answering**. The launch authorizes up to three additional paid checks. This supports Luna 6, Sol 6 and Astra 6 through their existing managed Agents API harness. `useTypesafeTools: true` on the authenticated benchmark launch API enables it; existing sessions and simple navigation do not gain tool authority.
 
 Folio configures the service-connected MCP tool `typesafe_check_claim` at `/api/typesafe-mcp`. Its only credential is a random, hashed, run-specific grant with expiry no later than the saved run deadline. The TypeSafe provider key stays in the Worker. The tool is unavailable after cancellation, hold release, archival or a terminal run. Three calls per grant and fifteen calls per owner per rolling day are reserved atomically in D1 before TypeSafe inference. The same request key reuses a saved outcome; changed input with that key is rejected. Unknown/failed requests are never automatically retried. MCP discovery and GET do not call TypeSafe.
 

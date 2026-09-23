@@ -371,7 +371,7 @@ test("sandbox SEO is off by default and only the explicit start carries authoriz
   await checkbox.check(); expect(state.starts).toHaveLength(0);
   await page.getByRole("button", { name: "Run baseline", exact: true }).click();
   await expect.poll(() => state.starts.length).toBe(1);
-  expect(state.starts[0]).toMatchObject({ caseId: suite.cases[0].id, kind: "baseline", useSeoTools: true, model: "gpt-5.6-luna" });
+  expect(state.starts[0]).toMatchObject({ caseId: suite.cases[0].id, kind: "baseline", useSeoTools: true, model: "gpt-6-luna" });
 });
 
 
@@ -383,7 +383,7 @@ test("private report compares matching public context without publishing or star
   const observation = { id: "public-observation", queryId: query.id, observedAt: at, status: "completed", model: value.model, surface: value.surface,
     searchMode: "open-web", harnessVersion: value.harnessVersion, environmentType: value.environmentType,
     recommendations: [{ position: 1, name: "Public fixture recommendation", url: "https://example.com", citationUrls: [] }], citations: [], limitations: ["Fixture only"] };
-  const competing = {...observation,id:"newer-other-model",model:"gpt-5.6-luna",observedAt:"2026-09-14T10:00:00.000Z",
+  const competing = {...observation,id:"newer-other-model",model:"gpt-6-luna",observedAt:"2026-09-14T10:00:00.000Z",
     recommendations:[{position:1,name:"Different model recommendation",url:"https://other.example.com",citationUrls:[]}]};
   let available = true;
   await page.route("**/api/public/benchmarks", route => route.fulfill({ json: buildPublicDashboard({ format: "folio-public-search-rankings-v1", queries: [query], observations: available ? [observation,competing] : [] },
@@ -443,17 +443,16 @@ test("publication requires a reviewed preview; withdrawal clears the shared resu
 
 const modelOptions = [
   { id: "gpt-6-astra", label: "Astra", validation: "validated" as const },
-  { id: "gpt-5.6-luna", label: "Luna", validation: "experimental" as const },
-  { id: "gpt-5.6-sol", label: "Sol", validation: "experimental" as const },
-  { id: "gpt-5.6-terra", label: "Terra", validation: "experimental" as const },
+  { id: "gpt-6-luna", label: "Luna 6", validation: "experimental" as const },
+  { id: "gpt-6-sol", label: "Sol 6", validation: "experimental" as const },
 ];
-for (const [model,label] of [["gpt-5.6-luna","Luna"],["gpt-5.6-sol","Sol"],["gpt-5.6-terra","Terra"]]) test(`${label} open-web model selection starts nothing until an explicit paid start`, async ({ page }) => {
+for (const [model,label] of [["gpt-6-luna","Luna 6"],["gpt-6-sol","Sol 6"]]) test(`${label} open-web model selection starts nothing until an explicit paid start`, async ({ page }) => {
   const state = await fixture(page);
   state.openWebModels = modelOptions;
   state.suites = [{ ...suite, cases: suite.cases.map(item => ({ ...item, searchMode: "open-web" })) }];
   await page.goto(`/benchmarks?suite=${suite.id}`);
   const select = page.getByRole("combobox", { name: "Model for the next observation", exact: true });
-  await expect(select).toHaveValue("gpt-5.6-luna");
+  await expect(select).toHaveValue("gpt-6-luna");
   await select.selectOption("gpt-6-astra");
   const seo = page.getByRole("checkbox", { name: /Let this agent research keywords and search data/ });
   await seo.check();
@@ -489,20 +488,20 @@ test("changing model preserves the fresh baseline link and explains mismatched c
   const state = await fixture(page, [baseline]); state.openWebModels = modelOptions;
   state.suites = [{ ...suite, cases: [{ ...suite.cases[0], ...baseline.case }] }];
   await page.goto(`/benchmarks?suite=${suite.id}`);
-  await page.getByRole("combobox", { name: "Model for the next observation", exact: true }).selectOption("gpt-5.6-luna");
+  await page.getByRole("combobox", { name: "Model for the next observation", exact: true }).selectOption("gpt-6-luna");
   await expect(page.getByText(/The selected baseline uses a different model/)).toBeVisible();
   expect(state.starts).toEqual([]);
   await page.getByRole("button", { name: "Run fresh observation", exact: true }).click();
   await expect.poll(() => state.starts.length).toBe(1);
-  expect(state.starts[0]).toMatchObject({ model: "gpt-5.6-luna", kind: "fresh", baselineRunId: baseline.id });
-  await expect(page.getByText("Ordered as returned by gpt-5.6-luna for this question.")).toBeVisible();
+  expect(state.starts[0]).toMatchObject({ model: "gpt-6-luna", kind: "fresh", baselineRunId: baseline.id });
+  await expect(page.getByText("Ordered as returned by gpt-6-luna for this question.")).toBeVisible();
 });
 
 test("model selection resets when a different owner signs in", async ({ page }) => {
   const state = await fixture(page); state.openWebModels = modelOptions;
   state.suites = [{ ...suite, cases: suite.cases.map(item => ({ ...item, searchMode: "open-web" })) }];
   await page.goto(`/benchmarks?suite=${suite.id}`);
-  await page.getByRole("combobox", { name: "Model for the next observation", exact: true }).selectOption("gpt-5.6-sol");
+  await page.getByRole("combobox", { name: "Model for the next observation", exact: true }).selectOption("gpt-6-sol");
   await navigate(page, "/settings");
   await page.getByRole("button", { name: "Sign out", exact: true }).click();
   await expect.poll(() => state.owner).toBeNull();
@@ -512,7 +511,7 @@ test("model selection resets when a different owner signs in", async ({ page }) 
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
   await expect(page).toHaveURL(/\/websites$/);
   await navigate(page, "/benchmarks");
-  await expect(page.getByRole("combobox", { name: "Model for the next observation", exact: true })).toHaveValue("gpt-5.6-luna");
+  await expect(page.getByRole("combobox", { name: "Model for the next observation", exact: true })).toHaveValue("gpt-6-luna");
   expect(state.starts).toEqual([]); expect(state.forbidden).toEqual([]);
 });
 
@@ -535,19 +534,19 @@ test("unknown creation explains recovery limits without offering a nonexistent c
 test('TypeSafe tool authorization is opt-in and sent only on explicit question launch',async({page})=>{
  const state=await fixture(page);
  state.suites=[{...suite,cases:suite.cases.map(c=>({...c,searchMode:'open-web' as const}))}];
- state.openWebModels=[{id:'gpt-5.6-luna',label:'Luna',validation:'experimental'},{id:'gpt-5.6-sol',label:'Sol',validation:'experimental'},{id:'gpt-5.6-terra',label:'Terra',validation:'experimental'}];
+ state.openWebModels=[{id:'gpt-6-luna',label:'Luna 6',validation:'experimental'},{id:'gpt-6-sol',label:'Sol 6',validation:'experimental'}];
  await page.goto(`/benchmarks?suite=${suite.id}`);
  const check=page.getByRole('checkbox',{name:/Let this agent check claims with TypeSafe/});
  await expect(check).not.toBeChecked();await check.check();expect(state.starts).toHaveLength(0);
- await page.getByRole('combobox',{name:'Model for the next observation'}).selectOption('gpt-5.6-terra');expect(state.starts).toHaveLength(0);
+ await page.getByRole('combobox',{name:'Model for the next observation'}).selectOption('gpt-6-sol');expect(state.starts).toHaveLength(0);
  await noOverflow(page);
  await page.getByRole('button',{name:'Run baseline',exact:true}).click();
  await expect.poll(()=>state.starts.length).toBe(1);
- expect(state.starts[0]).toMatchObject({caseId:'case-fixture',useTypesafeTools:true,model:'gpt-5.6-terra'});
+ expect(state.starts[0]).toMatchObject({caseId:'case-fixture',useTypesafeTools:true,model:'gpt-6-sol'});
 });
 
 test("research activity has real milestones, keyboard disclosure, motion control and no extra paid starts",async({page})=>{
- const value={...run("activity"),model:"gpt-5.6-luna",status:"running" as const,answer:null,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),harnessVersion:"open-web-seo-v2-typesafe-v1"};
+ const value={...run("activity"),model:"gpt-6-luna",status:"running" as const,answer:null,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),harnessVersion:"open-web-seo-v2-typesafe-v1"};
  const state=await fixture(page,[value]);
  await page.goto(`/benchmarks?suite=${suite.id}&run=${value.id}`);
  const activity=page.getByRole("region",{name:"Observation progress",exact:true});
@@ -594,7 +593,7 @@ test("a delayed launch shows immediate feedback without resubmitting",async({pag
   await page.goto(`/benchmarks?suite=${suite.id}`);
   await page.getByRole('button',{name:'Run baseline',exact:true}).click();
   const starting=page.getByRole('region',{name:'Starting observation',exact:true});
-  await expect(starting.getByRole('status')).toHaveText('Starting Luna…');
+  await expect(starting.getByRole('status')).toHaveText('Starting Luna 6…');
   await expect(page.getByRole('button',{name:'Starting observation…',exact:true})).toBeDisabled();
   release();
   await expect(page.getByRole('region',{name:'Observation progress',exact:true})).toBeVisible();

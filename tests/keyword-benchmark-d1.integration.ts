@@ -296,7 +296,7 @@ test("operator suite allowance is bounded and does not change the browser defaul
   } finally { await current.dispose(); await rm(directory,{recursive:true,force:true}); }
 });
 
-for (const model of ["gpt-5.6-luna","gpt-5.6-sol","gpt-5.6-terra"]) test(`${model} is frozen before one provider create and unsupported models reserve nothing`, {timeout:90_000},async()=>{
+for (const model of ["gpt-6-luna","gpt-6-sol"]) test(`${model} is frozen before one provider create and unsupported models reserve nothing`, {timeout:90_000},async()=>{
  const directory=await mkdtemp(join(tmpdir(),"folio-model-selection-d1-"));let current:Miniflare|undefined;
  try {
   current=runtime(directory);const db=await current.getD1Database("DB");await setup(db);

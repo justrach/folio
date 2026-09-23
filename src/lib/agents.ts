@@ -7,7 +7,7 @@ import type { EvaluationRun } from "./evals";
  * Credentials stay in the Worker / Next server; this module is never client code.
  */
 const AGENTS_API = "https://api.openai.com/v1/agents/sessions";
-const DEFAULT_MODEL = "gpt-5.6-luna";
+const DEFAULT_MODEL = "gpt-6-luna";
 const MAX_RESPONSE_BYTES = 1_000_000;
 
 export type AgentsEnvironment = {

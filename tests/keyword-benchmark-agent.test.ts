@@ -166,7 +166,7 @@ test("open-web completion preserves full provider search evidence and final answ
   }
 });
 
-for (const [model,label] of [["gpt-5.6-luna","Luna"],["gpt-5.6-sol","Sol"],["gpt-5.6-terra","Terra"]]) test(`${label} open-web requests retain the bounded hosted search contract`,()=>{
+for (const [model,label] of [["gpt-6-luna","Luna 6"],["gpt-6-sol","Sol 6"]]) test(`${label} open-web requests retain the bounded hosted search contract`,()=>{
  const payload=buildKeywordBenchmarkRequest({...input,model,searchMode:"open-web",allowedDomains:[]});
  assert.equal(payload.agent.model,model);
  assert.ok(payload.agent.instructions.includes(`single ${label} API-agent`));
@@ -189,7 +189,7 @@ test("recorded cache tokens come from the selected cumulative usage, never added
 });
 
 test('TypeSafe is opt-in service MCP for each open-web model and changes harness provenance',()=>{
- for(const model of ['gpt-5.6-luna','gpt-5.6-sol','gpt-5.6-terra','gpt-6-astra']) {
+ for(const model of ['gpt-6-luna','gpt-6-sol','gpt-6-astra']) {
   const plain={...input,model,allowedDomains:[],searchMode:'open-web' as const};
   assert.equal(buildKeywordBenchmarkRequest(plain).agent.tools.length,1);
   const payload=buildKeywordBenchmarkRequest({...plain,typesafeMcp:{url:'https://folio.example.com/api/typesafe-mcp',authorization:'Bearer folio_typesafe_'+'a'.repeat(64)}});

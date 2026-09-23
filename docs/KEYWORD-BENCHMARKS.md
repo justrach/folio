@@ -23,7 +23,7 @@ This guide describes the implemented workflow and its fixture checks. Actual pro
 | `clothing-shopping-v1` / `open-web` | Recommendations, shipping, returns, sizing, value and materials |
 | `service-booking-v1` / `open-web` | Service discovery, coverage, pricing, cancellation, comparisons and screening |
 | `learning-python-v1` / `open-web` | Beginner courses, projects, prerequisites, free options, practical support and pace |
-| `coding-harness-open-web-v1` / `open-web` | Luna (`gpt-5.6-luna`) by default, live OpenAI web search with no domain filter; the hosted sandbox has outbound network disabled and validates local JSON |
+| `coding-harness-open-web-v1` / `open-web` | Luna 6 (`gpt-6-luna`) by default, live OpenAI web search with no domain filter; the hosted sandbox has outbound network disabled and validates local JSON |
 | `coding-harness-research-v1` / `reviewed-domains` | Luna for new runs; saved model retained for historical observations, live search and hosted network restricted to the reviewed documentation hosts |
 
 All broader packs and custom questions use the open-web execution contract, defaulting to Luna. A custom draft requires an existing owned website; target URLs and execution settings cannot be supplied as overrides. Saving only creates suite/case records: no capture, session, reservation or provider call is made. A saved suite reports completed-question coverage and each question’s latest attempt state; incomplete questions are not silently scored as zero.

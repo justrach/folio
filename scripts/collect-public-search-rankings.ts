@@ -107,7 +107,7 @@ async function waitForRun(db: D1Database, ownerId: string, initial: KeywordBench
 }
 function help() {
   console.log("Usage: node --conditions=react-server --import tsx scripts/collect-public-search-rankings.ts <seed|start|reconcile|status|export> --owner-id <existing-local-account>\n"
-    + "start --query-id <public-query-id> --confirm-spend [--model gpt-6-astra|gpt-5.6-luna] [--wait]\nreconcile --run-id <saved-run-id> [--wait]\nstatus [--query-id <public-query-id>]\nexport --run-id <completed-run-id> [--publish]\n"
+    + "start --query-id <public-query-id> --confirm-spend [--model gpt-6-astra|gpt-6-sol|gpt-6-luna] [--wait]\nreconcile --run-id <saved-run-id> [--wait]\nstatus [--query-id <public-query-id>]\nexport --run-id <completed-run-id> [--publish]\n"
     + "Raw evidence stays private in local D1 and .local/public-search-collections. Export writes a private preview unless --publish is explicit. Only start creates a paid task; --wait retrieves it and enforces its saved deadline, not a guaranteed billing cap.");
 }
 async function main() {

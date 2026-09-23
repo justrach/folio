@@ -10,7 +10,7 @@ DataForSEO response-reported costs are stored separately. Partial known amounts 
 
 The current page aggregates all saved time by workflow/model and shows at most 50 recent attempts. Operators can query the latest view directly in D1 for account-wide totals using the same source/model grouping; there is no unauthenticated or cross-owner browser endpoint. A sum of estimates is an estimate subtotal, never a complete provider bill.
 
-Rates source: https://developers.openai.com/api/docs/pricing. Sol pricing is promotional at least through 21 November 2026. To revise rates, apply a reviewed migration with a new version; do not rewrite old cost observations. Full invoice reconciliation, search/sandbox metering, billing entitlements, atomic credit reservations and payment webhooks are follow-up work before charging customers.
+Rates source: https://developers.openai.com/api/docs/pricing. Migration `0022_gpt6_sol_luna_rates.sql` adds GPT-6 Sol ($2 input, $0.20 cached input, $10 output) and GPT-6 Luna ($0.10 input, $0.01 cached input, $0.50 output) per million short-context text tokens using the published standard rates checked 23 September 2026. Earlier 5.6 rates and saved estimates remain historical. Estimates still exclude search/sandbox charges, cache writes, long-context adjustments and other rate modifiers. To revise rates, apply a reviewed migration with a new version; do not rewrite old cost observations. Full invoice reconciliation, search/sandbox metering, billing entitlements, atomic credit reservations and payment webhooks are follow-up work before charging customers.
 
 ## Question expansion
 

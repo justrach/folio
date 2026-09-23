@@ -76,7 +76,7 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
   const [baselineChoices, setBaselineChoices] = useState<Record<string, string>>({});
   const [typesafeCase, setTypesafeCase] = useState("");
   const [seoCase, setSeoCase] = useState("");
-  const [modelChoice, setModelChoice] = useState("gpt-5.6-luna");
+  const [modelChoice, setModelChoice] = useState("gpt-6-luna");
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -207,7 +207,7 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
     finally { pendingAction.current = false; if (!signal.aborted) setBusy(""); }
   }
   const openWebModels = overview?.access.openWebModels ?? [];
-  const selectedModel = openWebModels.find(item => item.id === modelChoice) ?? openWebModels.find(item => item.id === "gpt-5.6-luna") ?? openWebModels[0];
+  const selectedModel = openWebModels.find(item => item.id === modelChoice) ?? openWebModels.find(item => item.id === "gpt-6-luna") ?? openWebModels[0];
   function start(caseId: string, kind: "baseline" | "fresh", baselineRunId?: string) {
     if (!ready || runs.some(item => item.caseId === caseId && item.status === "requires_action" && (item.archivedAt || (item.holdReleasedAt && !item.sessionId)))
       || (kind === "fresh" && !baselineRunId)) return;

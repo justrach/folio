@@ -41,20 +41,23 @@ test("benchmark mutations require the configured app origin and responses do not
 test("explicit open-web model selection freezes supported models and rejects unsupported combinations",async()=>{
  const trial={query:"Which tool helps a team plan?",targetUrl:null,language:"en",locale:"en-US",rubricVersion:"keyword-observation-v1",searchMode:"open-web" as const};
  const env={OPENAI_API_KEY:"fixture-not-a-real-key"};
- assert.equal((await keywordBenchmarkExecutionConfig(trial,env)).model,"gpt-5.6-luna");
- for (const model of ["gpt-5.6-luna","gpt-5.6-sol","gpt-5.6-terra"]) {
+ assert.equal((await keywordBenchmarkExecutionConfig(trial,env)).model,"gpt-6-luna");
+ for (const model of ["gpt-6-luna","gpt-6-sol"]) {
  assert.equal((await keywordBenchmarkExecutionConfig(trial,env,{},model)).model,model);
  assert.equal((await keywordBenchmarkExecutionConfig(trial,env,{useSeoTools:true},model)).model,model);
  await assert.rejects(keywordBenchmarkExecutionConfig({...trial,searchMode:"reviewed-domains"},env,{},model));
  }
  await assert.rejects(keywordBenchmarkExecutionConfig(trial,env,{},"unknown-model"));
- assert.equal((await keywordBenchmarkExecutionConfig(trial,env,{useSeoTools:true},"gpt-5.6-luna")).model,"gpt-5.6-luna");
- await assert.rejects(keywordBenchmarkExecutionConfig({...trial,searchMode:"reviewed-domains"},env,{},"gpt-5.6-luna"));
- assert.deepEqual(keywordBenchmarkAccess(env,"alice").openWebModels.map(model=>model.id),["gpt-6-astra","gpt-5.6-luna","gpt-5.6-sol","gpt-5.6-terra"]);
+ await assert.rejects(keywordBenchmarkExecutionConfig(trial,env,{},"gpt-5.6-terra"));
+ await assert.rejects(keywordBenchmarkExecutionConfig(trial,env,{},"gpt-5.6-luna"));
+ await assert.rejects(keywordBenchmarkExecutionConfig(trial,env,{},"gpt-5.6-sol"));
+ assert.equal((await keywordBenchmarkExecutionConfig(trial,env,{useSeoTools:true},"gpt-6-luna")).model,"gpt-6-luna");
+ await assert.rejects(keywordBenchmarkExecutionConfig({...trial,searchMode:"reviewed-domains"},env,{},"gpt-6-luna"));
+ assert.deepEqual(keywordBenchmarkAccess(env,"alice").openWebModels.map(model=>model.id),["gpt-6-astra","gpt-6-luna","gpt-6-sol"]);
 });
 
 test("SEO tools cannot silently upgrade the Luna default to Astra", async () => {
  const trial={query:"Find pricing",targetUrl:null,language:"en",locale:"en-US",rubricVersion:"keyword-observation-v1",searchMode:"open-web" as const};
- assert.equal((await keywordBenchmarkExecutionConfig(trial,{}, {useSeoTools:true})).model,"gpt-5.6-luna");
+ assert.equal((await keywordBenchmarkExecutionConfig(trial,{}, {useSeoTools:true})).model,"gpt-6-luna");
  assert.equal((await keywordBenchmarkExecutionConfig(trial,{}, {useSeoTools:true},"gpt-6-astra")).model,"gpt-6-astra");
 });

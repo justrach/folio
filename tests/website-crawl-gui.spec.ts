@@ -2,7 +2,7 @@ import { test,expect } from '@playwright/test';
 import { createDemoEvaluationRun } from '../src/lib/eval-verifier';
 import { EVAL_SUITE, evaluationSummary, type EvaluationRun } from '../src/lib/evals';
 test('crawl launch is explicit, defaults to Luna, and saved Jev evidence survives refresh',async({page})=>{
- const connection={configured:true,authorized:true,canRun:true,crawlAvailable:true,model:'gpt-5.6-luna',allowedTargets:['example.com'],usage:{remainingLiveRuns:3,liveAttemptsLast24Hours:0,activeRunId:null}};
+ const connection={configured:true,authorized:true,canRun:true,crawlAvailable:true,model:'gpt-6-luna',allowedTargets:['example.com'],usage:{remainingLiveRuns:3,liveAttemptsLast24Hours:0,activeRunId:null}};
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/api/auth/get-session**',r=>r.fulfill({json:{user:{id:'crawl-fixture-owner',name:'Fixture',email:'crawl@example.test',emailVerified:true},session:{id:'crawl-session-fixture',userId:'crawl-fixture-owner',expiresAt:'2099-01-01T00:00:00Z'}}}));
  await page.route('**/api/scans',r=>r.fulfill({json:{scans:[]}}));
@@ -15,7 +15,7 @@ test('crawl launch is explicit, defaults to Luna, and saved Jev evidence survive
   if(u.pathname==='/api/evaluations'&&route.request().method()==='GET')return route.fulfill({json:{runs:saved?[evaluationSummary(saved)]:[],connection,suite:EVAL_SUITE}});
   if(u.pathname==='/api/evaluations'&&route.request().method()==='POST'){
    calls.push(route.request().postDataJSON());
-   saved={...fixture,id:'crawl-fixture-run',mode:'live',workflow:'website-crawl-v1',suiteVersion:'website-crawl-v1',model:'gpt-5.6-luna',targetUrl:'https://example.com/',siteName:'Fixture website',status:'completed',result:null,captures:[],expectedFacts:undefined,crawlResult:{attemptedPages:1,reviewStatus:'completed',pages:[{id:'page-fixture',url:'https://example.com/',title:'Fixture homepage',text:'Project planning for small teams.',sha256:'fixture-hash',capturedAt:'2026-09-18T00:00:00Z',truncated:false,links:[]}],review:{model:'jev-fixture',results:[{evidenceId:'page-fixture',field:'audience',claim:'Intended audience is explicit',relation:'supports',confidence:.9}],usage:{input_tokens:100,output_tokens:10},costUsd:null}}};
+   saved={...fixture,id:'crawl-fixture-run',mode:'live',workflow:'website-crawl-v1',suiteVersion:'website-crawl-v1',model:'gpt-6-luna',targetUrl:'https://example.com/',siteName:'Fixture website',status:'completed',result:null,captures:[],expectedFacts:undefined,crawlResult:{attemptedPages:1,reviewStatus:'completed',pages:[{id:'page-fixture',url:'https://example.com/',title:'Fixture homepage',text:'Project planning for small teams.',sha256:'fixture-hash',capturedAt:'2026-09-18T00:00:00Z',truncated:false,links:[]}],review:{model:'jev-fixture',results:[{evidenceId:'page-fixture',field:'audience',claim:'Intended audience is explicit',relation:'supports',confidence:.9}],usage:{input_tokens:100,output_tokens:10},costUsd:null}}};
    return route.fulfill({status:201,json:{run:saved}});
   }
   return route.fulfill({json:{run:saved}});

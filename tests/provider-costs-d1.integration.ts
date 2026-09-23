@@ -33,6 +33,11 @@ test("D1 cost snapshots backfill, survive restart, isolate owners and never sum 
   let run = await createEvaluationRun(db,"alice",base);
   await createEvaluationRun(db,"bob",{...base,id:"bob-live"});
   for(const name of names.filter(n=>n>="0015")) await db.batch(unstable_splitSqlQuery(await readFile(new URL(name,migrationDir),"utf8")).map(sql=>db.prepare(sql)));
+  const newRates = await db.prepare("SELECT model, version, input_usd_per_million, cached_usd_per_million, output_usd_per_million FROM provider_cost_rates WHERE model IN ('gpt-6-luna','gpt-6-sol') ORDER BY model").all();
+  assert.deepEqual(newRates.results, [
+    { model: "gpt-6-luna", version: "openai-standard-short-2026-09-23", input_usd_per_million: 0.1, cached_usd_per_million: 0.01, output_usd_per_million: 0.5 },
+    { model: "gpt-6-sol", version: "openai-standard-short-2026-09-23", input_usd_per_million: 2, cached_usd_per_million: 0.2, output_usd_per_million: 10 },
+  ]);
   assert.equal((await ownedCostSummary(db,"alice")).groups[0].unknown_runs,1);
   assert.equal((await ownedCostSummary(db,"alice")).recent.length,1);
   run = await updateEvaluationRun(db,"alice",{...run,status:"running",usage:{input_tokens:1000,output_tokens:100,input_tokens_details:{cached_tokens:200}}});

@@ -12,7 +12,7 @@ The report displays saved page excerpts and whether each explicitly covers produ
 
 ## Collection boundaries
 
-- Luna (`gpt-5.6-luna`) is pinned for crawling. Ordinary page evaluations are also pinned to Luna; legacy `OPENAI_AGENTS_MODEL` values are ignored. Open-web questions default to Luna and may use another supported model only by explicit selection. No automatic Astra upgrade occurs.
+- Luna 6 (`gpt-6-luna`) is pinned for crawling. Ordinary page evaluations are also pinned to Luna 6; legacy `OPENAI_AGENTS_MODEL` values are ignored. Open-web questions default to Luna 6 and may use Astra 6 or Sol 6 only by explicit selection. No automatic Astra upgrade occurs. Earlier 5.6 runs retain their recorded model IDs.
 - The hosted environment has shell network access disabled and no web-search tool. The agent controls traversal through the fetch tool; the tool performs HTTPS GETs with public-address protection, no browser cookies, no page-script execution, and no form submissions.
 - Exact HTTPS origin only, including redirect validation. Initial page plus links actually extracted from fetched pages; ten distinct URL attempts total. Failed attempts count. Repeated URLs retrieve saved state and never fetch again.
 - Each response is bounded to 150 KB and ten seconds. Text excerpts retain at most 6,000 characters per page. Links are capped at 80 and 12,000 aggregate URL characters per page. HTML extraction is not a rendered browser or a complete HTML accessibility parser.
