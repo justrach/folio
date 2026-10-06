@@ -11,6 +11,7 @@ import { compareKeywordBenchmarkRuns, isKeywordBenchmarkId, keywordSearchMode, t
 import { visibilityReport } from "@/lib/visibility";
 import { keywordRecommendationMetrics } from "@/lib/keyword-search-mode";
 import { evaluationHref } from "@/lib/evaluation-navigation";
+import { WebsiteComparison } from "./website-comparison";
 import { WorkspaceEvaluationSummary } from "./workspace-evaluation-summary";
 import "./real-overview.css";
 
@@ -36,6 +37,7 @@ function selectedModel(query: Pick<URLSearchParams, "getAll">): string {
   return models.length === 1 && /^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,119}$/.test(models[0]) ? models[0] : "";
 }
 
+/** Page-evidence handoffs keep their view; website comparisons never start paid work. */
 export function workspaceOverviewHref(query: Pick<URLSearchParams, "getAll">): string {
   const params = new URLSearchParams({ view: "workspace" });
   const websites = query.getAll("website");
@@ -159,6 +161,9 @@ function OwnedOverview({scans,scansLoading,scansError,onRetryScans,onOpenScan}:O
     {data.sites.state==="error"&&<p role="alert">Your saved websites could not be loaded. Refresh to try again.</p>}
     {data.sites.state==="ready"&&!selected&&<section className="panel real-overview-empty"><h2>{data.sites.items.length?"Choose an owned website":"Add your first website"}</h2><p>{data.sites.items.length?"This website selection is unavailable for the current account.":"Your overview starts with a website saved in your workspace."}</p><Link className="button primary" href="/websites">Open My websites<ArrowRight size={14}/></Link></section>}
     {selected&&<>
+      {data.sites.state === "ready" && data.sites.items.length > 1 && (
+        <WebsiteComparison sites={data.sites.items} scope={scope} model={model} />
+      )}
       <section className="panel real-search-overview" aria-label="Saved search overview"><header><div><h2>Search observations</h2><p>{selected.url}</p></div><Link className="button primary" href={`/benchmarks?website=${encodeURIComponent(selected.id)}`}>Open search questions<ArrowRight size={14}/></Link></header>
         <div className="real-search-scopes" aria-label="Search scope"><button type="button" aria-pressed={scope==="open-web"} onClick={()=>select(selected.id,"open-web")}>Open-web observations</button><button type="button" aria-pressed={scope==="reviewed-domains"} onClick={()=>select(selected.id,"reviewed-domains")}>Reviewed documentation</button></div>
         <div className="real-overview-select real-overview-scope-note"><label>Answer model<select aria-label="Answer model" value={model} onChange={event=>select(selected.id,scope,event.target.value)}><option value="">All models</option>{models.map(value=><option key={value} value={value}>{value}</option>)}</select></label></div>

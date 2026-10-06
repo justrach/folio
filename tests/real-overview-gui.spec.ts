@@ -45,6 +45,22 @@ async function fixture(page: Page) {
       const offset=Number(params.get("cursor")??0), pageRuns=filtered.slice(offset,offset+100);
       return route.fulfill(state.failRuns ? {status:503,json:{error:"Fixture read failure"}} : {json:{runs:pageRuns.map(({answer,...value})=>({...value,mentionCount:answer?.mentions.length??0,citationCount:answer?.citations.length??0,answerCharacters:answer?.text.length??0})),models:[...new Set(matching.map(value=>value.model))],nextCursor:filtered.length>offset+100?String(offset+100):null}});
     }
+    if (path === "/api/benchmarks/comparison") {
+      state.historyReads.push(req.url());
+      const owned = state.owner === "alice" ? [alpha, beta] : state.owner ? [beta] : [];
+      const snapshots = owned.map(site => {
+        const completed = state.runs.filter(value => value.status === "completed" && value.answer && value.case.targetUrl === site.url && value.case.searchMode === "open-web");
+        const latest = new Map<string, typeof completed[number]>();
+        for (const value of [...completed].sort((a, b) => b.createdAt.localeCompare(a.createdAt) || b.id.localeCompare(a.id))) if (!latest.has(value.case.query)) latest.set(value.case.query, value);
+        const answered = [...latest.values()];
+        const known = answered.filter(value => value.answer!.mentions.some(item => item.url));
+        const appeared = answered.filter(value => value.answer!.mentions.some(item => item.url === site.url)).length;
+        return { websiteId: site.id, url: site.url, answered: answered.length, identified: known.length, appeared, unknown: answered.length - known.length,
+          sourceCount: new Set(answered.flatMap(value => value.answer!.citations.map(item => item.url))).size,
+          appearanceRate: known.length ? Math.round((appeared / known.length) * 100) : null, failedReads: 0 };
+      });
+      return route.fulfill({ json: { snapshots, failedReads: 0 } });
+    }
     if (path.startsWith("/api/benchmarks/runs/")) {
       const value = structuredClone(state.runs.find(item => path.endsWith(item.id))); state.detailReads.push(path);
       if (state.holdDetails) await state.holdDetails;
@@ -269,5 +285,25 @@ test("website history filters before paging and loads older completed answers wi
   await expect(hiddenQuestion.getByRole("link",{name:`Open observation for ${suite.cases[1].query}`})).toBeVisible();
   await expect(page.getByRole("button",{name:"Load older attempts",exact:true})).toHaveCount(0);
   expect(state.historyReads.every(url=>{const p=new URL(url).searchParams;return p.get("websiteId")==="site-alpha"&&p.get("model")==="fixture-model"&&p.get("searchMode")==="open-web";})).toBe(true);
+  expect(state.writes).toEqual([]);
+});
+
+test("explicit website comparison opens side-by-side saved summaries without spending", async ({ page }) => {
+  const state = await fixture(page);
+  await page.goto("/overview?view=workspace&website=site-alpha");
+  const comparison = page.getByRole("region", { name: "Compare your websites over time", exact: true });
+  const historyBefore = state.historyReads.length;
+  const detailsBefore = state.detailReads.length;
+  await expect(comparison.getByRole("button", { name: "Compare websites", exact: true })).toBeVisible();
+  await comparison.getByRole("button", { name: "Compare websites", exact: true }).click();
+  const detailsAfterOpen = state.detailReads.length;
+  await expect(comparison.getByRole("table")).toContainText("50% (1 of 2)");
+  await expect(comparison.getByRole("table")).toContainText("100% (1 of 1)");
+  await expect(comparison.getByRole("link", { name: "Open website", exact: true }).first()).toHaveAttribute("href", "/overview?view=workspace&website=site-alpha");
+  const comparisonReads = state.historyReads.slice(historyBefore);
+  expect(comparisonReads.length).toBeGreaterThanOrEqual(1);
+  expect(comparisonReads.some((url) => new URL(url).pathname === "/api/benchmarks/comparison")).toBe(true);
+  expect(comparisonReads.every((url) => new URL(url).pathname === "/api/benchmarks/comparison" || new URL(url).pathname === "/api/benchmarks/runs")).toBe(true);
+  expect(state.detailReads.length).toBe(detailsAfterOpen);
   expect(state.writes).toEqual([]);
 });

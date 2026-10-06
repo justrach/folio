@@ -1,0 +1,12 @@
+.website-comparison { padding: 24px 26px; }
+.website-comparison header p { font-size: 12px; color: var(--folio-text-secondary); margin-top: 6px; max-width: 72ch; }
+.website-comparison-table-scroll { overflow-x: auto; margin-top: 16px; }
+.website-comparison table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.website-comparison th, .website-comparison td { text-align: left; padding: 12px 8px; border-bottom: 1px solid var(--line); }
+.website-comparison tbody th { font-weight: 600; }
+.website-comparison td small { color: var(--folio-text-secondary); }
+.website-comparison a { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; }
+@media (max-width: 700px) {
+  .website-comparison { padding: 20px 18px; }
+  .website-comparison th, .website-comparison td { padding: 10px 5px; font-size: 11px; }
+}

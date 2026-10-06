@@ -6,6 +6,7 @@ import type { D1Database } from "@cloudflare/workers-types";
 import { createKeywordBenchmarkSuite, getKeywordBenchmarkSuite, listKeywordBenchmarkSuites,
   updateKeywordBenchmarkCase, reserveKeywordBenchmarkRun, markKeywordBenchmarkCreateAttempt,
   updateKeywordBenchmarkRun, getKeywordBenchmarkRun, listKeywordBenchmarkRuns, getKeywordBenchmarkUsage,
+  summarizeOwnedWebsites,
   validateKeywordBenchmarkAnswer, validateKeywordBenchmarkCase, sanitizeKeywordBenchmarkError,
   KeywordBenchmarkStoreError } from "../src/lib/keyword-benchmark-store";
 import { compareKeywordBenchmarkRuns, type KeywordBenchmarkAnswer, type KeywordBenchmarkCaseInput } from "../src/lib/keyword-benchmark-types";
@@ -149,5 +150,43 @@ test("benchmark payload validation rejects credential URLs, oversized evidence a
     await assert.rejects(updateKeywordBenchmarkRun(db, "alice", run.id, run.revision, { usage: { inputTokens: -1, outputTokens: null, totalTokens: null, costUsd: null } }), /Invalid provider usage/);
     await assert.rejects(reserveKeywordBenchmarkRun(db, "alice", { ...execution, caseId: suite.cases[0].id, kind: "baseline" }, { maxRunsPerDay: 0 }), /deployment benchmark limit/);
     await assert.rejects(getKeywordBenchmarkRun(db, "", run.id), error => error instanceof KeywordBenchmarkStoreError && error.status === 401);
+  } finally { sqlite.close(); }
+});
+
+test("owned website comparison summarizes latest completed answers per site without spending", async () => {
+  const { db, sqlite } = database();
+  try {
+    sqlite.prepare("INSERT INTO sites(id,user_id,url,name,created_at) VALUES(?,?,?,?,?)").run("site-alpha", "alice", "https://alpha-fixture.dev/", "Alpha", Date.now());
+    sqlite.prepare("INSERT INTO sites(id,user_id,url,name,created_at) VALUES(?,?,?,?,?)").run("site-beta", "alice", "https://beta-fixture.dev/", "Beta", Date.now());
+    const suite = await createKeywordBenchmarkSuite(db, "alice", { name: "Comparison fixtures", cases: [
+      { ...fixture, query: "Alpha question one", targetUrl: "https://alpha-fixture.dev/", searchMode: "open-web" },
+      { ...fixture, query: "Alpha question two", targetUrl: "https://alpha-fixture.dev/", searchMode: "open-web" },
+      { ...fixture, query: "Shared question", targetUrl: "https://beta-fixture.dev/", searchMode: "open-web" },
+    ] });
+    async function complete(caseId: string, targetUrl: string, mentions: KeywordBenchmarkAnswer["mentions"]) {
+      let run = await reserveKeywordBenchmarkRun(db, "alice", { ...execution, caseId, kind: "baseline" }, { maxRunsPerDay: null });
+      run = await markKeywordBenchmarkCreateAttempt(db, "alice", run.id, run.revision);
+      return updateKeywordBenchmarkRun(db, "alice", run.id, run.revision, {
+        status: "completed",
+        sessionId: `session-${run.id}`,
+        answer: { text: "Synthetic observation", mentions, citations: [{ url: targetUrl }] },
+      });
+    }
+    await complete(suite.cases[0].id, "https://alpha-fixture.dev/", [{ name: "Alpha", url: "https://alpha-fixture.dev/" }]);
+    await complete(suite.cases[1].id, "https://alpha-fixture.dev/", [{ name: "Other", url: "https://other-fixture.dev/" }]);
+    await complete(suite.cases[2].id, "https://beta-fixture.dev/", [{ name: "Beta", url: "https://beta-fixture.dev/" }]);
+    const both = await summarizeOwnedWebsites(db, "alice", { searchMode: "open-web" });
+    assert.equal(both.failedReads, 0);
+    assert.equal(both.snapshots.length, 2);
+    const alpha = both.snapshots.find((row) => row.websiteId === "site-alpha")!;
+    const beta = both.snapshots.find((row) => row.websiteId === "site-beta")!;
+    assert.equal(alpha.answered, 2);
+    assert.equal(alpha.appeared, 1);
+    assert.equal(alpha.appearanceRate, 50);
+    assert.equal(beta.appeared, 1);
+    assert.equal(beta.appearanceRate, 100);
+    assert.equal((await summarizeOwnedWebsites(db, "bob", { searchMode: "open-web" })).snapshots.length, 0);
+    await assert.rejects(summarizeOwnedWebsites(db, "", { searchMode: "open-web" }), (error) => error instanceof KeywordBenchmarkStoreError && error.status === 401);
+    await assert.rejects(summarizeOwnedWebsites(db, "alice", { searchMode: "other" }), /Invalid search scope/);
   } finally { sqlite.close(); }
 });

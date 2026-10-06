@@ -1,7 +1,7 @@
 import "server-only";
 import type { D1Database } from "@cloudflare/workers-types";
 import type { AgentReservationGuard } from "./agent-observation-types";
-import { keywordPublicUrl, validateKeywordCollectionEvidence } from "./keyword-search-mode";
+import { keywordPublicUrl, keywordRecommendationMetrics, validateKeywordCollectionEvidence } from "./keyword-search-mode";
 import { parseWebsiteResearch } from "./website-research";
 import { KEYWORD_BENCHMARK_SURFACE, KEYWORD_BENCHMARK_QUERY_MAX_LENGTH, isKeywordBenchmarkId, keywordSearchMode, type KeywordBenchmarkAnswer, type KeywordBenchmarkCase,
   type KeywordBenchmarkCaseInput, type KeywordBenchmarkExecution, type KeywordBenchmarkRun,
@@ -251,6 +251,98 @@ export async function listWebsiteKeywordRunsPage(db: D1Database, ownerId: string
     const {referenceFacts: _references, ...publicCase} = input;
     return {...run, case: publicCase, answerCharacters: row.answer_characters, mentionCount: row.mention_count, citationCount: row.citation_count};
   }), models: models.results.map(item=>item.model), nextCursor: rows.results.length>100 && last ? `${last.created_at}:${last.id}` : null };
+}
+export type WebsiteComparisonSnapshot = {
+  websiteId: string;
+  url: string;
+  answered: number;
+  identified: number;
+  appeared: number;
+  unknown: number;
+  sourceCount: number;
+  appearanceRate: number | null;
+  failedReads: number;
+};
+
+/**
+ * Read-only multi-website summary over saved completed answers only.
+ * Latest completed answer per question per site; unfinished attempts never replace it.
+ * Unknown target identities are excluded from the rate. No provider call, no spending.
+ */
+export async function summarizeOwnedWebsites(
+  db: D1Database,
+  ownerId: string,
+  options: { searchMode: string; model?: string },
+): Promise<{ snapshots: WebsiteComparisonSnapshot[]; failedReads: number }> {
+  requireOwner(ownerId);
+  if (!["open-web", "reviewed-domains"].includes(options.searchMode)) throw new KeywordBenchmarkStoreError("Invalid search scope.", 400);
+  if (options.model !== undefined && !/^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,119}$/.test(options.model))
+    throw new KeywordBenchmarkStoreError("Invalid model.", 400);
+  const sites = await db
+    .prepare("SELECT id,url FROM sites WHERE user_id=? ORDER BY created_at DESC,id LIMIT 100")
+    .bind(ownerId)
+    .all<{ id: string; url: string }>();
+  const snapshots: WebsiteComparisonSnapshot[] = [];
+  let failedReads = 0;
+  for (const site of sites.results) {
+    try {
+      const rows = await db
+        .prepare(
+          `SELECT ${runColumns},answer_json FROM keyword_benchmark_runs WHERE user_id=? AND json_extract(case_json,'$.targetUrl')=?
+            AND COALESCE(json_extract(case_json,'$.searchMode'),'reviewed-domains')=?
+            AND json_extract(case_json,'$.websiteResearch.stage') IS NULL AND status='completed' AND answer_json IS NOT NULL
+            AND (? IS NULL OR model=?) ORDER BY created_at DESC,id DESC LIMIT 500`,
+        )
+        .bind(ownerId, site.url, options.searchMode, options.model ?? null, options.model ?? null)
+        .all<RunRow>();
+      const latest = new Map<string, KeywordBenchmarkRun>();
+      for (const row of rows.results) {
+        let run: KeywordBenchmarkRun;
+        try {
+          run = decodeRun(row);
+        } catch {
+          failedReads += 1;
+          continue;
+        }
+        if (
+          !run.answer ||
+          !Array.isArray(run.answer.mentions) ||
+          !Array.isArray(run.answer.citations) ||
+          run.case.targetUrl !== site.url
+        ) {
+          failedReads += 1;
+          continue;
+        }
+        try {
+          keywordRecommendationMetrics(run);
+        } catch {
+          failedReads += 1;
+          continue;
+        }
+        if (!latest.has(run.case.query)) latest.set(run.case.query, run);
+      }
+      const observations = [...latest.values()].map((run) => keywordRecommendationMetrics(run));
+      const identified = observations.filter((item) => item.targetNamed !== "unknown");
+      const appeared = identified.filter((item) => item.targetNamed === "yes").length;
+      const sourceCount = new Set(
+        [...latest.values()].flatMap((run) => (run.answer ? run.answer.citations.map((citation) => citation.url) : [])),
+      ).size;
+      snapshots.push({
+        websiteId: site.id,
+        url: site.url,
+        answered: observations.length,
+        identified: identified.length,
+        appeared,
+        unknown: observations.length - identified.length,
+        sourceCount,
+        appearanceRate: identified.length ? Math.round((appeared / identified.length) * 100) : null,
+        failedReads: 0,
+      });
+    } catch {
+      failedReads += 1;
+    }
+  }
+  return { snapshots, failedReads };
 }
 /** One atomic INSERT freezes the owned case and reserves capacity before any remote POST. */
 export function prepareKeywordBenchmarkReservation(db: D1Database, ownerId: string,
