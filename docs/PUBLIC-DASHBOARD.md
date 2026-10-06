@@ -14,6 +14,14 @@ Each report shows the exact public question, language/locale, returned recommend
 
 Sources use returned titles where available, with a hostname fallback beside each recommendation. Links retain their original citation URLs. Expand **Returned reason** for the recorded explanation and **About this observation** for execution labels, the full source list and limitations. A citation link establishes what the agent returned; it does not independently verify factual support. A completed answer with an empty recommendation list stays empty.
 
+## Advisory evidence coverage on the existing results
+
+The same returned website rows on `/leaderboard` and `/overview?query=<public-query-id>` include **Evidence coverage**. Explicitly published Jev records are bound to the exact question, observation, position and returned URL; changing models or observations cannot transfer the judgment. No record means **Not evaluated**, not missing website information or zero coverage. This layer never reorders recommendations or changes HTML/benchmark scores.
+
+Expand the disclosure for separate relevance and answer coverage, captured page URLs/dates/hashes, truncation, capture-attempt counts, the evaluator's model/date, and a classification-specific next evidence step. A short captured-text preview is not a model-selected supporting quote. Confidence is not measured accuracy; classifications do not verify truth or explain why the search agent recommended a website. Page gaps concern these bounded captures, not the entire site.
+
+`src/data/public-question-coverage.json` contains only reviewed allowlisted public projections and starts empty. The public snapshot adds optional `questionCoverage`; old snapshots without it remain valid. Browsing, refresh and history are read-only. Preparing/running, previewing and explicitly updating that local artifact are separate operations; see [question coverage](QUESTION-COVERAGE.md). No live classification or deployment is established by an empty artifact or browser fixtures.
+
 ## Publication and collection are separate
 
 The dashboard exposes two independent facts: whether collection has a confirmed status, and whether a reviewed answer has been published.

@@ -56,7 +56,7 @@ test("D1 sandbox capability is hashed, selected-domain-only, expires and uses se
       payload = JSON.parse(String(init?.body)); return Response.json({ id: "session_fixture", object: "agent.session", status: "in_progress", required_actions: [] });
     }) as typeof fetch });
     const mcp = payload.agent.tools.find((tool: any) => tool.type === "mcp");
-    assert.equal(mcp.connection_origin, "service"); assert.equal(payload.environment.network.access, "disabled");
+    assert.equal(mcp.connection_origin, "service"); assert.deepEqual(payload.environment, { type: "none" });
     assert.deepEqual(mcp.allowed_tools, ["folio_sandbox_seo", "folio_keyword_research"]);
     const token = mcp.transport.authorization.replace("Bearer ", "");
     assert.equal(JSON.stringify(payload.input).includes(token), false);

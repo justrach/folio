@@ -2,7 +2,8 @@ import type { D1Database, Fetcher } from "@cloudflare/workers-types";
 
 declare global {
   interface CloudflareEnv {
-    DB: D1Database;
+    DB?: D1Database;
+    HYPERDRIVE?: { connectionString: string };
     ASSETS: Fetcher;
     WORKER_SELF_REFERENCE: Fetcher;
     BETTER_AUTH_SECRET: string;
@@ -16,7 +17,9 @@ declare global {
     OPENAI_ALLOWED_USER_IDS?: string;
     OPENAI_MAX_RUNS_PER_DAY?: string;
     OPENAI_UNMETERED_USER_IDS?: string;
-  OPENAI_PARALLEL_USER_IDS?: string;
+    OPENAI_PARALLEL_USER_IDS?: string;
+    CONDENSATION_API_KEY?: string;
+    CODEGRAFF_API_KEY?: string;
     FOLIO_MCP_URL?: string;
     DATAFORSEO_LOGIN?: string;
     DATAFORSEO_PASSWORD?: string;

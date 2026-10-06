@@ -20,7 +20,8 @@ export function validateKeywordCollectionEvidence(value: unknown): KeywordCollec
     !value.searchItems.some(item => item.status === "completed") ||
     new Set(value.searchItems.map(item => item.id)).size !== value.searchItems.length) return invalid();
   const command = value.validationItem;
-  if (["id", "type", "turn_id", "status", "exit_code", "output"].some(key => !Object.hasOwn(command, key)) || !isKeywordBenchmarkId(command.id) || command.type !== "command_execution" ||
+  const validationType = command.type === "folio_json_schema" || command.type === "command_execution";
+  if (["id", "type", "turn_id", "status", "exit_code", "output"].some(key => !Object.hasOwn(command, key)) || !isKeywordBenchmarkId(command.id) || !validationType ||
     command.turn_id !== value.rootTurnId || command.status !== "completed" || (command.exit_code !== 0 && command.exit_code !== null) ||
     typeof command.output !== "string" || !command.output.split("\n").some(line => line.trim() === "FOLIO_KEYWORD_JSON_VALID")) return invalid();
   try {

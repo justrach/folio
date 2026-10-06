@@ -43,22 +43,41 @@ preview (not a fifth step).
    labelled non-neutral.
 4. **Report plan**: reviewed profile, topic-sourced editable/selectable questions, mode, and the
    "Preview first report" CTA with the demo-only notice.
-5. **Report preview**: comparative table (Question | business | tracked competitors) showing sample
-   positions only for exact unedited fixture questions in open mode on the sample site. On narrow
-   screens each question becomes a card with labelled business/competitor cells so positions stay
-   readable without sideways scrolling. A sample-only advisory agent action, a "Review agent brief"
-   in-page panel (nothing is sent or executed; includes mode, competitor names, and final question
-   prompts), and a "Download agent brief" JSON export flagged `mock: true`, `measured: false`,
-   `persisted: false` complete the preview.
+5. **Report preview**: clicking "Preview first report" captures a single report packet
+   (`buildOnboardingReport(buildOnboardingExport(...))` from `src/lib/onboarding-report.ts`) that is
+   reused by the on-screen report, the brief panel, and the JSON download — it is regenerated only
+   on an explicit re-preview and cleared by start-over/site changes. An overview card labels the
+   report as an illustrative fixture with "No live capture or collection date", lists target site,
+   business, mode, and three counts — selected questions, sample answers available, and questions
+   without a sample answer. When at least one question has a fixture answer, a hatched bar chart
+   (adapted from EvilCharts, MIT — `src/components/evilcharts/`, upstream
+   https://github.com/legions-developer/evilcharts/blob/844344cb/charts/bar-charts/hatched-bar-chart.tsx)
+   shows per-brand appearances across the available answers only, with the caption "Counts across
+   available sample answers only; not market share or Google rankings" and an equivalent readable
+   list for long names. When no question has a fixture answer an explicit empty state is shown and
+   no chart renders. Below it the comparative table (Question | business | tracked competitors)
+   shows sample positions only for exact unedited fixture questions in open mode on the sample
+   site. Question rows carry a "Question NN" kicker with a "Sample answer" / "No sample answer"
+   state, compact inline source disclosures, and pill position badges (accent-tinted for the target
+   business, neutral for competitors). On narrow screens each question becomes a card with a
+   labelled brand line per cell — including a "Your business" marker on the target — and positions
+   stay readable without sideways scrolling. A sample-only advisory agent action, a
+   "Review agent brief" in-page panel (nothing is sent or executed; includes mode, competitor
+   names, and final question prompts), a "Download agent brief" JSON export flagged `mock: true`,
+   `measured: false`, `persisted: false`, and a "Print report / Save PDF" button (calls
+   `window.print`; print styles hide controls/navigation and keep the report, evidence, and
+   disclaimers on paper) complete the preview.
 
 ## Tests
 
 ```sh
-node --conditions=react-server --import tsx --test tests/onboarding-mock.test.ts
+node --conditions=react-server --import tsx --test tests/onboarding-mock.test.ts tests/onboarding-report.test.ts
 bunx playwright test tests/onboarding-mock-gui.spec.ts
 ```
 
 Unit tests cover the fixture helpers in `src/lib/onboarding-mock.ts` (claim decisions, list limits,
-topic reconciliation, sample observations, export shape). GUI tests run on desktop and mobile
-projects, drive the full flow including the JSON download, and abort-and-assert against any `/api`
-or external-origin request.
+topic reconciliation, sample observations, export shape) and the report aggregation in
+`src/lib/onboarding-report.ts` (counts, per-brand appearances/positions, dedupe, non-mutation).
+GUI tests run on desktop and mobile projects, drive the full flow including the JSON download,
+dark/light contrast, and print emulation, and abort-and-assert against any `/api` or
+external-origin request.

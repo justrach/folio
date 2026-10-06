@@ -2,10 +2,12 @@ import "server-only";
 
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
-import { drizzle } from "drizzle-orm/d1";
+import { drizzle as drizzlePg } from "drizzle-orm/node-postgres";
+import { drizzle as drizzleD1 } from "drizzle-orm/d1";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
-import { getDb } from "@/lib/db";
-import * as schema from "@/lib/auth-schema";
+import { getDb, getPgPool } from "@/lib/db";
+import * as pgSchema from "@/lib/auth-schema-pg";
+import * as sqliteSchema from "@/lib/auth-schema";
 import { identityAuthOptions } from "@/lib/github-auth";
 
 export async function getAuth() {
@@ -18,7 +20,12 @@ export async function getAuth() {
     );
   }
 
-  const database = drizzle(await getDb(), { schema });
+  // Keep local D1 and the existing production binding active until a verified
+  // PostgreSQL cutover. Never cache either connection across Worker requests.
+  const usePg = Boolean(env.HYPERDRIVE || (process.env.NODE_ENV === "development" && process.env.FOLIO_POSTGRES_URL));
+  const database = usePg
+    ? drizzleAdapter(drizzlePg(await getPgPool(), { schema: pgSchema }), { provider: "pg", schema: pgSchema })
+    : drizzleAdapter(drizzleD1(await getDb(), { schema: sqliteSchema }), { provider: "sqlite", schema: sqliteSchema });
   return betterAuth({
     appName: "Folio",
     baseURL,
@@ -29,7 +36,7 @@ export async function getAuth() {
       GITHUB_CLIENT_ID: env.GITHUB_CLIENT_ID || process.env.GITHUB_CLIENT_ID,
       GITHUB_CLIENT_SECRET: env.GITHUB_CLIENT_SECRET || process.env.GITHUB_CLIENT_SECRET,
     }),
-    database: drizzleAdapter(database, { provider: "sqlite", schema }),
+    database,
     emailAndPassword: {
       enabled: true,
       minPasswordLength: 10,

@@ -18,10 +18,13 @@
     "db:migrate:local": "node scripts/local-db.mjs migrate",
     "db:status:local": "node scripts/local-db.mjs status",
     "db:backup:local": "node scripts/local-db.mjs backup",
-    "test:d1": "node --conditions=react-server --import tsx --test tests/d1-runtime.integration.ts tests/search-console-d1.integration.ts tests/keyword-benchmark-d1.integration.ts tests/agent-api-d1.integration.ts tests/question-suites-d1.integration.ts tests/keyword-hold-release-d1.integration.ts tests/seo-mcp-d1.integration.ts tests/public-keyword-d1.integration.ts tests/provider-costs-d1.integration.ts tests/typesafe-review-d1.integration.ts tests/typesafe-tool-d1.integration.ts tests/website-crawl-d1.integration.ts",
+    "test:d1": "node --conditions=react-server --import tsx --test tests/d1-runtime.integration.ts tests/search-console-d1.integration.ts tests/keyword-benchmark-d1.integration.ts tests/agent-api-d1.integration.ts tests/question-suites-d1.integration.ts tests/keyword-hold-release-d1.integration.ts tests/seo-mcp-d1.integration.ts tests/public-keyword-d1.integration.ts tests/provider-costs-d1.integration.ts tests/typesafe-review-d1.integration.ts tests/typesafe-tool-d1.integration.ts tests/website-crawl-d1.integration.ts tests/website-research-d1.integration.ts tests/platform-proxy.integration.ts",
+    "test:pg": "node --conditions=react-server --import tsx --test tests/pg-runtime.integration.ts",
     "benchmark": "node --conditions=react-server --import tsx scripts/keyword-benchmark.ts",
+    "experiment:search": "node --conditions=react-server --import tsx scripts/condensation-search-experiment.ts",
     "rankings:collect": "node --conditions=react-server --import tsx scripts/collect-public-search-rankings.ts",
     "index:evaluate": "node --conditions=react-server --import tsx scripts/evaluate-developer-tools.ts",
+    "index:questions": "node --conditions=react-server --import tsx scripts/question-coverage.ts",
     "cf:build": "opennextjs-cloudflare build",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
@@ -46,6 +49,7 @@
     "lucide-react": "latest",
     "motion": "latest",
     "next": "15.5.25",
+    "pg": "^8.23.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "recharts": "^3.0.0",
@@ -58,6 +62,7 @@
     "@cloudflare/workers-types": "latest",
     "@playwright/test": "latest",
     "@types/node": "^22.0.0",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "miniflare": "5.20260911.0-alpha",
@@ -67,5 +72,8 @@
   },
   "overrides": {
     "postcss": "^8.5.28"
+  },
+  "patchedDependencies": {
+    "wrangler@4.131.1": "patches/wrangler@4.131.1.patch"
   }
 }

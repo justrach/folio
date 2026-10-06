@@ -4,6 +4,8 @@ Completed live **page-evidence evaluations** have an explicit **Run paid semanti
 
 `jev-latest` returns supports / contradicts / insufficient judgments, distributions, and model confidence. Folio displays these privately as advisory judgments. They do not alter verification scores, publish evidence, or establish factual truth. Confidence is not measured accuracy. Calibrate against representative labeled examples before automatic acceptance.
 
+The separate local [question-to-page coverage prototype](QUESTION-COVERAGE.md) uses the same bounded TypeSafe transport for relevance and answer-coverage Choice judgments. It is not this authenticated citation-review action, does not use its application quotas or cost dashboard, and does not change benchmark scores or public rankings. Its real frozen website matrix is prepared only; provider responses are fixture-tested, not live-validated.
+
 ## Configuration
 
 Apply migration `0018_typesafe_reviews.sql`. Configure `TYPESAFE_API_KEY` as a server-only Worker secret and `TYPESAFE_ALLOWED_USER_IDS` as a comma-separated explicit account allowlist. Neither is public client configuration. This access is separate from OpenAI access.

@@ -4,6 +4,8 @@ Prepared 13 September 2026. The [query data](../src/data/website-search-queries.
 
 The first batch emphasizes decisions people make: product fit, setup, cost, permissions, shipping, returns, booking conditions and learning access. The separate HTML rubric and discovery-document diagnostics do not answer these questions.
 
+The separate [question-to-page coverage prototype](QUESTION-COVERAGE.md) reuses these immutable primary IDs and captured public text for advisory Jev relevance/answer-coverage classifications. It prepares a private question → website → evidence matrix without creating search observations, publishing rankings or establishing factual correctness. Local fixtures and a real frozen input packet are validated; live Jev classification still depends on a configured server-side key.
+
 ## First collection batch
 
 | Query ID | Question focus | Catalog websites to inspect in the result |
@@ -38,9 +40,9 @@ Comparisons involving different product roles should explain those differences. 
 
 ## Running and judging a question
 
-Use one existing managed Agents open-web session per question, retaining its hosted sandbox, exact query, language, locale, harness version and provider receipts. Follow the collection workflow in [keyword benchmarks](KEYWORD-BENCHMARKS.md). Save each creation attempt before sending it, retrieve the same session when its ID exists, and preserve unknown creation as unresolved. A prepared batch does not authorize bypassing an unresolved-session guard or silently retrying an ambiguous attempt.
+Use one existing managed Agents open-web session per question, retaining `environment.type: "none"`, exact query, language, locale, harness version and provider receipts. Follow the collection workflow in [keyword benchmarks](KEYWORD-BENCHMARKS.md). Save each creation attempt before sending it, retrieve the same session when its ID exists, and preserve unknown creation as unresolved. A prepared batch does not authorize bypassing an unresolved-session guard or silently retrying an ambiguous attempt.
 
-The sandbox should inspect the saved answer and source artifacts for that question. Useful reproducible checks include parseable structured output, retained recommendation order, source URLs attached to the relevant recommendations, explicit missing evidence, and whether the question's requested comparison dimensions are addressed. A source link proves only that a URL was returned; it does not establish that the page supports the claim. Coverage of a topic is distinct from factual correctness.
+Judging should inspect the saved answer and source artifacts for that question. Useful reproducible checks include parseable structured output, retained recommendation order, source URLs attached to the relevant recommendations, explicit missing evidence, and whether the question's requested comparison dimensions are addressed. A source link proves only that a URL was returned; it does not establish that the page supports the claim. Coverage of a topic is distinct from factual correctness.
 
 For substantive judging, compare individual claims with independently captured official product, pricing, support or policy pages. Retain the exact supporting passages and capture dates, and mark inaccessible or ambiguous evidence as unresolved. Prices require currency, billing period, region and usage assumptions. Shipping, booking and course conditions require the applicable product, itinerary or course. Claims about comfort, learning outcomes or actual API execution require evidence appropriate to those claims; a readable answer is insufficient.
 

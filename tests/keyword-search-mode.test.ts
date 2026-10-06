@@ -73,4 +73,7 @@ test("collection evidence preserves complete raw records within a bounded own-pr
   assert.throws(() => validateKeywordCollectionEvidence({ ...collection, searchItems: [Object.create(collection.searchItems[0])] }));
   assert.throws(() => validateKeywordCollectionEvidence({ ...collection, validationItem: { ...collection.validationItem, exit_code: 1 } }));
   assert.throws(() => validateKeywordCollectionEvidence({ ...collection, validationItem: { ...collection.validationItem, output: `FOLIO_KEYWORD_JSON_VALID\n${"x".repeat(750_000)}` } }));
+  const folio = validateKeywordCollectionEvidence({ ...collection, validationItem: { id: "folio-json-fixture", turn_id: "turn-fixture", type: "folio_json_schema", status: "completed", exit_code: 0, output: "FOLIO_KEYWORD_JSON_VALID" } });
+  assert.equal(folio.validationItem.type, "folio_json_schema");
+  assert.throws(() => validateKeywordCollectionEvidence({ ...collection, validationItem: { ...collection.validationItem, type: "other" } }));
 });

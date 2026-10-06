@@ -57,16 +57,35 @@ This suite caught a D1-specific deletion regression: `meta.changes` includes the
 
 Run this suite for changes to migrations, D1 stores, reservation SQL, ownership predicates, or emulator configuration. Keep `bun run test` for focused unit and contract tests, and `bun run test:gui` for browser flows. No validation count is implied here; record the actual command result when it runs. Cloudflare documents Miniflare's D1 binding as a programmatic local testing option. [D1 programmatic testing](https://developers.cloudflare.com/d1/best-practices/local-development/#test-programmatically)
 
-## D1 now; reconsider Postgres when requirements justify it
+## Bindings proxy stub patch
 
-Keep D1 for this pilot. Authentication, saved reports, owner predicates, compare-and-swap updates, and quota reservations already use it. Persistent local data does not require a database migration. There is no measured production workload demonstrating that these queries exceed D1's capacity.
+`bun run dev` (and `getPlatformProxy`) relies on Wrangler's bindings-only proxy Worker. Upstream
+`wrangler@4.131.1` gives that internal Worker an empty script, which makes workerd fall back to
+forwarding each ordinary request to its own entry URL — a loopback amplification source when any
+local process probes the port. `patches/wrangler@4.131.1.patch` (applied automatically by Bun via
+`patchedDependencies` on every install) replaces only that stub with an explicit terminal 404
+handler. Cloudflare, D1 bindings, assets, persistence, and production deploys are unchanged and not
+disabled.
 
-Track database size, serialized evidence-row size, query duration, concurrent writes, and overload errors as real usage grows. Cloudflare currently documents a maximum database size of 500 MB on Free or 10 GB on Workers Paid, a 2 MB row/string/blob limit, and single-threaded query processing per database. Those are concrete constraints to measure against, not a forecast of how many Folio customers it can serve. [D1 limits](https://developers.cloudflare.com/d1/platform/limits/)
+Regression check after reinstall or upgrade:
 
-Revisit Postgres when measured workload or a specific feature calls for it: sustained write contention after query/index improvements, a data model that cannot fit the chosen database-size strategy, a required SQL extension, or transaction semantics that Folio cannot implement cleanly with its current D1 operations. Define that requirement and benchmark the alternatives before moving authentication and all stores. A Postgres migration would need schema/data migration, a runtime connection approach, and fresh ownership, quota, and recovery tests.
+```sh
+node --conditions=react-server --import tsx --test tests/platform-proxy.integration.ts
+```
 
-Large HTML captures and evidence bundles are a separate storage question. A future design could put those objects in R2 while keeping ownership, hashes, lifecycle state, and indexes in D1. That is a proposed optimization; Folio currently stores its evaluation evidence in D1 JSON and has no R2 evidence implementation.
+If wrangler is upgraded, re-run this test. Keep the patch, refresh it, or remove it only when the
+upstream handler terminates requests without self-forwarding.
 
-## Production remains separate
+## D1 remains the local default
 
-Provisioning a real D1 database, replacing the placeholder ID, applying remote migrations, configuring Worker secrets, deployment, and validating production recovery remain deployment work. A persistent Miniflare directory and a private SQL export do not perform any of those steps. See [architecture](../ARCHITECTURE.md), [Cloudflare/auth setup](cloudflare-auth.md), and [current launch work](../TODO.md).
+Ordinary local development still uses isolated D1. Production switched to PlanetScale PostgreSQL through Hyperdrive on September 27, 2026; its previous D1 database remains intact only for a reconciled rollback. Set `FOLIO_POSTGRES_URL` only for an explicitly isolated local PostgreSQL rehearsal; never point normal development at production data. See [the migration record](POSTGRES-MIGRATION.md) for the schema, full-row checks, cutover, and rollback constraints.
+
+For local D1 and the retained rollback database, track size, serialized evidence-row size, query duration, concurrent writes, and overload errors. Cloudflare currently documents a maximum database size of 500 MB on Free or 10 GB on Workers Paid, a 2 MB row/string/blob limit, and single-threaded query processing per database. These are D1 constraints, not PlanetScale capacity limits or a forecast of how many Folio customers it can serve. [D1 limits](https://developers.cloudflare.com/d1/platform/limits/)
+
+The completed data cutover does not prove better capacity or cost for Folio. Compare actual workload, latency, errors, and provider costs over time; isolated importer and fixture tests remain distinct from the live PlanetScale/Hyperdrive checks recorded in the migration runbook.
+
+Large HTML captures and evidence bundles are a separate storage question. A future design could put those objects in R2 while keeping ownership, hashes, lifecycle state, and indexes in PostgreSQL. That is a proposed optimization; production currently stores evaluation evidence in PostgreSQL JSON text (local development in D1) and has no R2 evidence implementation.
+
+## Production remains separate from the emulator
+
+The hosted Workers now use Hyperdrive PostgreSQL; local `.wrangler/state/v3` is not their database. The frozen production D1 database and private SQL exports are rollback inputs, not an automatic restore service. Live owner sign-in and ongoing recovery monitoring remain separate checks. See [architecture](../ARCHITECTURE.md), [production setup](PRODUCTION-SETUP.md), and [current launch work](../TODO.md).

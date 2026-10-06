@@ -3,7 +3,7 @@ import { startKeywordBenchmark } from "@/lib/keyword-benchmark-service";
 import { listKeywordBenchmarkRuns, listWebsiteKeywordRunsPage, KeywordBenchmarkStoreError } from "@/lib/keyword-benchmark-store";
 import { keywordBenchmarkRequestContext, keywordBenchmarkErrorResponse, requireKeywordBenchmarkOrigin, PRIVATE_BENCHMARK_HEADERS } from "@/lib/keyword-benchmark-api";
 export const dynamic = "force-dynamic";
-export const maxDuration = 60;
+export const maxDuration = 180;
 export async function GET(request: Request) {
   try {
     const { db, ownerId } = await keywordBenchmarkRequestContext(request), query = new URL(request.url).searchParams;

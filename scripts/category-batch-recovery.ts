@@ -43,10 +43,12 @@ export function matchesCategoryReceipt(run: KeywordBenchmarkRun, candidate: unkn
   const session = object(candidate), metadata = object(session.metadata), agent = object(session.agent);
   const environment = object(session.environment), network = object(environment.network);
   const domains = network.allowed_domains;
-  const networkMatches = keywordSearchMode(run.case.searchMode) === "open-web"
+  const noneMatches = environment.type === "none" && (network.access == null) && (domains == null || (Array.isArray(domains) && domains.length === 0));
+  const hostedMatches = environment.type === "openai_hosted" && (keywordSearchMode(run.case.searchMode) === "open-web"
     ? network.access === "disabled" && (domains == null || (Array.isArray(domains) && domains.length === 0))
     : network.access === "restricted" && Array.isArray(domains) && domains.every(domain => typeof domain === "string")
-      && JSON.stringify([...new Set(domains)].sort()) === JSON.stringify([...new Set(run.allowedDomains)].sort());
+      && JSON.stringify([...new Set(domains)].sort()) === JSON.stringify([...new Set(run.allowedDomains)].sort()));
+  const networkMatches = run.environmentType === "none" ? noneMatches : hostedMatches;
   return typeof session.id === "string" && /^[A-Za-z0-9_-]{1,200}$/.test(session.id)
     && metadata.run_id === run.id && metadata.case_id === run.caseId && metadata.harness_version === run.harnessVersion
     && agent.model === run.model && environment.type === run.environmentType && networkMatches;

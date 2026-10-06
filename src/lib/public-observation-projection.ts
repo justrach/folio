@@ -10,6 +10,11 @@ import { assertPublicSearchRankings } from "./public-search-rankings-validation"
 
 export class PublicCollectionUsageError extends Error {}
 const hash = (value: unknown) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
+function publishableOpenWebExecution(run: KeywordBenchmarkRun): boolean {
+  const version = run.harnessVersion;
+  if (run.environmentType === "none" && version === keywordAgentHarnessVersion("open-web")) return true;
+  return run.environmentType === "openai_hosted" && (version === "keyword-open-web-v2" || version.startsWith("keyword-open-web-v2-"));
+}
 function sameQuery(run: KeywordBenchmarkRun, query: PublicSearchQuery) {
   return run.case.query === query.query && run.case.language === query.language && run.case.locale === query.locale;
 }
@@ -23,10 +28,11 @@ function publicAnswerFields(answer: KeywordBenchmarkAnswer) {
 }
 /** Exact allowlist projection. Keep returned order, duplicates, missing URLs and stated limitations. */
 function projectObservation(run: KeywordBenchmarkRun, query: PublicSearchQuery, privateIdentifiers: string[], website: boolean): PublicSearchObservation {
+  if (run.case.websiteResearch || ["website-query-discovery-v1", "website-competitor-research-v1"].includes(run.case.rubricVersion))
+    throw new PublicCollectionUsageError("Website research is private and cannot be published as a measured search observation.");
   if (run.status !== "completed" || !run.answer || !run.sessionId || !run.answer.collection || !sameQuery(run, query)
     || (!website && (run.case.targetUrl !== null || (run.case.referenceFacts?.length ?? 0) > 0)) || keywordSearchMode(run.case.searchMode) !== "open-web"
-    || !isRecordedKeywordOpenWebModel(run.model) || run.environmentType !== "openai_hosted" || run.allowedDomains.length
-    || run.harnessVersion !== keywordAgentHarnessVersion("open-web"))
+    || !isRecordedKeywordOpenWebModel(run.model) || !publishableOpenWebExecution(run) || run.allowedDomains.length)
     throw new PublicCollectionUsageError(website
       ? "Publication requires a completed supported-model open-web collection for this exact question and the standard target-withheld harness."
       : "Export requires a completed supported-model open-web collection for this exact public query, without private targets or reference facts.");
@@ -53,7 +59,7 @@ function projectObservation(run: KeywordBenchmarkRun, query: PublicSearchQuery, 
     collection.finalAnswerItemId, ...collection.searchItems.map(item => typeof item.id === "string" ? item.id : ""),
     typeof collection.validationItem.id === "string" ? collection.validationItem.id : "", ...privateIdentifiers];
   if (privateValues.some(value => value && serialized.includes(value))
-    || /\b(?:sk-[A-Za-z0-9_-]{12,}|folio_(?:v1|sandbox)_[a-f0-9]{64}|Bearer\s+[A-Za-z0-9._-]+)/i.test(serialized))
+    || /\b(?:sk-[A-Za-z0-9_-]{12,}|cnd_sk_[A-Za-z0-9_-]{12,}|folio_(?:v1|sandbox)_[a-f0-9]{64}|Bearer\s+[A-Za-z0-9._-]+)/i.test(serialized))
     throw new PublicCollectionUsageError("The proposed public export contains private identifiers or credential-like text. Review the private source; nothing was published.");
   return observation;
 }

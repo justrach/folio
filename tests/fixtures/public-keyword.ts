@@ -6,7 +6,7 @@ export const publicKeywordQuery: PublicSearchQuery = { id: "public-fixture", aud
 export function publicKeywordRunFixture(): KeywordBenchmarkRun {
   const value: KeywordBenchmarkRun = { id: "private_run_123", suiteId: "private_suite_123", caseId: "private_case_123", kind: "baseline", baselineRunId: null,
     surface: "openai-managed-agents", publication: "private", model: KEYWORD_OPEN_WEB_MODEL,
-    harnessVersion: keywordAgentHarnessVersion("open-web"), environmentType: "openai_hosted", environmentFingerprint: "private_configuration_digest",
+    harnessVersion: keywordAgentHarnessVersion("open-web"), environmentType: "none", environmentFingerprint: "private_configuration_digest",
     case: { query: publicKeywordQuery.query, targetUrl: null, language: publicKeywordQuery.language, locale: publicKeywordQuery.locale, rubricVersion: "keyword-observation-v1", searchMode: "open-web" },
     status: "completed", sessionId: "private_session_123", createAttemptAt: "2026-09-13T00:00:00.000Z", allowedDomains: [], deadlineAt: "2026-09-13T00:03:00.000Z",
     cancelAttemptAt: null, cancelAcknowledgedAt: null, createdAt: "2026-09-13T00:00:00.000Z", updatedAt: "2026-09-13T00:00:30.000Z", revision: 3,
@@ -20,7 +20,7 @@ export function publicKeywordRunFixture(): KeywordBenchmarkRun {
       collection: { format: "folio-keyword-collection-v1", searchMode: "open-web", collectedAt: "2026-09-13T00:00:30.000Z", sessionId: "private_session_123", rootTurnId: "private_turn_123",
         finalAnswerItemId: "private_final_123", finalAnswerJson: '{"raw":"private_owner_123"}',
         searchItems: [{ id: "private_search_123", type: "web_search_call", turn_id: "private_turn_123", status: "completed", raw: "private raw search material" }],
-        validationItem: { id: "private_validation_123", type: "command_execution", turn_id: "private_turn_123", status: "completed", exit_code: null, output: "FOLIO_KEYWORD_JSON_VALID" } } },
+        validationItem: { id: "private_validation_123", type: "folio_json_schema", turn_id: "private_turn_123", status: "completed", exit_code: 0, output: "FOLIO_KEYWORD_JSON_VALID" } } },
   };
   retainPublicKeywordAnswer(value);
   return value;

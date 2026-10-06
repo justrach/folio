@@ -74,3 +74,14 @@
 }
 
 .ranked-search .ranked-search-empty-link { display: inline-block; margin-top: 12px; font-size: 13px; }
+.ranked-search-coverage { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--folio-edge); font-size: 13px; overflow-wrap: anywhere; }
+.ranked-search-coverage summary { cursor: pointer; font-weight: 600; }
+.ranked-search-coverage > summary { display: list-item; }
+.ranked-search-coverage > summary span { display: inline-block; margin-left: 8px; color: var(--folio-text-secondary); font-size: 12px; font-weight: 400; }
+.ranked-search-coverage p { margin: 10px 0; line-height: 1.6; }
+.ranked-search-coverage .ranked-search-coverage-limit, .ranked-search-coverage small { color: var(--folio-text-secondary); }
+.ranked-search-coverage-pages { margin: 14px 0; padding: 0; list-style: none; }
+.ranked-search-coverage-pages > li { padding: 12px 0; border-top: 1px solid var(--folio-edge); }
+.ranked-search-coverage-pages details { margin-top: 10px; }
+.ranked-search-coverage blockquote { margin: 10px 0; padding: 8px 12px; border-left: 2px solid var(--folio-edge-strong); }
+.ranked-search-coverage code { font-size: 11px; word-break: break-all; }

@@ -38,6 +38,18 @@ The selected website’s **View results** link opens its combined workspace over
 
 The **Demo report** remains an explicit alternative. Its sample percentages, sparklines, citations and company ranks do not enter the real overview.
 
+## Private website query and competitor research
+
+`/websites` has a capture-free **Save website** form. It uses the existing owned-site API and selects the saved URL without starting an audit, search, evaluation, or paid provider session. **Open website research** is the primary next action and jumps to the same-page research panel; technical checks remain secondary. **Search questions** opens the canonical `/evaluations?view=search&website=<owned-site-id>` workspace. The research panel is keyed separately from the site's SEO summary so switching sites unmounts the previous research state.
+
+**Generate suggested queries (paid)** explicitly starts one managed OpenAI run that opens the target's public pages and proposes up to five customer questions with intent, product fit, and sources. These are hypotheses, not measured demand. The owner reviews/edits a suggestion before separately clicking **Research competitors (paid)**. That second action freezes the reviewed query, searches it, and opens target/competitor pages for up to three source-backed candidate briefs in returned recommendation order. Completing discovery does not start competitor research.
+
+A four-step guide tracks saved website, discovery, query review and brief state from owned records—not elapsed time. Completed history offers **Review saved queries** or **Open latest saved brief**, without another paid start. The query picker shows one editable suggestion and one competitor-start button; switching suggestions or refreshing saved history preserves drafts for the same discovery. The launch summary identifies the selected model and reminds the owner that only that query will run. Selected competitor briefs and unfinished competitor receipts appear before new-run forms; unresolved attempts have a direct reopen action.
+
+The panel shows saved sources, target-evidence gaps, advisory suggestions, model/date, token usage, and unknown charges. Native `?site=` / `?research=` selections support direct entry, refresh, and back/forward. Switching website/account aborts private reads and clears drafts. History, saved brief reopening, and private JSON downloads spend nothing; provider progress retrieval is a separate explicit action. Uncertain starts retain the original request key/query/model, and unresolved history blocks replacement paid starts.
+
+Agents can reopen validated structured briefs through the existing authenticated `folio_run` read. Research stays private and outside search-observation metrics and public publication. Provider-credit authorization is implemented, not checkout/customer billing. See [website research](WEBSITE-RESEARCH.md) for the API, page-open evidence requirements, quotas, and validation limits.
+
 ## Carry a website or SEO report into a form
 
 | Starting point | Action | Result |

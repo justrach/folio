@@ -12,6 +12,7 @@ import { cancelKeywordBenchmark, keywordBenchmarkAccess, keywordBenchmarkExecuti
 import { getKeywordBenchmarkRun, prepareKeywordBenchmarkReservation } from "./keyword-benchmark-store";
 import { isKeywordBenchmarkId, keywordSearchMode, type KeywordBenchmarkCaseInput, type KeywordBenchmarkRun } from "./keyword-benchmark-types";
 import { normalizeScanUrl } from "./scanner";
+import { parseWebsiteResearch } from "./website-research";
 
 export const AGENT_OBSERVATION_DEFAULT_MAX_AGE = 86_400;
 export type AgentObservationOptions = Omit<KeywordBenchmarkServiceOptions, "reserve">;
@@ -86,8 +87,17 @@ function project(run: EvaluationRun | KeywordBenchmarkRun): AgentObservationRun 
   const keyword = "caseId" in run;
   let result: AgentObservationRun["result"] = null;
   if (keyword && run.answer) {
-    const { collection: _privateCollection, ...answer } = run.answer;
-    result = answer;
+    const { collection: _privateCollection, websiteResearch: _research, ...answer } = run.answer;
+    const stage = run.case.websiteResearch?.stage ?? (run.case.rubricVersion === "website-query-discovery-v1" ? "query-discovery"
+      : run.case.rubricVersion === "website-competitor-research-v1" ? "competitor-research" : null);
+    const research = stage && run.case.targetUrl ? parseWebsiteResearch(_research,
+      { stage, targetUrl: run.case.targetUrl, query: run.case.query }, answer) : null;
+    const serialized = research ? JSON.stringify(research) : "";
+    const privateIds = [run.id, run.caseId, run.suiteId, run.sessionId, run.providerMetadata.environmentId,
+      run.providerMetadata.requestId, run.providerMetadata.turnId, run.case.websiteResearch?.discoveryRunId];
+    const safeResearch = research && !privateIds.some(id => id && serialized.includes(id))
+      && !/\b(?:sk-[A-Za-z0-9_-]{12,}|cnd_sk_[A-Za-z0-9_-]{12,}|folio_(?:v1|sandbox)_[a-f0-9]{64}|Bearer\s+[A-Za-z0-9._-]+)/i.test(serialized);
+    result = { ...answer, ...(safeResearch ? { websiteResearch: research } : {}) };
   } else if (!keyword && run.result) result = { ...run.result, checks: run.result.checks.map(check =>
     run.expectedFacts && ["product-understanding", "pricing-extraction"].includes(check.id)
       ? { ...check, expected: "Private reference value omitted from this API response." } : check) };

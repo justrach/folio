@@ -9,6 +9,7 @@ import {
   latestPublicSearchObservation,
 } from "@/lib/public-search-rankings";
 import { RecordedRanking } from "./recorded-ranking";
+import { PUBLIC_QUESTION_COVERAGE } from "@/lib/published-question-coverage";
 import "./ranked-search-table.css";
 
 const categories = [...new Set(PUBLIC_SEARCH_QUERIES.map(query => query.category))];
@@ -50,7 +51,7 @@ function RankedSearchTableContent({ compact }: { compact: boolean }) {
       {query && <div key={`${query.id}-${observation?.id ?? "pending"}`}>
         <p className="ranked-search-query" id={`${controlId}-question`}>{query.query}</p>
         <p className="ranked-search-context">{query.locale} · Language: {query.language}</p>
-        {observation ? <RecordedRanking query={query} observation={observation} /> : <div className="ranked-search-empty" role="status">
+        {observation ? <RecordedRanking query={query} observation={observation} coverage={PUBLIC_QUESTION_COVERAGE} /> : <div className="ranked-search-empty" role="status">
           <h3>No recorded ranking yet.</h3>
           <p>Public rankings appear here after a completed search observation is published.</p>
           <Link className="ranked-search-empty-link" href="/evaluations">Open your evaluations</Link>

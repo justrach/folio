@@ -64,11 +64,13 @@ export function parseCitationReview(value: unknown, request: CitationReviewReque
 }
 
 /** Explicit server-side invocation only. No auto-retry or automatic cascade. */
-export async function reviewCitations(request: CitationReviewRequest, apiKey: string) {
+export async function postTypeSafeQuestions(request: { model: string; state: unknown; questions: Record<string, unknown> }, apiKey: string): Promise<unknown> {
   if (!apiKey.trim()) throw new Error("Configure a server-side TypeSafe key before explicit semantic review.");
+  const body = JSON.stringify(request);
+  if (new TextEncoder().encode(body).byteLength > 100_000) throw new Error("TypeSafe request exceeds the size limit.");
   const response = await fetch("https://api.typesafe.ai/v1/systemone", {
     method: "POST", headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify(request), redirect: "manual", cache: "no-store", signal: AbortSignal.timeout(30_000),
+    body, redirect: "manual", cache: "no-store", signal: AbortSignal.timeout(30_000),
   });
   if (!response.ok) { await response.body?.cancel(); throw new Error(`TypeSafe returned HTTP ${response.status}; no automatic retry.`); }
   if (response.headers.get("content-type")?.split(";")[0] !== "application/json") { await response.body?.cancel(); throw new Error("Invalid TypeSafe content type."); }
@@ -90,5 +92,9 @@ export async function reviewCitations(request: CitationReviewRequest, apiKey: st
   for (const chunk of chunks) { data.set(chunk, offset); offset += chunk.length; }
   let value: unknown;
   try { value = JSON.parse(new TextDecoder().decode(data)); } catch { throw new Error("TypeSafe returned unreadable JSON."); }
-  return parseCitationReview(value, request);
+  return value;
+}
+
+export async function reviewCitations(request: CitationReviewRequest, apiKey: string) {
+  return parseCitationReview(await postTypeSafeQuestions(request, apiKey), request);
 }

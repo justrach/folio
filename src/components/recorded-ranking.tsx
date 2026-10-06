@@ -1,5 +1,7 @@
 import React from "react";
 import type { PublicSearchObservation, PublicSearchQuery, PublicSearchRecommendation } from "@/lib/public-search-rankings";
+import { coverageForRecommendation, type PublicQuestionCoverage, type PublicQuestionCoverageRecord } from "@/lib/public-question-coverage";
+import { RecommendationCoverage } from "./recommendation-coverage";
 
 const dateFormat = new Intl.DateTimeFormat("en-GB", {
   day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "UTC",
@@ -15,18 +17,21 @@ function citationLabel(url: string, title?: string | null) {
   return label.length > 90 ? `${label.slice(0, 87)}…` : label;
 }
 
-export function RecordedRanking({ query, observation }: { query: PublicSearchQuery; observation: PublicSearchObservation }) {
+export function RecordedRanking({ query, observation, coverage }: { query: PublicSearchQuery; observation: PublicSearchObservation; coverage?: PublicQuestionCoverage }) {
   return <>
     {observation.recommendations.length > 0 ? <figure className="ranked-search-chart" aria-label="Returned recommendations">
       <figcaption><strong>Recommendation order</strong><span>Listed as returned for this question. 1 is first.</span></figcaption>
       <ol>{observation.recommendations.map((recommendation, index) => <RecommendationRow
         key={`${recommendation.position}-${index}`} recommendation={recommendation} citations={observation.citations}
+        coverage={coverageForRecommendation(coverage, observation, recommendation)}
         />)}</ol>
     </figure> : <div className="ranked-search-empty" role="status"><h3>No recommendations returned.</h3><p>This completed observation did not include a recommendation list.</p></div>}
     <details className="ranked-search-provenance">
       <summary>About this observation</summary>
       <p>Position follows the returned list for this question. Depending on the question, recommendations may be websites, products, resources or steps. Another run can return a different order. Reasons and citations remain evidence to review.</p>
       <dl>
+        <dt>Question ID</dt><dd>{query.id}</dd>
+        <dt>Observation ID</dt><dd>{observation.id}</dd>
         <dt>Model</dt><dd>{observation.model}</dd>
         <dt>Observed at</dt><dd><time dateTime={observation.observedAt}>{dateFormat.format(new Date(observation.observedAt))} UTC</time></dd>
         <dt>Surface</dt><dd>OpenAI managed Agents API</dd>
@@ -46,7 +51,7 @@ export function RecordedRanking({ query, observation }: { query: PublicSearchQue
   </>;
 }
 
-function RecommendationRow({ recommendation, citations }: { recommendation: PublicSearchRecommendation; citations: PublicSearchObservation["citations"] }) {
+function RecommendationRow({ recommendation, citations, coverage }: { recommendation: PublicSearchRecommendation; citations: PublicSearchObservation["citations"]; coverage?: PublicQuestionCoverageRecord }) {
   const sourceUrls = [...new Set(recommendation.citationUrls)];
   return <li className="ranked-search-row">
     <span className="ranked-search-position" aria-label={`Position ${recommendation.position}`}>{recommendation.position}</span>
@@ -66,6 +71,7 @@ function RecommendationRow({ recommendation, citations }: { recommendation: Publ
       <details className="ranked-search-evidence"><summary>Returned reason</summary>
         <p>{recommendation.reason || "No reason was recorded for this recommendation."}</p>
       </details>
+      <RecommendationCoverage record={coverage} hasWebsite={Boolean(recommendation.url)} />
       </div>
     </div>
   </li>;

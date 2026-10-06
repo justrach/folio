@@ -2,6 +2,28 @@
 
 Working checklist for completing the current website-evaluation pilot. Check items only after implementation and relevant verification. Provider credentials, deployment access, and external billing are dependencies, not completed features.
 
+## Two-stage private website research
+
+- [x] Improve the first-site research flow with a four-step guide, one focused query editor, same-discovery draft preservation, saved/unresolved resume actions, report-first competitor briefs and a canonical Search questions handoff. Verified October 2, 2026 by 26 desktop/mobile research and navigation fixtures, a rendered Codegraff walkthrough, project typecheck and Cloudflare build. Provider responses were fixture-controlled; no new paid task or production deployment was performed for this UX change.
+- [x] Add capture-free website saving/selection and explicit paid managed OpenAI query discovery: up to five source-backed customer-query hypotheses, with no automatic audit, competitor research, or spending on navigation.
+- [x] Add owner-reviewed/edited query → separately authorized competitor investigation, private source-backed strengths/advisory suggestions, saved history/JSON download, and authenticated agent reuse. Retain one-attempt request identities, shared quotas, owner isolation, recorded page-open requirements, unknown costs, and exclusion from measured/public search observations.
+- [x] Verify local implementation on September 30, 2026 with focused schema/transport/MCP fixtures, actual isolated D1 including restart/concurrency/public-boundary checks, the 37-check serial D1 suite, 16 desktop/mobile browser fixtures against the built local app, project typecheck, and the Cloudflare production build. The parallel D1/dev-browser runs encountered local emulator socket/file-descriptor errors; serial D1 and built-app browser runs passed. See [website research](docs/WEBSITE-RESEARCH.md).
+- [ ] Validate explicitly authorized live OpenAI results/model access, actual provider usage, isolated PostgreSQL runtime behavior, and production deployment. The local PostgreSQL test server was unavailable; mocked provider receipts and browser APIs do not establish these outcomes. Checkout/customer billing is not implemented.
+
+## Question-first evidence coverage
+
+- [x] Add a bounded private question → website → captured-page index prototype using 38 curated existing/starter question texts and Jev relevance/answer-coverage Choice judgments. Explicit spending, frozen request validation, once-only reservations, provenance, advisory distributions and private reports are implemented. Verified by 18 focused fixture tests and the project typecheck on September 30, 2026; see [question coverage](docs/QUESTION-COVERAGE.md).
+- [x] Prepare the real saved Codegraff-site packet as a three-question/six-page matrix: 18 pairs and 36 typed judgments, all not evaluated. Original receipt/reservation remain unchanged; no new capture, sandbox, inference reservation or paid call was made.
+- [x] Connect coverage to the existing Folio Index `/leaderboard` and selected-question `/overview` results, preserving exact question/observation/returned-position identities and original rankings. Add strict reviewed public projections, honest not-evaluated states, captured-page provenance and explicit operator plan/run/preview/local-publication workflow. Verified September 30, 2026 by 48 focused fixtures and four desktop/mobile GUI cases; no live Jev call or deployment. Local emulator resource errors remain outside the mocked browser validation.
+- [ ] Validate actual Jev responses and calibrate against independently labeled question/page examples. The local TypeSafe key is absent; fixtures and a prepared source matrix do not establish semantic accuracy, speed, cost or citation readiness. The integrated public coverage artifact is empty, and production deployment is not complete.
+
+## Codegraff gateway fleet migration
+
+- [x] Switch the opt-in local search experiment to Codegraff gateway fleet with explicit secure guest attachment, bounded full-output downloads, historical receipt compatibility, and no automatic create/exec retries. Verified by 44 focused fixture tests and the project typecheck; see [sandbox experiments](docs/CONDENSATION-SEARCH.md).
+- [x] Add explicit public-website capture → frozen page/check evidence → sandbox analysis → private report mode, with six-page attempt bounds and exact saved quote/check references. Verified by 61 focused fixtures, CLI help and the project typecheck on September 30, 2026; this is local implementation, not production integration or live outcome validation.
+- [ ] Validate one explicitly authorized public-website → guest Graff findings → downloaded output/report → confirmed cleanup pilot. The September 30, 2026 attempt captured six real public pages and confirmed guest attachment/terminal cleanup, but gateway HTTP 503 left execution uncertain with no model output retained. Its private export is an incomplete source packet, not a completed assessment. The provider reports tested local timeout-handling fixes, but neither host nor gateway fix is deployed and this pilot's specific 503 cause remains unconfirmed. The additionally authorized paid attempt remains unused and conditional on a confirmed deployed fix; no automatic replacement was started.
+- [ ] Validate one explicitly authorized Folio host-search → guest Graff research answer → downloaded output/report → confirmed cleanup pilot. The provider agent's separately authorized live security checks cover credentials and direct guest model calls, not this full research workflow.
+
 ## Completed foundation
 
 - [x] Annual-report-inspired landing page, dashboard, charts, and researched positioning.
@@ -36,6 +58,8 @@ Working checklist for completing the current website-evaluation pilot. Check ite
 - [x] Make local D1 persistence explicit; add local migration status and private SQL backup commands.
 - [x] Exercise actual Miniflare D1 bindings, Better Auth, repositories, concurrency, deletion accounting, restart persistence, and isolated stores.
 - [x] Fix evidence deletion's D1 trigger-count mismatch using the conditional update's returned row.
+- [x] Implement and locally test the PostgreSQL/Hyperdrive runtime, auth schema, and full-row D1 importer; complete the September 27, 2026 maintenance-window production cutover to PlanetScale after post-commit field verification across 32 tables and 832 rows. Both Workers now use uncached Hyperdrive; D1 remains intact for reconciled rollback. See [migration record](docs/POSTGRES-MIGRATION.md).
+- [ ] Rotate the agent-scoped PlanetScale credential that appeared in chat, confirm PostgreSQL 18 compatibility with Cloudflare, validate live owner sign-in and owner-scoped writes, and monitor read-after-write/latency/errors. The public-index Worker already uses a separate verified read-only role. Anonymous hosted checks and local fixtures do not establish these outcomes.
 
 ## External launch dependencies
 
@@ -74,6 +98,8 @@ Search Console implementation now includes optional Google identity, explicit re
 - [x] Add Astra open-web research in hosted sandboxes, preserving legacy restricted-domain observations and per-run harness provenance.
 - [x] Add scoped, expiring Folio API keys; 24-hour default freshness; durable idempotent ensure requests; OpenAPI, Markdown and browser reference pages.
 - [x] Validate two private open-web searches locally. Retain the third unknown creation and its accounting; current operator dispositions are recorded in [live validation](docs/LIVE-VALIDATION.md), without automatically retrying an uncertain creation.
+- [x] Validate a local paid Codegraff open-web keyword start (`gpt-6-sol` + Responses `web_search`) for an approved test account. The authenticated run completed, reopened by owned GET, and rendered with citations in Folio on September 27, 2026. Cost was not reported; this is not production or publication validation. See [keyword benchmarks](docs/KEYWORD-BENCHMARKS.md).
+- [ ] Validate the separate reviewed-domain Codegraff path (hosted search + `glm-5.3-flash`) for an approved account. Open-web Responses validation does not establish this path's live provider behavior.
 - [x] Add a ranked public table and an explicit collection/export script with a strict public projection.
 - [ ] Complete collection and public review of the initial 15 primary questions. At the 13 September public-dashboard checkpoint, six real tasks completed and the seventh creation was unconfirmed, stopping that batch. Published counts come from the validated public artifacts, separately from completion status. See [live validation](docs/LIVE-VALIDATION.md) for current recovery and accounting; private customer results are not published into this collection.
 
@@ -123,7 +149,7 @@ Validation: 232 unit tests and 22 actual temporary-D1 tests passed; affected pub
 Production: migration `0013_seo_agent_tools.sql` was applied successfully to the existing production D1. The app revision at this checkpoint is not yet deployed. Earlier clean production builds and scheduler dry run passed; the final integrated revision still needs its final production build, deploy and hosted smoke checks.
 
 Remaining acceptance work:
-- [ ] Finish final integrated build/deployment and verify public pages/authenticated boundary on the deployed version. No new paid provider test is authorized by this checkpoint.
+- [x] Finish final integrated build/deployment and verify public pages/authenticated boundary on the deployed version. Completed 20 September 2026 from `bb89efb`; Worker `af017bc8-7cc5-4cee-86fc-9089277546e2`. See [production setup](docs/PRODUCTION-SETUP.md). No new paid provider test was run.
 - [ ] Validate the MCP workflows with a hosted owner-scoped client separately from SDK/D1 fixtures.
 - [ ] Review issue #7 row-level collection scope: saved aggregate reports now explicitly say detail was never collected; no new detailed SEO collector exists.
 - [ ] Integrate/review the separate real-readiness graph task (#8) when ready; do not invent Overall/SEO health/Discovery scores.

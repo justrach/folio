@@ -51,11 +51,15 @@ export async function publishKeywordObservation(db: D1Database, ownerId: string,
   const preview = await previewKeywordPublication(db, ownerId, runId, metadata, catalog);
   if (reviewHash !== preview.reviewHash) throw new KeywordBenchmarkStoreError("The preview changed. Review it again before publishing.", 409);
   const run = await owned(db, ownerId, runId);
+  if (run.case.websiteResearch || ["website-query-discovery-v1", "website-competitor-research-v1"].includes(run.case.rubricVersion))
+    throw new KeywordBenchmarkStoreError("Website research is private and cannot be published as a measured search observation.", 400);
   // A second read must still match the reviewed source before the atomic write.
   if (digest([ownerId, runId, run.revision, preview.revision, preview.payload]) !== reviewHash)
     throw new KeywordBenchmarkStoreError("The observation changed. Review it again.", 409);
   const result = await db.prepare(`INSERT INTO public_keyword_observations(run_id,user_id,revision,payload_json,updated_at)
     SELECT id,user_id,1,?,? FROM keyword_benchmark_runs WHERE id=? AND user_id=? AND revision=? AND status='completed'
+    AND json_type(case_json,'$.websiteResearch') IS NULL
+    AND COALESCE(json_extract(case_json,'$.rubricVersion'),'') NOT IN ('website-query-discovery-v1','website-competitor-research-v1')
     AND (? > 0 OR NOT EXISTS(SELECT 1 FROM public_keyword_observations WHERE run_id=? AND user_id=?))
     ON CONFLICT(run_id,user_id) DO UPDATE SET revision=public_keyword_observations.revision+1,payload_json=excluded.payload_json,updated_at=excluded.updated_at
     WHERE public_keyword_observations.revision=? RETURNING revision`)

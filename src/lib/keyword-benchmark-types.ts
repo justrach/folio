@@ -1,3 +1,5 @@
+import type { WebsiteResearch, WebsiteResearchCase } from "./website-research";
+
 /** A baseline is a saved model observation, never an answer key or ground truth. */
 export const KEYWORD_BENCHMARK_SURFACE = "openai-managed-agents" as const;
 export const KEYWORD_BENCHMARK_QUERY_MAX_LENGTH = 2000;
@@ -19,6 +21,8 @@ export type KeywordBenchmarkCaseInput = {
   locale: string;
   rubricVersion: string;
   searchMode?: KeywordSearchMode;
+  /** Private two-stage research; never a public ranking or visibility measurement. */
+  websiteResearch?: WebsiteResearchCase;
   /** Private, independently supplied references. Never include these in model input. */
   referenceFacts?: { id: string; statement: string }[];
 };
@@ -45,6 +49,8 @@ export type KeywordBenchmarkAnswer = {
   limitations?: string[];
   /** Actual provider-returned evidence. Private export data; never trusted instructions. */
   collection?: KeywordCollectionEvidence;
+  /** Saved advisory research, separately authorized from query discovery. */
+  websiteResearch?: WebsiteResearch;
 };
 export type KeywordCollectionEvidence = {
   format: "folio-keyword-collection-v1";
@@ -92,6 +98,7 @@ export type KeywordBenchmarkRun = KeywordBenchmarkExecution & {
   usage: KeywordBenchmarkUsage;
   providerMetadata: {
     environmentId: string | null; requestId: string | null; turnId: string | null;
+    searchProvider?: string; searchResultCount?: number; searchHosts?: string[];
     /** Safe original creation diagnostics; absent on older records, never reconstructed. */
     creationHttpStatus?: number;
     creationErrorCode?: "INVALID_INPUT" | "NOT_CONFIGURED" | "UPSTREAM_ERROR" | "INVALID_RESPONSE";

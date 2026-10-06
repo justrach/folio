@@ -8,6 +8,8 @@ import { evaluateHtml } from "./evaluation";
 import { normalizeSeoDomain } from "./dataforseo";
 import { normalizeScanUrl } from "./scanner";
 
+// Applied inside the source query, before savedRows adds its pagination LIMIT.
+export const MEASURED_KEYWORD_SQL = "json_type(case_json,'$.websiteResearch') IS NULL AND COALESCE(json_extract(case_json,'$.rubricVersion'),'') NOT IN ('website-query-discovery-v1','website-competitor-research-v1')";
 export type SavedPage = { limit?: number; cursor?: string };
 type CursorRow = { id: string; created_at: number };
 function cursor(value?: string): [number, string] | null {
@@ -40,13 +42,14 @@ export async function pagedTargets(db:D1Database,owner:string,input:SavedPage & 
   const page=await savedRows<{id:string;created_at:number;suite_id:string;case_json:string}>(db,`SELECT id,created_at,suite_id,case_json FROM keyword_benchmark_cases WHERE user_id=? AND (? IS NULL OR suite_id=?) AND (? IS NULL OR json_extract(case_json,'$.targetUrl')=?) AND (? IS NULL OR COALESCE(json_extract(case_json,'$.searchMode'),'reviewed-domains')=?)`,[owner,input.suiteId??null,input.suiteId??null,site?.url??null,site?.url??null,input.searchMode??null,input.searchMode??null],input);
   return {...page,kind:"keyword",items:page.items.map(row=>{const c=JSON.parse(row.case_json);return {id:row.id,suiteId:row.suite_id,createdAt:new Date(row.created_at).toISOString(),query:c.query,targetUrl:c.targetUrl,language:c.language,locale:c.locale,searchMode:c.searchMode??"reviewed-domains"};})};
 }
-export async function savedRunHistory(db:D1Database,owner:string,input:SavedPage & {kind:"website"|"keyword";websiteId?:string;caseId?:string;status?:string;since?:string;until?:string;searchMode?:string;model?:string;changedSince?:string}) {
+export async function savedRunHistory(db:D1Database,owner:string,input:SavedPage & {kind:"website"|"keyword";websiteId?:string;caseId?:string;status?:string;since?:string;until?:string;searchMode?:string;model?:string;changedSince?:string}, measuredOnly = false) {
   if(!owner)throw new AgentApiError("Authentication required.",401,"unauthorized");
   const site=input.websiteId?await savedSite(db,owner,input.websiteId):null;
   const keyword=input.kind==="keyword";
   const table=keyword?"keyword_benchmark_runs":"evaluation_runs";
   const filters=["user_id=?"],values:(string|number|null)[]=[owner];
   if(!keyword)filters.push("mode='live' AND deleted_at IS NULL");
+  if(keyword&&measuredOnly)filters.push(MEASURED_KEYWORD_SQL);
   if(site){filters.push(`${keyword?"json_extract(case_json,'$.targetUrl')":"target_url"}=?`);values.push(keyword?site.url:normalizeScanUrl(site.url).href);}
   if(input.caseId){if(!keyword)throw new AgentApiError("caseId requires keyword kind.");filters.push("case_id=?");values.push(input.caseId);}
   if(input.status){filters.push("status=?");values.push(input.status);}
@@ -93,8 +96,8 @@ export async function savedVisibilityComparison(db:D1Database,owner:string,input
   const dates=[input.baselineStart,input.baselineEnd,input.comparisonStart,input.comparisonEnd];
   if(dates.some(d=>!Number.isFinite(Date.parse(d)))||Date.parse(dates[0])>=Date.parse(dates[1])||Date.parse(dates[1])>Date.parse(dates[2])||Date.parse(dates[2])>=Date.parse(dates[3])||input.publicationAt&&!Number.isFinite(Date.parse(input.publicationAt)))throw new AgentApiError("Use ordered, non-overlapping baseline and comparison windows (end exclusive).",400,"invalid_input");
   const common={kind:"keyword" as const,websiteId:input.websiteId,caseId:input.caseId,model:input.model,searchMode:input.searchMode,limit:100};
-  const a=await savedRunHistory(db,owner,{...common,since:input.baselineStart,until:input.baselineEnd,cursor:input.baselineCursor});
-  const b=await savedRunHistory(db,owner,{...common,since:input.comparisonStart,until:input.comparisonEnd,cursor:input.comparisonCursor});
+  const a=await savedRunHistory(db,owner,{...common,since:input.baselineStart,until:input.baselineEnd,cursor:input.baselineCursor},true);
+  const b=await savedRunHistory(db,owner,{...common,since:input.comparisonStart,until:input.comparisonEnd,cursor:input.comparisonCursor},true);
   const load=async(items:typeof a.items)=>{const runs=[];for(const r of items){if(r){const run=await getKeywordBenchmarkRun(db,owner,r.id);if(run)runs.push(run);}}return runs;};
   return {...compareVisibility(await load(a.items),await load(b.items),input.publicationAt),coverage:{baseline:{nextCursor:a.nextCursor,truncated:a.truncated},comparison:{nextCursor:b.nextCursor,truncated:b.truncated},scope:"Current pages only; use run history for complete client-side pairing if truncated"}};
 }

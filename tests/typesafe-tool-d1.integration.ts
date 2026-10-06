@@ -38,7 +38,7 @@ test('TypeSafe tool runs inside authorized harness with metered idempotent bound
   let payload:any;
   const run=await startKeywordBenchmark(db,'alice',{caseId:suite.cases[0].id,kind:'baseline',model:'gpt-6-luna'},env,{useTypesafeTools:true,fetcher:(async(_u,init)=>{payload=JSON.parse(String(init?.body));return Response.json({id:'session_fixture',object:'agent.session',status:'in_progress',required_actions:[]});}) as typeof fetch});
   const mcp=payload.agent.tools.find((t:any)=>t.server_label==='folio_typesafe');
-  assert.deepEqual(mcp.allowed_tools,['typesafe_check_claim']);assert.equal(mcp.connection_origin,'service');assert.equal(payload.environment.network.access,'disabled');assert.match(run.harnessVersion,/typesafe-v1$/);
+  assert.deepEqual(mcp.allowed_tools,['typesafe_check_claim']);assert.equal(mcp.connection_origin,'service');assert.deepEqual(payload.environment,{type:'none'});assert.match(run.harnessVersion,/typesafe-v1$/);
   assert.ok(!JSON.stringify(payload).includes(env.TYPESAFE_API_KEY));
   const token=mcp.transport.authorization.replace('Bearer ','');
   const principal=await authenticateTypesafeTool(db,token);

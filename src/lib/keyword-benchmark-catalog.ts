@@ -11,8 +11,8 @@ export const KEYWORD_BENCHMARK_TEMPLATES: readonly {
   id: string; name: string; description: string; cases: readonly KeywordBenchmarkCaseInput[];
 }[] = [{
   id: "coding-harness-open-web-v1",
-  name: "Coding harnesses · OpenAI web search",
-  description: "Astra researches these questions with OpenAI live web search and no domain filter. Returned recommendation positions are observations of each answer, not a general engine ranking.",
+  name: "Coding harnesses · live web search",
+  description: "A selected model researches these questions with live web search and no domain filter. Returned recommendation positions are observations of each answer, not a general engine ranking.",
   cases: [
     "Which open-source AI coding harnesses can run repository tasks from the terminal? Compare their model support, tools, and verification workflow.",
     "Which coding agents support multiple model providers for working on an existing codebase? Explain the practical trade-offs and source each recommendation.",

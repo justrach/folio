@@ -1,0 +1,147 @@
+.ob-report {
+  border: 1px solid var(--folio-edge);
+  border-radius: var(--folio-radius-card);
+  background: var(--folio-surface);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  break-inside: avoid;
+}
+
+.ob-report-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
+.ob-report-badge {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--folio-accent-soft);
+  border: 1px solid var(--folio-accent-edge);
+  color: var(--folio-accent-hover);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ob-report-note {
+  margin: 0;
+  font-size: 12px;
+  color: var(--folio-text-muted);
+}
+
+.ob-report-meta,
+.ob-report-counts {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px 24px;
+}
+
+.ob-report-meta > div,
+.ob-report-counts > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ob-report-meta dt,
+.ob-report-counts dt {
+  font-size: 12px;
+  color: var(--folio-text-muted);
+}
+
+.ob-report-meta dd,
+.ob-report-counts dd {
+  margin: 0;
+  font-size: 14px;
+  color: var(--folio-ink);
+  overflow-wrap: anywhere;
+}
+
+.ob-report-counts dd {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.ob-report-chart {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ob-report-chart figcaption {
+  font-size: 12px;
+  color: var(--folio-text-muted);
+}
+
+.ob-report-counts-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--folio-ink);
+}
+
+.ob-report-counts-list li {
+  overflow-wrap: anywhere;
+}
+
+.ob-report-counts-list li[data-target="true"] {
+  font-weight: 600;
+}
+
+.ob-report-empty {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px dashed var(--folio-edge-strong);
+  border-radius: var(--folio-radius-control);
+  color: var(--folio-text-secondary);
+  font-size: 13px;
+}
+
+.ob-chart-tip {
+  background: var(--folio-surface);
+  color: var(--folio-ink);
+  border: 1px solid var(--folio-edge-strong);
+  border-radius: var(--folio-radius-control);
+  padding: 6px 10px;
+  font-size: 12px;
+  max-width: 260px;
+  overflow-wrap: anywhere;
+}
+
+.ob-report-axis-label {
+  margin: 0;
+  text-align: center;
+  font-size: 11px;
+  color: var(--folio-text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ob-report-chart * {
+    transition: none !important;
+  }
+}
+
+@media print {
+  .ob-report {
+    border-color: #999;
+    background: #fff;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

@@ -171,7 +171,7 @@ test("real D1 service runs private baseline/fresh answers with one create, safe 
         assert.equal(reservation?.sessionId, null); assert.equal(reservation?.case.query, JSON.parse(body.input).query);
         assert.equal(payloads.at(-1)?.includes("PRIVATE_REFERENCE_NEVER_IN_MODEL"), false);
         return Response.json({ id: `session_${creates}`, object: "agent.session", status: "in_progress", required_actions: [],
-          environment: { id: `env_${creates}`, type: "openai_hosted", network: { access: "restricted", allowed_domains: domains } } });
+          environment: { id: `env_${creates}`, type: "none" }, metadata: { approved_hosts: "codegraff.com,opencode.ai" } });
       }
       const sessionId = address.match(/\/sessions\/(session_\d+)/)?.[1]; assert.ok(sessionId);
       if (address.endsWith("/events")) {
@@ -186,13 +186,12 @@ test("real D1 service runs private baseline/fresh answers with one create, safe 
       if (address.includes("/turns?")) return Response.json({ data: emptyHistory ? [] : [{ id: turnId, session_id: sessionId, status: providerState, subagent_id: null }], has_more: false });
       if (address.includes("/items?")) return Response.json({ data: providerState === "completed" ? [
         { id: "search_item", turn_id: turnId, type: "web_search_call", status: "completed" },
-        { id: "command_item", turn_id: turnId, type: "command_execution", status: "completed", exit_code: 0, output: "FOLIO_KEYWORD_JSON_VALID" },
         { id: "answer_item", turn_id: turnId, type: "message", role: "assistant", phase: "final_answer", status: "completed", content: [{ type: "output_text", text: JSON.stringify({
           text: `PRIVATE_BASELINE_OBSERVATION_${sessionId}`, mentions: [{ name: "Codegraff", url: "https://codegraff.com/", reason: "Fixture documentation", citationUrls: ["https://codegraff.com/docs"] }],
           citations: [{ url: "https://codegraff.com/docs", title: "Fixture public docs" }], limitations: ["Synthetic evidence; no live provider request."] }) }] },
       ] : [], has_more: false });
       return Response.json({ id: sessionId, object: "agent.session", status: providerState === "in_progress" ? "in_progress" : "idle", required_actions: [],
-        environment: { id: "env_saved", type: "openai_hosted", network: { access: "restricted", allowed_domains: domains } }, usage: null,
+        environment: { id: "env_saved", type: "none" }, metadata: { approved_hosts: "codegraff.com,opencode.ai" }, usage: null,
         ...(sessionId === "session_4" ? recoveredSession : {}) });
     };
     const options = { fetcher, allowedDomains: domains };
@@ -239,8 +238,8 @@ test("real D1 service runs private baseline/fresh answers with one create, safe 
     assert.deepEqual(await getKeywordBenchmarkRun(restored, "alice", ambiguous.id), ambiguous);
     assert.deepEqual(await getKeywordBenchmarkRun(restored, "alice", overdue.id), overdue);
     assert.equal((await getKeywordBenchmarkUsage(restored, "alice", { maxRunsPerDay: 6, maxActiveRuns: 1 })).remainingRuns, 2);
-    recoveredSession = { id: "session_4", metadata: { run_id: ambiguous.id, case_id: ambiguous.caseId, harness_version: ambiguous.harnessVersion },
-      agent: { model: ambiguous.model }, environment: { type: "openai_hosted", network: { access: "restricted", allowed_domains: domains } } };
+    recoveredSession = { id: "session_4", metadata: { run_id: ambiguous.id, case_id: ambiguous.caseId, harness_version: ambiguous.harnessVersion, approved_hosts: "codegraff.com,opencode.ai" },
+      agent: { model: ambiguous.model }, environment: { type: "none" } };
     const candidate = structuredClone(recoveredSession);
     for (const bad of [
       { ...candidate, agent: { model: "different-model" } },

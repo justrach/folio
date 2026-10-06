@@ -16,6 +16,7 @@ import {
   ListChecks,
   PenLine,
   Plus,
+  Printer,
   RotateCcw,
   Sparkles,
 } from "lucide-react";
@@ -23,7 +24,6 @@ import { readEvaluationIntent } from "@/lib/evaluation-navigation";
 import {
   CLAIM_ORDER,
   PREVIEW_DISCLAIMER,
-  SAMPLE_AGENT_ACTION,
   SAMPLE_BUSINESS_NAME,
   SAMPLE_CLAIMS,
   SAMPLE_COMPETITORS,
@@ -33,13 +33,11 @@ import {
   assertedClaims,
   buildOnboardingExport,
   comparisonPrompt,
-  competitorPosition,
   initialClaimDecisions,
   isSampleWebsite,
   parseLineList,
   reconcileTopics,
   rewriteError,
-  sampleObservation,
   sampleTopicsAllowed,
   type ClaimDecisions,
   type ClaimId,
@@ -47,6 +45,8 @@ import {
   type DraftTopic,
   type QuestionMode,
 } from "@/lib/onboarding-mock";
+import { buildOnboardingReport, type OnboardingReport } from "@/lib/onboarding-report";
+import OnboardingReportOverview from "./onboarding-report-overview";
 import "./onboarding-mock.css";
 
 const STEPS = [
@@ -98,6 +98,7 @@ export default function OnboardingMock() {
   const parkedTopics = useRef(new Map<string, DraftTopic>());
   const [questionGateError, setQuestionGateError] = useState(false);
   const [briefOpen, setBriefOpen] = useState(false);
+  const [report, setReport] = useState<OnboardingReport | null>(null);
   const [needsScroll, setNeedsScroll] = useState(false);
   const tableWrapRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -150,6 +151,7 @@ export default function OnboardingMock() {
     setQuestionGateError(false);
     setBriefOpen(false);
     setNameEdit(null);
+    setReport(null);
   };
 
   const previewSite = () => {
@@ -255,16 +257,21 @@ export default function OnboardingMock() {
   const selectedTopics = topics.filter((t) => t.selected && t.question.trim().length > 0);
   const canPreviewReport = selectedTopics.length > 0;
 
+  const buildPacket = () =>
+    buildOnboardingReport(
+      buildOnboardingExport({
+        websiteUrl: confirmedUrl,
+        businessName,
+        decisions,
+        topics,
+        competitors: namedCompetitors,
+        keywordGoals: keywordList.entries,
+        mode: questionMode,
+      }),
+    );
+
   const downloadBrief = () => {
-    const payload = buildOnboardingExport({
-      websiteUrl: confirmedUrl,
-      businessName,
-      decisions,
-      topics,
-      competitors: namedCompetitors,
-      keywordGoals: keywordList.entries,
-      mode: questionMode,
-    });
+    const payload = (report ?? buildPacket()).snapshot;
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
@@ -963,6 +970,7 @@ export default function OnboardingMock() {
                 return;
               }
               setQuestionGateError(false);
+              setReport(buildPacket());
               setStep(5);
             }}
           >
@@ -975,11 +983,11 @@ export default function OnboardingMock() {
   };
 
   const renderReport = () => {
-    const businessLabel = businessName.trim() || "Your business";
-    const profile = assertedClaims(decisions, siteIsSample);
-    const anyObservation = selectedTopics.some(
-      (topic) => sampleObservation(topic, { siteIsSample, mode: questionMode }) !== null,
-    );
+    const packet = report ?? buildPacket();
+    const snapshot = packet.snapshot;
+    const brandColumns = packet.brands;
+    const profile = snapshot.acceptedProfile;
+    const anyObservation = packet.availableQuestionCount > 0;
     return (
       <>
         <p className="ob-kicker">Report preview</p>
@@ -993,6 +1001,7 @@ export default function OnboardingMock() {
             <Info size={14} aria-hidden /> Illustrative AI-answer order, not Google rankings
           </p>
         ) : null}
+        <OnboardingReportOverview report={packet} />
         {needsScroll ? (
           <p className="ob-hint" id="ob-table-scroll-hint">Scroll to see all tracked competitors.</p>
         ) : null}
@@ -1017,34 +1026,36 @@ export default function OnboardingMock() {
             <thead role="rowgroup">
               <tr role="row">
                 <th scope="col" role="columnheader">Question</th>
-                <th scope="col" role="columnheader">{businessLabel}</th>
-                {namedCompetitors.map((name) => (
-                  <th scope="col" role="columnheader" key={name}>{name}</th>
+                {brandColumns.map((brand) => (
+                  <th scope="col" role="columnheader" key={brand.identity}>{brand.label}</th>
                 ))}
               </tr>
             </thead>
             <tbody role="rowgroup">
-              {selectedTopics.map((topic) => {
-                const observation = sampleObservation(topic, { siteIsSample, mode: questionMode });
-                const cell = (name: string, label: string) => (
-                  <>
-                    <span className="ob-cell-label" aria-hidden="true">{label}</span>
-                    {!observation ? (
-                      <span className="ob-none">No sample observation</span>
-                    ) : competitorPosition(name, observation.positions) === null ? (
-                      <span className="ob-none">Not included in sample</span>
-                    ) : (
-                      <span>Sample position {competitorPosition(name, observation.positions)}</span>
-                    )}
-                  </>
-                );
-                const businessKey = siteIsSample ? SAMPLE_BUSINESS_NAME : businessLabel;
+              {snapshot.questions.map((question, index) => {
+                const observation = question.illustrativeFindings;
+                const cell = (position: number | null) =>
+                  !observation ? (
+                    <span className="ob-none">No sample observation</span>
+                  ) : position === null ? (
+                    <span className="ob-none">Not included in sample</span>
+                  ) : (
+                    <span className="ob-position">Sample position <strong>{position}</strong></span>
+                  );
                 return (
-                  <tr role="row" key={`${topic.origin}-${topic.id}`}>
+                  <tr role="row" key={`${question.origin}-${index}`}>
                     <th scope="row" role="rowheader">
-                      {questionMode === "named-comparison"
-                        ? comparisonPrompt(topic.question, namedCompetitors)
-                        : topic.question}
+                      <span className="ob-q-head">
+                        <span className="ob-q-kicker">Question {String(index + 1).padStart(2, "0")}</span>
+                        <span className="ob-q-state" data-found={!!observation}>
+                          {observation ? "Sample answer" : "No sample answer"}
+                        </span>
+                      </span>
+                      <span className="ob-report-question-text">
+                        {question.mode === "named-comparison"
+                          ? comparisonPrompt(question.text, snapshot.competitors)
+                          : question.text}
+                      </span>
                       {observation ? (
                         <span className="ob-table-details">
                           <details className="ob-details">
@@ -1066,11 +1077,23 @@ export default function OnboardingMock() {
                         </span>
                       ) : null}
                     </th>
-                    <td role="cell" data-you={siteIsSample && observation?.positions.includes(SAMPLE_BUSINESS_NAME)}>
-                      {cell(businessKey, businessLabel)}
-                    </td>
-                    {namedCompetitors.map((name) => (
-                      <td role="cell" key={name}>{cell(name, name)}</td>
+                    {brandColumns.map((brand) => (
+                      <td
+                        role="cell"
+                        key={brand.identity}
+                        data-you={brand.isTarget && !!observation?.includes(brand.identity)}
+                        data-target={brand.isTarget}
+                      >
+                        <span className="ob-cell-line">
+                          <span className="ob-brand-identity">
+                            <span className="ob-cell-label" aria-hidden="true">{brand.label}</span>
+                            {brand.isTarget ? (
+                              <span className="ob-you-label">Your business</span>
+                            ) : null}
+                          </span>
+                          {cell(brand.positions[index] ?? null)}
+                        </span>
+                      </td>
                     ))}
                   </tr>
                 );
@@ -1091,7 +1114,7 @@ export default function OnboardingMock() {
             ))}
           </ul>
         ) : null}
-        {siteIsSample ? (
+        {snapshot.agentActions.length > 0 ? (
           <section className="ob-agent-card" aria-label="Sample agent action">
             <div className="ob-agent-head">
               <Sparkles size={16} aria-hidden /> Sample agent action — advisory fixture
@@ -1099,19 +1122,19 @@ export default function OnboardingMock() {
             <dl className="ob-agent-body">
               <div className="ob-agent-field">
                 <dt>Action</dt>
-                <dd>{SAMPLE_AGENT_ACTION.title}</dd>
+                <dd>{snapshot.agentActions[0].title}</dd>
               </div>
               <div className="ob-agent-field">
                 <dt>Observation</dt>
-                <dd>{SAMPLE_AGENT_ACTION.observation}</dd>
+                <dd>{snapshot.agentActions[0].observation}</dd>
               </div>
               <div className="ob-agent-field">
                 <dt>Recommendation</dt>
-                <dd>{SAMPLE_AGENT_ACTION.recommendation}</dd>
+                <dd>{snapshot.agentActions[0].recommendation}</dd>
               </div>
               <div className="ob-agent-field">
                 <dt>How to verify</dt>
-                <dd>{SAMPLE_AGENT_ACTION.verification}</dd>
+                <dd>{snapshot.agentActions[0].verification}</dd>
               </div>
             </dl>
           </section>
@@ -1130,17 +1153,19 @@ export default function OnboardingMock() {
               <div className="ob-agent-field">
                 <dt>Mode</dt>
                 <dd>
-                  {questionMode === "named-comparison"
-                    ? `Named comparison against: ${namedCompetitors.join(", ")}`
+                  {snapshot.questions[0]?.mode === "named-comparison"
+                    ? `Named comparison against: ${snapshot.competitors.join(", ")}`
                     : "Open discovery"}
                 </dd>
               </div>
-              {namedCompetitors.length > 0 ? (
+              {snapshot.competitors.length > 0 ? (
                 <div className="ob-agent-field">
                   <dt>Tracked competitors</dt>
                   <dd>
-                    {namedCompetitors.join(", ")}
-                    {questionMode === "open" ? " (tracked, not named in questions)" : ""}
+                    {snapshot.competitors.join(", ")}
+                    {snapshot.questions[0]?.mode !== "named-comparison"
+                      ? " (tracked, not named in questions)"
+                      : ""}
                   </dd>
                 </div>
               ) : null}
@@ -1148,29 +1173,33 @@ export default function OnboardingMock() {
                 <dt>Selected questions</dt>
                 <dd>
                   <ul className="ob-tech-list">
-                    {selectedTopics.map((t) => (
-                      <li key={`${t.origin}-${t.id}`}>
-                        {questionMode === "named-comparison"
-                          ? comparisonPrompt(t.question, namedCompetitors)
-                          : t.question}
+                    {snapshot.questions.map((question, index) => (
+                      <li key={`${question.origin}-${index}`}>
+                        {question.mode === "named-comparison"
+                          ? comparisonPrompt(question.text, snapshot.competitors)
+                          : question.text}
                       </li>
                     ))}
                   </ul>
                 </dd>
               </div>
-              <div className="ob-agent-field">
-                <dt>Advisory recommendation</dt>
-                <dd>{SAMPLE_AGENT_ACTION.recommendation}</dd>
-              </div>
-              <div className="ob-agent-field">
-                <dt>Retest</dt>
-                <dd>{SAMPLE_AGENT_ACTION.verification}</dd>
-              </div>
+              {snapshot.agentActions.length > 0 ? (
+                <>
+                  <div className="ob-agent-field">
+                    <dt>Advisory recommendation</dt>
+                    <dd>{snapshot.agentActions[0].recommendation}</dd>
+                  </div>
+                  <div className="ob-agent-field">
+                    <dt>Retest</dt>
+                    <dd>{snapshot.agentActions[0].verification}</dd>
+                  </div>
+                </>
+              ) : null}
             </dl>
           </section>
         ) : null}
         <div className="ob-actions">
-          {siteIsSample ? (
+          {snapshot.agentActions.length > 0 ? (
             <button
               type="button"
               className="ob-button ob-button-primary"
@@ -1182,6 +1211,13 @@ export default function OnboardingMock() {
           ) : null}
           <button type="button" className="ob-button ob-button-secondary" onClick={downloadBrief}>
             <Download size={16} aria-hidden /> Download agent brief
+          </button>
+          <button
+            type="button"
+            className="ob-button ob-button-secondary"
+            onClick={() => window.print()}
+          >
+            <Printer size={16} aria-hidden /> Print report / Save PDF
           </button>
           <button type="button" className="ob-button ob-button-quiet" onClick={() => setStep(2)}>
             Edit understanding

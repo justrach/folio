@@ -13,8 +13,11 @@ import { acknowledgeKeywordBenchmarkCancellation, createKeywordBenchmarkSuite, g
   listKeywordBenchmarkSuites, markKeywordBenchmarkCreateAttempt, reserveKeywordBenchmarkCancellation,
   reserveKeywordBenchmarkRun, updateKeywordBenchmarkRun, updateKeywordBenchmarkUsage, type KeywordBenchmarkRunPatch } from "./keyword-benchmark-store";
 import { isKeywordBenchmarkId, keywordSearchMode, type KeywordBenchmarkCaseInput, type KeywordBenchmarkRun } from "./keyword-benchmark-types";
+import { validateKeywordBenchmarkCase } from "./keyword-benchmark-store";
+import type { WebsiteResearchInput } from "./website-research";
 
 import { KEYWORD_OPEN_WEB_MODELS, isKeywordOpenWebModel } from "./keyword-models";
+import { CODEGRAFF_KEYWORD_MODEL, CODEGRAFF_OPEN_WEB_MODEL, CODEGRAFF_OPEN_WEB_MODELS, assertCodegraffKeywordInput, codegraffKeywordFingerprint, codegraffKeywordHarnessVersion, isCodegraffKeywordSession, runCodegraffKeywordTurn, usesCodegraffKeyword } from "./codegraff-keyword-agent";
 
 export const KEYWORD_BENCHMARK_LIMITS = { maxRunsPerDay: 6, maxActiveRuns: 1 } as const;
 export type KeywordBenchmarkServiceOptions = KeywordAgentOptions & { useSeoTools?: boolean; useTypesafeTools?: boolean; now?: Date; allowedDomains?: string[];
@@ -28,11 +31,14 @@ export class KeywordBenchmarkPersistenceError extends Error {
 }
 export function keywordBenchmarkAccess(env: AgentsEnvironment, ownerId: string) {
   const connection = getAgentsConnectionStatus(env);
+  const codegraff = usesCodegraffKeyword(env);
+  const configured = connection.configured || codegraff;
   const authorized = Boolean(ownerId) && (env.OPENAI_ALLOWED_USER_IDS ?? "").split(",").map(value => value.trim()).filter(Boolean).includes(ownerId);
   const maxActiveRuns = authorized && (env.OPENAI_PARALLEL_USER_IDS ?? "").split(",").map(value => value.trim()).includes(ownerId) ? 3 : 1;
-  return { configured: connection.configured, authorized, canRun: connection.configured && authorized, model: connection.model, openWebModels: KEYWORD_OPEN_WEB_MODELS,
+  return { configured, authorized, canRun: configured && authorized, model: codegraff ? CODEGRAFF_OPEN_WEB_MODEL : connection.model,
+    openWebModels: codegraff ? CODEGRAFF_OPEN_WEB_MODELS : KEYWORD_OPEN_WEB_MODELS, managedOpenWebModels: KEYWORD_OPEN_WEB_MODELS,
     ...KEYWORD_BENCHMARK_LIMITS, maxActiveRuns, maxRunsPerDay: authorized && isAgentDailyLimitExempt(env, ownerId) ? null : KEYWORD_BENCHMARK_LIMITS.maxRunsPerDay, deadlineMs: KEYWORD_AGENT_DEADLINE_MS,
-    message: !connection.configured ? "Connect the evaluation provider before starting a benchmark."
+    message: !configured ? "Connect the evaluation provider before starting a benchmark."
       : !authorized ? "This account needs approval before it can spend evaluation credits."
         : isAgentDailyLimitExempt(env, ownerId) ? `Each explicit start uses evaluation credits. This account has no daily cap; up to ${maxActiveRuns} active observations are allowed. The task deadline still applies.`
           : "Each explicit start uses evaluation credits. Six starts per day and one active benchmark are allowed; the task deadline is not a guaranteed spending cap." };
@@ -90,7 +96,12 @@ async function persistReceipt(db: D1Database, ownerId: string, run: KeywordBench
 }
 export async function keywordBenchmarkExecutionConfig(trial: KeywordBenchmarkCaseInput, env: AgentsEnvironment, options: KeywordBenchmarkServiceOptions = {}, selectedModel?: string) {
   const searchMode = keywordSearchMode(trial.searchMode);
-  if (selectedModel !== undefined && (searchMode !== "open-web" || !isKeywordOpenWebModel(selectedModel)))
+  const research = trial.websiteResearch;
+  const codegraff = !research && usesCodegraffKeyword(env, options);
+  if (research && (options.useSeoTools || options.useTypesafeTools))
+    throw new KeywordBenchmarkStoreError("Website research uses the separately authorized OpenAI web workflow only.", 400);
+  if (selectedModel !== undefined && (searchMode !== "open-web" ||
+    (codegraff ? !CODEGRAFF_OPEN_WEB_MODELS.some(model => model.id === selectedModel) : !isKeywordOpenWebModel(selectedModel))))
     throw new KeywordBenchmarkStoreError("Choose a supported model for an open-web question.", 400);
   if (options.useSeoTools) {
     if (searchMode !== "open-web") throw new KeywordBenchmarkStoreError("SEO tools require an open-web question.", 400);
@@ -98,8 +109,13 @@ export async function keywordBenchmarkExecutionConfig(trial: KeywordBenchmarkCas
   }
   if (options.useTypesafeTools && searchMode !== "open-web") throw new KeywordBenchmarkStoreError("TypeSafe tools require an open-web question.",400);
   const allowedDomains = searchMode === "open-web" ? [] : keywordAllowedDomains(options.allowedDomains ?? [...KEYWORD_BENCHMARK_ALLOWED_DOMAINS]);
-  return { searchMode, allowedDomains, model: searchMode === "open-web" ? selectedModel ?? KEYWORD_OPEN_WEB_MODEL : getAgentsConnectionStatus(env).model, harnessVersion: keywordAgentHarnessVersion(searchMode, options.useSeoTools, options.useTypesafeTools),
-    environmentType: "openai_hosted", environmentFingerprint: options.useTypesafeTools ? await agentApiHash((await keywordEnvironmentFingerprint(allowedDomains, searchMode)) + (options.useSeoTools ? ":sandbox-seo-v2" : "") + ":typesafe-tool-v1") : options.useSeoTools ? await agentApiHash((await keywordEnvironmentFingerprint(allowedDomains, searchMode)) + ":sandbox-seo-v2") : await keywordEnvironmentFingerprint(allowedDomains, searchMode), deadlineMs: KEYWORD_AGENT_DEADLINE_MS };
+  if (codegraff) {
+    const model = searchMode === "open-web" ? selectedModel ?? CODEGRAFF_OPEN_WEB_MODEL : CODEGRAFF_KEYWORD_MODEL;
+    return { searchMode, allowedDomains, model, harnessVersion: codegraffKeywordHarnessVersion(searchMode),
+      environmentType: "none", environmentFingerprint: await codegraffKeywordFingerprint(allowedDomains, searchMode, model), deadlineMs: KEYWORD_AGENT_DEADLINE_MS };
+  }
+  return { searchMode, allowedDomains, model: searchMode === "open-web" ? selectedModel ?? KEYWORD_OPEN_WEB_MODEL : getAgentsConnectionStatus(env).model, harnessVersion: keywordAgentHarnessVersion(searchMode, options.useSeoTools, options.useTypesafeTools, research?.stage),
+    environmentType: "none", environmentFingerprint: options.useTypesafeTools ? await agentApiHash((await keywordEnvironmentFingerprint(allowedDomains, searchMode, research?.stage)) + (options.useSeoTools ? ":sandbox-seo-v2" : "") + ":typesafe-tool-v1") : options.useSeoTools ? await agentApiHash((await keywordEnvironmentFingerprint(allowedDomains, searchMode, research?.stage)) + ":sandbox-seo-v2") : await keywordEnvironmentFingerprint(allowedDomains, searchMode, research?.stage), deadlineMs: KEYWORD_AGENT_DEADLINE_MS };
 }
 /** Paid start: validate before reserving, then commit the one-attempt marker before one provider POST. */
 export async function startKeywordBenchmark(db: D1Database, ownerId: string,
@@ -111,12 +127,27 @@ export async function startKeywordBenchmark(db: D1Database, ownerId: string,
   const suite = await getKeywordBenchmarkSuite(db, ownerId, row.suite_id);
   const trial = suite?.cases.find(value => value.id === input.caseId);
   if (!trial) throw new KeywordBenchmarkStoreError("The private benchmark case was not found.", 404);
+  if (trial.websiteResearch) {
+    validateKeywordBenchmarkCase(trial);
+    if (!env.OPENAI_API_KEY?.trim()) throw new KeywordBenchmarkStoreError("Connect OpenAI before starting website research.", 503);
+    const site = await db.prepare("SELECT id FROM sites WHERE user_id=? AND url=? LIMIT 1").bind(ownerId, trial.targetUrl).first();
+    if (!site) throw new KeywordBenchmarkStoreError("Choose a website saved in your account.", 404);
+    if (trial.websiteResearch.stage === "competitor-research") {
+      const source = await getKeywordBenchmarkRun(db, ownerId, trial.websiteResearch.discoveryRunId!);
+      if (!source || source.status !== "completed" || source.case.targetUrl !== trial.targetUrl ||
+        source.case.websiteResearch?.stage !== "query-discovery" || source.answer?.websiteResearch?.stage !== "query-discovery")
+        throw new KeywordBenchmarkStoreError("Review a completed discovery result for this website before competitor research.", 409);
+    }
+  }
   if (options.useTypesafeTools) typesafeToolUrl(env, ownerId);
   if (options.useSeoTools) sandboxSeoUrl(env, ownerId, trial.targetUrl);
   const config = await keywordBenchmarkExecutionConfig(trial, env, options, input.model);
+  const codegraff = !trial.websiteResearch && usesCodegraffKeyword(env, options);
   const providerInput = { runId: "preflight", caseId: trial.id, query: trial.query, language: trial.language, locale: trial.locale,
-    model: config.model, allowedDomains: config.allowedDomains, searchMode: config.searchMode };
-  buildKeywordBenchmarkRequest(providerInput);
+    model: config.model, allowedDomains: config.allowedDomains, searchMode: config.searchMode,
+    ...(trial.websiteResearch ? { researchInput: { stage: trial.websiteResearch.stage, targetUrl: trial.targetUrl!, query: trial.query.trim() } satisfies WebsiteResearchInput } : {}) };
+  if (codegraff) assertCodegraffKeywordInput(providerInput);
+  else buildKeywordBenchmarkRequest(providerInput);
   const reservationInput = { ...input, ...config };
   const reservation = options.reserve ? await options.reserve(reservationInput, access) : null;
   if (reservation && !reservation.created) return reservation.run;
@@ -124,16 +155,25 @@ export async function startKeywordBenchmark(db: D1Database, ownerId: string,
     { maxRunsPerDay: access.maxRunsPerDay, maxActiveRuns: access.maxActiveRuns, now: options.now });
   // Re-project from the atomic frozen snapshot in case its source case changed during preflight.
   const frozenInput: typeof providerInput & { seoMcp?: { url: string; authorization: string }; typesafeMcp?: { url: string; authorization: string } } = { ...providerInput, runId: run.id, query: run.case.query, language: run.case.language, locale: run.case.locale,
-    searchMode: keywordSearchMode(run.case.searchMode) };
+    searchMode: keywordSearchMode(run.case.searchMode),
+    researchInput: run.case.websiteResearch ? { stage: run.case.websiteResearch.stage, targetUrl: run.case.targetUrl!, query: run.case.query.trim() } : undefined };
   try {
+    if (trial.websiteResearch && (run.case.targetUrl !== trial.targetUrl || JSON.stringify(run.case.websiteResearch) !== JSON.stringify(trial.websiteResearch)))
+      throw new Error("The research target or review lineage changed during reservation.");
     if (frozenInput.searchMode !== config.searchMode) throw new Error("The case search mode changed during reservation.");
     if (options.useSeoTools) frozenInput.seoMcp = await createSandboxSeoGrant(db, ownerId, run, env);
     if (options.useTypesafeTools) frozenInput.typesafeMcp = await createTypesafeToolGrant(db, ownerId, run, env);
-    buildKeywordBenchmarkRequest(frozenInput);
+    if (codegraff) assertCodegraffKeywordInput(frozenInput);
+    else buildKeywordBenchmarkRequest(frozenInput);
   }
   catch { return updateKeywordBenchmarkRun(db, ownerId, run.id, run.revision, { status: "failed", error: "The benchmark case is not valid for this evaluator." }); }
   run = await markKeywordBenchmarkCreateAttempt(db, ownerId, run.id, run.revision);
   try {
+    if (codegraff) {
+      const observed = await runCodegraffKeywordTurn(frozenInput, env, options);
+      return persistReceipt(db, ownerId, run, { sessionId: observed.sessionId, providerMetadata: observed.providerMetadata, usage: observed.usage,
+        status: observed.status === "completed" ? "completed" : "failed", answer: observed.answer, error: observed.error });
+    }
     const receipt = await createKeywordBenchmarkSession(frozenInput, env, options);
     return persistReceipt(db, ownerId, run, { sessionId: receipt.sessionId, providerMetadata: receipt.providerMetadata, usage: receipt.usage,
       status: receipt.status === "failed" ? "failed" : receipt.status === "requires_action" ? "requires_action" : "running",
@@ -161,7 +201,7 @@ export async function cancelKeywordBenchmark(db: D1Database, ownerId: string, id
   try { run = await reserveKeywordBenchmarkCancellation(db, ownerId, run.id, run.revision); }
   catch (error) { if (error instanceof KeywordBenchmarkStoreError) return ownedRun(db, ownerId, id); throw error; }
   try {
-    await cancelKeywordBenchmarkSession(run.sessionId!, env, options);
+    if (!isCodegraffKeywordSession(run.sessionId)) await cancelKeywordBenchmarkSession(run.sessionId!, env, options);
     try { return await acknowledgeKeywordBenchmarkCancellation(db, ownerId, run.id, run.revision); }
     catch { return ownedRun(db, ownerId, id); }
   } catch {
@@ -175,14 +215,15 @@ export async function reconcileKeywordBenchmark(db: D1Database, ownerId: string,
   let run = await ownedRun(db, ownerId, id);
   let initialInputUnconfirmed = false;
   if (!run.sessionId) return run;
+  if (isCodegraffKeywordSession(run.sessionId)) return run;
   if (terminal(run)) {
     try {
-      const observed = await reconcileKeywordBenchmarkSession(run.sessionId, env, { ...options, expectedAllowedDomains: run.allowedDomains, expectedSearchMode: keywordSearchMode(run.case.searchMode) });
+      const observed = await reconcileKeywordBenchmarkSession(run.sessionId, env, { ...options, expectedAllowedDomains: run.allowedDomains, expectedSearchMode: keywordSearchMode(run.case.searchMode), expectedWebsiteResearch: run.case.websiteResearch ? { stage: run.case.websiteResearch.stage, targetUrl: run.case.targetUrl!, query: run.case.query.trim() } : undefined });
       return await updateKeywordBenchmarkUsage(db,ownerId,run,observed.usage);
     } catch { return ownedRun(db,ownerId,id); }
   }
   try {
-    const observation = await reconcileKeywordBenchmarkSession(run.sessionId!, env, { ...options, expectedAllowedDomains: run.allowedDomains, expectedSearchMode: keywordSearchMode(run.case.searchMode) });
+    const observation = await reconcileKeywordBenchmarkSession(run.sessionId!, env, { ...options, expectedAllowedDomains: run.allowedDomains, expectedSearchMode: keywordSearchMode(run.case.searchMode), expectedWebsiteResearch: run.case.websiteResearch ? { stage: run.case.websiteResearch.stage, targetUrl: run.case.targetUrl!, query: run.case.query.trim() } : undefined });
     initialInputUnconfirmed = Boolean(observation.initialInputUnconfirmed);
     const pendingCancel = run.cancelAttemptAt && ["queued", "running", "requires_action"].includes(observation.status);
     run = await updateKeywordBenchmarkRun(db, ownerId, run.id, run.revision, {

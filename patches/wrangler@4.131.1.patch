@@ -1,0 +1,15 @@
+diff --git a/wrangler-dist/cli.js b/wrangler-dist/cli.js
+index 4a4fbee76f02547e5d3016696a72aaa7647f946e..c285a1669eff2f6627a19d8c227e8886e21851a2 100644
+--- a/wrangler-dist/cli.js
++++ b/wrangler-dist/cli.js
+@@ -363191,7 +363191,9 @@ async function getMiniflareOptionsFromConfig(args) {
+     rootPath: projectRoot,
+     workers: [
+       {
+-        script: "",
++        // Bindings-only proxy worker: terminate ordinary HTTP explicitly. An empty script falls
++        // back to fetch(event.request), which forwards the request to its own entry URL.
++        script: "export default { fetch() { return new Response(null, { status: 404 }); } };",
+         modules: true,
+         name: config2.name,
+         zone: getZoneFromConfig(config2),

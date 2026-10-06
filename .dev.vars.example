@@ -36,3 +36,11 @@ FOLIO_MCP_URL=
 
 # Exact approved account IDs permitted three simultaneous keyword observations.
 OPENAI_PARALLEL_USER_IDS=
+
+# Legacy direct-Condensation trial scripts only; not needed by experiment:search.
+# Server-only; never NEXT_PUBLIC_ or tracked files.
+CONDENSATION_API_KEY=
+# Codegraff hosted search and gateway fleet sandboxes. Server-only cg_sk_.
+# experiment:search explicitly selects provider:"fleet" with a finite paid lease.
+# Never automatically retry an uncertain sandbox create or command.
+CODEGRAFF_API_KEY=

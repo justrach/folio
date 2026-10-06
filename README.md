@@ -1,6 +1,6 @@
 # Folio
 
-Inspect website discovery through a public benchmark dashboard, captured-page checks, and private Astra search observations. Open a question to see its returned recommendations and sources. Built with Next.js, OpenNext for Cloudflare, Better Auth, D1, and real components from Rare UI.
+Inspect website discovery through a public benchmark dashboard, captured-page checks, and private Astra search observations. Open a question to see its returned recommendations and sources. Built with Next.js, OpenNext for Cloudflare, Better Auth, PlanetScale PostgreSQL through Hyperdrive in production, local D1, and real components from Rare UI.
 
 Progress and remaining launch dependencies: [TODO.md](TODO.md).
 
@@ -16,7 +16,7 @@ bun run dev --port 3001
 
 Open [the landing page](http://localhost:3001/) or [the public dashboard](http://localhost:3001/overview). Your saved website results are in [the private workspace](http://localhost:3001/overview?view=workspace); illustrative charts have an explicit [demo view](http://localhost:3001/overview?view=demo). Setup preserves existing credentials and generates a fresh authentication secret only for a new environment. No Cloudflare account is needed for the local D1 emulator.
 
-Local records persist in `.wrangler/state/v3` across restarts. Use `bun run db:status:local`, `bun run db:migrate:local`, and `bun run db:backup:local` to inspect migrations, apply them, or create a private local export. See [local D1 and runtime tests](docs/LOCAL-D1.md) for the shared persistence path, isolated Miniflare tests, and the D1/Postgres decision.
+Local records persist in `.wrangler/state/v3` across restarts. Use `bun run db:status:local`, `bun run db:migrate:local`, and `bun run db:backup:local` to inspect migrations, apply them, or create a private local export. See [local D1 and runtime tests](docs/LOCAL-D1.md) for the shared persistence path and isolated Miniflare tests, and [the production migration record](docs/POSTGRES-MIGRATION.md) for the PostgreSQL cutover.
 
 ## What works
 
@@ -81,7 +81,7 @@ bun run agents:approve <account-id>
 
 Restart the development server after changing `.dev.vars`. The run-count gate is not a monetary cap; configure provider-project spend controls separately.
 
-Google sign-in uses server-only `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`; owners grant Search Console access separately. The intended public origin is `https://usefolio.site`. Production requires its own D1 binding, secrets, exact OAuth callback, domain checks, and external-user Google configuration; see the [Search Console launch checklist](docs/SEARCH-CONSOLE.md#external-user-launch-at-usefoliosite). Local setup does not establish deployment or OAuth verification.
+Google sign-in uses server-only `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`; owners grant Search Console access separately. The intended public origin is `https://usefolio.site`. Production uses a Hyperdrive PostgreSQL binding, retained D1 rollback binding, secrets, exact OAuth callback, domain checks, and external-user Google configuration; see the [Search Console launch checklist](docs/SEARCH-CONSOLE.md#external-user-launch-at-usefoliosite). Local setup does not establish deployment or OAuth verification.
 
 GitHub identity uses server-only `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET`, with `/api/auth/callback/github` on the corresponding application origin as its callback. Existing Folio users sign in with their current method, then select **Connect GitHub** in Settings. See [GitHub identity](docs/GITHUB-AUTH.md) for exact local/production callbacks and scope details.
 
@@ -91,11 +91,11 @@ See [DataForSEO integration](docs/DATAFORSEO.md), [Cloudflare and authentication
 
 The public dashboard derives its counts from reviewed public artifacts. Its initial primary collection contains 15 questions; collection progress and published answer coverage are separate. An unfinished or unconfirmed task contributes no invented answer or position. The dated live collection status and unknown-attempt accounting are recorded in [live validation](docs/LIVE-VALIDATION.md), not inferred from dashboard availability. The 36-page HTML coverage is a separate measurement.
 
-Keyword observations have private D1 storage, browser/CLI/API controls, durable reservations, recovery, deadline cancellation and baseline/fresh comparison. New `open-web` cases use Astra with OpenAI live web search; older `reviewed-domains` cases keep their restricted corpus. A position is the original recommendation order in one saved answer, not Google rank or general product quality. Target-host matches and target citations are separate; unknown website identities remain unknown. See [keyword operations](docs/KEYWORD-BENCHMARKS.md).
+Keyword observations have private database storage, browser/CLI/API controls, durable reservations, recovery, deadline cancellation and baseline/fresh comparison. New `open-web` cases use Astra with OpenAI live web search; older `reviewed-domains` cases keep their restricted corpus. A position is the original recommendation order in one saved answer, not Google rank or general product quality. Target-host matches and target citations are separate; unknown website identities remain unknown. See [keyword operations](docs/KEYWORD-BENCHMARKS.md).
 
 The separate AI visibility trends, sample company profiles, sample citations, and sample index remain illustrative fixtures. They are never stored as measured results or mixed into the published-audit endpoint. A technical readiness score does not establish Google position, live model citations, or task success. DataForSEO uses a separate provider index; its traffic is estimated, and its authority rank is not Folio's readiness score.
 
-The managed Agents API is used by `POST /api/evaluations`: Folio reserves a private run in D1, captures approved website HTML, and persists a creation-attempt marker before making one `POST /v1/agents/sessions` request containing the initial task and captured evidence. The `none` environment requires initial input. Folio saves the returned session ID; it does not send a second initial-input event. A lost or unreadable creation response may mean a billable task started without a recoverable ID, so Folio preserves the uncertainty and never automatically retries creation. The browser polls saved sessions while visible; OpenAI runs the task remotely. Folio requires a completed turn and valid returned JSON before running its deterministic verifier. It does not treat an idle session as a successful result. No SDK or Responses API is substituted for the requested managed runtime.
+The managed Agents API is used by `POST /api/evaluations`: Folio reserves a private run in the production database, captures approved website HTML, and persists a creation-attempt marker before making one `POST /v1/agents/sessions` request containing the initial task and captured evidence. The `none` environment requires initial input. Folio saves the returned session ID; it does not send a second initial-input event. A lost or unreadable creation response may mean a billable task started without a recoverable ID, so Folio preserves the uncertainty and never automatically retries creation. The browser polls saved sessions while visible; OpenAI runs the task remotely. Folio requires a completed turn and valid returned JSON before running its deterministic verifier. It does not treat an idle session as a successful result. No SDK or Responses API is substituted for the requested managed runtime.
 
 Live product/price correctness remains unmeasured when no reference answer is supplied. Owners can explicitly confirm reference answers before starting a run; Folio does not independently certify those references as truth. References stay out of model inputs, and replays retain their original references and captures. Exact quotes prove text occurrence, not semantic correctness.
 
@@ -112,7 +112,7 @@ Competitive research found substantial existing overlap. Folio is positioned aro
 - [KEYWORD-BENCHMARKS.md](docs/KEYWORD-BENCHMARKS.md): open-web and legacy search scopes, recommendation order, private suites and baseline/fresh comparisons.
 - [FRONTEND-WORKFLOW.md](docs/FRONTEND-WORKFLOW.md): private workspace, target/report handoffs, launch preflight, private inputs, agent returns, and replay versus fresh evaluation controls.
 - [EVALUATION-LOOP.md](docs/EVALUATION-LOOP.md): one run from capture through managed execution, independent verification, private review, and explicit retesting; includes a flow diagram and current improvement-loop gaps.
-- [ARCHITECTURE.md](ARCHITECTURE.md): Next.js/OpenNext, Cloudflare D1, Better Auth, managed session lifecycle, data flow and private/public/provider boundaries.
+- [ARCHITECTURE.md](ARCHITECTURE.md): Next.js/OpenNext, production PostgreSQL/Hyperdrive, local D1, Better Auth, managed session lifecycle, data flow and private/public/provider boundaries.
 - [LOCAL-D1.md](docs/LOCAL-D1.md): persistent local bindings, migration/status/backup commands, isolated D1 integration tests, and database growth decisions.
 - [SEARCH-CONSOLE.md](docs/SEARCH-CONSOLE.md): Google consent, private performance snapshots, coverage limits, disconnect, and production preparation for `usefolio.site`.
 - [EVALUATION-STRATEGY.md](EVALUATION-STRATEGY.md): frozen inputs, independent expected facts, eight verification checks, reproducibility, and requirements for a fair future benchmark.

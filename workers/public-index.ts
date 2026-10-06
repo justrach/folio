@@ -1,9 +1,11 @@
 import type { D1Database } from "@cloudflare/workers-types";
+import { Pool } from "pg";
+import { PgD1Database } from "../src/lib/pg-d1";
 import type { PublicPromptExperiment } from "../src/lib/prompt-evals";
 import { buildPublicRanking, questionExperiment } from "../src/lib/public-ranking";
 import { PROMPT_EVAL_SUITE } from "../src/lib/prompt-suite";
 
-type Environment = { DB: D1Database; FOLIO_APP?: { fetch(request: Request): Promise<Response> } };
+type Environment = { DB?: D1Database; HYPERDRIVE?: { connectionString: string }; FOLIO_APP?: { fetch(request: Request): Promise<Response> } };
 const escape = (value: unknown) => String(value).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
 const count = (value: unknown): number => { if (typeof value !== "number" || !Number.isSafeInteger(value) || value < 0) throw new Error("Invalid published count"); return value; };
 
@@ -67,7 +69,11 @@ export default {
     if (!["/", "/leaderboard", "/leaderboard/", "/api/question-index"].includes(url.pathname)) return new Response("Not found", { status: 404 });
     const headers = { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff", "Referrer-Policy": "no-referrer", "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'" };
     try {
-      const result = await env.DB.prepare("SELECT summary_json FROM published_question_snapshots ORDER BY json_extract(summary_json, '$.completedAt') DESC LIMIT 100").all<{ summary_json: string }>();
+      const db = env.HYPERDRIVE
+        ? new PgD1Database(new Pool({ connectionString: env.HYPERDRIVE.connectionString, max: 3, idleTimeoutMillis: 1_000 }))
+        : env.DB;
+      if (!db) throw new Error("The publication database binding is unavailable.");
+      const result = await db.prepare("SELECT summary_json FROM published_question_snapshots ORDER BY json_extract(summary_json, '$.completedAt') DESC LIMIT 100").all<{ summary_json: string }>();
       const experiments = result.results.map((row) => publicSummary(row.summary_json));
       const json = url.pathname === "/api/question-index";
       return new Response(request.method === "HEAD" ? null : json ? JSON.stringify({ experiments }) : page(experiments, url), { headers: { ...headers, "Content-Type": json ? "application/json; charset=utf-8" : "text/html; charset=utf-8" } });

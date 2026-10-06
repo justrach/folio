@@ -10,13 +10,13 @@ import { createHash } from "node:crypto";
 const env = { OPENAI_API_KEY: "fixture-keyword-secret" };
 const input = { runId: "run_fixture", caseId: "case_fixture", query: "Which authentication tools document passkeys?", language: "English", locale: "en-US", model: "gpt-6-astra", allowedDomains: ["clerk.com", "auth0.com"] };
 const answer = { text: "A public-documentation comparison.", mentions: [{ name: "Clerk", url: "https://clerk.com/", reason: "Relevant documentation.", citationUrls: ["https://clerk.com/docs"] }], citations: [{url: "https://clerk.com/docs", title: "Clerk documentation"}], limitations: ["Restricted to approved sources."] };
-const session = { id: "session_fixture", object: "agent.session", status: "idle", required_actions: [], environment: { id: "env_fixture", type: "openai_hosted", network: {access: "restricted", allowed_domains: input.allowedDomains } }, usage: null };
+const session = { id: "session_fixture", object: "agent.session", status: "idle", required_actions: [], environment: { id: "env_fixture", type: "none" }, metadata: { approved_hosts: "auth0.com,clerk.com" }, usage: null };
 const turn = { id: "turn_fixture", session_id: session.id, status: "completed", subagent_id: null, usage: {input_tokens: 100, output_tokens: 50, total_tokens: 150} };
 const items = [
   { id: "search_fixture", turn_id: turn.id, type: "web_search_call", status: "completed", action: {type: "search", query: "authentication passkeys"} },
-  { id: "command_fixture", turn_id: turn.id, type: "command_execution", status: "completed", exit_code: 0, output: "FOLIO_KEYWORD_JSON_VALID", command: "python validate.py" },
   { id: "final_fixture", turn_id: turn.id, type: "message", role: "assistant", phase: "final_answer", status: "completed", content: [{type: "output_text", text: JSON.stringify(answer)}] },
 ];
+const folioValidation = { id: "folio_json_schema", type: "folio_json_schema", turn_id: turn.id, status: "completed", exit_code: 0, output: "FOLIO_KEYWORD_JSON_VALID" };
 function fixture(overrides: {session?: unknown;turns?: unknown[];items?: unknown[]} = {}, seen: RequestInit[] = []): typeof fetch {
   return async (url, init) => {
     seen.push(init ?? {});
@@ -25,12 +25,13 @@ function fixture(overrides: {session?: unknown;turns?: unknown[];items?: unknown
     return Response.json(overrides.session ?? session, {headers: {"x-request-id": "req_fixture"}});
   };
 }
-test("hosted keyword payload contains only approved inputs and independent network policies", async () => {
+test("hosted keyword payload contains only approved inputs and no hosted sandbox", async () => {
   const request = buildKeywordBenchmarkRequest({...input, baselineAnswer: "PRIVATE_BASELINE", referenceFacts: "PRIVATE_REFERENCES"} as typeof input);
-  assert.equal(request.environment.type, "openai_hosted");
-  assert.deepEqual(request.environment.network, {access: "restricted", allowed_domains: ["auth0.com", "clerk.com"]});
+  assert.equal(request.environment.type, "none");
+  assert.equal("network" in request.environment, false);
+  assert.equal("approved_hosts" in request.metadata ? request.metadata.approved_hosts : undefined, "auth0.com,clerk.com");
   assert.equal(request.agent.tools[0].mode, "live");
-  assert.deepEqual(request.agent.tools[0].allowed_domains, request.environment.network.allowed_domains);
+  assert.deepEqual(request.agent.tools[0].allowed_domains, ["auth0.com", "clerk.com"]);
   assert.equal(request.agent.multi_agent.enabled, false);
   assert.equal(JSON.stringify(request).includes("PRIVATE_"), false);
   assert.equal(JSON.stringify(request).includes(env.OPENAI_API_KEY), false);
@@ -57,19 +58,21 @@ test("one create POST preserves metadata and treats ambiguous responses as non-r
   await assert.rejects(createKeywordBenchmarkSession(input, env, {fetcher: async () => new Response(env.OPENAI_API_KEY, {status: 307, headers: {location: "https://example.net"}})}),
     error => error instanceof KeywordAgentError && error.status === 307 && !error.message.includes(env.OPENAI_API_KEY));
 });
-test("completed research requires root final JSON, search and successful sandbox evidence; reads are GET only", async () => {
+test("completed research requires root final JSON and live search; hosted shells fail; reads are GET only", async () => {
   const seen: RequestInit[] = [];
   const observation = await reconcileKeywordBenchmarkSession(session.id, env, {fetcher: fixture({}, seen)});
   assert.equal(observation.status, "completed"); assert.equal(observation.answer?.mentions[0].name, "Clerk");
   assert.equal(observation.usage.totalTokens, 150); assert.equal(observation.usage.costUsd, null);
   assert.equal(observation.answer?.evidence?.find(e => e.id === "citation-support")?.outcome, "unmeasured");
+  assert.equal(observation.answer?.evidence?.find(e => e.id === "folio-json-validated")?.outcome, "passed");
+  assert.deepEqual(observation.answer?.collection?.validationItem, folioValidation);
   assert.ok(seen.every(init => init.method === "GET" && !init.body));
   await assert.rejects(reconcileKeywordBenchmarkSession(session.id, env, { fetcher: fixture(), expectedAllowedDomains: ["clerk.com"] }), /frozen reservation/);
-  for (const removed of ["search_fixture", "command_fixture"]) {
-    const result = await reconcileKeywordBenchmarkSession(session.id, env, {fetcher: fixture({items: items.filter(item => item.id !== removed)})});
-    assert.equal(result.status, "failed"); assert.equal(result.answer, null);
-  }
-  const missingFinal = await reconcileKeywordBenchmarkSession(session.id, env, {fetcher: fixture({items: items.slice(0,2)})});
+  const missingSearch = await reconcileKeywordBenchmarkSession(session.id, env, {fetcher: fixture({items: items.filter(item => item.id !== "search_fixture")})});
+  assert.equal(missingSearch.status, "failed"); assert.equal(missingSearch.answer, null);
+  const hostedShell = await reconcileKeywordBenchmarkSession(session.id, env, {fetcher: fixture({items: [...items, { id: "command_fixture", turn_id: turn.id, type: "command_execution", status: "completed", exit_code: 0, output: "FOLIO_KEYWORD_JSON_VALID" }]})});
+  assert.equal(hostedShell.status, "failed"); assert.equal(hostedShell.answer, null);
+  const missingFinal = await reconcileKeywordBenchmarkSession(session.id, env, {fetcher: fixture({items: items.slice(0,1)})});
   assert.equal(missingFinal.status, "running"); assert.equal(missingFinal.answer, null);
   const noTurn = await reconcileKeywordBenchmarkSession(session.id, env, {fetcher: fixture({turns: [], items: []})});
   assert.equal(noTurn.status, "requires_action"); assert.equal(noTurn.initialInputUnconfirmed, true);
@@ -78,13 +81,6 @@ test("completed research requires root final JSON, search and successful sandbox
   assert.equal(awaitingTurn.status, "running"); assert.equal(awaitingTurn.initialInputUnconfirmed, undefined);
   const subagent = await reconcileKeywordBenchmarkSession(session.id, env, {fetcher: fixture({turns: [{...turn, subagent_id: "child"}]})});
   assert.notEqual(subagent.status, "completed");
-  const nullableExit = await reconcileKeywordBenchmarkSession(session.id, env, { fetcher: fixture({ items: items.map(item => item.type === "command_execution" ? { ...item, exit_code: null } : item) }) });
-  assert.equal(nullableExit.status, "completed");
-  assert.equal(nullableExit.answer?.evidence?.find(item => item.id === "sandbox-exit-code")?.outcome, "unmeasured");
-  for (const exit_code of [1, -1, undefined]) {
-    const failedCommand = await reconcileKeywordBenchmarkSession(session.id, env, { fetcher: fixture({ items: items.map(item => item.type === "command_execution" ? { ...item, exit_code } : item) }) });
-    assert.equal(failedCommand.status, "failed");
-  }
 });
 test("failed and cancelled outcomes are preserved and cancellation never creates input", async () => {
   for (const state of ["failed", "cancelled"] as const) {
@@ -114,42 +110,42 @@ test("citation and response limits fail closed without inventing verified outcom
   }}), /pagination/);
 });
 
-test("open-web mode uses unfiltered Astra search with disabled shell networking and a distinct identity", async () => {
+test("open-web mode uses unfiltered Astra search with environment none and a distinct identity", async () => {
   const open = { ...input, searchMode: "open-web" as const, allowedDomains: [] };
   const payload = buildKeywordBenchmarkRequest({ ...open, targetUrl: "https://private-target.example/", baselineAnswer: "PRIVATE_ANSWER", referenceFacts: "PRIVATE_FACTS" } as typeof open);
   assert.deepEqual(payload.agent.tools, [{ type: "web_search", mode: "live", context_size: "low" }]);
-  assert.deepEqual(payload.environment.network, { access: "disabled" });
+  assert.deepEqual(payload.environment, { type: "none" });
   assert.equal(payload.agent.model, "gpt-6-astra");
-  assert.equal(payload.metadata.harness_version, "keyword-open-web-v2");
-  assert.equal(payload.metadata.search_mode, "open-web");
+  assert.equal(payload.metadata.harness_version, "keyword-open-web-v3");
+  assert.equal("search_mode" in payload.metadata ? payload.metadata.search_mode : undefined, "open-web");
   assert.ok(!JSON.stringify(payload).includes("private-target"));
   assert.ok(!JSON.stringify(payload).includes("PRIVATE_"));
   assert.ok(!("approvedResearchHosts" in JSON.parse(payload.input)));
   assert.throws(() => buildKeywordBenchmarkRequest({ ...open, allowedDomains: ["clerk.com"] }), /cannot carry/);
   assert.throws(() => buildKeywordBenchmarkRequest({ ...open, model: "another-model" }), /supported model/);
-  assert.equal(keywordAgentHarnessVersion(), "keyword-research-v1");
-  assert.equal(keywordAgentHarnessVersion("open-web"), "keyword-open-web-v2");
-  const legacyIdentity = { harness: "keyword-research-v1", environment: "openai_hosted", domains: ["auth0.com", "clerk.com"], search: "live", reasoning: "low", multiAgent: false };
-  assert.equal(await keywordEnvironmentFingerprint(input.allowedDomains), createHash("sha256").update(JSON.stringify(legacyIdentity)).digest("hex"));
+  assert.equal(keywordAgentHarnessVersion(), "keyword-research-v2");
+  assert.equal(keywordAgentHarnessVersion("open-web"), "keyword-open-web-v3");
+  const identity = { harness: "keyword-research-v2", environment: "none", domains: ["auth0.com", "clerk.com"], search: "live", reasoning: "low", multiAgent: false };
+  assert.equal(await keywordEnvironmentFingerprint(input.allowedDomains), createHash("sha256").update(JSON.stringify(identity)).digest("hex"));
   assert.notEqual(await keywordEnvironmentFingerprint([], "open-web"), await keywordEnvironmentFingerprint(input.allowedDomains));
 });
 
 test("open-web completion preserves full provider search evidence and final answer without corpus laundering", async () => {
-  const openSession = { ...session, environment: { ...session.environment, network: { access: "disabled" } } };
+  const openSession = { ...session, environment: { id: "env_fixture", type: "none" }, metadata: { search_mode: "open-web" } };
   const openAnswer = { ...answer, mentions: [{ name: "Aider", url: "https://aider.chat/", reason: "Returned recommendation.", citationUrls: ["https://aider.chat/docs/"] }],
     citations: [{ url: "https://aider.chat/docs/", title: "Aider docs" }], limitations: ["One API observation, not a general ranking."] };
   const search = { ...items[0], action: { type: "search", queries: ["terminal coding harness tools"], sources: [{ type: "url", url: "https://aider.chat/docs/", title: "Aider docs" }] } };
-  const openItems = [search, items[1], { ...items[2], content: [{ type: "output_text", text: JSON.stringify(openAnswer) }] }];
+  const openItems = [search, { ...items[1], content: [{ type: "output_text", text: JSON.stringify(openAnswer) }] }];
   const options = { fetcher: fixture({ session: openSession, items: openItems }), expectedSearchMode: "open-web" as const, expectedAllowedDomains: [] };
   const observed = await reconcileKeywordBenchmarkSession(session.id, env, options);
   assert.equal(observed.status, "completed");
   assert.equal(observed.answer?.mentions[0].name, "Aider");
   assert.equal(observed.answer?.collection?.finalAnswerJson, JSON.stringify(openAnswer));
   assert.deepEqual(observed.answer?.collection?.searchItems, [search]);
-  assert.deepEqual(observed.answer?.collection?.validationItem, items[1]);
+  assert.deepEqual(observed.answer?.collection?.validationItem, folioValidation);
   assert.equal(observed.answer?.collection?.sessionId, session.id);
   assert.equal(observed.answer?.collection?.rootTurnId, turn.id);
-  assert.equal(observed.answer?.collection?.finalAnswerItemId, items[2].id);
+  assert.equal(observed.answer?.collection?.finalAnswerItemId, items[1].id);
   assert.equal(observed.answer?.collection?.searchMode, "open-web");
   assert.equal(observed.answer?.evidence?.find(item => item.id === "citation-support")?.outcome, "unmeasured");
   const manyCalls = await reconcileKeywordBenchmarkSession(session.id, env, { ...options,
@@ -171,8 +167,7 @@ for (const [model,label] of [["gpt-6-luna","Luna 6"],["gpt-6-sol","Sol 6"]]) tes
  assert.equal(payload.agent.model,model);
  assert.ok(payload.agent.instructions.includes(`single ${label} API-agent`));
  assert.doesNotMatch(payload.agent.instructions,/single Astra API-agent/);
- assert.equal(payload.environment.type,"openai_hosted");
- assert.deepEqual(payload.environment.network,{access:"disabled"});
+ assert.deepEqual(payload.environment,{type:"none"});
  assert.equal(payload.agent.multi_agent.enabled,false);
 });
 
@@ -194,7 +189,7 @@ test('TypeSafe is opt-in service MCP for each open-web model and changes harness
   assert.equal(buildKeywordBenchmarkRequest(plain).agent.tools.length,1);
   const payload=buildKeywordBenchmarkRequest({...plain,typesafeMcp:{url:'https://folio.example.com/api/typesafe-mcp',authorization:'Bearer folio_typesafe_'+'a'.repeat(64)}});
   assert.equal(payload.agent.tools[1].type,'mcp');assert.match(payload.metadata.harness_version,/-typesafe-v1$/);
-  assert.equal(payload.environment.network.access,'disabled');assert.ok(!payload.input.includes('folio_typesafe_'));
+  assert.deepEqual(payload.environment,{type:'none'});assert.ok(!payload.input.includes('folio_typesafe_'));
  }
  assert.throws(()=>buildKeywordBenchmarkRequest({...input,typesafeMcp:{url:'http://localhost/api/typesafe-mcp',authorization:'secret'}}));
 });

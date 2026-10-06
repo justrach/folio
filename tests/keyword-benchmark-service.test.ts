@@ -61,3 +61,27 @@ test("SEO tools cannot silently upgrade the Luna default to Astra", async () => 
  assert.equal((await keywordBenchmarkExecutionConfig(trial,{}, {useSeoTools:true})).model,"gpt-6-luna");
  assert.equal((await keywordBenchmarkExecutionConfig(trial,{}, {useSeoTools:true},"gpt-6-astra")).model,"gpt-6-astra");
 });
+
+test("Codegraff open-web starts use Responses models while reviewed-domain and SEO/TypeSafe paths stay distinct", async () => {
+  const trial={query:"Which tool helps a team plan?",targetUrl:null,language:"en",locale:"en-US",rubricVersion:"keyword-observation-v1",searchMode:"open-web" as const};
+  const env={OPENAI_ALLOWED_USER_IDS:"alice",CODEGRAFF_API_KEY:"cg_sk_fixture_not_a_real_key"};
+  assert.equal(keywordBenchmarkAccess(env,"alice").canRun,true);
+  assert.equal(keywordBenchmarkAccess(env,"alice").model,"gpt-6-sol");
+  assert.deepEqual(keywordBenchmarkAccess(env,"alice").openWebModels.map(model=>model.id),["gpt-6-sol","gpt-6-luna","gpt-6-astra"]);
+  assert.equal(keywordBenchmarkAccess({OPENAI_ALLOWED_USER_IDS:"alice"},"alice").canRun,false);
+  assert.equal(JSON.stringify(keywordBenchmarkAccess(env,"alice")).includes(env.CODEGRAFF_API_KEY),false);
+  const open=await keywordBenchmarkExecutionConfig(trial,env);
+  assert.equal(open.model,"gpt-6-sol");
+  assert.equal(open.harnessVersion,"keyword-open-web-codegraff-v2");
+  const astra=await keywordBenchmarkExecutionConfig(trial,env,{},"gpt-6-astra");
+  assert.equal(astra.model,"gpt-6-astra");
+  assert.notEqual(open.environmentFingerprint,astra.environmentFingerprint);
+  await assert.rejects(keywordBenchmarkExecutionConfig(trial,env,{},"gpt-5.6-luna"));
+  await assert.rejects(keywordBenchmarkExecutionConfig({...trial,searchMode:"reviewed-domains"},env,{},"gpt-6-sol"));
+  const reviewed=await keywordBenchmarkExecutionConfig({...trial,searchMode:"reviewed-domains"},env);
+  assert.equal(reviewed.model,"glm-5.3-flash");
+  assert.equal(reviewed.harnessVersion,"keyword-codegraff-v1");
+  assert.equal((await keywordBenchmarkExecutionConfig(trial,env,{useSeoTools:true})).model,"gpt-6-luna");
+  assert.equal((await keywordBenchmarkExecutionConfig(trial,env,{useSeoTools:true},"gpt-6-astra")).model,"gpt-6-astra");
+  assert.equal((await keywordBenchmarkExecutionConfig(trial,env,{useTypesafeTools:true},"gpt-6-luna")).model,"gpt-6-luna");
+});

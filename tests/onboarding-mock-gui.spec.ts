@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 
 const BASE_PATH = "/onboarding";
@@ -82,6 +82,9 @@ test("A: complete flow — edit, removal, named comparison, brief panel and JSON
   await expect(page.getByRole("heading", { name: "Your first report preview" })).toBeFocused();
   await expect(page.getByRole("cell", { name: "No sample observation" })).toHaveCount(3);
   await expect(page.getByText("Illustrative AI-answer order")).toHaveCount(0);
+  await expect(page.locator(".ob-report-empty")).toBeVisible();
+  await expect(page.locator(".ob-report-chart svg")).toHaveCount(0);
+  await expect(page.locator("[data-report-overview]")).toContainText("Without sample answer");
 
   await page.getByRole("button", { name: "Review agent brief" }).click();
   const brief = page.locator("[data-brief]");
@@ -153,6 +156,7 @@ test("B: tracked competitors keep open mode with table sample positions and disc
   await page.getByRole("button", { name: "Use sample competitors" }).click();
   await expect(page.getByRole("button", { name: "Track competitors" })).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByText(/track their appearances without adding their names/)).toBeVisible();
+  await page.getByLabel("Include topic Running agents in isolated environments").check();
   await page.getByRole("button", { name: "Continue" }).click();
 
   await expect(page.getByRole("heading", { name: "Review your report plan" })).toBeFocused();
@@ -161,20 +165,66 @@ test("B: tracked competitors keep open mode with table sample positions and disc
 
   await expect(page.getByText("Illustrative AI-answer order, not Google rankings")).toBeVisible();
   const rows = page.locator(".ob-table tbody tr");
-  await expect(rows).toHaveCount(2);
+  await expect(rows).toHaveCount(3);
   const workspaceRow = rows.first();
+  await expect(workspaceRow.locator(".ob-q-kicker")).toHaveText("Question 01");
+  await expect(workspaceRow.locator(".ob-q-state")).toContainText("Sample answer");
   await expect(workspaceRow).toContainText("Which tools let developers run multiple coding agents in one workspace?");
   await expect(workspaceRow.getByRole("cell").nth(0)).toContainText("Sample position 2");
   await expect(workspaceRow.getByRole("cell").nth(1)).toContainText("Sample position 1");
   await expect(workspaceRow.getByRole("cell").nth(2)).toContainText("Sample position 3");
+  await expect(workspaceRow.getByRole("cell").nth(0).locator(".ob-position")).toContainText("Sample position 2");
+  const targetCell = workspaceRow.getByRole("cell").nth(0);
+  await expect(targetCell).toHaveCSS("box-shadow", "none");
+  if (!isMobile) {
+    await expect(targetCell).toHaveCSS("vertical-align", "middle");
+    const cellBox = (await targetCell.boundingBox())!;
+    const badgeBox = (await targetCell.locator(".ob-position").boundingBox())!;
+    expect(Math.abs(cellBox.y + cellBox.height / 2 - (badgeBox.y + badgeBox.height / 2))).toBeLessThanOrEqual(2);
+  }
+  if (isMobile) {
+    await expect(workspaceRow.getByRole("cell").nth(0).locator(".ob-you-label")).toHaveText("Your business");
+    await expect(workspaceRow.getByRole("cell").nth(1).locator(".ob-you-label")).toHaveCount(0);
+    await expect(workspaceRow.getByRole("cell").nth(0).locator(".ob-cell-label")).toHaveCSS("text-transform", "none");
+  }
   const contextRow = rows.nth(1);
   await expect(contextRow.getByRole("cell").nth(0)).toContainText("Sample position 1");
   await expect(contextRow.getByRole("cell").nth(1)).toContainText("Not included in sample");
+  const missingRow = rows.nth(2);
+  await expect(missingRow.locator(".ob-q-kicker")).toHaveText("Question 03");
+  await expect(missingRow.locator(".ob-q-state")).toContainText("No sample answer");
+  await expect(missingRow.getByRole("cell", { name: "No sample observation" })).toHaveCount(3);
+  await expect(missingRow.locator(".ob-position")).toHaveCount(0);
+
+  const firstHeader = workspaceRow.locator("th").first();
+  const disclosures = firstHeader.locator(".ob-table-details .ob-details");
+  for (let i = 0; i < await disclosures.count(); i++) {
+    const headerBox = (await firstHeader.boundingBox())!;
+    const closedBox = (await disclosures.nth(i).boundingBox())!;
+    expect(closedBox.y).toBeGreaterThanOrEqual(headerBox.y - 1);
+    expect(closedBox.y + closedBox.height).toBeLessThanOrEqual(headerBox.y + headerBox.height + 1);
+    const summary = disclosures.nth(i).locator("summary");
+    await summary.press("Enter");
+    await expect(summary).toBeFocused();
+    const outline = await summary.evaluate((el) => {
+      const s = getComputedStyle(el);
+      return { style: s.outlineStyle, width: parseFloat(s.outlineWidth) };
+    });
+    expect(outline.style).not.toBe("none");
+    expect(outline.width).toBeGreaterThanOrEqual(2);
+    await summary.press("Enter");
+  }
   await assertMobileRowLayout(page, isMobile);
   await page.getByText("Data provenance").first().click();
   await expect(page.getByText(/static demo fixture data/).first()).toBeVisible();
   await page.getByText("Related evidence").first().click();
   await expect(page.getByText(/not the same measurement/).first()).toBeVisible();
+  const openHeaderBox = (await firstHeader.boundingBox())!;
+  for (let i = 0; i < await disclosures.count(); i++) {
+    const openBox = (await disclosures.nth(i).boundingBox())!;
+    expect(openBox.y).toBeGreaterThanOrEqual(openHeaderBox.y - 1);
+    expect(openBox.y + openBox.height).toBeLessThanOrEqual(openHeaderBox.y + openHeaderBox.height + 1);
+  }
   await assertMobileRowLayout(page, isMobile);
   await expect(page.getByText("Sample agent action — advisory fixture")).toBeVisible();
 
@@ -332,6 +382,8 @@ test("F: non-sample site keeps typed name, custom topic, manual claims, and a cl
   await page.getByRole("button", { name: "Preview first report" }).click();
 
   await expect(page.getByRole("cell", { name: "No sample observation" })).toHaveCount(1);
+  await expect(page.locator(".ob-report-empty")).toBeVisible();
+  await expect(page.locator(".ob-report-chart svg")).toHaveCount(0);
   await expect(page.getByText("Make the website’s identity clear")).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Review agent brief" })).toHaveCount(0);
 
@@ -481,5 +533,275 @@ test("K: removing a custom topic keeps other topics and their edits", async ({ p
   await expect(page.getByText(/fleet dashboards/)).toHaveCount(0);
   await expect(page.locator("#ob-q-3")).toHaveValue(editedText);
   await expect(page.getByLabel("Include candidate question 4")).not.toBeChecked();
+  expect(violations).toEqual([]);
+});
+
+async function textContrast(locator: Locator) {
+  return locator.evaluate((node) => {
+    const parse = (value: string) => {
+      const parts = value.match(/[\d.]+/g)?.map(Number);
+      if (!parts || parts.length < 3) throw new Error(`Unsupported computed color: ${value}`);
+      return [parts[0], parts[1], parts[2], parts[3] ?? 1];
+    };
+    const luminance = (rgb: number[]) =>
+      rgb
+        .slice(0, 3)
+        .map((channel) => {
+          const s = channel / 255;
+          return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+        })
+        .reduce((sum, channel, i) => sum + channel * [0.2126, 0.7152, 0.0722][i], 0);
+    const foreground = parse(getComputedStyle(node).color);
+    let ancestor: Element | null = node;
+    let background: number[] | undefined;
+    while (ancestor) {
+      const color = parse(getComputedStyle(ancestor).backgroundColor);
+      if (color[3] === 1) {
+        background = color;
+        break;
+      }
+      if (color[3] !== 0) throw new Error("Contrast assertion needs an opaque or transparent background");
+      ancestor = ancestor.parentElement;
+    }
+    if (!background) throw new Error("No opaque background found");
+    const text = foreground
+      .slice(0, 3)
+      .map((channel, i) => channel * foreground[3] + background![i] * (1 - foreground[3]));
+    const a = luminance(text);
+    const b = luminance(background);
+    return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+  });
+}
+
+async function expectReadable(locator: Locator) {
+  await expect(locator).toBeVisible();
+  expect(await textContrast(locator)).toBeGreaterThanOrEqual(4.5);
+}
+
+async function assertNoHorizontalOverflow(page: Page) {
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(1);
+}
+
+for (const scheme of ["dark", "light"] as const) {
+  test(`L: readable contrast and focus outlines in ${scheme} mode`, async ({ page }, testInfo) => {
+    const project = testInfo.project.name;
+    const shot = (name: string) => `.local/onboarding-shots/${name}-${project}.png`;
+    const violations = await watchForForbiddenRequests(page);
+    await page.emulateMedia({ colorScheme: scheme });
+    await openOnboarding(page);
+
+    const urlInput = page.getByLabel("Website address");
+    await expectReadable(urlInput);
+    await urlInput.focus();
+    const outline = await urlInput.evaluate((el) => {
+      const style = getComputedStyle(el);
+      return { style: style.outlineStyle, width: parseFloat(style.outlineWidth) };
+    });
+    expect(outline.style).not.toBe("none");
+    expect(outline.width).toBeGreaterThanOrEqual(2);
+    await assertNoHorizontalOverflow(page);
+    await previewSiteAndWait(page);
+    await acceptAllClaims(page);
+
+    const selectedChoices = page.locator('.ob-choice[data-selected="true"]:visible');
+    const selectedCount = await selectedChoices.count();
+    expect(selectedCount).toBeGreaterThanOrEqual(3);
+    for (let i = 0; i < selectedCount; i++) {
+      await expectReadable(selectedChoices.nth(i));
+    }
+
+    const description = page.locator('[data-claim="description"]');
+    await description.getByRole("button", { name: "Source details" }).click();
+    await expectReadable(description.locator(".ob-excerpt"));
+    await expectReadable(description.locator(".ob-claim-source a"));
+
+    await description.getByRole("button", { name: "Edit" }).click();
+    await expectReadable(description.locator("textarea"));
+    await description.getByRole("button", { name: "Cancel edit" }).click();
+    if (scheme === "dark" || project === "desktop") {
+      await page.screenshot({ path: shot(`${scheme}-understanding`), fullPage: true });
+    }
+    await assertNoHorizontalOverflow(page);
+    await page.getByRole("button", { name: "Continue" }).click();
+
+    await page.getByRole("button", { name: "Use sample competitors" }).click();
+    const compare = page.getByRole("button", { name: "Compare specific businesses" });
+    await compare.click();
+    await expect(compare).toHaveAttribute("data-selected", "true");
+    await expectReadable(compare);
+    const track = page.getByRole("button", { name: "Track competitors" });
+    await track.click();
+    await expect(track).toHaveAttribute("data-selected", "true");
+    await expectReadable(track);
+    await page.getByLabel("Include topic Running agents in isolated environments").check();
+    await expectReadable(page.getByLabel("Add another topic"));
+    await assertNoHorizontalOverflow(page);
+    await page.getByRole("button", { name: "Continue" }).click();
+
+    await expect(page.getByRole("heading", { name: "Review your report plan" })).toBeFocused();
+    const questionCards = page.locator(".ob-question");
+    const questionCount = await questionCards.count();
+    expect(questionCount).toBeGreaterThanOrEqual(3);
+    for (let i = 0; i < questionCount; i++) {
+      await expectReadable(questionCards.nth(i).locator(".ob-label").first());
+      await expectReadable(questionCards.nth(i).locator("textarea"));
+    }
+    const firstQuestion = questionCards.first();
+    await page.getByLabel("Include candidate question 1").uncheck();
+    await expect(firstQuestion).toHaveAttribute("data-selected", "false");
+    await expect(firstQuestion.locator(".ob-label").first()).toHaveCSS("opacity", "1");
+    await expectReadable(firstQuestion.locator(".ob-label").first());
+    await page.getByLabel("Include candidate question 1").check();
+    await assertNoHorizontalOverflow(page);
+    await page.getByRole("button", { name: "Preview first report" }).click();
+
+    await expect(page.getByRole("heading", { name: "Your first report preview" })).toBeFocused();
+    await expectReadable(page.locator(".ob-agent-head"));
+    const agentBodyTerms = page.locator(".ob-agent-body").first().locator("dt, dd");
+    for (let i = 0; i < await agentBodyTerms.count(); i++) {
+      await expectReadable(agentBodyTerms.nth(i));
+    }
+    const tableCells = page.locator(".ob-table tbody tr:first-child > *");
+    for (let i = 0; i < await tableCells.count(); i++) {
+      await expectReadable(tableCells.nth(i));
+    }
+    await expectReadable(page.locator("[data-report-overview] .ob-report-badge"));
+    const overviewText = page.locator(
+      "[data-report-overview] .ob-report-meta dd, [data-report-overview] .ob-report-counts dd, .ob-report-counts-list li, .ob-report-chart figcaption, .ob-report-note, .ob-report-axis-label",
+    );
+    for (let i = 0; i < await overviewText.count(); i++) {
+      await expectReadable(overviewText.nth(i));
+    }
+    const cardDecor = page.locator(
+      ".ob-q-kicker, .ob-q-state, .ob-report-question-text, .ob-table-details summary, .ob-position, .ob-table .ob-none",
+    );
+    for (let i = 0; i < await cardDecor.count(); i++) {
+      await expectReadable(cardDecor.nth(i));
+    }
+    if (project === "mobile") {
+      const youLabels = page.locator(".ob-you-label");
+      for (let i = 0; i < await youLabels.count(); i++) {
+        await expectReadable(youLabels.nth(i));
+      }
+    }
+    await page.locator(".ob-table-wrap").screenshot({ path: shot(`report-cards-${scheme}`) });
+    await page.locator(".ob-hatched-bar").first().hover();
+    await expectReadable(page.locator(".ob-chart-tip"));
+    await page.screenshot({ path: shot(`report-showcase-${scheme}`), fullPage: true });
+    if (scheme === "dark") {
+      await page.screenshot({ path: shot("dark-report"), fullPage: true });
+      await page.emulateMedia({ media: "print", colorScheme: scheme });
+      const printReadable = page.locator(
+        "[data-report-overview] .ob-report-meta dd, [data-report-overview] .ob-report-counts dd, .ob-report-note, .ob-agent-body dt, .ob-agent-body dd, .ob-table tbody td, .ob-table .ob-none, .ob-position, .ob-q-kicker, .ob-report-question-text, .ob-banner p",
+      );
+      for (let i = 0; i < await printReadable.count(); i++) {
+        await expectReadable(printReadable.nth(i));
+      }
+      await page.screenshot({ path: shot("report-showcase-dark-print"), fullPage: true });
+      await page.emulateMedia({ media: "screen", colorScheme: scheme });
+    }
+    await assertNoHorizontalOverflow(page);
+
+    await page.getByRole("button", { name: "Review agent brief" }).click();
+    const brief = page.locator("[data-brief]");
+    await expect(brief).toBeVisible();
+    const briefText = brief.locator("dt, dd, h2, h3, p, li");
+    for (let i = 0; i < await briefText.count(); i++) {
+      await expectReadable(briefText.nth(i));
+    }
+    expect(violations).toEqual([]);
+  });
+}
+
+test("M: report overview counts, hatched chart, snapshot-matched brief and print", async ({ page }) => {
+  const violations = await watchForForbiddenRequests(page);
+  await page.addInitScript(() => {
+    const w = window as unknown as { __obPrinted: number };
+    w.__obPrinted = 0;
+    window.print = () => {
+      w.__obPrinted += 1;
+    };
+  });
+  await openOnboarding(page);
+  await previewSiteAndWait(page);
+  await acceptAllClaims(page);
+  await page.getByRole("button", { name: "Continue" }).click();
+
+  await page.getByRole("button", { name: "Use sample competitors" }).click();
+  await page
+    .getByLabel(/Competitors/)
+    .fill("Paseo\nLanes Desktop\nAn Extremely Long Competitor Name For Wrapping Validation Incorporated");
+  await page.getByRole("button", { name: "Continue" }).click();
+  await page.getByRole("button", { name: "Preview first report" }).click();
+
+  await expect(page.getByRole("heading", { name: "Your first report preview" })).toBeFocused();
+  const overview = page.locator("[data-report-overview]");
+  await expect(overview).toBeVisible();
+  await expect(overview.getByText("Illustrative fixture report")).toBeVisible();
+  await expect(overview.getByText("No live capture or collection date.")).toBeVisible();
+  const countCards = overview.locator(".ob-report-counts > div");
+  await expect(countCards.nth(0).locator("dd")).toHaveText("2");
+  await expect(countCards.nth(1).locator("dd")).toHaveText("2");
+  await expect(countCards.nth(2).locator("dd")).toHaveText("0");
+  await expect(overview.locator(".ob-report-meta")).toContainText("https://codegraff.com/");
+  await expect(overview.locator(".ob-report-meta")).toContainText("Open discovery");
+  await expect(
+    overview.getByText("Counts across available sample answers only; not market share or Google rankings."),
+  ).toBeVisible();
+  await expect(overview.locator(".ob-hatched-bar")).toHaveCount(3);
+  await expect(
+    overview.getByText("Codegraff — 2 of 2 sample answers (this business)"),
+  ).toBeVisible();
+  await expect(overview.getByText("Paseo — 1 of 2 sample answers")).toBeVisible();
+  await expect(
+    overview.getByText(
+      "An Extremely Long Competitor Name For Wrapping Validation Incorporated — 0 of 2 sample answers",
+    ),
+  ).toBeVisible();
+  await expect(
+    overview.getByText("Competitors not listed here are not tracked in this preview."),
+  ).toBeVisible();
+
+  const rowHeaders = page.locator(".ob-table tbody tr > th");
+  await expect(rowHeaders).toHaveCount(2);
+  await expect(rowHeaders.nth(0)).toContainText(
+    "Which tools let developers run multiple coding agents in one workspace?",
+  );
+  await expect(rowHeaders.nth(1)).toContainText(
+    "Which tools give coding agents local repository context?",
+  );
+
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Download agent brief" }).click();
+  const payload = JSON.parse(await readFile((await (await downloadPromise).path())!, "utf8"));
+  expect(payload.questions).toHaveLength(2);
+  expect(payload.questions[0].text).toBe(
+    "Which tools let developers run multiple coding agents in one workspace?",
+  );
+  expect(payload.questions[0].illustrativeFindings).toEqual(["Paseo", "Codegraff", "Lanes Desktop"]);
+  expect(payload.questions[1].illustrativeFindings).toEqual(["Codegraff", "Sample context tool"]);
+  expect(payload.competitors).toEqual([
+    "Paseo",
+    "Lanes Desktop",
+    "An Extremely Long Competitor Name For Wrapping Validation Incorporated",
+  ]);
+
+  await page.getByRole("button", { name: "Print report / Save PDF" }).click();
+  expect(
+    await page.evaluate(() => (window as unknown as { __obPrinted: number }).__obPrinted),
+  ).toBe(1);
+  await page.emulateMedia({ media: "print" });
+  await expect(page.locator(".ob-actions")).toBeHidden();
+  await expect(page.locator(".ob-rail")).toBeHidden();
+  await expect(page.locator(".ob-aside")).toBeHidden();
+  await expect(page.locator(".ob-banner p")).toBeVisible();
+  await expect(overview).toBeVisible();
+  await expect(page.locator(".ob-table")).toBeVisible();
+  await expect(page.getByText("Make the website’s identity clear")).toBeVisible();
+  await page.emulateMedia({ media: "screen" });
+  await assertNoHorizontalOverflow(page);
   expect(violations).toEqual([]);
 });

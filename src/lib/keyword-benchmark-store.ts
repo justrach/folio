@@ -1,7 +1,8 @@
 import "server-only";
 import type { D1Database } from "@cloudflare/workers-types";
 import type { AgentReservationGuard } from "./agent-observation-types";
-import { validateKeywordCollectionEvidence } from "./keyword-search-mode";
+import { keywordPublicUrl, validateKeywordCollectionEvidence } from "./keyword-search-mode";
+import { parseWebsiteResearch } from "./website-research";
 import { KEYWORD_BENCHMARK_SURFACE, KEYWORD_BENCHMARK_QUERY_MAX_LENGTH, isKeywordBenchmarkId, keywordSearchMode, type KeywordBenchmarkAnswer, type KeywordBenchmarkCase,
   type KeywordBenchmarkCaseInput, type KeywordBenchmarkExecution, type KeywordBenchmarkRun,
   type KeywordBenchmarkRunSummary, type KeywordBenchmarkSuite, type KeywordBenchmarkSuiteSummary,
@@ -48,6 +49,18 @@ export function validateKeywordBenchmarkCase(value: KeywordBenchmarkCaseInput): 
     try { result.searchMode = keywordSearchMode(value.searchMode); }
     catch { throw new KeywordBenchmarkStoreError("Invalid keyword search mode.", 400); }
   }
+  if (value.websiteResearch !== undefined) {
+    const research = value.websiteResearch;
+    const target = keywordPublicUrl(result.targetUrl);
+    if (!research || !["query-discovery", "competitor-research"].includes(research.stage) ||
+      Object.keys(research).some(key => !["stage", "discoveryRunId"].includes(key)) || result.searchMode !== "open-web" || !target || target.search ||
+      result.rubricVersion !== (research.stage === "query-discovery" ? "website-query-discovery-v1" : "website-competitor-research-v1") ||
+      (research.stage === "query-discovery" ? research.discoveryRunId !== undefined : !isKeywordBenchmarkId(research.discoveryRunId)))
+      throw new KeywordBenchmarkStoreError("Invalid private website research case.", 400);
+    result.websiteResearch = { stage: research.stage, ...(research.discoveryRunId ? { discoveryRunId: research.discoveryRunId } : {}) };
+  } else if (["website-query-discovery-v1", "website-competitor-research-v1"].includes(result.rubricVersion)) {
+    throw new KeywordBenchmarkStoreError("Website research requires its stage and review provenance.", 400);
+  }
   if (value.referenceFacts !== undefined) {
     if (!Array.isArray(value.referenceFacts) || value.referenceFacts.length > 30) throw new KeywordBenchmarkStoreError("At most 30 independent reference facts are allowed.", 400);
     result.referenceFacts = value.referenceFacts.map(fact => ({ id: bounded(fact?.id, "reference ID", 100), statement: bounded(fact?.statement, "reference statement", 2000) }));
@@ -86,6 +99,13 @@ export function validateKeywordBenchmarkAnswer(value: KeywordBenchmarkAnswer): K
     try { result.collection = validateKeywordCollectionEvidence(value.collection); }
     catch { throw new KeywordBenchmarkStoreError("Invalid or oversized keyword collection evidence.", 400); }
   }
+  if (value.websiteResearch !== undefined) {
+    const research = value.websiteResearch;
+    const parsed = parseWebsiteResearch(research, { stage: research.stage, targetUrl: research.targetUrl,
+      query: research.stage === "competitor-research" ? research.query : "" }, result);
+    if (!parsed) throw new KeywordBenchmarkStoreError("Invalid saved website research evidence.", 400);
+    result.websiteResearch = parsed;
+  }
   json(result, 1_000_000);
   return result;
 }
@@ -113,13 +133,13 @@ function decodeCase(row: CaseRow): KeywordBenchmarkCase {
 }
 /** Suite insertion and all cases are a single D1 transaction; quota failures add no rows. */
 export async function createKeywordBenchmarkSuite(db: D1Database, ownerId: string,
-  input: { name: string; description?: string; cases: (KeywordBenchmarkCaseInput & { id?: string })[] }, options: { maxSuites?: number } = {}): Promise<KeywordBenchmarkSuite> {
+  input: { name: string; description?: string; cases: (KeywordBenchmarkCaseInput & { id?: string })[] }, options: { maxSuites?: number; id?: string } = {}): Promise<KeywordBenchmarkSuite> {
   requireOwner(ownerId);
   const name = bounded(input.name, "suite name", 200), description = bounded(input.description ?? "", "suite description", 4000, true);
   if (!Array.isArray(input.cases) || !input.cases.length || input.cases.length > 50) throw new KeywordBenchmarkStoreError("A benchmark suite requires 1 to 50 cases.", 400);
   const maxSuites = options.maxSuites ?? 20;
   if (!Number.isInteger(maxSuites) || maxSuites < 1 || maxSuites > 100) throw new KeywordBenchmarkStoreError("Invalid operator suite allowance.", 400);
-  const suiteId = crypto.randomUUID(), now = Date.now();
+  const suiteId = options.id === undefined ? crypto.randomUUID() : benchmarkId(options.id, "suite ID"), now = Date.now();
   const cases = input.cases.map(value => ({ input: validateKeywordBenchmarkCase(value), id: value.id === undefined ? crypto.randomUUID() : benchmarkId(value.id, "case ID") }));
   if (new Set(cases.map(value => value.id)).size !== cases.length) throw new KeywordBenchmarkStoreError("Case IDs must be unique.", 400);
   const result = await db.batch([
@@ -145,7 +165,9 @@ export async function listKeywordBenchmarkSuites(db: D1Database, ownerId: string
   requireOwner(ownerId);
   const rows = await db.prepare(`SELECT s.id,s.name,s.description,s.created_at,
     (SELECT COUNT(*) FROM keyword_benchmark_cases c WHERE c.user_id=s.user_id AND c.suite_id=s.id) AS case_count
-    FROM keyword_benchmark_suites s WHERE s.user_id=? ORDER BY s.created_at DESC,s.id LIMIT 20`).bind(ownerId).all<SuiteRow>();
+    FROM keyword_benchmark_suites s WHERE s.user_id=?
+    AND NOT EXISTS(SELECT 1 FROM keyword_benchmark_cases r WHERE r.user_id=s.user_id AND r.suite_id=s.id AND json_extract(r.case_json,'$.websiteResearch.stage') IS NOT NULL)
+    ORDER BY s.created_at DESC,s.id LIMIT 20`).bind(ownerId).all<SuiteRow>();
   return rows.results.map(row => ({ id: row.id, name: row.name, description: row.description, createdAt: new Date(row.created_at).toISOString(), caseCount: row.case_count ?? 0 }));
 }
 export async function updateKeywordBenchmarkCase(db: D1Database, ownerId: string, caseId: string, revision: number, input: KeywordBenchmarkCaseInput): Promise<KeywordBenchmarkCase> {
@@ -187,12 +209,14 @@ export async function getKeywordBenchmarkRun(db: D1Database, ownerId: string, id
   const row = await db.prepare(`SELECT ${runColumns},answer_json FROM keyword_benchmark_runs WHERE user_id=? AND id=?`).bind(ownerId, id).first<RunRow>();
   return row ? decodeRun(row) : null;
 }
-export async function listKeywordBenchmarkRuns(db: D1Database, ownerId: string, options: { suiteId?: string; caseId?: string } = {}): Promise<KeywordBenchmarkRunSummary[]> {
+export async function listKeywordBenchmarkRuns(db: D1Database, ownerId: string, options: { suiteId?: string; caseId?: string; includeWebsiteResearch?: boolean } = {}): Promise<KeywordBenchmarkRunSummary[]> {
   requireOwner(ownerId);
   if (options.suiteId !== undefined) benchmarkId(options.suiteId, "suite ID");
   if (options.caseId !== undefined) benchmarkId(options.caseId, "case ID");
   const rows = await db.prepare(`SELECT ${runColumns} FROM keyword_benchmark_runs WHERE user_id=?
-    AND (? IS NULL OR suite_id=?) AND (? IS NULL OR case_id=?) ORDER BY created_at DESC,id DESC LIMIT 100`)
+    AND (? IS NULL OR suite_id=?) AND (? IS NULL OR case_id=?)
+    ${options.includeWebsiteResearch ? "" : "AND json_extract(case_json,'$.websiteResearch.stage') IS NULL"}
+    ORDER BY created_at DESC,id DESC LIMIT 100`)
     .bind(ownerId, options.suiteId ?? null, options.suiteId ?? null, options.caseId ?? null, options.caseId ?? null).all<RunRow>();
   return rows.results.map(row => {
     const { answer: _answer, case: input, ...run } = decodeRun(row);
@@ -202,7 +226,7 @@ export async function listKeywordBenchmarkRuns(db: D1Database, ownerId: string, 
 }
 /** Page saved attempts after owned website/scope/model filtering, never after an account-wide limit. */
 export async function listWebsiteKeywordRunsPage(db: D1Database, ownerId: string, options: {
-  websiteId: string; searchMode: string; model?: string; cursor?: string;
+  websiteId: string; searchMode: string; model?: string; cursor?: string; researchOnly?: boolean;
 }) {
   requireOwner(ownerId); benchmarkId(options.websiteId, "website ID");
   if (!["open-web", "reviewed-domains"].includes(options.searchMode)) throw new KeywordBenchmarkStoreError("Invalid search scope.", 400);
@@ -215,7 +239,8 @@ export async function listWebsiteKeywordRunsPage(db: D1Database, ownerId: string
   }
   const site = await db.prepare("SELECT url FROM sites WHERE id=? AND user_id=?").bind(options.websiteId, ownerId).first<{url:string}>();
   if (!site) throw new KeywordBenchmarkStoreError("Owned website not found.", 404);
-  const where = "user_id=? AND json_extract(case_json,'$.targetUrl')=? AND COALESCE(json_extract(case_json,'$.searchMode'),'reviewed-domains')=?";
+  const where = "user_id=? AND json_extract(case_json,'$.targetUrl')=? AND COALESCE(json_extract(case_json,'$.searchMode'),'reviewed-domains')=?" +
+    (options.researchOnly ? " AND json_extract(case_json,'$.websiteResearch.stage') IN ('query-discovery','competitor-research')" : " AND json_extract(case_json,'$.websiteResearch.stage') IS NULL");
   const models = await db.prepare(`SELECT DISTINCT model FROM keyword_benchmark_runs WHERE ${where} ORDER BY model`).bind(ownerId, site.url, options.searchMode).all<{model:string}>();
   const rows = await db.prepare(`SELECT ${runColumns} FROM keyword_benchmark_runs WHERE ${where}
     AND (? IS NULL OR model=?) AND (? IS NULL OR created_at<? OR (created_at=? AND id<?)) ORDER BY created_at DESC,id DESC LIMIT 101`)
@@ -253,6 +278,8 @@ export function prepareKeywordBenchmarkReservation(db: D1Database, ownerId: stri
       AND (SELECT COUNT(*) FROM keyword_benchmark_runs WHERE user_id=? AND status IN ('queued','running','requires_action')
         AND NOT(status='requires_action' AND archived_at IS NOT NULL)
         AND NOT(status='requires_action' AND session_id IS NULL AND create_attempt_at IS NOT NULL AND hold_release_at IS NOT NULL)) < ?
+      AND (json_extract(c.case_json,'$.websiteResearch.stage') IS NULL OR NOT EXISTS(
+        SELECT 1 FROM keyword_benchmark_runs r WHERE r.user_id=c.user_id AND r.case_id=c.id))
       AND NOT EXISTS(SELECT 1 FROM keyword_benchmark_runs h WHERE h.user_id=c.user_id AND h.case_id=c.id
         AND h.status='requires_action' AND (h.archived_at IS NOT NULL OR (h.session_id IS NULL AND h.create_attempt_at IS NOT NULL AND h.hold_release_at IS NOT NULL)))
       ${guard ? "AND EXISTS(SELECT 1 FROM agent_api_requests WHERE id=? AND user_id=? AND run_id=? AND disposition='started')" : ""}
@@ -272,6 +299,9 @@ export async function reserveKeywordBenchmarkRun(db: D1Database, ownerId: string
     const baseline = input.baselineRunId ? await getKeywordBenchmarkRun(db, ownerId, input.baselineRunId) : null;
     if (!ownedCase || (input.baselineRunId && (!baseline || baseline.caseId !== input.caseId || baseline.kind !== "baseline" || baseline.status !== "completed")))
       throw new KeywordBenchmarkStoreError("The owned case or completed baseline is unavailable.", 404);
+    const researchAttempt = await db.prepare("SELECT id FROM keyword_benchmark_runs WHERE user_id=? AND case_id=? AND json_extract(case_json,'$.websiteResearch.stage') IS NOT NULL LIMIT 1")
+      .bind(ownerId, input.caseId).first();
+    if (researchAttempt) throw new KeywordBenchmarkStoreError("This research attempt already exists. Reopen its saved run; do not submit it again.", 409);
     const releasedUnknown = await db.prepare(`SELECT id FROM keyword_benchmark_runs WHERE user_id=? AND case_id=?
       AND status='requires_action' AND (archived_at IS NOT NULL OR (session_id IS NULL AND create_attempt_at IS NOT NULL AND hold_release_at IS NOT NULL)) LIMIT 1`)
       .bind(ownerId, input.caseId).first();
@@ -334,6 +364,8 @@ const safeErrors = new Set([
   "The completed provider answer could not be validated.", "The provider session could not be retrieved. Try retrieving this saved session again.",
   "The benchmark exceeded its local wait deadline; cancellation is not yet confirmed.",
   "Cancellation was requested. The final provider outcome is not yet confirmed.",
+  "Codegraff hosted search returned no usable HTTPS results.",
+  "Codegraff finished without a Folio-valid JSON answer. Do not resend the prompt.",
   "Cancellation could not be confirmed. Retrieve the saved session; cancellation will not be submitted again automatically.",
   "Session creation was rejected before a session receipt was confirmed.",
   "The provider session is idle with no saved turn, items or requested action. The initial submission remains unresolved; do not resend it.",
@@ -365,8 +397,14 @@ export async function updateKeywordBenchmarkRun(db: D1Database, ownerId: string,
   if (usage.cachedInputTokens != null && (usage.inputTokens == null || usage.cachedInputTokens > usage.inputTokens))
     throw new KeywordBenchmarkStoreError("Cached input cannot exceed reported input usage.", 400);
   const suppliedMetadata = { ...existing.providerMetadata, ...patch.providerMetadata };
+  const searchHosts = Array.isArray(suppliedMetadata.searchHosts) ? suppliedMetadata.searchHosts.filter((host): host is string => typeof host === "string" && host.length > 0 && host.length <= 80).slice(0, 8) : undefined;
+  const searchResultCount = typeof suppliedMetadata.searchResultCount === "number" && Number.isInteger(suppliedMetadata.searchResultCount) && suppliedMetadata.searchResultCount >= 0 && suppliedMetadata.searchResultCount <= 100 ? suppliedMetadata.searchResultCount : undefined;
+  const searchProvider = typeof suppliedMetadata.searchProvider === "string" && suppliedMetadata.searchProvider.length > 0 && suppliedMetadata.searchProvider.length <= 80 ? suppliedMetadata.searchProvider : undefined;
   const providerMetadata: KeywordBenchmarkRun["providerMetadata"] = {
     environmentId: suppliedMetadata.environmentId, requestId: suppliedMetadata.requestId, turnId: suppliedMetadata.turnId,
+    ...(searchProvider === undefined ? {} : { searchProvider }),
+    ...(searchResultCount === undefined ? {} : { searchResultCount }),
+    ...(searchHosts === undefined ? {} : { searchHosts }),
     ...(suppliedMetadata.creationHttpStatus === undefined ? {} : { creationHttpStatus: suppliedMetadata.creationHttpStatus }),
     ...(suppliedMetadata.creationErrorCode === undefined ? {} : { creationErrorCode: suppliedMetadata.creationErrorCode }),
   };

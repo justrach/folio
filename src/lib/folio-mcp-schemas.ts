@@ -1,4 +1,9 @@
 import { z } from "zod";
+import { websiteResearchSchema } from "./website-research";
+
+// The saved projection additionally validates semantic citation/comparison constraints.
+const websiteResearch = z.union((["query-discovery", "competitor-research"] as const).map(stage =>
+  z.fromJSONSchema(websiteResearchSchema(stage) as Parameters<typeof z.fromJSONSchema>[0])));
 
 // Strict application projections: unknown evidence remains null, and omitted legacy
 // fields remain optional. Provider usage is JSON metadata, not a Folio metric.
@@ -14,8 +19,8 @@ const site = obj({id:s,url:s,name:s});
 const citation = obj({field:z.enum(["productName","pricing","finding"]),evidenceId:s,quote:s});
 const finding = obj({dimension:s,status:z.enum(["supported","unmeasured"]),evidenceIds:strings,explanation:s,recommendation:s});
 const verified = obj({summary:s,checks:z.array(obj({id:s,label:s,status:z.enum(["pass","fail","unmeasured"]),expected:s,actual:s,detail:s,evidenceIds:strings})),passed:n,failed:n,unmeasured:n,measured:n,verificationScore:nn,findings:z.array(finding),citations:z.array(citation),limitations:strings});
-const answer = obj({text:s,mentions:z.array(obj({name:s,url:sn,reason:s.optional(),citationUrls:strings.optional()})),citations:z.array(obj({url:s,title:s.optional(),quote:s.optional()})),evidence:z.array(obj({id:s,outcome:z.enum(["passed","failed","unmeasured"]),detail:s})).optional(),limitations:strings.optional()});
-const usage = obj({inputTokens:nn,outputTokens:nn,totalTokens:nn,costUsd:nn});
+const answer = obj({text:s,mentions:z.array(obj({name:s,url:sn,reason:s.optional(),citationUrls:strings.optional()})),citations:z.array(obj({url:s,title:s.optional(),quote:s.optional()})),evidence:z.array(obj({id:s,outcome:z.enum(["passed","failed","unmeasured"]),detail:s})).optional(),limitations:strings.optional(),websiteResearch:websiteResearch.optional()});
+const usage = obj({inputTokens:nn,cachedInputTokens:nn.optional(),outputTokens:nn,totalTokens:nn,costUsd:nn});
 const runCommon = {id:s,status,model:sn,surface:z.literal("openai-managed-agents"),createdAt:s,updatedAt:s,observedAt:sn,error:sn,pollUrl:s,recovery:obj({runId:s,sessionId:s}).nullable(),provenance:obj({searchMode:mode.nullable(),harnessVersion:s,environmentFingerprint:sn,environmentType:sn.optional(),allowedDomains:strings,completedSearchCount:nn})};
 const run = z.discriminatedUnion("kind",[
   obj({...runCommon,kind:z.literal("website"),result:verified.nullable(),usage:z.record(s,z.json()).nullable()}),

@@ -1,6 +1,6 @@
 # Folio architecture
 
-Folio is a Next.js application with a public search-results dashboard and private website workspaces. Technical readiness, SEO context, keyword search observations, and captured-evidence evaluations keep separate inputs, scoring, and publication rules. The application uses the **managed OpenAI Agents API** for live agent work. OpenAI runs the agent; Folio owns authentication, capture, run records, result verification, and presentation.
+Folio is a Next.js application with a public search-results dashboard and private website workspaces. Technical readiness, SEO context, keyword search observations, and captured-evidence evaluations keep separate inputs, scoring, and publication rules. The application uses the **managed OpenAI Agents API** for website evaluations and for keyword starts that still need OpenAI (SEO tools, TypeSafe, or no Codegraff key). Ordinary keyword starts can use host-side Codegraff search plus `glm-5.3-flash` instead. Folio owns authentication, capture, run records, result verification, and presentation.
 
 This document describes the implementation and identifies production work still required. See [EVALUATION-STRATEGY.md](EVALUATION-STRATEGY.md) for what the results establish and [docs/MONETIZATION.md](docs/MONETIZATION.md) for proposed commercial packaging.
 
@@ -11,8 +11,9 @@ flowchart LR
   Browser[Browser: Folio UI] --> Next[Next.js App Router / OpenNext Worker]
   Client[External agent: scoped Folio key] --> Next
   Next --> Auth[Better Auth]
-  Auth --> D1[(Cloudflare D1)]
-  Next --> D1
+  Auth --> PG[(PlanetScale PostgreSQL via Hyperdrive)]
+  Next --> PG
+  D1[(Cloudflare D1: retained rollback)] -. one-time migration .-> PG
   Next --> Capture[Bounded HTTPS capture]
   Capture --> Website[Operator-approved public website]
   Next --> Agents[OpenAI managed Agents API]
@@ -21,7 +22,7 @@ flowchart LR
   Next --> SEO[DataForSEO: two fixed endpoints]
   Auth --> Google[Google identity and explicit read-only consent]
   Next --> GSC[Google Search Console: properties and performance]
-  D1 --> Public[Opt-in technical index projection]
+  PG --> Public[Opt-in technical index projection]
   Public --> Browser
   Artifact[Reviewed public search and progress artifacts] --> PublicDashboard[Public snapshot GET and validation]
   PublicDashboard --> Browser
@@ -32,10 +33,10 @@ flowchart LR
 | Presentation        | Landing page, workspace navigation, charts, evaluations, evidence inspection, agent activity, and proposed pricing | `src/components/`, `src/app/[[...slug]]/page.tsx`                       |
 | Public dashboard | Read-only task progress, published results, per-query selection and strict derived counters | `src/lib/public-dashboard.ts`, `src/components/public-benchmark-dashboard.tsx`, `src/app/api/public/benchmarks/route.ts` |
 | Server boundary     | Session validation, owner-scoped access, bounded inputs, provider calls, and public response projections           | `src/app/api/`                                                          |
-| Authentication      | Email/password, optional Google identity, explicit same-email linking, and persisted sessions                       | `src/lib/auth.ts`, `src/lib/google-auth.ts`, `src/lib/auth-schema.ts`    |
+| Authentication      | Email/password, optional Google identity, explicit same-email linking, and persisted sessions                       | `src/lib/auth.ts`, `src/lib/google-auth.ts`, `src/lib/auth-schema.ts`, `src/lib/auth-schema-pg.ts` |
 | Agent-facing API    | Scoped key authentication, saved freshness, atomic idempotency and shared run services | `src/lib/agent-api*.ts`, `src/lib/agent-observation-*.ts`, `src/app/api/v1/` |
 | Keyword observations | Separate hosted search runs, frozen case/configuration, target matching and comparisons | `src/lib/keyword-benchmark-*.ts`, `src/lib/keyword-search-mode.ts` |
-| Database            | D1 stores accounts, private sites/scans, rate limits, and evaluation runs                                          | `src/lib/db.ts`, `migrations/`                                          |
+| Database            | Production uses PlanetScale PostgreSQL through Hyperdrive; local development uses D1, retained remotely for rollback | `src/lib/db.ts`, `src/lib/pg-d1.ts`, `migrations/`, `migrations/postgres/` |
 | Technical readiness | Fetch one approved public HTML page; apply the versioned deterministic rubric                                      | `src/lib/scanner.ts`, `src/lib/evaluation.ts`                           |
 | Agent integration   | Create managed sessions with initial input, retrieve turns/items, cancel, and expose connection state              | `src/lib/agents.ts`, `src/lib/agent-runs.ts`, and evaluation routes     |
 | Evidence evaluation | Typed suite, captures, independent verification, and private run persistence                                       | `src/lib/evals.ts`, `src/lib/eval-verifier.ts`, `src/lib/eval-store.ts` |
@@ -44,7 +45,7 @@ flowchart LR
 
 The deployment target is Cloudflare Workers through OpenNext. Bun manages dependencies and package scripts; explicit Node commands and Miniflare/`workerd` retain their runtimes. `next dev` uses the OpenNext development integration and Wrangler's local D1 binding, backed by Miniflare/`workerd`. Its explicit persistence path is `.wrangler/state/v3`, with remote bindings disabled. Migration/status commands pass Wrangler `.wrangler/state` because its CLI adds `/v3`; local exports run from the repository root using that same default store. Database bindings are obtained per request; they are not cached across Worker requests. See [local D1 persistence, exports, and runtime tests](docs/LOCAL-D1.md) and [Cloudflare and authentication setup](docs/cloudflare-auth.md).
 
-D1 remains the pilot's system of record. The isolated Miniflare integration suite exercises migrations, owner predicates, revisions, reservations, deletion accounting, and restart persistence through its actual binding. Local persistence and private SQL exports do not provision a production database or establish a production recovery policy. Postgres is a future option if measured capacity or specific SQL/transaction requirements justify a migration; moving large evidence objects into R2 is also a proposal, not current implementation.
+The September 27, 2026 cutover moved both production Workers to PlanetScale PostgreSQL through cache-disabled Hyperdrive. The final D1 snapshot was verified field by field after import; D1 remains frozen as a rollback source, not a dual-write peer. PostgreSQL writes use a transaction-scoped row lock to preserve the existing serialized reservation gates. Local D1 development remains separate. Live owner sign-in and long-term behavior still need validation, and Cloudflare's generic PostgreSQL table lists 9–17 as known supported while its PlanetScale provider row says all versions; the live PostgreSQL 18 read and transaction smokes passed, but ongoing monitoring remains important. See [the migration runbook](docs/POSTGRES-MIGRATION.md). Moving large evidence objects into R2 remains a separate proposal.
 
 The initial migration creates Better Auth's account/session tables, `sites`, `scans`, and `rate_limit`. The evaluation migration creates `evaluation_runs`: an owner key and queryable lifecycle columns accompany the private JSON run record, which contains captures, events, output, and verification. It enforces one active evaluation per owner. An atomic reservation also applies the deployment's rolling 24-hour live-run allowance, one by default; failed and ambiguous starts still count. This is a request allowance, not a dollar spending cap.
 
@@ -57,7 +58,7 @@ The website-evidence environment is `none`, which requires initial input when cr
 ### Live run lifecycle
 
 1. A signed-in owner requests a live evaluation. Server configuration and the operator's approved user-ID list gate provider spending; a user-supplied email or body field cannot establish authorization.
-2. Folio reserves the run in D1 before outbound work, validates the target against the reviewed host allowlist, fetches HTTPS HTML with a 190,000-byte limit, computes capture hashes, and persists the captures.
+2. Folio reserves the run in the production database before outbound work, validates the target against the reviewed host allowlist, fetches HTTPS HTML with a 190,000-byte limit, computes capture hashes, and persists the captures.
 3. Folio persists a creation-attempt marker, then makes one session-creation POST containing the initial task and captured evidence. It saves the session ID returned by that request. There is no second initial-input event; the provider may begin work before Folio receives or persists the ID.
 4. OpenAI executes the turn remotely. Navigating away does not make the browser responsible for executing the agent. Folio's evaluation view reconciles active runs by retrieving the remote session, turns, and saved items, including subsequent pages. Retrieval is bounded to ten pages per history collection; an incomplete collection is an error rather than a fabricated complete result.
 5. Once a terminal turn and its output are observed, Folio validates the output schema and independently verifies evidence references and supported checks. It persists the result and visible run activity for the owner.
@@ -69,7 +70,7 @@ Folio's activity list is a stored application view of capture, provider state, o
 
 ### Background behavior and its limit
 
-The remote session can work while the user visits another page or closes the browser. Folio performs local reconciliation when the user returns or asks to refresh the run. An optional Cloudflare Cron Worker now calls an authenticated internal endpoint through a service binding every five minutes. Its configuration is disabled by default. Three-run batches, fair last-attempt ordering, a D1 lease, and a shared server secret bound the job. It only reads existing provider state; it never creates a task, returns an application tool result, or sends a notification. Without deployment/enabling, a closed browser can leave local state behind until the next visit.
+The remote session can work while the user visits another page or closes the browser. Folio performs local reconciliation when the user returns or asks to refresh the run. An optional Cloudflare Cron Worker now calls an authenticated internal endpoint through a service binding every five minutes. Its configuration is disabled by default. Three-run batches, fair last-attempt ordering, a database lease, and a shared server secret bound the job. It only reads existing provider state; it never creates a task, returns an application tool result, or sends a notification. Without deployment/enabling, a closed browser can leave local state behind until the next visit.
 
 Recurring creation of new evaluations and delivered notifications remain separate future work. See [background-job configuration and limits](docs/BACKGROUND-JOBS.md).
 
@@ -148,15 +149,15 @@ The fetcher allows reviewed HTTPS hosts, rejects credentials/IP/local host forms
 
 ## Current production boundaries
 
-Private keyword benchmarks use migrations 0009 and 0010 for suites, frozen cases, run/configuration history, creation/cancellation attempts and usage reservations. Browser, CLI and scoped-key APIs share the service. Saving questions for an existing owned website performs no inference. New open-web cases use Astra and unrestricted-domain OpenAI live web search; their hosted sandbox has network disabled. Legacy cases retain their reviewed-domain search/network restrictions and original hashes. Normal limits are six starts per rolling day and one active keyword run, with explicit owner daily exceptions. A saved three-minute deadline is enforced by active reconciliation or CLI `--wait`, not a hard billing cap or deployed keyword scheduler. Comparisons require matching query, target, locale, mode, references and execution settings. Baselines are observations, not answer keys. See [keyword operations](docs/KEYWORD-BENCHMARKS.md).
+Private keyword benchmarks use migrations 0009 and 0010 for suites, frozen cases, run/configuration history, creation/cancellation attempts and usage reservations. Browser, CLI and scoped-key APIs share the service. Saving questions for an existing owned website performs no inference. When `CODEGRAFF_API_KEY` is set, ordinary keyword starts use Codegraff hosted search and `glm-5.3-flash` (`keyword-codegraff-v1` / `keyword-open-web-codegraff-v1`) with no Fleet lease. Otherwise new open-web cases use Luna and unrestricted-domain OpenAI live web search with `environment.type: "none"`. Folio validates the final JSON in both paths. Legacy cases retain their reviewed-domain search restrictions and original hashes. An optional Condensation Fleet client remains available for separate trials and is not leased per keyword start. Normal limits are six starts per rolling day and one active keyword run, with explicit owner daily exceptions. A saved three-minute deadline is enforced by active reconciliation or CLI `--wait`, not a hard billing cap or deployed keyword scheduler. Comparisons require matching query, target, locale, mode, references and execution settings. Baselines are observations, not answer keys. See [keyword operations](docs/KEYWORD-BENCHMARKS.md).
 
 The public search view loads separately reviewed artifacts whose strict field allowlists exclude owner/run/session IDs, usage, private references, raw provider items and credentials. Completed open-web observations retain original one-based recommendation positions. The dashboard selects the latest observation only for the same exact query; it neither fills missing answers nor combines positions into a general company score. Returned reasons/citations remain observations to inspect, not independently verified factual support. Publication is separate from private run storage and technical site-publication flags. An unresolved creation remains an unknown attempt in private accounting; operational dispositions are documented in [live validation](docs/LIVE-VALIDATION.md).
 
 The developer-tool directory is a different public dataset: reviewed source links and dated `readiness-v1` homepage summaries. Its batch script captures bounded HTML and evaluates it inside workerd without executing page JavaScript. Full captures stay in ignored local storage; published summaries contain bounded checks and content hashes. Local preview captures are excluded from the public directory. Neither this dataset nor keyword search observations reproduce consumer ChatGPT answers or measure execution against other vendors’ APIs.
 
-Authentication, D1 persistence, technical checks, manual DataForSEO access, managed session integration, and private evidence verification have distinct configuration requirements. A configured key is not a successful live integration test. Report live provider verification separately from fixture-driven automated tests.
+Authentication, database persistence, technical checks, manual DataForSEO access, managed session integration, and private evidence verification have distinct configuration requirements. A configured key is not a successful live integration test. Report live provider verification separately from fixture-driven automated tests.
 
-The intended public origin is `https://usefolio.site`. It requires a real remote D1 binding and migrations, production Worker secrets, matching Better Auth origin and Google callback, and verified deployment/domain configuration. Public Google onboarding additionally requires the external audience and applicable branding/data-access verification; local Testing access is not production approval. No deployment, DNS verification, Google approval, or live Search Console report is established by this architecture document.
+The public origin is `https://usefolio.site`. It now uses production Hyperdrive bindings and retains D1 for a reconciled rollback; it also requires Worker secrets, the matching Better Auth origin and Google callback, and verified deployment/domain configuration. Public Google onboarding additionally requires the external audience and applicable branding/data-access verification; local Testing access is not production approval. No deployment, DNS verification, Google approval, or live Search Console report is established by this architecture document.
 
 Scheduled collection, browser-rendered crawling, consumer AI visibility collection, independently operated cross-company agent benchmarks, ownership verification, team roles, automated retention policies, remote-provider deletion, autonomous provider lookup tools, automatic repairs/deployment, and payment processing require further implementation. The commercial plans in [MONETIZATION.md](docs/MONETIZATION.md) do not create those capabilities.
 
@@ -197,7 +198,7 @@ Folio now includes `/api/mcp` for coding clients and `/api/v1/seo` for explicit,
 
 ### Advisory semantic review
 
-An explicit owner action can review saved page-evidence fact citations with TypeSafe after deterministic integrity and quote checks. `typesafe-review-store.ts` reserves D1 capacity before inference and retains ambiguity without retry; `typesafe-citations.ts` bounds and validates the transport. This is separate from scoring, publication and reference truth. D1 usage is included in the private cost summary, with money unknown. See [TypeSafe reviews](docs/TYPESAFE-REVIEWS.md).
+An explicit owner action can review saved page-evidence fact citations with TypeSafe after deterministic integrity and quote checks. `typesafe-review-store.ts` reserves database capacity before inference and retains ambiguity without retry; `typesafe-citations.ts` bounds and validates the transport. This is separate from scoring, publication and reference truth. Stored usage is included in the private cost summary, with money unknown. See [TypeSafe reviews](docs/TYPESAFE-REVIEWS.md).
 
 ## Agent-directed website crawl
 
@@ -205,4 +206,4 @@ See [Luna crawl and Jev review](docs/WEBSITE-CRAWL.md): agent-controlled same-we
 
 ## Website keyword research
 
-Managed website questions now support Luna with optional, bounded DataForSEO related-keyword research. General coding clients can use the same research via Folio MCP. See [keyword research](docs/KEYWORD-RESEARCH.md) for authorization, limits, private D1 receipts and cost semantics.
+Managed website questions now support Luna with optional, bounded DataForSEO related-keyword research. General coding clients can use the same research via Folio MCP. See [keyword research](docs/KEYWORD-RESEARCH.md) for authorization, limits, private database receipts and cost semantics.

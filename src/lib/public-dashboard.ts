@@ -1,5 +1,6 @@
 import type { PublicSearchObservation, PublicSearchQuery, PublicSearchRankings } from "./public-search-rankings";
 import { assertPublicSearchRankings } from "./public-search-rankings-validation";
+import { assertPublicQuestionCoverage, type PublicQuestionCoverage } from "./public-question-coverage";
 
 export type PublicCollectionStatus = "not-started" | "queued" | "running" | "completed" | "failed" | "cancelled" | "unresolved";
 export type PublicCollectionProgress = {
@@ -41,6 +42,8 @@ export type PublicDashboardData = {
   /** Original artifact order is retained, including older observations. */
   observations: PublicSearchObservation[];
   htmlCoverage?: PublicHtmlCoverage | null;
+  /** Explicitly published advisory page coverage, bound to exact observed recommendations. */
+  questionCoverage?: PublicQuestionCoverage;
 };
 
 function invalid(): never { throw new Error("Invalid public collection progress artifact."); }
@@ -74,8 +77,9 @@ export function assertPublicCollectionProgress(value: unknown, queries: readonly
 }
 
 /** Derive public-only display data. No authentication, private lookup, capture, or provider operation. */
-export function buildPublicDashboard(rankings: unknown, status: unknown): PublicDashboardData {
+export function buildPublicDashboard(rankings: unknown, status: unknown, questionCoverage?: unknown): PublicDashboardData {
   assertPublicSearchRankings(rankings);
+  if (questionCoverage !== undefined) assertPublicQuestionCoverage(questionCoverage, rankings);
   assertPublicCollectionProgress(status, rankings.queries, rankings.observations);
   const publicRankings: PublicSearchRankings = structuredClone(rankings);
   const collectionById = new Map(status.queries.map(query => [query.queryId, query]));
@@ -103,7 +107,8 @@ export function buildPublicDashboard(rankings: unknown, status: unknown): Public
       publishedObservationCount: publicRankings.observations.length,
       completedUnpublishedQueryCount: queries.filter(query => query.resultStatus === "awaiting-publication").length,
       collection, uniqueRecommendedWebsiteCount: websites.size, uniqueCitedSourceCount: sources.size },
-    queries, observations: publicRankings.observations, htmlCoverage: null };
+    queries, observations: publicRankings.observations, htmlCoverage: null,
+    ...(questionCoverage === undefined ? {} : { questionCoverage: structuredClone(questionCoverage as PublicQuestionCoverage) }) }; 
 }
 
 /** HTML coverage is independent of search collection, and excludes local previews and non-catalog rows. */
@@ -146,7 +151,7 @@ function assertHtmlCoverage(value: unknown): asserts value is PublicHtmlCoverage
 
 /** Validate fetched public data, including exact source order, relationships, and recomputed counters. */
 export function assertPublicDashboardData(value: unknown): asserts value is PublicDashboardData {
-  const data = plain(value, ["format", "updatedAt", "summary", "queries", "observations"], ["htmlCoverage"]);
+  const data = plain(value, ["format", "updatedAt", "summary", "queries", "observations"], ["htmlCoverage", "questionCoverage"]);
   if (data.format !== "folio-public-dashboard-v1" || !Array.isArray(data.queries)) return invalid();
   const queries: Record<string, unknown>[] = [], progress: Record<string, unknown>[] = [];
   for (const item of data.queries) {
@@ -161,4 +166,7 @@ export function assertPublicDashboardData(value: unknown): asserts value is Publ
     {format: "folio-public-search-progress-v1", updatedAt: data.updatedAt, queries: progress});
   if (!equalJson(data.summary, expected.summary) || !equalJson(data.queries, expected.queries)) return invalid();
   if (Object.hasOwn(data, "htmlCoverage") && data.htmlCoverage !== null) assertHtmlCoverage(data.htmlCoverage);
+  if (Object.hasOwn(data, "questionCoverage")) assertPublicQuestionCoverage(data.questionCoverage, {
+    format: "folio-public-search-rankings-v1", queries: expected.queries.map(({ id, audience, category, query, language, locale }) => ({ id, audience, category, query, language, locale })), observations: expected.observations,
+  });
 }

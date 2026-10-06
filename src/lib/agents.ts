@@ -23,6 +23,8 @@ export type AgentsEnvironment = {
   OPENAI_MAX_RUNS_PER_DAY?: string;
   OPENAI_UNMETERED_USER_IDS?: string;
   OPENAI_PARALLEL_USER_IDS?: string;
+  CONDENSATION_API_KEY?: string;
+  CODEGRAFF_API_KEY?: string;
 };
 
 export type EvaluationEvidence = {
@@ -104,6 +106,8 @@ function runtimeEnvironment(): AgentsEnvironment {
     OPENAI_MAX_RUNS_PER_DAY: process.env.OPENAI_MAX_RUNS_PER_DAY,
     OPENAI_UNMETERED_USER_IDS: process.env.OPENAI_UNMETERED_USER_IDS,
     OPENAI_PARALLEL_USER_IDS: process.env.OPENAI_PARALLEL_USER_IDS,
+    CONDENSATION_API_KEY: process.env.CONDENSATION_API_KEY,
+    CODEGRAFF_API_KEY: process.env.CODEGRAFF_API_KEY,
   };
 }
 

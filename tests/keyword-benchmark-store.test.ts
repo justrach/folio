@@ -42,7 +42,8 @@ test("creation diagnostics are bounded, require an attempt, and survive retrieva
   try {
     const suite = await createKeywordBenchmarkSuite(db, "alice", { name: "Diagnostics fixture", cases: [fixture] });
     let run = await reserveKeywordBenchmarkRun(db, "alice", { ...execution, caseId: suite.cases[0].id, kind: "baseline" });
-    const metadata = { ...run.providerMetadata, creationHttpStatus: 429, creationErrorCode: "UPSTREAM_ERROR" as const };
+    const metadata = { ...run.providerMetadata, creationHttpStatus: 429, creationErrorCode: "UPSTREAM_ERROR" as const,
+      searchProvider: "codegraff-responses-web-search", searchResultCount: 43 };
     await assert.rejects(updateKeywordBenchmarkRun(db, "alice", run.id, run.revision, { providerMetadata: metadata }), /saved creation attempt/);
     run = await markKeywordBenchmarkCreateAttempt(db, "alice", run.id, run.revision);
     for (const status of [99, 600, 429.5, NaN]) await assert.rejects(updateKeywordBenchmarkRun(db, "alice", run.id, run.revision,
@@ -56,6 +57,8 @@ test("creation diagnostics are bounded, require an attempt, and survive retrieva
       { sessionId: "recovered_fixture_session", providerMetadata: { environmentId: "recovered_env", requestId: "retrieval_request", turnId: "retrieval_turn" } });
     assert.equal(run.providerMetadata.creationHttpStatus, 429);
     assert.equal(run.providerMetadata.creationErrorCode, "UPSTREAM_ERROR");
+    assert.equal(run.providerMetadata.searchResultCount, 43);
+    assert.equal((await getKeywordBenchmarkRun(db, "alice", run.id))?.providerMetadata.searchResultCount, 43);
     assert.equal(run.status, "requires_action"); assert.equal(run.usage.costUsd, null);
   } finally { sqlite.close(); }
 });

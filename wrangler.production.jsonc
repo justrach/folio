@@ -16,14 +16,10 @@
   "services": [
     { "binding": "WORKER_SELF_REFERENCE", "service": "folio-visibility" }
   ],
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "folio-visibility",
-      "database_id": "1ac63021-5da1-45c8-839e-5ba35898bea5",
-      "migrations_dir": "migrations"
-    }
-  ],
+  "hyperdrive": [{
+    "binding": "HYPERDRIVE",
+    "id": "4fda2d3a8b07493ca3fd8c2737b032cf"
+  }],
   "vars": {
     "BETTER_AUTH_URL": "https://usefolio.site",
     "EVALUATION_RECONCILE_ENABLED": "false"

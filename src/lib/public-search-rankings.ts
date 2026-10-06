@@ -1,7 +1,7 @@
-import artifact from "@/data/public-search-rankings.json";
-import progressArtifact from "@/data/public-search-progress.json";
+import artifact from "../data/public-search-rankings.json";
+import progressArtifact from "../data/public-search-progress.json";
 import type { PublicCollectionProgress } from "./public-dashboard";
-import additionalQuestions from "@/data/public-additional-questions.json";
+import additionalQuestions from "../data/public-additional-questions.json";
 import type { WebsiteAudience } from "./developer-tools-source";
 import { assertPublicSearchRankings } from "./public-search-rankings-validation";
 
