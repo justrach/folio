@@ -122,6 +122,7 @@ function OwnerWebsites({ onAudit }: { onAudit?: (url: string) => void }) {
           {!selected && <option value="">Select one of your websites</option>}
           {sites.map(site => <option key={site.id} value={site.id}>{site.name} · {new URL(site.url).hostname}</option>)}
         </select></label>}
+        {!loading && !selected && !!sites.length && <p className="owned-website-note">Choose a website above to open its research, results, and reports.</p>}
         {selected && <>
           <div className="owned-website-title"><h3>{new URL(selected.url).hostname}</h3><span>{selected.isPublic ? "Technical scan shared" : "Private website"}</span></div>
           <p>{selected.seoScore == null ? "Technical readiness has not been measured yet." : `Latest technical readiness: ${selected.seoScore}/100.`}</p>

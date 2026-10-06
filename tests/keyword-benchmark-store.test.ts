@@ -159,11 +159,15 @@ test("owned website comparison summarizes latest completed answers per site with
     sqlite.prepare("INSERT INTO sites(id,user_id,url,name,created_at) VALUES(?,?,?,?,?)").run("site-alpha", "alice", "https://alpha-fixture.dev/", "Alpha", Date.now());
     sqlite.prepare("INSERT INTO sites(id,user_id,url,name,created_at) VALUES(?,?,?,?,?)").run("site-beta", "alice", "https://beta-fixture.dev/", "Beta", Date.now());
     const suite = await createKeywordBenchmarkSuite(db, "alice", { name: "Comparison fixtures", cases: [
-      { ...fixture, query: "Alpha question one", targetUrl: "https://alpha-fixture.dev/", searchMode: "open-web" },
-      { ...fixture, query: "Alpha question two", targetUrl: "https://alpha-fixture.dev/", searchMode: "open-web" },
-      { ...fixture, query: "Shared question", targetUrl: "https://beta-fixture.dev/", searchMode: "open-web" },
+      { ...fixture, query: "Alpha question one", targetUrl: "https://alpha-fixture.dev/", searchMode: "open-web", referenceFacts: [] },
+      { ...fixture, query: "Alpha question two", targetUrl: "https://alpha-fixture.dev/", searchMode: "open-web", referenceFacts: [] },
+      { ...fixture, query: "Shared question", targetUrl: "https://beta-fixture.dev/", searchMode: "open-web", referenceFacts: [] },
     ] });
-    async function complete(caseId: string, targetUrl: string, mentions: KeywordBenchmarkAnswer["mentions"]) {
+    // The node:sqlite shim reuses bound values across statements; read back the
+    // frozen case rows so each completion attaches to the intended case.
+    const frozen = new Map((await getKeywordBenchmarkSuite(db, "alice", suite.id))!.cases.map((item) => [item.query, item]));
+    async function complete(query: string, targetUrl: string, mentions: KeywordBenchmarkAnswer["mentions"]) {
+      const caseId = frozen.get(query)!.id;
       let run = await reserveKeywordBenchmarkRun(db, "alice", { ...execution, caseId, kind: "baseline" }, { maxRunsPerDay: null });
       run = await markKeywordBenchmarkCreateAttempt(db, "alice", run.id, run.revision);
       return updateKeywordBenchmarkRun(db, "alice", run.id, run.revision, {
@@ -172,9 +176,9 @@ test("owned website comparison summarizes latest completed answers per site with
         answer: { text: "Synthetic observation", mentions, citations: [{ url: targetUrl }] },
       });
     }
-    await complete(suite.cases[0].id, "https://alpha-fixture.dev/", [{ name: "Alpha", url: "https://alpha-fixture.dev/" }]);
-    await complete(suite.cases[1].id, "https://alpha-fixture.dev/", [{ name: "Other", url: "https://other-fixture.dev/" }]);
-    await complete(suite.cases[2].id, "https://beta-fixture.dev/", [{ name: "Beta", url: "https://beta-fixture.dev/" }]);
+    await complete("Alpha question one", "https://alpha-fixture.dev/", [{ name: "Alpha", url: "https://alpha-fixture.dev/" }]);
+    await complete("Alpha question two", "https://alpha-fixture.dev/", [{ name: "Other", url: "https://other-fixture.dev/" }]);
+    await complete("Shared question", "https://beta-fixture.dev/", [{ name: "Beta", url: "https://beta-fixture.dev/" }]);
     const both = await summarizeOwnedWebsites(db, "alice", { searchMode: "open-web" });
     assert.equal(both.failedReads, 0);
     assert.equal(both.snapshots.length, 2);
@@ -183,6 +187,7 @@ test("owned website comparison summarizes latest completed answers per site with
     assert.equal(alpha.answered, 2);
     assert.equal(alpha.appeared, 1);
     assert.equal(alpha.appearanceRate, 50);
+    assert.equal(beta.answered, 1);
     assert.equal(beta.appeared, 1);
     assert.equal(beta.appearanceRate, 100);
     assert.equal((await summarizeOwnedWebsites(db, "bob", { searchMode: "open-web" })).snapshots.length, 0);

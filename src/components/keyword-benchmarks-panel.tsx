@@ -256,6 +256,16 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
       <button type="button" className="benchmark-refresh" disabled={!!busy} onClick={() => setRefresh(value => value + 1)} aria-label="Refresh saved history"><RefreshCw size={15}/></button>
     </div>{runs.length > 0 && <div className="benchmark-history" aria-label="Saved keyword observations">{runs.map(item => <button key={item.id} type="button" disabled={!!busy} aria-pressed={item.id === runId} aria-label={`Open ${item.kind} observation for ${item.case.query}`} onClick={() => select(item.suiteId,item.id)}><strong>{item.case.query}</strong><span>{item.kind === "baseline" ? "Baseline" : "Fresh"} · {(item.archivedAt ? "Archived · outcome unresolved" : statusLabel(item.status))} · {item.model} · {date(item.createdAt)}</span></button>)}</div>}</nav>
     {overview?.suites.length && !suiteId && !runId ? <p className="benchmark-muted">Choose a saved suite. No suite was selected automatically for this website.</p> : null}
+    {overview && !overview.suites.length && !busy && (
+      <section className="panel benchmark-empty-suite" aria-label="No questions yet">
+        <h2>No questions saved yet</h2>
+        <p>Save 1–10 questions against one of your websites below, or start from a customer question your research already found. Saving starts no paid run.</p>
+        <div className="benchmark-actions">
+          <Link className="button primary" href="/websites#website-research">Discover customer questions</Link>
+          <button className="button secondary" type="button" onClick={() => { setSettingsOpen(true); setCustomQuestionsOpen(true); requestAnimationFrame(() => settingsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })); }}>Write questions now</button>
+        </div>
+      </section>
+    )}
     {runId && !currentRun && <p role="status" className="benchmark-loading">Opening saved observation…</p>}
     {busy.startsWith("start-") && <ResearchActivity model={displayedModel?.label ?? "Luna"}/>}
     {currentRun && <KeywordObservationReport run={currentRun} baseline={baseline} busy={!!busy} onRefresh={() => refreshRun("reconcile")} onCancel={() => refreshRun("cancel")} onArchive={() => refreshRun("archive")} onPrepare={() => {setSettingsOpen(true); requestAnimationFrame(() => {settingsRef.current?.scrollIntoView({behavior:"smooth",block:"start"}); settingsRef.current?.querySelector("summary")?.focus();});}}/>}

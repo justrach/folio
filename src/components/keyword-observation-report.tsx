@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { KeywordPublication } from "./keyword-publication";
 
 import { ResearchActivity } from "./research-activity";
@@ -45,6 +46,9 @@ export function KeywordObservationReport({ run, baseline, busy, onRefresh, onCan
     {run.cancelAttemptAt && active(run) && <p role="status" className="benchmark-inline-note">Cancellation was requested; stopping is not yet confirmed.</p>}
     {completed ? <>
       <section className="benchmark-presence" aria-label="Target presence"><div><h3>Did your site appear?</h3><p>Matched by website address.</p></div><dl><div><dt>Target in recommendations</dt><dd>{presenceLabel(metrics.targetNamed)}</dd><small>{metrics.targetNamed === "yes" ? `Returned at ${metrics.targetPositions.map(value => `position ${value}`).join(", ")}` : metrics.targetNamed === "unknown" ? "Some identities could not be matched." : "No listed URL matched your site."}</small></div><div><dt>Target cited as a source</dt><dd>{citationLabel(metrics.targetCited)}</dd><small>In the returned source links.</small></div></dl></section>
+      {metrics.targetNamed === "no" && run.case.targetUrl && (
+        <p className="benchmark-next-step">Not listed here. <Link href={`/overview?view=workspace&website=${encodeURIComponent(run.suiteId)}`}>Review this website over time</Link> or <Link href={run.case.targetUrl} target="_blank" rel="noreferrer">open your page <ExternalLink size={12} /></Link> to check whether the answer’s topic is covered.</p>
+      )}
       <PublicWebsiteComparison key={run.id} run={run} />
       <KeywordPublication key={`publication-${run.id}`} runId={run.id} />
       {baseline && <Comparison baseline={baseline} fresh={run}/>}

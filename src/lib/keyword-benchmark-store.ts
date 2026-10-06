@@ -285,18 +285,26 @@ export async function summarizeOwnedWebsites(
   const snapshots: WebsiteComparisonSnapshot[] = [];
   let failedReads = 0;
   for (const site of sites.results) {
-    try {
-      const rows = await db
-        .prepare(
-          `SELECT ${runColumns},answer_json FROM keyword_benchmark_runs WHERE user_id=? AND json_extract(case_json,'$.targetUrl')=?
-            AND COALESCE(json_extract(case_json,'$.searchMode'),'reviewed-domains')=?
-            AND json_extract(case_json,'$.websiteResearch.stage') IS NULL AND status='completed' AND answer_json IS NOT NULL
-            AND (? IS NULL OR model=?) ORDER BY created_at DESC,id DESC LIMIT 500`,
-        )
-        .bind(ownerId, site.url, options.searchMode, options.model ?? null, options.model ?? null)
-        .all<RunRow>();
+    const rows = await db
+      .prepare(
+        `SELECT ${runColumns},answer_json,case_json FROM keyword_benchmark_runs WHERE user_id=? AND json_extract(case_json,'$.targetUrl')=?
+          AND COALESCE(json_extract(case_json,'$.searchMode'),'reviewed-domains')=?
+          AND json_extract(case_json,'$.websiteResearch.stage') IS NULL AND status='completed' AND answer_json IS NOT NULL
+          AND (? IS NULL OR model=?) ORDER BY created_at DESC,id DESC LIMIT 500`,
+      )
+      .bind(ownerId, site.url, options.searchMode, options.model ?? null, options.model ?? null)
+      .all<RunRow & { case_json: string }>()
+      .catch(() => {
+        failedReads += 1;
+        return { results: [] as (RunRow & { case_json: string })[] };
+      });
       const latest = new Map<string, KeywordBenchmarkRun>();
-      for (const row of rows.results) {
+      // The SQL predicate already filters by case target; decode the frozen case
+      // from the row instead of trusting a potentially rewritten site URL.
+      // Order newest-first so the latest completed answer wins per question.
+      // created_at has millisecond resolution; ties break by id descending.
+      const ordered = [...rows.results].sort((a, b) => b.created_at - a.created_at || (b.id < a.id ? -1 : b.id > a.id ? 1 : 0));
+      for (const row of ordered) {
         let run: KeywordBenchmarkRun;
         try {
           run = decodeRun(row);
@@ -304,12 +312,7 @@ export async function summarizeOwnedWebsites(
           failedReads += 1;
           continue;
         }
-        if (
-          !run.answer ||
-          !Array.isArray(run.answer.mentions) ||
-          !Array.isArray(run.answer.citations) ||
-          run.case.targetUrl !== site.url
-        ) {
+        if (!run.answer || !Array.isArray(run.answer.mentions) || !Array.isArray(run.answer.citations)) {
           failedReads += 1;
           continue;
         }
@@ -338,9 +341,6 @@ export async function summarizeOwnedWebsites(
         appearanceRate: identified.length ? Math.round((appeared / identified.length) * 100) : null,
         failedReads: 0,
       });
-    } catch {
-      failedReads += 1;
-    }
   }
   return { snapshots, failedReads };
 }
