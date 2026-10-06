@@ -41,6 +41,16 @@ export function WebsiteComparison({ sites, scope, model }: { sites: Site[]; scop
           if (
             typeof row.websiteId !== "string" ||
             typeof row.url !== "string" ||
+            !Array.isArray(row.latestRuns) ||
+            row.latestRuns.length > 500 ||
+            row.latestRuns.some(
+              (item) =>
+                !item ||
+                typeof item.id !== "string" ||
+                typeof item.suiteId !== "string" ||
+                !/^[A-Za-z0-9_-]{1,128}$/.test(item.id) ||
+                !/^[A-Za-z0-9_-]{1,128}$/.test(item.suiteId),
+            ) ||
             ![row.answered, row.identified, row.appeared, row.unknown, row.sourceCount].every(
               (count) => Number.isSafeInteger(count) && count >= 0,
             ) ||
@@ -123,6 +133,14 @@ export function WebsiteComparison({ sites, scope, model }: { sites: Site[]; scop
                         <Link href={`/overview?view=workspace&website=${encodeURIComponent(row.websiteId)}`}>
                           Open website <ArrowRight size={12} />
                         </Link>
+                        {row.latestRuns.length > 0 && (
+                          <Link
+                            href={`/benchmarks?suite=${encodeURIComponent(row.latestRuns[0].suiteId)}&run=${encodeURIComponent(row.latestRuns[0].id)}`}
+                            aria-label={`Open latest answer for ${site?.name || row.url}`}
+                          >
+                            Latest answer <ArrowRight size={12} />
+                          </Link>
+                        )}
                       </td>
                     </tr>
                   );

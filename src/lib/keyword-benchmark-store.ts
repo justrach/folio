@@ -262,6 +262,8 @@ export type WebsiteComparisonSnapshot = {
   sourceCount: number;
   appearanceRate: number | null;
   failedReads: number;
+  /** Latest completed run per question backing this snapshot; safe for detail links. */
+  latestRuns: { id: string; suiteId: string }[];
 };
 
 /**
@@ -340,6 +342,7 @@ export async function summarizeOwnedWebsites(
         sourceCount,
         appearanceRate: identified.length ? Math.round((appeared / identified.length) * 100) : null,
         failedReads: 0,
+        latestRuns: [...latest.values()].map((run) => ({ id: run.id, suiteId: run.suiteId })),
       });
   }
   return { snapshots, failedReads };

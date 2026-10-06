@@ -22,6 +22,7 @@ Local records persist in `.wrangler/state/v3` across restarts. Use `bun run db:s
 
 - A public dashboard showing published answer coverage, collection status, and each question's original recommendation order with titled source links. Audience, status and text filters, mobile task selection, and shareable query links work without signing in. Reads only refresh public snapshots; they start no agent work.
 - An explicit private workspace with saved website question coverage, returned positions, citation counts, and links to private audits, backlinks, and Search Console reports. Illustrative charts remain in the separate Demo report view.
+- A read-only multi-website comparison (`GET /api/benchmarks/comparison`) summarizing each owned site's latest completed answers side by side — appeared rate, completed count, cited pages — behind an explicit workspace action. No provider call or spending.
 - Better Auth email/password sign-up, login, persisted sessions, and logout.
 - Optional Google sign-in and explicit read-only Search Console consent, with bounded private performance snapshots. Live Google validation remains separate; see [Search Console setup](docs/SEARCH-CONSOLE.md).
 - Optional GitHub sign-in and explicit account linking in Settings, using profile/email permissions. See [GitHub setup](docs/GITHUB-AUTH.md); live OAuth still requires configured application credentials.

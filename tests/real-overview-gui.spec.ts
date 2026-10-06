@@ -57,7 +57,8 @@ async function fixture(page: Page) {
         const appeared = answered.filter(value => value.answer!.mentions.some(item => item.url === site.url)).length;
         return { websiteId: site.id, url: site.url, answered: answered.length, identified: known.length, appeared, unknown: answered.length - known.length,
           sourceCount: new Set(answered.flatMap(value => value.answer!.citations.map(item => item.url))).size,
-          appearanceRate: known.length ? Math.round((appeared / known.length) * 100) : null, failedReads: 0 };
+          appearanceRate: known.length ? Math.round((appeared / known.length) * 100) : null, failedReads: 0,
+          latestRuns: answered.map(value => ({ id: value.id, suiteId: value.suiteId })) };
       });
       return route.fulfill({ json: { snapshots, failedReads: 0 } });
     }

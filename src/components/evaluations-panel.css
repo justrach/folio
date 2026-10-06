@@ -148,6 +148,11 @@
 .eval-pending p{font-size:11px;color:var(--folio-text-muted);line-height:1.8;max-width:610px}
 .eval-run-error{background:var(--folio-canvas);border-bottom:1px solid var(--folio-accent-edge);color:var(--folio-accent);padding:14px 27px;font-size:12px}
 .eval-report-footer{display:flex;align-items:center;justify-content:space-between;gap:17px;flex-wrap:wrap;padding:17px 25px;border-top:1px solid var(--line);background:var(--folio-surface)}
+.eval-next-steps{padding:20px 25px;border-top:1px solid var(--line);background:var(--folio-canvas)}
+.eval-next-steps h3{font:400 20px var(--serif);margin:0 0 10px}
+.eval-next-steps ol{margin:0;padding-left:20px;display:grid;gap:10px;font-size:12px;line-height:1.75;color:var(--folio-text-secondary)}
+.eval-next-steps button{color:var(--folio-accent);text-decoration:underline;text-underline-offset:3px;font:inherit;padding:0;background:none;border:0;cursor:pointer}
+.eval-next-steps a{overflow-wrap:anywhere}
 .eval-report-footer>span{display:flex;align-items:center;gap:6px;font-size:9px;color:var(--folio-text-muted)}
 .eval-report-footer>div{display:flex;gap:7px;flex-wrap:wrap}
 .eval-report-footer .button{font-size:10px;padding:8px 10px;min-height:33px}
