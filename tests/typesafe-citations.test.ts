@@ -22,7 +22,7 @@ test("missing quotes and tampered sources fail before TypeSafe spending", async 
   await assert.rejects(prepareCitationReview(run), /integrity/);
 });
 
-test("TypeSafe response validates every distribution and remains advisory at high confidence", async () => {
+test("semantic review response validates every distribution and remains advisory at high confidence", async () => {
   const request = await prepareCitationReview(await createDemoEvaluationRun());
   const response = { model: "jev-fixture", answers: Object.fromEntries(Object.keys(request.questions).map(id => [id, {
     type: "choice", choice: "supports", confidence: 0.99, probabilities: { supports: 0.99, contradicts: 0, insufficient: 0.01 },
@@ -36,12 +36,13 @@ test("TypeSafe response validates every distribution and remains advisory at hig
   assert.throws(() => parseCitationReview(response, request), /response/);
 });
 
-test("TypeSafe transport uses one bounded request and does not retry failures", async (t) => {
+test("Decisions transport uses one bounded request and does not retry failures", async (t) => {
   const request = await prepareCitationReview(await createDemoEvaluationRun());
   let calls = 0;
   t.mock.method(globalThis, "fetch", async (url: RequestInfo | URL, init?: RequestInit) => {
     calls++;
-    assert.equal(String(url), "https://api.typesafe.ai/v1/systemone");
+    assert.equal(String(url), "https://api.openai.com/v1/decisions");
+    assert.equal(JSON.parse(String(init?.body)).model, "gpt-6-luna");
     assert.equal(init?.redirect, "manual");
     assert.equal(new Headers(init?.headers).get("Authorization"), "Bearer fixture-key");
     return new Response("private provider error", { status: 429 });

@@ -1,12 +1,12 @@
 # Two-stage private website research
 
-Folio can turn a saved website into a reusable customer-query and competitor-research brief. This is separate from the editorial question bank, Jev question/page coverage, public Folio Index, technical scores, and consumer ChatGPT visibility.
+Folio can turn a saved website into a reusable customer-query and competitor-research brief. This is separate from the editorial question bank, Decisions question/page coverage, public Folio Index, technical scores, and consumer ChatGPT visibility.
 
 ## Customer workflow
 
 1. **Save a website.** Saving/selecting a site does not audit it, generate queries, start a provider session, or publish evidence.
-2. **Generate suggested queries.** The owner selects a supported OpenAI model and explicitly authorizes one paid discovery run. It opens the website's public pages and suggests up to five customer queries, each with an intent, product-fit explanation, and consulted sources. These are editorial hypotheses, not measured keyword volume or traffic.
-3. **Review one suggestion.** A query picker opens one focused editor. The owner can edit the wording, switch suggestions without losing drafts, and refresh saved history without clearing drafts for the same discovery. The launch summary names the selected model and scopes the next paid action to that exact query. Discovery completion does not automatically research competitors.
+2. **Generate suggested queries.** The owner explicitly authorizes one paid discovery run. Website research always uses Luna (`gpt-6-luna`) with OpenAI live web search; there is no model picker, and requests naming another model are refused. It opens the website's public pages and suggests up to five customer queries, each with an intent, product-fit explanation, and consulted sources. These are editorial hypotheses, not measured keyword volume or traffic.
+3. **Review one suggestion.** A query picker opens one focused editor. The owner can edit the wording, switch suggestions without losing drafts, and refresh saved history without clearing drafts for the same discovery. The launch summary names Luna and scopes the next paid action to that exact query. Discovery completion does not automatically research competitors.
 4. **Research one reviewed query.** A second explicit paid action freezes the edited text and links it to the completed discovery run for the same owned website. The managed agent searches that exact question, returns up to three leading websites in its own recommendation order, and opens relevant competitor and target pages.
 5. **Reopen or export the saved brief.** The panel offers a direct resume action for completed history and a direct reopen action for unresolved attempts. Selected competitor briefs/receipts appear above new research forms. The brief shows consulted sources, candidate strengths, target evidence, suggested changes, model/date, limitations, and recorded usage. Reading saved work spends no provider credits. Agents can reuse it instead of repeating the research.
 
@@ -14,7 +14,7 @@ Folio can turn a saved website into a reusable customer-query and competitor-res
 
 ## Two explicit paid starts
 
-Both stages use the managed OpenAI Agents API at `/v1/agents/sessions`, `OpenAI-Beta: agents=v1`, with live `web_search` and `environment.type: "none"`. They do not silently select Codegraff, Responses, the Agents SDK, DataForSEO, or TypeSafe when those integrations are configured. Models are the existing explicit managed OpenAI choices; model access and live outcome validation remain separate dependencies.
+Both stages use the managed OpenAI Agents API at `/v1/agents/sessions`, `OpenAI-Beta: agents=v1`, with live `web_search` and `environment.type: "none"`. They do not silently select Codegraff, Responses, the Agents SDK, DataForSEO, or the Decisions API when those integrations are configured. Both stages run on Luna only; model access and live outcome validation remain separate dependencies.
 
 The existing account allowlist and rolling benchmark allowance apply to both stages together: normally six starts per day and one active run, with only the existing explicit account exemptions/parallel approvals. The requested eight search/page-open calls and three-minute task deadline are instructions, not provider-enforced dollar caps. Missing charges stay unknown. This implementation authorizes provider usage; it does **not** implement checkout, subscription collection, credit purchases, or a promised customer price.
 
@@ -60,7 +60,7 @@ Agents with an authenticated `read`-scoped Folio key can use the existing `folio
 
 The output contract binds the exact target and reviewed query, citations, recommendation names/order, and source hosts. Competitor and target comparisons must reference their respective source lists. An observed difference needs target evidence; otherwise it must be marked `target_not_established`. An inaccessible/uninspected candidate has no invented strengths. Completed research additionally requires recorded completed `web_search` page-open actions for its supporting URLs; search snippets or citation presence alone do not establish a visit.
 
-This checks retained provenance, syntax and relationships—not literal quotation accuracy, source truth, semantic correctness, exhaustive site coverage, or the provider's actual billing. No independent page capture or Jev judgment is implied.
+This checks retained provenance, syntax and relationships—not literal quotation accuracy, source truth, semantic correctness, exhaustive site coverage, or the provider's actual billing. No independent page capture or Decisions judgment is implied.
 
 Local fixture and actual isolated D1 checks exercise separate authorizations, model selection, review lineage, edited-query freezing, duplicate/concurrent starts, unknown creation across restart, owner-scoped agent reopening, strict MCP output including cached-token usage, page-open requirements, public publication rejection and metric separation. Browser fixtures exercise the rendered workflow and mobile/navigation safety. These are not live provider validation or production deployment. Existing real private receipts and the earlier frozen Codegraff/Jev plan remain untouched.
 

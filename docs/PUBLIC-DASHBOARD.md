@@ -16,7 +16,7 @@ Sources use returned titles where available, with a hostname fallback beside eac
 
 ## Advisory evidence coverage on the existing results
 
-The same returned website rows on `/leaderboard` and `/overview?query=<public-query-id>` include **Evidence coverage**. Explicitly published Jev records are bound to the exact question, observation, position and returned URL; changing models or observations cannot transfer the judgment. No record means **Not evaluated**, not missing website information or zero coverage. This layer never reorders recommendations or changes HTML/benchmark scores.
+The same returned website rows on `/leaderboard` and `/overview?query=<public-query-id>` include **Evidence coverage**. Explicitly published coverage records are bound to the exact question, observation, position and returned URL; changing models or observations cannot transfer the judgment. No record means **Not evaluated**, not missing website information or zero coverage. This layer never reorders recommendations or changes HTML/benchmark scores.
 
 Expand the disclosure for separate relevance and answer coverage, captured page URLs/dates/hashes, truncation, capture-attempt counts, the evaluator's model/date, and a classification-specific next evidence step. A short captured-text preview is not a model-selected supporting quote. Confidence is not measured accuracy; classifications do not verify truth or explain why the search agent recommended a website. Page gaps concern these bounded captures, not the entire site.
 

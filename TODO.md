@@ -12,10 +12,10 @@ Working checklist for completing the current website-evaluation pilot. Check ite
 
 ## Question-first evidence coverage
 
-- [x] Add a bounded private question → website → captured-page index prototype using 38 curated existing/starter question texts and Jev relevance/answer-coverage Choice judgments. Explicit spending, frozen request validation, once-only reservations, provenance, advisory distributions and private reports are implemented. Verified by 18 focused fixture tests and the project typecheck on September 30, 2026; see [question coverage](docs/QUESTION-COVERAGE.md).
+- [x] Add a bounded private question → website → captured-page index prototype using 38 curated existing/starter question texts and relevance/answer-coverage Choice judgments (now via the OpenAI Decisions API). Explicit spending, frozen request validation, once-only reservations, provenance, advisory distributions and private reports are implemented. Verified by 18 focused fixture tests and the project typecheck on September 30, 2026; see [question coverage](docs/QUESTION-COVERAGE.md).
 - [x] Prepare the real saved Codegraff-site packet as a three-question/six-page matrix: 18 pairs and 36 typed judgments, all not evaluated. Original receipt/reservation remain unchanged; no new capture, sandbox, inference reservation or paid call was made.
 - [x] Connect coverage to the existing Folio Index `/leaderboard` and selected-question `/overview` results, preserving exact question/observation/returned-position identities and original rankings. Add strict reviewed public projections, honest not-evaluated states, captured-page provenance and explicit operator plan/run/preview/local-publication workflow. Verified September 30, 2026 by 48 focused fixtures and four desktop/mobile GUI cases; no live Jev call or deployment. Local emulator resource errors remain outside the mocked browser validation.
-- [ ] Validate actual Jev responses and calibrate against independently labeled question/page examples. The local TypeSafe key is absent; fixtures and a prepared source matrix do not establish semantic accuracy, speed, cost or citation readiness. The integrated public coverage artifact is empty, and production deployment is not complete.
+- [ ] Calibrate Decisions coverage responses against independently labeled question/page examples. One private live Decisions run (9 October 2026, 36 judgments) completed; it does not establish semantic accuracy, thresholds or citation readiness. The integrated public coverage artifact is empty, and production deployment is not complete.
 
 ## Codegraff gateway fleet migration
 
@@ -156,7 +156,7 @@ Remaining acceptance work:
 
 ## Luna crawl follow-up
 
-- [ ] Validate a real authorized Luna → crawl MCP → Jev run. The implemented ten-page workflow and local fixtures are documented in [website crawl](docs/WEBSITE-CRAWL.md); do not mark live validation from mock results.
+- [ ] Validate a real authorized Luna → crawl MCP → Decisions review run. The implemented ten-page workflow and local fixtures are documented in [website crawl](docs/WEBSITE-CRAWL.md); do not mark live validation from mock results.
 
 ## DataForSEO keyword tool
 

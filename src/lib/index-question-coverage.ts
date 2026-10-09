@@ -1,4 +1,5 @@
 import "server-only";
+import { DECISIONS_MODEL } from "./openai-decisions";
 import { isDeepStrictEqual } from "node:util";
 import type { PublicSearchRankings } from "./public-search-rankings";
 import { assertPublicSearchRankings } from "./public-search-rankings-validation";
@@ -20,7 +21,7 @@ export function indexCoverageCatalog(plan: IndexCoveragePlan): CoverageQuestion[
 }
 
 /** Freeze the actual public question and returned websites, never a replacement draft question or inferred rank. */
-export function prepareIndexQuestionCoverage(input: unknown, observationId: string, positions: readonly number[], evidences: unknown[], model = "jev-latest"): IndexCoveragePlan {
+export function prepareIndexQuestionCoverage(input: unknown, observationId: string, positions: readonly number[], evidences: unknown[], model: string = DECISIONS_MODEL): IndexCoveragePlan {
   assertPublicSearchRankings(input);
   const observation = input.observations.find(item => item.id === observationId);
   const query = input.queries.find(item => item.id === observation?.queryId);

@@ -1,0 +1,23 @@
+.website-checklist { margin: 22px 0 6px; border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; background: var(--folio-canvas); }
+.website-checklist header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+.website-checklist header h4 { margin: 0; font-size: 15px; }
+.website-checklist header span { font-size: 12px; color: var(--folio-text-secondary); }
+.website-checklist ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.website-checklist li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+.website-checklist li:first-child { border-top: 0; }
+.website-checklist li > div { min-width: 0; }
+.website-checklist strong { font-size: 14px; }
+.website-checklist p { margin: 3px 0 0; font-size: 13px; color: var(--folio-text-secondary); }
+.website-checklist-mark { width: 26px; height: 26px; border-radius: 999px; display: inline-grid; place-items: center; font-size: 12px; border: 1px solid var(--line); background: var(--folio-surface); }
+.website-checklist li[data-state="done"] .website-checklist-mark { background: var(--folio-accent); border-color: var(--folio-accent); color: var(--folio-on-accent); }
+.website-checklist li[data-state="done"] strong { color: var(--folio-text-secondary); }
+.website-checklist li[data-state="current"] .website-checklist-mark { border-width: 2px; border-color: var(--folio-accent); font-weight: 600; }
+.website-checklist-cta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 10px; }
+.website-checklist-cta small { font-size: 11px; color: var(--folio-text-secondary); }
+.website-checklist-blocked { margin-top: 8px !important; padding: 8px 12px; border: 1px solid var(--folio-edge); border-radius: 8px; background: var(--folio-surface); color: inherit !important; }
+.website-checklist .text-link { margin-top: 4px; font-size: 12px; }
+.website-checklist-done { margin-top: 10px !important; }
+.website-step-highlight { animation: website-step-highlight 1.6s ease-out; }
+@keyframes website-step-highlight { 0% { box-shadow: 0 0 0 3px var(--folio-focus); } 100% { box-shadow: none; } }
+@media (prefers-reduced-motion: reduce) { .website-step-highlight { animation: none; } }
+@media (max-width: 700px) { .website-checklist { padding: 14px; } }

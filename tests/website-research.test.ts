@@ -172,6 +172,8 @@ test("schemas are separate, closed, bounded and fully required; instructions pro
   }
   for (const stage of ["query-discovery", "competitor-research"] as const) {
     const schema = websiteResearchSchema(stage); closed(schema);
+    // Strict structured outputs answered HTTP 400 for these keywords; the parser enforces the bounds instead.
+    assert.doesNotMatch(JSON.stringify(schema), /"(minLength|maxLength|uniqueItems|pattern|format)"/);
     assert.deepEqual(schema.properties.stage, { type: "string", enum: [stage] });
     const instructions = websiteResearchInstructions(stage);
     for (const phrase of ["web_search", "page opening", "untrusted", "No signup", "no tools besides", "private", "limitations", "causal rank"])

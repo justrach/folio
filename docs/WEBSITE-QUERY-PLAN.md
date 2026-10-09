@@ -4,7 +4,7 @@ Prepared 13 September 2026. The [query data](../src/data/website-search-queries.
 
 The first batch emphasizes decisions people make: product fit, setup, cost, permissions, shipping, returns, booking conditions and learning access. The separate HTML rubric and discovery-document diagnostics do not answer these questions.
 
-The separate [question-to-page coverage prototype](QUESTION-COVERAGE.md) reuses these immutable primary IDs and captured public text for advisory Jev relevance/answer-coverage classifications. It prepares a private question → website → evidence matrix without creating search observations, publishing rankings or establishing factual correctness. Local fixtures and a real frozen input packet are validated; live Jev classification still depends on a configured server-side key.
+The separate [question-to-page coverage prototype](QUESTION-COVERAGE.md) reuses these immutable primary IDs and captured public text for advisory Decisions relevance/answer-coverage classifications. It prepares a private question → website → evidence matrix without creating search observations, publishing rankings or establishing factual correctness. Local fixtures and a real frozen input packet are validated; classification now uses the OpenAI Decisions API with the server `OPENAI_API_KEY`; one private live run is recorded in that document.
 
 ## First collection batch
 

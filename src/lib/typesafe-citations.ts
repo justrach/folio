@@ -1,6 +1,7 @@
 import "server-only";
 import { parseWebsiteAgentOutput, sha256Source } from "./eval-verifier";
 import type { EvaluationRun } from "./evals";
+import { DECISIONS_MODEL, postDecisions } from "./openai-decisions";
 
 const relations = ["supports", "contradicts", "insufficient"] as const;
 type Relation = typeof relations[number];
@@ -17,8 +18,8 @@ const probability = (value: unknown): value is number => typeof value === "numbe
  * Complete frozen page context is sent once, not repeated per citation. No key,
  * owner ID, expected answer or unrelated saved report enters the request.
  */
-export async function prepareCitationReview(run: EvaluationRun, model = "jev-latest"): Promise<CitationReviewRequest> {
-  if (!/^[A-Za-z0-9._-]{1,128}$/.test(model)) throw new Error("Invalid TypeSafe model.");
+export async function prepareCitationReview(run: EvaluationRun, model: string = DECISIONS_MODEL): Promise<CitationReviewRequest> {
+  if (!/^[A-Za-z0-9._-]{1,128}$/.test(model)) throw new Error("Invalid semantic review model.");
   const output = parseWebsiteAgentOutput(run.agentOutput);
   if (!output || run.status !== "completed" || run.captures.length !== 1 || run.captures[0].kind !== "page")
     throw new Error("Citation review requires a completed single-page structured result.");
@@ -44,57 +45,26 @@ export async function prepareCitationReview(run: EvaluationRun, model = "jev-lat
 
 export function parseCitationReview(value: unknown, request: CitationReviewRequest) {
   if (!record(value) || typeof value.model !== "string" || !value.model.trim() || !record(value.answers) ||
-    Object.keys(value.answers).length !== Object.keys(request.questions).length || !record(value.usage)) throw new Error("Invalid TypeSafe response.");
+    Object.keys(value.answers).length !== Object.keys(request.questions).length || !record(value.usage)) throw new Error("Invalid semantic review response.");
   const answers = value.answers;
   const results = Object.keys(request.questions).map((id, index) => {
     const answer = answers[id];
     if (!record(answer) || answer.type !== "choice" || !relations.includes(answer.choice as Relation) || !probability(answer.confidence) ||
       !record(answer.probabilities) || Object.keys(answer.probabilities).length !== relations.length ||
-      !relations.every(relation => probability((answer.probabilities as Record<string, unknown>)[relation]))) throw new Error("Invalid TypeSafe choice.");
+      !relations.every(relation => probability((answer.probabilities as Record<string, unknown>)[relation]))) throw new Error("Invalid semantic review choice.");
     const probabilities = answer.probabilities as Record<Relation, number>;
     if (Math.abs(Object.values(probabilities).reduce((a, b) => a + b, 0) - 1) > 0.001 ||
-      probabilities[answer.choice as Relation] < Math.max(...Object.values(probabilities))) throw new Error("Inconsistent TypeSafe probabilities.");
+      probabilities[answer.choice as Relation] < Math.max(...Object.values(probabilities))) throw new Error("Inconsistent semantic review probabilities.");
     return { id, ...request.state.claims[index], relation: answer.choice as Relation, confidence: answer.confidence, probabilities,
       humanReviewRequired: true as const };
   });
   const usage = value.usage;
-  if (![usage.input_tokens, usage.output_tokens].every(n => typeof n === "number" && Number.isSafeInteger(n) && n >= 0)) throw new Error("Invalid TypeSafe usage.");
-  return { provider: "TypeSafe", model: value.model, results, usage: { input_tokens: usage.input_tokens, output_tokens: usage.output_tokens },
+  if (![usage.input_tokens, usage.output_tokens].every(n => typeof n === "number" && Number.isSafeInteger(n) && n >= 0)) throw new Error("Invalid semantic review usage.");
+  return { provider: "OpenAI Decisions", model: value.model, results, usage: { input_tokens: usage.input_tokens, output_tokens: usage.output_tokens },
     role: "Advisory semantic judgments; not reference truth, not part of benchmark scoring.", costUsd: null };
 }
 
-/** Explicit server-side invocation only. No auto-retry or automatic cascade. */
-export async function postTypeSafeQuestions(request: { model: string; state: unknown; questions: Record<string, unknown> }, apiKey: string): Promise<unknown> {
-  if (!apiKey.trim()) throw new Error("Configure a server-side TypeSafe key before explicit semantic review.");
-  const body = JSON.stringify(request);
-  if (new TextEncoder().encode(body).byteLength > 100_000) throw new Error("TypeSafe request exceeds the size limit.");
-  const response = await fetch("https://api.typesafe.ai/v1/systemone", {
-    method: "POST", headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-    body, redirect: "manual", cache: "no-store", signal: AbortSignal.timeout(30_000),
-  });
-  if (!response.ok) { await response.body?.cancel(); throw new Error(`TypeSafe returned HTTP ${response.status}; no automatic retry.`); }
-  if (response.headers.get("content-type")?.split(";")[0] !== "application/json") { await response.body?.cancel(); throw new Error("Invalid TypeSafe content type."); }
-  const reader = response.body?.getReader();
-  if (!reader) throw new Error("Empty TypeSafe response.");
-  const chunks: Uint8Array[] = [];
-  let bytes = 0;
-  try {
-    while (true) {
-      const { value, done } = await reader.read();
-      if (done) break;
-      bytes += value.length;
-      if (bytes > 100_000) { await reader.cancel(); throw new Error("TypeSafe response exceeds the size limit."); }
-      chunks.push(value);
-    }
-  } finally { reader.releaseLock(); }
-  const data = new Uint8Array(bytes);
-  let offset = 0;
-  for (const chunk of chunks) { data.set(chunk, offset); offset += chunk.length; }
-  let value: unknown;
-  try { value = JSON.parse(new TextDecoder().decode(data)); } catch { throw new Error("TypeSafe returned unreadable JSON."); }
-  return value;
-}
-
-export async function reviewCitations(request: CitationReviewRequest, apiKey: string) {
-  return parseCitationReview(await postTypeSafeQuestions(request, apiKey), request);
+/** Explicit server-side invocation only: one Decisions POST, no auto-retry or automatic cascade. */
+export async function reviewCitations(request: CitationReviewRequest, apiKey: string, fetcher?: typeof fetch) {
+  return parseCitationReview(await postDecisions(request, apiKey, fetcher), request);
 }

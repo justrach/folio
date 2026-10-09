@@ -14,3 +14,6 @@
 .owned-connected-sites { gap: 16px; }
 .owned-connected-sites > div { padding: 12px 0; border-top: 1px solid var(--folio-edge); }
 @media(max-width:600px) { .owned-website-actions .button { width: 100%; justify-content: center; } }
+.owned-website-more { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; padding-top: 12px; border-top: 1px solid var(--folio-edge); font-size: 12px; }
+.owned-website-more > span { color: var(--folio-text-secondary); }
+.owned-website-more a, .owned-website-more .text-link { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; }

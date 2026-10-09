@@ -8,6 +8,7 @@ import {
   parseQuestionCoverageResponse, validateQuestionCoverageResult, reviewQuestionCoverage, renderQuestionCoverageReport,
   type CoveragePlan,
 } from "../src/lib/question-coverage";
+import { toDecisionsRequest } from "../src/lib/openai-decisions";
 
 const hash = (text: string) => createHash("sha256").update(text).digest("hex");
 async function evidence() {
@@ -85,7 +86,7 @@ test("strict responses preserve probabilities, resolved model, source provenance
   const fixture = response(plan);
   const result = parseQuestionCoverageResponse(fixture, plan);
   assert.equal(result.model, "jev-fixture-resolved");
-  assert.equal(result.requestedModel, "jev-latest");
+  assert.equal(result.requestedModel, "gpt-6-luna");
   assert.equal(result.judgments.length, 6);
   assert.equal(result.rows.length, 3);
   assert.ok(result.rows.every(row => row.status === "direct"));
@@ -119,11 +120,13 @@ test("explicit transport uses one typed request; HTTP failures and embedded cred
   const plan = prepareQuestionCoverage([await evidence()], CODING_QUESTION_IDS);
   let calls = 0;
   t.mock.method(globalThis, "fetch", async (url: RequestInfo | URL, init?: RequestInit) => {
-    calls++; assert.equal(String(url), "https://api.typesafe.ai/v1/systemone");
+    calls++; assert.equal(String(url), "https://api.openai.com/v1/decisions");
     assert.equal(init?.redirect, "manual");
     assert.equal(new Headers(init?.headers).get("Authorization"), "Bearer fixture-key");
-    assert.deepEqual(JSON.parse(init!.body as string), plan.request);
-    return Response.json(response(plan));
+    assert.deepEqual(JSON.parse(init!.body as string), toDecisionsRequest(plan.request));
+    const keyed = response(plan);
+    return Response.json({ model: "gpt-6-luna", usage: keyed.usage, answers: Object.entries(keyed.answers).map(([name, answer]) => ({ ...answer, name,
+      probabilities: Object.entries(answer.probabilities).map(([value, probability]) => ({ value, probability })) })) });
   });
   const result = await reviewQuestionCoverage(plan, "fixture-key");
   assert.equal(result.rows.length, 3); assert.equal(calls, 1);

@@ -5,7 +5,7 @@ import type { AgentsEnvironment } from "./agents";
 import { agentApiHash } from "./agent-api-key-store";
 import { keywordPublicUrl } from "./keyword-search-mode";
 import { isKeywordBenchmarkId, type KeywordBenchmarkCaseInput, type KeywordBenchmarkRun } from "./keyword-benchmark-types";
-import { KEYWORD_OPEN_WEB_MODEL, KEYWORD_OPEN_WEB_MODELS, isKeywordOpenWebModel } from "./keyword-models";
+import { KEYWORD_OPEN_WEB_MODEL, KEYWORD_OPEN_WEB_MODELS } from "./keyword-models";
 import { createKeywordBenchmarkSuite, getKeywordBenchmarkRun, KeywordBenchmarkStoreError, listKeywordBenchmarkRuns, listWebsiteKeywordRunsPage } from "./keyword-benchmark-store";
 import { keywordBenchmarkAccess, startKeywordBenchmark, type KeywordBenchmarkServiceOptions } from "./keyword-benchmark-service";
 import type { WebsiteResearchStage } from "./website-research";
@@ -23,7 +23,8 @@ async function ownedWebsite(db: D1Database, ownerId: string, websiteId: string) 
 export function websiteResearchAccess(env: AgentsEnvironment, ownerId: string) {
   const access = keywordBenchmarkAccess(env, ownerId);
   const configured = Boolean(env.OPENAI_API_KEY?.trim());
-  return { ...access, configured, canRun: configured && access.authorized, model: KEYWORD_OPEN_WEB_MODEL, openWebModels: KEYWORD_OPEN_WEB_MODELS,
+  return { ...access, configured, canRun: configured && access.authorized, // Website research always runs OpenAI web search on Luna; there is no model choice.
+    model: KEYWORD_OPEN_WEB_MODEL, openWebModels: KEYWORD_OPEN_WEB_MODELS.filter(item => item.id === KEYWORD_OPEN_WEB_MODEL),
     message: !configured ? "Connect OpenAI before generating queries or researching competitors."
       : !access.authorized ? "This account needs approval before it can spend research credits."
         : "Query generation and each competitor investigation are separately authorized paid OpenAI runs. Provider charges may be unknown; saved reads spend nothing." };
@@ -42,8 +43,8 @@ function researchRequest(value: unknown): ResearchRequest {
   const body = value as Record<string, unknown>;
   if (Object.keys(body).some(key => !["stage", "requestKey", "confirmSpend", "model", "query", "discoveryRunId"].includes(key)) ||
     !["query-discovery", "competitor-research"].includes(String(body.stage)) || body.confirmSpend !== true || !isKeywordBenchmarkId(body.requestKey) ||
-    (body.model !== undefined && !isKeywordOpenWebModel(body.model)))
-    throw new KeywordBenchmarkStoreError("Authorize one bounded research action with a stable request key and supported OpenAI model.", 400);
+    (body.model !== undefined && body.model !== KEYWORD_OPEN_WEB_MODEL))
+    throw new KeywordBenchmarkStoreError("Authorize one bounded research action with a stable request key. Website research runs on Luna only.", 400);
   if (body.stage === "query-discovery" && (body.query !== undefined || body.discoveryRunId !== undefined))
     throw new KeywordBenchmarkStoreError("Query discovery starts from the saved website, not a supplied answer or query.", 400);
   if (body.stage === "competitor-research" && (typeof body.query !== "string" || !body.query.trim() || body.query.length > 2000 || /\u0000/.test(body.query) || !isKeywordBenchmarkId(body.discoveryRunId)))

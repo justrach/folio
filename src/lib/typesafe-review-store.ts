@@ -2,10 +2,10 @@ import "server-only";
 import type { D1Database } from "@cloudflare/workers-types";
 import { getEvaluationRun, EvalStoreError } from "./eval-store";
 import { prepareCitationReview, reviewCitations } from "./typesafe-citations";
-export type TypeSafeEnvironment = { TYPESAFE_API_KEY?: string; TYPESAFE_ALLOWED_USER_IDS?: string };
+export type SemanticReviewEnvironment = { OPENAI_API_KEY?: string; DECISIONS_ALLOWED_USER_IDS?: string };
 export type SavedSemanticReview = { id: string; status: "pending" | "completed" | "needs_attention"; model: string; input_tokens: number | null; output_tokens: number | null; latency_ms: number | null; result: null | Awaited<ReturnType<typeof reviewCitations>> };
-export function semanticReviewAccess(env: TypeSafeEnvironment, ownerId: string) {
- return Boolean(env.TYPESAFE_API_KEY?.trim() && ownerId && env.TYPESAFE_ALLOWED_USER_IDS?.split(",").map(s=>s.trim()).includes(ownerId));
+export function semanticReviewAccess(env: SemanticReviewEnvironment, ownerId: string) {
+ return Boolean(env.OPENAI_API_KEY?.trim() && ownerId && env.DECISIONS_ALLOWED_USER_IDS?.split(",").map(s=>s.trim()).includes(ownerId));
 }
 export async function getSemanticReview(db: D1Database, ownerId: string, runId: string): Promise<SavedSemanticReview | null> {
  if (!ownerId) throw new EvalStoreError("Sign in to inspect a semantic review.",401);
@@ -15,7 +15,7 @@ export async function getSemanticReview(db: D1Database, ownerId: string, runId: 
  if (!row) return null;
  const {result_json,...rest}=row;return {...rest,result:result_json ? JSON.parse(result_json) : null};
 }
-export async function startSemanticReview(db: D1Database, ownerId: string, runId: string, revision: unknown, env: TypeSafeEnvironment,
+export async function startSemanticReview(db: D1Database, ownerId: string, runId: string, revision: unknown, env: SemanticReviewEnvironment,
  invoke: typeof reviewCitations = reviewCitations) {
  if (!semanticReviewAccess(env,ownerId)) throw new EvalStoreError("Semantic review is not enabled for this account.",403);
  const run=await getEvaluationRun(db,ownerId,runId);
@@ -36,7 +36,7 @@ export async function startSemanticReview(db: D1Database, ownerId: string, runId
  }
  const started=Date.now();
  try {
-  const result=await invoke(request,env.TYPESAFE_API_KEY!);
+  const result=await invoke(request,env.OPENAI_API_KEY!);
   await db.prepare(`UPDATE typesafe_reviews SET status='completed',model=?,input_tokens=?,output_tokens=?,latency_ms=?,updated_at=?,
    result_json=CASE WHEN EXISTS(SELECT 1 FROM evaluation_runs WHERE id=? AND user_id=? AND deleted_at IS NULL AND revision=?) THEN ? ELSE NULL END
    WHERE id=? AND user_id=? AND status='pending'`).bind(result.model,result.usage.input_tokens,result.usage.output_tokens,Date.now()-started,Date.now(),runId,ownerId,run.revision,JSON.stringify(result),id,ownerId).run();

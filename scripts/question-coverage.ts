@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 import { isDeepStrictEqual, parseEnv } from "node:util";
 import {
   CODING_QUESTION_IDS, QUESTION_COVERAGE_BANK, prepareQuestionCoverage,
-  renderQuestionCoverageReport, reviewQuestionCoverage, validateQuestionCoveragePlan, validateQuestionCoverageResult,
+  renderQuestionCoverageReport, reviewQuestionCoverage, questionCoverageRunnable, validateQuestionCoveragePlan, validateQuestionCoverageResult,
   type CoveragePlan, type CoverageResult,
 } from "../src/lib/question-coverage";
 import { PUBLIC_SEARCH_RANKINGS } from "../src/lib/public-search-rankings";
@@ -38,7 +38,7 @@ function parse(argv: string[]) {
   const receipts = options.get("--receipt") ?? [];
   if (command === "plan" && (receipts.length < 1 || receipts.length > 2)) return fail("Provide one or two --receipt paths.");
   const model = options.get("--model")?.[0];
-  if (model !== undefined && !/^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$/.test(model)) return fail("Provide a valid model identifier.");
+  if (model !== undefined && model !== "gpt-6-luna") return fail("Coverage uses the OpenAI Decisions API; only --model gpt-6-luna is supported.");
   const observation = options.get("--observation")?.[0], positions = options.get("--position") ?? [];
   if (command === "plan" && (observation || positions.length || options.has("--rankings"))) {
     if (!observation || !positions.length || positions.length > 2 || options.has("--question") || positions.some(value => !/^[1-9][0-9]{0,3}$/.test(value))) return fail("Index plans require --observation and one or two --position values, without draft --question options.");
@@ -98,13 +98,13 @@ async function save(root: string, directory: string, name: string, value: unknow
   await writeFile(join(directory, name), markdown ? String(value) : JSON.stringify(value, null, 2) + "\n", { flag: "wx", mode: 0o600 });
 }
 
-async function credentials(root: string) {
-  let key = process.env.TYPESAFE_API_KEY;
+async function credentials(root: string, name: "OPENAI_API_KEY") {
+  let key = process.env[name];
   if (!key?.trim()) {
-    try { key = parseEnv(await readBounded(root, ".dev.vars")).TYPESAFE_API_KEY; }
+    try { key = parseEnv(await readBounded(root, ".dev.vars"))[name]; }
     catch (error) { if ((error as NodeJS.ErrnoException).code !== "ENOENT") return fail("Could not read local configuration; no inference was made."); }
   }
-  if (!key?.trim()) return fail("Configure a nonempty TYPESAFE_API_KEY; no inference was made.");
+  if (!key?.trim()) return fail(`Configure a nonempty ${name}; no inference was made.`);
   return key;
 }
 
@@ -117,7 +117,7 @@ async function main() {
   const input = parse(process.argv.slice(2));
   if (input.command === "help") {
     console.log("Usage: bun run index:questions list\n"
-      + "       bun run index:questions plan --id <new-id> --receipt <path> [--receipt <path>] [--question <bank-id>] [--model <model>]\n"
+      + "       bun run index:questions plan --id <new-id> --receipt <path> [--receipt <path>] [--question <bank-id>] (classified by the OpenAI Decisions API, gpt-6-luna)\n"
       + "       bun run index:questions run --id <existing-id> --confirm-spend\n"
       + "       bun run index:questions report --id <existing-id>\n"
       + "       bun run index:questions plan --id <new-id> --observation <public-observation-id> --position <returned-position> --receipt <path> [--rankings <public-snapshot>]\n"
@@ -189,7 +189,8 @@ async function main() {
   // A reservation of any state blocks a second inference, even if no result was saved.
   try { await lstat(join(directory, "reservation.json")); return fail("A reservation already exists; retry is refused. Preserve all artifacts."); }
   catch (error) { if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error; }
-  const key = await credentials(root);
+  if (!questionCoverageRunnable(plan)) return fail("This plan was frozen for the retired TypeSafe provider; prepare a new plan ID. No reservation or inference was made.");
+  const key = await credentials(root, "OPENAI_API_KEY");
   await save(root, directory, "reservation.json", { status: "pending", requestSha256: plan.requestSha256, model: plan.request.model, costUsd: null });
   const started = performance.now();
   try {

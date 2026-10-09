@@ -64,7 +64,7 @@ test("a selected website opens its exact saved report privately and only a delib
   await expect(summary).toContainText("73");
   await expect(summary).toContainText("129");
   await expect(summary).not.toContainText("9,999");
-  await expect(summary).not.toContainText("DataForSEO");
+  await expect(summary).toContainText("Domain rank (DataForSEO, 0–100)");
   await expect(summary).not.toContainText("PRIVATE_OWNER_ID");
   await expect(summary).not.toContainText("PRIVATE_TASK_ID");
   await expect(summary).not.toContainText("$0.04");
@@ -125,7 +125,8 @@ test("an incomplete website report keeps missing values distinct from measured z
   const summary = page.getByRole("region", {name: "Website search and backlinks"});
   await expect(summary).toContainText("Some data is unavailable");
   await expect(summary.locator("dd").filter({hasText: /^0$/})).toHaveCount(1);
-  await expect(summary.locator("dd").filter({hasText: /^Unavailable$/})).toHaveCount(3);
+  // Domain rank is also unavailable: this fixture has no 0–100 provider rank.
+  await expect(summary.locator("dd").filter({hasText: /^Unavailable$/})).toHaveCount(4);
   expect(state.posts).toBe(0);
 });
 
@@ -156,7 +157,7 @@ test("opening an existing Search Console property adds its private website witho
   await expect(page).toHaveURL(/\/websites\?site=website-codegraff$/);
   await expect(page.getByRole("region", {name: "Your websites", exact: true})).toContainText("Private website");
   await expect(page.getByRole("region", {name: "Website search and backlinks"})).toContainText("142");
-  await expect(page.getByRole("link", {name: "Evaluate website", exact: true})).toBeVisible();
-  await expect(page.getByRole("region", {name: "Your websites", exact: true}).getByRole("link", {name: "Keyword evaluations", exact: true})).toBeVisible();
+  await expect(page.getByRole("navigation", {name: "More tools"}).getByRole("link", {name: "Evaluate a page"})).toBeVisible();
+  await expect(page.getByRole("region", {name: "Your websites", exact: true}).getByRole("link", {name: "Track search questions"})).toBeVisible();
   expect(handoffs).toBe(1); expect(state.posts).toBe(0); expect(paidRequests).toEqual([]);
 });

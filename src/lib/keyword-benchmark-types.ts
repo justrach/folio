@@ -102,6 +102,8 @@ export type KeywordBenchmarkRun = KeywordBenchmarkExecution & {
     /** Safe original creation diagnostics; absent on older records, never reconstructed. */
     creationHttpStatus?: number;
     creationErrorCode?: "INVALID_INPUT" | "NOT_CONFIGURED" | "UPSTREAM_ERROR" | "INVALID_RESPONSE";
+    /** Explicit Folio page check for research citations the agent did not open. One-way; never reset or retried. */
+    sourceCheck?: KeywordSourceCheckState;
   };
   error: string | null;
 };
@@ -111,6 +113,13 @@ export type KeywordBenchmarkRunSummary = Omit<KeywordBenchmarkRun, "answer" | "c
 };
 
 /** Released unknown creations stay in history but do not block a different case. */
+export const SOURCE_CHECK_REQUIRED = "Luna returned queries but did not open the pages it cited. An explicit Folio page check can fetch those pages and verify them; nothing is saved until then.";
+export const SOURCE_CHECK_NONE_SUPPORTED = "Folio fetched the cited pages, but none supported the suggested queries. Nothing was saved as a brief.";
+export const SOURCE_CHECK_UNCONFIRMED = "The Folio page check could not be confirmed; its Decisions cost is unknown. It will not be retried automatically.";
+export type KeywordSourceCheckState = "eligible" | "pending" | "completed" | "failed" | "needs_attention";
+export const KEYWORD_SOURCE_CHECK_TRANSITIONS: Record<KeywordSourceCheckState, readonly KeywordSourceCheckState[]> = {
+  eligible: ["pending"], pending: ["completed", "failed", "needs_attention"], completed: [], failed: [], needs_attention: [],
+};
 export function isKeywordBenchmarkBlocking(run: Pick<KeywordBenchmarkRun, "status" | "sessionId" | "createAttemptAt" | "holdReleasedAt" | "archivedAt">): boolean {
   return ["queued", "running", "requires_action"].includes(run.status)
     && !(run.status === "requires_action" && run.archivedAt)

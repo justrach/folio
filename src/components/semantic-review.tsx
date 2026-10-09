@@ -25,13 +25,13 @@ export function SemanticReview({run}:{run:EvaluationRun}) {
  }
  return <section className="eval-semantic-review" aria-label="Semantic citation review">
   <h3>Does the source support the claim?</h3>
-  <p>TypeSafe can review product-name and pricing claims against the saved page. This advisory review does not change the verification score or establish factual truth.</p>
+  <p>The OpenAI Decisions API can review product-name and pricing claims against the saved page. This advisory review does not change the verification score or establish factual truth.</p>
   {error&&<p role="alert">{error}</p>}
   {!loaded?<p role="status">Checking saved review…</p>:review?<>
    <p role="status">{review.status==="completed"?`Review saved · ${review.model}`:review.status==="pending"?"Request reserved. Its outcome is not yet confirmed.":"The provider outcome could not be confirmed. This attempt will not be retried automatically."}</p>
    {review.result&&<ul>{review.result.results.map((r,index)=><li key={r.id}><strong>{r.field === "pricing" ? "Pricing" : r.field === "productName" ? "Product name" : `Citation ${index+1}`}: {r.relation==="supports"?"Source supports the claim":r.relation==="contradicts"?"Source contradicts the claim":"Insufficient support"}</strong> · model confidence {Math.round(r.confidence*100)}% · review against <span>the Source evidence tab</span><p>{r.claim}</p><blockquote>{r.quote}</blockquote></li>)}</ul>}
    <p>{review.input_tokens===null?"Token usage unknown":`${review.input_tokens.toLocaleString()} input tokens · ${review.output_tokens?.toLocaleString()} output tokens`} · Dollar cost unknown{review.latency_ms!==null?` · ${(review.latency_ms/1000).toFixed(2)} seconds`:""}</p>
-  </>:available?<><p>Starting sends the saved page and cited claims to TypeSafe and may incur provider charges. Reference answers remain private. One review per evaluation, up to five per account per day.</p><button className="button secondary" type="button" disabled={busy} onClick={()=>void act(true)}>{busy?"Reviewing…":"Run paid semantic review"}</button></>:<p>Semantic review is not enabled for this account.</p>}
+  </>:available?<><p>Starting sends the saved page and cited claims to the OpenAI Decisions API and may incur provider charges. Reference answers remain private. One review per evaluation, up to five per account per day.</p><button className="button secondary" type="button" disabled={busy} onClick={()=>void act(true)}>{busy?"Reviewing…":"Run paid semantic review"}</button></>:<p>Semantic review is not enabled for this account.</p>}
   {loaded&&<button className="button secondary" type="button" disabled={busy} onClick={()=>void act(false)}>Refresh saved review</button>}
  </section>;
 }

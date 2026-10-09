@@ -77,7 +77,7 @@ test("actual D1 saves two separately authorized OpenAI stages, edited query prov
     const request = { stage: "query-discovery", requestKey: "discovery_one", confirmSpend: true };
     const discovery = await startWebsiteResearch(db, "alice", "site_alice", request, env, options);
     assert.equal(discovery.status, "running"); assert.equal(api.count(), 1);
-    assert.equal(discovery.harnessVersion, "website-query-discovery-v1");
+    assert.equal(discovery.harnessVersion, "website-query-discovery-harness-v2");
     assert.equal((await startWebsiteResearch(db, "alice", "site_alice", request, env, options)).id, discovery.id);
     assert.equal(api.count(), 1);
     await assert.rejects(startWebsiteResearch(db, "alice", "site_alice", { stage: "competitor-research", discoveryRunId: discovery.id, query: researchQuery, requestKey: "before_review", confirmSpend: true }, env, options));
@@ -141,5 +141,69 @@ test("same-key concurrency and unknown creation preserve one attempt across real
     assert.equal(reopened.id, saved!.id); assert.equal(api.count(), 1);
     assert.equal((await websiteResearchOverview(db, "alice", "site_alice", env)).runs.length, 1);
     assert.equal((await getKeywordBenchmarkUsage(db, "alice")).attemptsLast24Hours, 1);
+  } finally { await current.dispose(); await rm(directory, { recursive: true, force: true }); }
+});
+
+test("actual D1 page check: unopened discovery waits, one explicit Decisions check completes it, and nothing retries", { timeout: 90_000 }, async () => {
+  const { checkResearchSources } = await import("../src/lib/research-source-check");
+  const { SOURCE_CHECK_REQUIRED, SOURCE_CHECK_UNCONFIRMED } = await import("../src/lib/keyword-benchmark-types");
+  const directory = await mkdtemp(join(tmpdir(), "folio-research-source-check-d1-"));
+  const current = runtime(directory);
+  try {
+    const db = await current.getD1Database("DB"); await setup(db);
+    let creates = 0, decisions = 0, pages = 0, decisionsStatus = 200;
+    const fetcher: typeof fetch = async (url, init) => {
+      if (String(url) === "https://api.openai.com/v1/decisions") {
+        decisions++;
+        if (decisionsStatus !== 200) return new Response("private", { status: decisionsStatus });
+        const body = JSON.parse(String(init?.body));
+        assert.equal(body.model, "gpt-6-luna"); assert.equal(JSON.stringify(body).includes(env.OPENAI_API_KEY), false);
+        return Response.json({ model: "gpt-6-luna", usage: { input_tokens: 321, output_tokens: 0 }, answers: body.questions.map((q: { name: string }) => ({ type: "choice", name: q.name, choice: "supports", confidence: 0.9,
+          probabilities: [{ value: "supports", probability: 0.9 }, { value: "partial", probability: 0.05 }, { value: "not_supported", probability: 0.05 }] })) });
+      }
+      if (init?.method === "POST") { creates++; return Response.json(researchSession(`session_check_${creates}`, "query-discovery")); }
+      const id = /\/sessions\/([^/?]+)/.exec(String(url))![1];
+      const history = researchHistory(id, researchAnswer("query-discovery"));
+      if (String(url).includes("/turns?")) return Response.json({ data: [history.turn], has_more: false });
+      // The agent searched but never opened the page it cited.
+      if (String(url).includes("/items?")) return Response.json({ data: history.items.filter(item => item.action?.type !== "open_page"), has_more: false });
+      return Response.json(researchSession(id, "query-discovery"));
+    };
+    const pageFetcher: typeof fetch = async url => { pages++; assert.equal(new URL(String(url)).hostname, "example.com");
+      return new Response("<html><head><title>Setup</title></head><body><h1>Reproducible setup workflow</h1><p>Documented steps.</p></body></html>", { headers: { "Content-Type": "text/html" } }); };
+    const checkEnv = { ...env, DECISIONS_ALLOWED_USER_IDS: "alice" };
+    for (const model of ["gpt-6-astra", "gpt-6-sol"])
+      await assert.rejects(startWebsiteResearch(db, "alice", "site_alice", { stage: "query-discovery", requestKey: `not_luna_${model}`, confirmSpend: true, model }, env, { fetcher }), /Luna only/);
+    assert.equal(creates, 0);
+    const started = await startWebsiteResearch(db, "alice", "site_alice", { stage: "query-discovery", requestKey: "check_one", confirmSpend: true, model: "gpt-6-luna" }, env, { fetcher });
+    const waiting = await reconcileKeywordBenchmark(db, "alice", started.id, env, { fetcher });
+    assert.equal(waiting.status, "requires_action"); assert.equal(waiting.answer, null);
+    assert.equal(waiting.providerMetadata.sourceCheck, "eligible"); assert.equal(waiting.error, SOURCE_CHECK_REQUIRED);
+    assert.equal((await reconcileKeywordBenchmark(db, "alice", started.id, env, { fetcher })).providerMetadata.sourceCheck, "eligible");
+    assert.equal(decisions, 0); assert.equal(pages, 0);
+    const body = { confirmSpend: true, revision: (await getKeywordBenchmarkRun(db, "alice", started.id))!.revision };
+    await assert.rejects(checkResearchSources(db, "bob", started.id, body, { ...checkEnv, DECISIONS_ALLOWED_USER_IDS: "alice,bob" }, { fetcher, pageFetcher }), /not found/);
+    await assert.rejects(checkResearchSources(db, "alice", started.id, body, env, { fetcher, pageFetcher }), /not approved/);
+    await assert.rejects(checkResearchSources(db, "alice", started.id, body, { ...checkEnv, SCAN_ALLOWED_HOSTS: "other.com" }, { fetcher, pageFetcher }), /not approved fetching/);
+    await assert.rejects(checkResearchSources(db, "alice", started.id, { ...body, revision: body.revision - 1 }, checkEnv, { fetcher, pageFetcher }), /changed/);
+    await assert.rejects(checkResearchSources(db, "alice", started.id, { revision: body.revision }, checkEnv, { fetcher, pageFetcher }), /Confirm/);
+    assert.equal(decisions, 0); assert.equal(pages, 0);
+    const checked = await checkResearchSources(db, "alice", started.id, body, checkEnv, { fetcher, pageFetcher });
+    assert.equal(checked.status, "completed"); assert.equal(checked.providerMetadata.sourceCheck, "completed");
+    assert.equal(checked.answer?.websiteResearch?.stage, "query-discovery");
+    assert.match(checked.answer!.evidence!.at(-1)!.detail, /Decisions API \(gpt-6-luna, 321 input tokens\)/);
+    assert.equal(decisions, 1); assert.equal(pages, 1);
+    await assert.rejects(checkResearchSources(db, "alice", started.id, { confirmSpend: true, revision: checked.revision }, checkEnv, { fetcher, pageFetcher }), /once/);
+    assert.equal((await reconcileKeywordBenchmark(db, "alice", started.id, env, { fetcher })).status, "completed");
+    assert.equal(decisions, 1); assert.equal(creates, 1);
+
+    decisionsStatus = 500;
+    const second = await startWebsiteResearch(db, "alice", "site_alice", { stage: "query-discovery", requestKey: "check_two", confirmSpend: true, model: "gpt-6-luna" }, env, { fetcher });
+    const pending = await reconcileKeywordBenchmark(db, "alice", second.id, env, { fetcher });
+    const failed = await checkResearchSources(db, "alice", second.id, { confirmSpend: true, revision: pending.revision }, checkEnv, { fetcher, pageFetcher });
+    assert.equal(failed.status, "failed"); assert.equal(failed.providerMetadata.sourceCheck, "needs_attention"); assert.equal(failed.error, SOURCE_CHECK_UNCONFIRMED);
+    assert.equal(decisions, 2);
+    await assert.rejects(checkResearchSources(db, "alice", second.id, { confirmSpend: true, revision: failed.revision }, checkEnv, { fetcher, pageFetcher }));
+    assert.equal(decisions, 2);
   } finally { await current.dispose(); await rm(directory, { recursive: true, force: true }); }
 });

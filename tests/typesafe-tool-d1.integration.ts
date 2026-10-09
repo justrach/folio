@@ -29,7 +29,7 @@ async function setup(db: D1Database) {
     await db.batch(unstable_splitSqlQuery(await readFile(new URL(name, directory), "utf8")).map(sql => db.prepare(sql)));
   for (const id of ["alice", "bob"]) await db.prepare("INSERT INTO user(id,name,email,created_at,updated_at) VALUES(?,?,?,?,?)").bind(id, id, `${id}@example.test`, Date.now(), Date.now()).run();
 }
-const env={OPENAI_API_KEY:'fixture',OPENAI_ALLOWED_USER_IDS:'alice',TYPESAFE_API_KEY:'fixture-typesafe',TYPESAFE_ALLOWED_USER_IDS:'alice',FOLIO_MCP_URL:'https://folio.example.com/api/mcp'};
+const env={OPENAI_API_KEY:'fixture',OPENAI_ALLOWED_USER_IDS:'alice',DECISIONS_ALLOWED_USER_IDS:'alice',FOLIO_MCP_URL:'https://folio.example.com/api/mcp'};
 test('TypeSafe tool runs inside authorized harness with metered idempotent bounded D1 calls',async()=>{
  const dir=await mkdtemp(join(tmpdir(),'folio-typesafe-tool-'));const current=runtime(dir);
  try{
@@ -39,11 +39,11 @@ test('TypeSafe tool runs inside authorized harness with metered idempotent bound
   const run=await startKeywordBenchmark(db,'alice',{caseId:suite.cases[0].id,kind:'baseline',model:'gpt-6-luna'},env,{useTypesafeTools:true,fetcher:(async(_u,init)=>{payload=JSON.parse(String(init?.body));return Response.json({id:'session_fixture',object:'agent.session',status:'in_progress',required_actions:[]});}) as typeof fetch});
   const mcp=payload.agent.tools.find((t:any)=>t.server_label==='folio_typesafe');
   assert.deepEqual(mcp.allowed_tools,['typesafe_check_claim']);assert.equal(mcp.connection_origin,'service');assert.deepEqual(payload.environment,{type:'none'});assert.match(run.harnessVersion,/typesafe-v1$/);
-  assert.ok(!JSON.stringify(payload).includes(env.TYPESAFE_API_KEY));
+  assert.ok(!JSON.stringify(payload).includes(env.OPENAI_API_KEY));
   const token=mcp.transport.authorization.replace('Bearer ','');
   const principal=await authenticateTypesafeTool(db,token);
   assert.equal(JSON.stringify(await db.prepare('SELECT * FROM typesafe_tool_grants').all()).includes(token),false);
-  await assert.rejects(createTypesafeToolGrant(db,'bob',run,{...env,TYPESAFE_ALLOWED_USER_IDS:'bob'}));
+  await assert.rejects(createTypesafeToolGrant(db,'bob',run,{...env,DECISIONS_ALLOWED_USER_IDS:'bob'}));
   const req=new Request('https://folio.example.com/api/typesafe-mcp',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json, text/event-stream'},body:JSON.stringify({jsonrpc:'2.0',id:1,method:'tools/list'})});
   const list=await (await serveTypesafeTool(req,db,principal,env)).json() as any;
   assert.deepEqual(list.result.tools.map((t:any)=>t.name),['typesafe_check_claim']);

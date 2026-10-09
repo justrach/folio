@@ -27,8 +27,7 @@ export async function evaluationRequestContext(request: Request) {
       OPENAI_PARALLEL_USER_IDS: values.OPENAI_PARALLEL_USER_IDS || process.env.OPENAI_PARALLEL_USER_IDS,
       CONDENSATION_API_KEY: values.CONDENSATION_API_KEY || process.env.CONDENSATION_API_KEY,
       CODEGRAFF_API_KEY: values.CODEGRAFF_API_KEY || process.env.CODEGRAFF_API_KEY,
-      TYPESAFE_API_KEY: values.TYPESAFE_API_KEY || process.env.TYPESAFE_API_KEY,
-      TYPESAFE_ALLOWED_USER_IDS: values.TYPESAFE_ALLOWED_USER_IDS || process.env.TYPESAFE_ALLOWED_USER_IDS,
+      DECISIONS_ALLOWED_USER_IDS: values.DECISIONS_ALLOWED_USER_IDS || process.env.DECISIONS_ALLOWED_USER_IDS,
       SCAN_ALLOWED_HOSTS: values.SCAN_ALLOWED_HOSTS || process.env.SCAN_ALLOWED_HOSTS,
     } satisfies AgentRunEnvironment,
   };

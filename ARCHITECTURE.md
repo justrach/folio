@@ -1,6 +1,6 @@
 # Folio architecture
 
-Folio is a Next.js application with a public search-results dashboard and private website workspaces. Technical readiness, SEO context, keyword search observations, and captured-evidence evaluations keep separate inputs, scoring, and publication rules. The application uses the **managed OpenAI Agents API** for website evaluations and for keyword starts that still need OpenAI (SEO tools, TypeSafe, or no Codegraff key). Ordinary keyword starts can use host-side Codegraff search plus `glm-5.3-flash` instead. Folio owns authentication, capture, run records, result verification, and presentation.
+Folio is a Next.js application with a public search-results dashboard and private website workspaces. Technical readiness, SEO context, keyword search observations, and captured-evidence evaluations keep separate inputs, scoring, and publication rules. The application uses the **managed OpenAI Agents API** for website evaluations and for keyword starts that still need OpenAI (SEO tools, claim checks, or no Codegraff key). Ordinary keyword starts can use host-side Codegraff search plus `glm-5.3-flash` instead. Folio owns authentication, capture, run records, result verification, and presentation.
 
 This document describes the implementation and identifies production work still required. See [EVALUATION-STRATEGY.md](EVALUATION-STRATEGY.md) for what the results establish and [docs/MONETIZATION.md](docs/MONETIZATION.md) for proposed commercial packaging.
 
@@ -198,11 +198,11 @@ Folio now includes `/api/mcp` for coding clients and `/api/v1/seo` for explicit,
 
 ### Advisory semantic review
 
-An explicit owner action can review saved page-evidence fact citations with TypeSafe after deterministic integrity and quote checks. `typesafe-review-store.ts` reserves database capacity before inference and retains ambiguity without retry; `typesafe-citations.ts` bounds and validates the transport. This is separate from scoring, publication and reference truth. Stored usage is included in the private cost summary, with money unknown. See [TypeSafe reviews](docs/TYPESAFE-REVIEWS.md).
+An explicit owner action can review saved page-evidence fact citations with the OpenAI Decisions API after deterministic integrity and quote checks. `typesafe-review-store.ts` reserves database capacity before inference and retains ambiguity without retry; `typesafe-citations.ts` bounds and validates the transport. This is separate from scoring, publication and reference truth. Stored usage is included in the private cost summary, with money unknown. See [TypeSafe reviews](docs/TYPESAFE-REVIEWS.md).
 
 ## Agent-directed website crawl
 
-See [Luna crawl and Jev review](docs/WEBSITE-CRAWL.md): agent-controlled same-website traversal through bounded fetch tools, stored excerpts, one semantic review, and a separate report from search rankings.
+See [Luna crawl and Decisions review](docs/WEBSITE-CRAWL.md): agent-controlled same-website traversal through bounded fetch tools, stored excerpts, one semantic review, and a separate report from search rankings.
 
 ## Website keyword research
 

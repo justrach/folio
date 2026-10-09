@@ -53,7 +53,7 @@ export function assertCodegraffKeywordInput(input: KeywordAgentInput) {
   }
   if (mode === "reviewed-domains") keywordAllowedDomains(input.allowedDomains);
   else if (input.allowedDomains.length) throw new KeywordAgentError("Open-web search cannot carry a reviewed-domain filter.", "INVALID_INPUT", false, 400);
-  if (input.seoMcp || input.typesafeMcp) throw new KeywordAgentError("Codegraff keyword research does not run Folio SEO or TypeSafe tools.", "INVALID_INPUT", false, 400);
+  if (input.seoMcp || input.typesafeMcp) throw new KeywordAgentError("Codegraff keyword research does not run Folio SEO or claim-check tools.", "INVALID_INPUT", false, 400);
 }
 
 export async function codegraffKeywordFingerprint(allowedDomains: string[], searchMode?: ReturnType<typeof keywordSearchMode>, selectedModel?: string): Promise<string> {

@@ -109,8 +109,10 @@ test("saving a URL retries readably and prepares private website research withou
   await expect(page.getByLabel("Selected website", { exact: true })).toHaveValue("new-saved-site");
   await expect(panel(page)).toContainText("Target: https://saved-target.example.com/");
   await expect(form.getByRole("status")).toContainText("no audit or paid research has started");
-  await page.getByRole("link", { name: "Open website research", exact: true }).click();
-  await expect(page).toHaveURL(/#website-research$/);
+  const checklist = page.getByRole("region", { name: "Getting started" });
+  await expect(checklist.locator('[data-state="done"]')).toContainText("Save your website");
+  await expect(checklist.locator('[aria-current="step"]')).toBeVisible();
+  await panel(page).scrollIntoViewIfNeeded();
   await expect(panel(page).getByRole("list", { name: "Research steps" }).locator('[aria-current="step"]')).toContainText("Discover queries");
   expect(state.saves).toEqual([{ url: "https://saved-target.example.com/" }, { url: "https://saved-target.example.com/" }]);
   expect(state.starts).toEqual([]); expect(state.mutations).toEqual([]);

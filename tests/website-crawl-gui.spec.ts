@@ -22,9 +22,9 @@ test('crawl launch is explicit, defaults to Luna, and saved Jev evidence survive
  });
  await page.goto('/evaluations?view=page');
  await page.getByLabel('Website to evaluate',{exact:true}).fill('example.com');
- const option=page.getByRole('checkbox',{name:'Crawl up to 10 pages with Luna, then review with Jev'});
+ const option=page.getByRole('checkbox',{name:'Crawl up to 10 pages with Luna, then review with the Decisions API'});
  await expect(option).not.toBeChecked();await option.focus();await page.keyboard.press('Space');await expect(option).toBeChecked();expect(calls).toEqual([]);
- await page.getByRole('button',{name:'Crawl with Luna + Jev',exact:true}).click();
+ await page.getByRole('button',{name:'Crawl with Luna + Decisions',exact:true}).click();
  await expect.poll(()=>calls.length).toBe(1);expect(calls[0]).toEqual({domain:'example.com',mode:'managed',websiteCrawl:true});
  await expect(page.getByRole('region',{name:'Website crawl report'})).toBeVisible();
  await expect(page.getByText('Explicitly covered',{exact:false})).toBeVisible();

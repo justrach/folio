@@ -5,7 +5,7 @@ import queryPlan from "../data/website-search-queries.json";
 import expandedQueries from "../data/expanded-search-queries.json";
 import { KEYWORD_BENCHMARK_TEMPLATES } from "./keyword-benchmark-catalog";
 import { validateWebsiteEvidence, type WebsiteEvidence } from "./sandbox-website-evidence";
-import { postTypeSafeQuestions } from "./typesafe-citations";
+import { DECISIONS_MODEL, postDecisions } from "./openai-decisions";
 
 const METHOD = "question-page-coverage-v1" as const;
 const MAX_QUESTIONS = 5;
@@ -59,9 +59,9 @@ export type CoverageResult = {
 };
 
 /** Two atomic judgments per page/question. Source text occurs once; editorial targets, HTML scores and account/run IDs are excluded. */
-export function prepareQuestionCoverage(evidences: unknown[], questionIds: readonly string[], model = "jev-latest", catalog: readonly CoverageQuestion[] = QUESTION_COVERAGE_BANK): CoveragePlan {
+export function prepareQuestionCoverage(evidences: unknown[], questionIds: readonly string[], model: string = DECISIONS_MODEL, catalog: readonly CoverageQuestion[] = QUESTION_COVERAGE_BANK): CoveragePlan {
   if (!Array.isArray(evidences) || evidences.length < 1 || evidences.length > 2) throw new Error("Coverage requires one or two frozen websites.");
-  if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$/.test(model)) throw new Error("Invalid TypeSafe model.");
+  if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$/.test(model)) throw new Error("Invalid coverage model.");
   if (!questionIds.length || questionIds.length > MAX_QUESTIONS || new Set(questionIds).size !== questionIds.length) throw new Error("Select 1–5 distinct question IDs.");
   const questions = questionIds.map(id => {
     const question = catalog.find(item => item.id === id);
@@ -119,7 +119,7 @@ export function parseQuestionCoverageResponse(value: unknown, input: CoveragePla
   const plan = validateQuestionCoveragePlan(input, catalog);
   if (!record(value) || typeof value.model !== "string" || !/^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/.test(value.model) || !record(value.answers) || !record(value.usage) ||
       Object.keys(value.answers).length !== Object.keys(plan.request.questions).length ||
-      ![value.usage.input_tokens, value.usage.output_tokens].every(n => typeof n === "number" && Number.isSafeInteger(n) && n >= 0)) throw new Error("Invalid TypeSafe coverage response.");
+      ![value.usage.input_tokens, value.usage.output_tokens].every(n => typeof n === "number" && Number.isSafeInteger(n) && n >= 0)) throw new Error("Invalid coverage response.");
   const answers: CoverageResult["answers"] = {}, judgments: Judgment[] = [];
   plan.websites.forEach((website, siteIndex) => website.pages.forEach((page, pageIndex) => plan.questions.forEach((question, questionIndex) => {
     const id = `s${siteIndex}p${pageIndex}q${questionIndex}`;
@@ -152,18 +152,24 @@ export function validateQuestionCoverageResult(value: unknown, plan: CoveragePla
   return result;
 }
 
-/** Callers must reserve once before this explicit invocation. No retry, cascade, crawl or gateway operation. */
-export async function reviewQuestionCoverage(input: CoveragePlan, apiKey: string, catalog: readonly CoverageQuestion[] = QUESTION_COVERAGE_BANK): Promise<CoverageResult> {
+/** Plans frozen for the retired TypeSafe/Jev provider stay readable but cannot run; prepare a new plan instead. */
+export function questionCoverageRunnable(plan: Pick<CoveragePlan, "request">): boolean {
+  return plan.request.model === DECISIONS_MODEL;
+}
+
+/** Callers must reserve once before this explicit invocation. One Decisions POST; no retry, cascade, crawl or gateway operation. */
+export async function reviewQuestionCoverage(input: CoveragePlan, apiKey: string, catalog: readonly CoverageQuestion[] = QUESTION_COVERAGE_BANK, fetcher?: typeof fetch): Promise<CoverageResult> {
   const plan = validateQuestionCoveragePlan(input, catalog);
+  if (!questionCoverageRunnable(plan)) throw new Error("This plan was frozen for the retired provider; prepare a new plan. No inference was made.");
   const body = JSON.stringify(plan.request);
   if (apiKey.trim() && (body.includes(apiKey) || body.includes(JSON.stringify(apiKey).slice(1, -1)))) throw new Error("Coverage request contains the configured credential; inference refused.");
-  return parseQuestionCoverageResponse(await postTypeSafeQuestions(plan.request, apiKey), plan, catalog);
+  return parseQuestionCoverageResponse(await postDecisions(plan.request, apiKey, fetcher), plan, catalog);
 }
 
 const escape = (value: string) => value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/[\\`*_{}\[\]()#!|~]/g, "\\$&").replace(/[\r\n]+/g, " ");
 export function renderQuestionCoverageReport(input: CoveragePlan, saved?: CoverageResult, catalog: readonly CoverageQuestion[] = QUESTION_COVERAGE_BANK): string {
   const plan = validateQuestionCoveragePlan(input, catalog), result = saved === undefined ? undefined : validateQuestionCoverageResult(saved, plan, catalog);
-  const lines = ["# Question-to-page coverage", "", result ? "**Advisory model classifications — human review required.**" : "**Prepared only — no Jev classifications have been run.**", "",
+  const lines = ["# Question-to-page coverage", "", result ? "**Advisory model classifications — human review required.**" : "**Prepared only — no model classifications have been run.**", "",
     `Method: ${METHOD}. ${plan.websites.length} website(s), ${plan.questions.length} customer question(s), ${Object.keys(plan.request.state.pages).length} frozen page(s), ${Object.keys(plan.request.questions).length} typed judgments.`, "",
     "## Customer questions", "", ...plan.questions.map(question => `- **${escape(question.id)}** (${escape(question.questionType)}; ${escape(question.language)} / ${escape(question.locale)}): ${escape(question.query)}`), "",
     "## Website index", "", "| Website | Question ID | Evidence coverage |", "| --- | --- | --- |"];

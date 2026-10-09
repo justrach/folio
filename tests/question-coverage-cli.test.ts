@@ -28,20 +28,20 @@ async function fixture(mockSuccess = false) {
   const guard = join(cwd, "offline.mjs");
   await writeFile(guard, mockSuccess ? `import { appendFileSync } from "node:fs";
     globalThis.fetch = async (url, init) => {
-      if (url !== "https://api.typesafe.ai/v1/systemone") throw new Error("Unexpected fixture URL");
+      if (url !== "https://api.openai.com/v1/decisions") throw new Error("Unexpected fixture URL");
       appendFileSync("fetch-attempts", "fixture\\n");
       const request = JSON.parse(init.body);
-      const answers = Object.fromEntries(Object.entries(request.questions).map(([id, question]) => {
-        const options = Object.keys(question.criteria), choice = options[0];
-        return [id, { type: "choice", choice, confidence: 0.8,
-          probabilities: Object.fromEntries(options.map((option, i) => [option, i === 0 ? 0.8 : 0.1])) }];
-      }));
-      return Response.json({ model: "jev-fixture-resolved", answers, usage: { input_tokens: 123, output_tokens: 45 } });
+      const answers = request.questions.map(question => {
+        const options = question.choices.map(choice => choice.value), choice = options[0];
+        return { type: "choice", name: question.name, choice, confidence: 0.8,
+          probabilities: options.map((value, i) => ({ value, probability: i === 0 ? 0.8 : 0.1 })) };
+      });
+      return Response.json({ model: "gpt-6-luna", answers, usage: { input_tokens: 123, output_tokens: 0 } }, { headers: { "Content-Type": "application/json" } });
     };` : 'import { appendFileSync } from "node:fs"; globalThis.fetch = async () => { appendFileSync("fetch-attempts", "blocked\\n"); throw new Error("Offline test: inference blocked"); };');
   const run = (args: string[], key?: string) => spawnSync(process.execPath, ["--conditions=react-server", "--import", loader, "--import", guard, cli, ...args], {
     cwd, encoding: "utf8", timeout: 15_000,
     // Deliberately do not inherit host credentials or load the repository's .dev.vars.
-    env: { PATH: process.env.PATH, NODE_ENV: "test", ...(key === undefined ? {} : { TYPESAFE_API_KEY: key }) },
+    env: { PATH: process.env.PATH, NODE_ENV: "test", ...(key === undefined ? {} : { OPENAI_API_KEY: key }) },
   });
   const path = (name: string, id = "trial") => join(cwd, ".local", "question-coverage", id, name);
   const plan = (extra: string[] = [], id = "trial") => run(["plan", "--id", id, "--receipt", "receipt.json", ...extra]);
@@ -79,7 +79,8 @@ test("CLI help/list/plan/report are offline, private, and preserve an existing p
     assert.equal(await readFile(f.path("plan.json"), "utf8"), saved);
     await f.absent(f.path("reservation.json"));
     await f.absent(join(f.cwd, "fetch-attempts"));
-    success(f.plan(["--receipt", "second.json", "--question", bank[0].id, "--question", bank[1].id, "--model", "glm-5.3-flash"], "two-sites"));
+    success(f.plan(["--receipt", "second.json", "--question", bank[0].id, "--question", bank[1].id, "--model", "gpt-6-luna"], "two-sites"));
+    failure(f.plan(["--model", "glm-5.3-flash"], "other-model"));
     const two = JSON.parse(await readFile(f.path("plan.json", "two-sites"), "utf8"));
     assert.equal(two.websites.length, 2);
     assert.deepEqual(two.questions.map((q: { id: string }) => q.id), [bank[0].id, bank[1].id]);
@@ -95,7 +96,7 @@ test("confirmation and nonempty key are required before any reservation", async 
     await f.absent(f.path("reservation.json"));
     for (const key of [undefined, "", "   "]) {
       const noKey = f.run(["run", "--id", "trial", "--confirm-spend"], key);
-      failure(noKey); assert.match(noKey.stderr, /TYPESAFE_API_KEY/);
+      failure(noKey); assert.match(noKey.stderr, /OPENAI_API_KEY/);
       await f.absent(f.path("reservation.json"));
     }
     await f.absent(join(f.cwd, "fetch-attempts"));
@@ -196,8 +197,8 @@ test("completed fixture inference preserves the resolved model, reopens without 
     assert.match(await readFile(f.path("plan.md"), "utf8"), /Prepared only/);
     success(f.run(["run", "--id", "trial", "--confirm-spend"], fakeKey));
     const result = JSON.parse(await readFile(f.path("result.json"), "utf8"));
-    assert.equal(result.requestedModel, "jev-latest");
-    assert.equal(result.model, "jev-fixture-resolved");
+    assert.equal(result.requestedModel, "gpt-6-luna");
+    assert.equal(result.model, "gpt-6-luna");
     assert.equal(result.rows.length, 3);
     assert.ok(result.rows.every((row: { status: string }) => row.status === "direct"));
     assert.equal(result.humanReviewRequired, true);
@@ -209,7 +210,7 @@ test("completed fixture inference preserves the resolved model, reopens without 
     assert.ok(outcome.latencyMs >= 0);
     const report = f.run(["report", "--id", "trial"]); success(report);
     assert.match(report.stdout, /Advisory model classifications/);
-    assert.match(report.stdout, /resolved model: jev-fixture-resolved/);
+    assert.match(report.stdout, /resolved model: gpt-6-luna/);
     assert.equal(await readFile(f.path("report.md"), "utf8"), report.stdout);
     assert.equal(await readFile(join(f.cwd, "fetch-attempts"), "utf8"), "fixture\n");
     const reservation = await readFile(f.path("reservation.json"), "utf8");

@@ -20,7 +20,7 @@ import { getOwnedSeoReport } from "./seo-store";
 import { pendingSavedSeoAction } from "./managed-seo-tool";
 import { assertAllowedUrl, boundedFetch, configuredScanHosts, normalizeScanUrl, ScanError } from "./scanner";
 
-export type AgentRunEnvironment = AgentsEnvironment & { SCAN_ALLOWED_HOSTS?: string; TYPESAFE_API_KEY?: string; TYPESAFE_ALLOWED_USER_IDS?: string };
+export type AgentRunEnvironment = AgentsEnvironment & { SCAN_ALLOWED_HOSTS?: string; DECISIONS_ALLOWED_USER_IDS?: string };
 
 export function managedRunAccess(env: AgentRunEnvironment, ownerId: string) {
   const connection = getAgentsConnectionStatus(env);
@@ -128,7 +128,7 @@ export async function startEvaluationRun(
     suiteVersion: input.websiteCrawl ? CRAWL_WORKFLOW : WEBSITE_EVAL_VERSION, mode: "live", status: "queued",
     ...(input.websiteCrawl ? {workflow: CRAWL_WORKFLOW as "website-crawl-v1"} : {}),
     createdAt: now, updatedAt: now, sessionId: null, model: input.websiteCrawl ? CRAWL_MODEL : access.model,
-    providerStatus: null, captures: [], events: [event("queued", "Evaluation reserved", input.websiteCrawl ? "Private Luna crawl: up to ten same-website pages followed by one Jev review." : "Private run; a fresh managed OpenAI session will review frozen website evidence.")],
+    providerStatus: null, captures: [], events: [event("queued", "Evaluation reserved", input.websiteCrawl ? "Private Luna crawl: up to ten same-website pages followed by one Decisions review." : "Private run; a fresh managed OpenAI session will review frozen website evidence.")],
     result: null, error: null, usage: null, publication: "private", revision: 0,
     ...((previous ? previous.expectedFacts : input.expectedFacts) ? { expectedFacts: structuredClone((previous ? previous.expectedFacts : input.expectedFacts)!) } : {}),
   };
@@ -353,7 +353,7 @@ export async function reconcileEvaluationRun(db: D1Database, ownerId: string, id
       if(crawlResult) {
         agentOutput=validateCrawlFinal(text,crawlResult);
         status="completed";
-        events.set("verification-final",{...event("verification","Crawl and Jev review saved","Saved public page excerpts and advisory coverage judgments; no technical or search ranking score."),id:"verification-final"});
+        events.set("verification-final",{...event("verification","Crawl and Decisions review saved","Saved public page excerpts and advisory coverage judgments; no technical or search ranking score."),id:"verification-final"});
       } else {
       agentOutput = parseWebsiteAgentOutput(JSON.parse(text));
       if (!agentOutput) throw new Error("Invalid final response schema");
@@ -364,7 +364,7 @@ export async function reconcileEvaluationRun(db: D1Database, ownerId: string, id
       }
     } catch {
       status = "failed"; result = null; agentOutput = undefined;
-      error = crawlResult ? "The crawl did not complete its saved-page and Jev-review contract. Saved pages and any review outcome remain available; no work is retried automatically." : "OpenAI completed its turn, but the final answer did not match the evaluation JSON contract. No score was accepted.";
+      error = crawlResult ? "The crawl did not complete its saved-page and Decisions-review contract. Saved pages and any review outcome remain available; no work is retried automatically." : "OpenAI completed its turn, but the final answer did not match the evaluation JSON contract. No score was accepted.";
     }
   } else if (!latest && session.status === "idle") {
     status = "requires_action";

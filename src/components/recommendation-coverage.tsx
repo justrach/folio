@@ -13,8 +13,8 @@ const advice = {
 export function RecommendationCoverage({ record, hasWebsite }: { record?: PublicQuestionCoverageRecord; hasWebsite: boolean }) {
   return <details className="ranked-search-coverage">
     <summary>Evidence coverage <span>{record ? labels[record.status] : "Not evaluated"}</span></summary>
-    {!record ? <p>{hasWebsite ? "No published Jev page-coverage review for this exact question and returned website. Not evaluated does not mean the website lacks an answer." : "No website URL was returned, so captured pages cannot be matched to this recommendation."} Opening this result does not run a review.</p> : <>
-      <p className="ranked-search-coverage-limit">Advisory Jev classifications of frozen page excerpts, not verified truth or a website score. They do not explain why the search agent recommended this website or change its returned position.</p>
+    {!record ? <p>{hasWebsite ? "No published page-coverage review for this exact question and returned website. Not evaluated does not mean the website lacks an answer." : "No website URL was returned, so captured pages cannot be matched to this recommendation."} Opening this result does not run a review.</p> : <>
+      <p className="ranked-search-coverage-limit">Advisory model classifications of frozen page excerpts, not verified truth or a website score. They do not explain why the search agent recommended this website or change its returned position.</p>
       <p><strong>Next evidence step:</strong> {advice[record.status]}</p>
       <p>{record.pages.length} captured page{record.pages.length === 1 ? "" : "s"} / {record.captureAttemptCount} attempts · limited capture, not the whole website.</p>
       <ul className="ranked-search-coverage-pages">{record.pages.map(page => <li key={page.url}>

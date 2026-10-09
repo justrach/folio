@@ -18,8 +18,8 @@ export async function keywordBenchmarkRequestContext(request: Request) {
   const { env } = await getCloudflareContext({ async: true });
   const values = env as unknown as AgentsEnvironment;
   return { db: await getDb(), ownerId: session.user.id, baseURL: auth.options.baseURL, env: {
-    TYPESAFE_API_KEY: values.TYPESAFE_API_KEY || process.env.TYPESAFE_API_KEY,
-    TYPESAFE_ALLOWED_USER_IDS: values.TYPESAFE_ALLOWED_USER_IDS || process.env.TYPESAFE_ALLOWED_USER_IDS,
+    DECISIONS_ALLOWED_USER_IDS: values.DECISIONS_ALLOWED_USER_IDS || process.env.DECISIONS_ALLOWED_USER_IDS,
+    SCAN_ALLOWED_HOSTS: values.SCAN_ALLOWED_HOSTS || process.env.SCAN_ALLOWED_HOSTS,
     FOLIO_MCP_URL: values.FOLIO_MCP_URL || process.env.FOLIO_MCP_URL,
     DATAFORSEO_LOGIN: values.DATAFORSEO_LOGIN || process.env.DATAFORSEO_LOGIN,
     DATAFORSEO_PASSWORD: values.DATAFORSEO_PASSWORD || process.env.DATAFORSEO_PASSWORD,

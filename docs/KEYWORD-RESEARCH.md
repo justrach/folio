@@ -8,7 +8,7 @@ Folio's managed website-question workflow defaults to Luna. When the owner enabl
 - `folio_sandbox_seo`: existing selected-domain Google organic overview and backlink summary (two provider tasks). Call only when relevant; keyword research does not require buying a backlink report.
 - The managed run authorizes at most three distinct keyword seeds and one overview. The application also reserves at most 15 keyword requests per owner per rolling day. A selected target website and existing DataForSEO account approval are required. Checkboxes, navigation and status reads spend nothing.
 - Coding agents using Folio's general `/api/mcp` can call `folio_keyword_research` with `domain`, `seed`, `requestKey`, `confirmSpend:true` and `seo` scope. It is available alongside saved website evidence tools for other website tasks. External clients choose their own model; Folio's managed tasks default to Luna.
-- The technical ten-page crawl remains a separate capture-and-Jev workflow. It does not automatically purchase keyword data. Use a website question with the research option to plan improvements using live search data.
+- The technical ten-page crawl remains a separate capture-and-Decisions-review workflow. It does not automatically purchase keyword data. Use a website question with the research option to plan improvements using live search data.
 
 Example question: “What useful free tool could this website offer its customers? Check related search demand, explain the job it would do, and separate measured keyword estimates from your product suggestions.”
 
@@ -20,7 +20,7 @@ Raw provider errors and credentials are never passed to agents. Only bounded pro
 
 New sandbox grants are version 2. Existing version-1 grants retain only their previously authorized overview tool. Grants expire within five minutes or the saved run deadline, and stop authorizing new requests after cancellation, hold release or a terminal run. Admission rechecks these conditions atomically alongside the request count.
 
-Search volume is a provider estimate, not actual site traffic. Advertising competition is not organic ranking difficulty. Unknown values remain null. Keyword demand alone does not establish product fit or guarantee traffic. Luna reasons over these observations; this change does not add another Jev call.
+Search volume is a provider estimate, not actual site traffic. Advertising competition is not organic ranking difficulty. Unknown values remain null. Keyword demand alone does not establish product fit or guarantee traffic. Luna reasons over these observations; this change does not add another semantic-review call.
 
 ## Validation
 

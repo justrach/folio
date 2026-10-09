@@ -102,3 +102,41 @@ export async function listOwnedSeoReports(db: D1Database, ownerId: string): Prom
     };
   });
 }
+
+/** DataForSEO is the source of truth for domain authority and search/backlink estimates in Folio.
+ * Latest complete saved observation per domain; unavailable values stay null, never zero. */
+export type DomainSeoMetrics = {
+  domain: string; reportId: string; retrievedAt: string;
+  domainRank: number | null; referringDomains: number | null; backlinks: number | null;
+  organicKeywords: number | null; estimatedMonthlyTraffic: number | null;
+};
+const metric = (value: unknown, max = Number.MAX_SAFE_INTEGER) =>
+  typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= max ? value : null;
+
+export function domainSeoMetrics(report: SavedSeoReport): DomainSeoMetrics | null {
+  const result = report.result;
+  if (!result || !report.retrievedAt || result.provider !== "DataForSEO") return null;
+  const organic = result.organic?.status === "success" ? result.organic.data : null;
+  const backlinks = result.backlinks?.status === "success" ? result.backlinks.data : null;
+  return { domain: report.domain, reportId: report.id, retrievedAt: report.retrievedAt,
+    domainRank: backlinks?.authorityRankScale === 100 ? metric(backlinks.authorityRank, 100) : null,
+    referringDomains: metric(backlinks?.referringDomains), backlinks: metric(backlinks?.backlinks),
+    organicKeywords: metric(organic?.organicKeywords), estimatedMonthlyTraffic: metric(organic?.estimatedMonthlyTraffic) };
+}
+
+/** Owner-scoped reads of saved observations only; this never calls DataForSEO. */
+export async function latestDomainSeoMetrics(db: D1Database, ownerId: string, domains: string[]): Promise<Map<string, DomainSeoMetrics>> {
+  requireOwner(ownerId);
+  const wanted = [...new Set(domains.map(domain => { try { return normalizeSeoDomain(domain); } catch { return null; } }).filter((d): d is string => !!d))].slice(0, 50);
+  const metrics = new Map<string, DomainSeoMetrics>();
+  if (!wanted.length) return metrics;
+  const { results } = await db.prepare(`SELECT id, domain, created_at, retrieved_at, result_json FROM seo_reports
+    WHERE user_id = ? AND result_json IS NOT NULL AND domain IN (${wanted.map(() => "?").join(",")})
+    ORDER BY retrieved_at DESC, id DESC LIMIT 200`).bind(ownerId, ...wanted).all<Row>();
+  for (const row of results) {
+    if (metrics.has(row.domain)) continue;
+    const parsed = domainSeoMetrics(reportFromRow(row));
+    if (parsed) metrics.set(row.domain, parsed);
+  }
+  return metrics;
+}

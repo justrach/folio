@@ -1,6 +1,6 @@
 # Question-first website evidence index
 
-Folio's useful unit is **customer question → observed website result → supporting captured pages**, not a generic website-quality score. The coverage layer is now connected to the existing Folio Index at `/leaderboard` and the selected-question report at `/overview?query=<public-query-id>`. It enriches the same returned website rows; it does not create another index or change the agent's recommendation order. This is local application integration, not a deployment or live Jev validation.
+Folio's useful unit is **customer question → observed website result → supporting captured pages**, not a generic website-quality score. The coverage layer is now connected to the existing Folio Index at `/leaderboard` and the selected-question report at `/overview?query=<public-query-id>`. It enriches the same returned website rows; it does not create another index or change the agent's recommendation order. This is local application integration, not a deployment or live validation of published coverage.
 
 ## Existing index integration
 
@@ -37,9 +37,9 @@ These cover developer tools, software/work, shopping, services/travel and learni
 
 Named questions and unbranded discovery remain distinguishable. A page answering a named-product question does not establish unprompted discovery. Editorial expected-site lists, reference answers and tracked-company metadata do not enter the model request.
 
-## What Jev is asked
+## What the classifier is asked
 
-The prototype uses TypeSafe's [Choice interface](https://docs.typesafe.ai/primitives/choice) and the [atomic-question approach](https://docs.typesafe.ai/introduction). Each page/question pair produces **two independent typed questions** against one shared frozen state:
+Classification uses OpenAI's Decisions API (`choice` questions) with an atomic-question approach; it replaced the earlier TypeSafe/Jev prototype. Each page/question pair produces **two independent typed questions** against one shared frozen state:
 
 1. **Relevance:** `relevant`, `irrelevant`, or `uncertain`.
 2. **Answer coverage:** `direct`, `partial`, or `not_established`.
@@ -47,6 +47,10 @@ The prototype uses TypeSafe's [Choice interface](https://docs.typesafe.ai/primit
 For comparisons/discovery, coverage concerns this website's candidate-specific contribution, not whether its page compares every alternative. A documented negative answer can be direct evidence. Topic words or navigation links alone do not establish an answer. Each judgment is scoped to one saved page; no browsing or synthesis from other pages is authorized.
 
 Website/question rows conservatively use the strongest relevant page. Positive coverage paired with uncertain/irrelevant relevance produces `review_required`, not automatic acceptance. This is not a multi-page reasoning engine. Results retain the distributions, confidence, requested/resolved model, token usage, and exact page IDs, URLs, capture dates, truncation flags and text hashes. Sources are stored once in the request; this does not establish the provider's billing or latency.
+
+### Provider
+
+Every plan is classified by OpenAI's Decisions API (`POST /v1/decisions`, public beta, `gpt-6-luna` only, input-token pricing) using the server `OPENAI_API_KEY`. `plan` accepts only `--model gpt-6-luna` (the default). The request carries only the frozen `state` as input and each atomic question's instructions with its criteria as choice descriptions. Answers are converted into the same strict choice/probability result; refusals, duplicate or missing answers fail closed. The reservation, single-attempt and no-retry rules are unchanged.
 
 **All classifications remain advisory.** Confidence is not measured accuracy, exact text hashes do not authenticate the source, and coverage does not prove factual correctness, product suitability, citation selection or agent recommendation frequency. Missing facts mean missing from these bounded excerpts, not absent from the entire website. No benchmark or HTML score is modified and no keep/change repair is applied. Explicitly published advisory coverage appears alongside a previously published search ranking; it never creates or reorders that ranking.
 
@@ -69,14 +73,19 @@ Only this explicit command can spend:
 bun run index:questions run --id <prepared-id> --confirm-spend
 ```
 
-It requires a nonempty server-side `TYPESAFE_API_KEY` from the process environment or existing `.dev.vars`. Configuration is never overwritten, credentials are not logged or copied into state, and the exact outgoing body is checked against the credential value before dispatch. A frozen-plan/hash mismatch prevents dispatch.
+It requires a nonempty server-side `OPENAI_API_KEY` from the process environment or existing `.dev.vars`. Plans frozen with the retired `jev-latest` model stay readable through `report` but are refused before any reservation; prepare a new plan ID. Configuration is never overwritten, credentials are not logged or copied into state, and the exact outgoing body is checked against the credential value before dispatch. A frozen-plan/hash mismatch prevents dispatch.
 
 An exclusive immutable `reservation.json` is written before the single provider attempt. Any existing reservation blocks another call, including completed and unknown attempts. Completion and latency/model/usage go into separate `outcome.json`, with validated `result.json` / `report.md`. Timeout, invalid response or interrupted persistence leaves pending/needs-attention accounting; never delete it to retry. Dollar cost remains unknown. This operator CLI has no application-owner quota/auth or cost-dashboard integration. Index-linked results have the separate explicit local publication workflow above; the original draft plans remain private. No production deployment is implied.
+
+## Observed validation — October 9, 2026 (Decisions provider)
+
+- **Fixtures:** four Decisions transport tests cover provider selection, an unchanged question/criteria mapping, one `POST /v1/decisions`, credential refusal, no retry or error-body echo, and fail-closed refusals/duplicates/missing answers.
+- **Live, private:** a new plan (`--model gpt-6-luna`) over the same six frozen Codegraff pages and three coding questions completed one authorized Decisions call: 36 judgments, 13,374 input tokens, no output tokens, about one second. All three website rows were `partial`; several page judgments had low confidence. The earlier TypeSafe plan remains unevaluated and unchanged. This is not calibration against labeled examples, a publication, or a deployment; dollar cost is recorded as unknown.
 
 ## Observed validation — September 30, 2026
 
 - **Implementation/fixtures:** 18 focused coverage, CLI and existing citation-transport tests passed. The project `bun run typecheck` passed. Fixtures cover source/hash integrity, strict distributions, relevance/coverage conflicts, unknown-cost failures, explicit-spend gates, immutable reservations, path confinement, successful saved-result reopening, resolved-model aliases and no automatic retries. Fixture success is not live Jev validation or accuracy calibration.
 - **Existing-index integration/fixtures:** 48 focused public contract, index-plan/projection, CLI, dashboard and citation-transport tests passed. Four Playwright cases passed across desktop (1440×1000) and mobile (Pixel 5) at `http://127.0.0.1:3001`, covering exact question/model history and refresh, unmeasured rows, advisory classifications, gaps, source provenance, unchanged recommendation order, no horizontal overflow, and no private/provider requests. Browser fixtures are synthetic and screenshots stay outside Git. The local emulator still logged file-descriptor errors, and the loopback dev origin emitted a warning; the earlier localhost run had startup/hydration/HMR failures. The final rendered fixture checks do not validate live database bindings or providers.
 - **Real frozen input:** a private Codegraff-site plan uses the six pages captured in the earlier website attempt, three coding questions, 18 page/question pairs and 36 typed judgments. Its request is 53,136 bytes. The original receipt/reservation were checked unchanged; no new capture, sandbox creation or TypeSafe reservation occurred. Every matrix cell is **not evaluated**, not a fabricated score.
-- **Live dependency:** no local TypeSafe credential is configured, so no live Jev classification, provider latency, price or citation-readiness claim is established. Validate representative independently labeled examples before considering thresholds or automatic advice.
+- **Live dependency (at that date):** no local TypeSafe credential was configured, so no live Jev classification, provider latency, price or citation-readiness claim is established. Validate representative independently labeled examples before considering thresholds or automatic advice.
 - **Separate sandbox dependency:** the additional paid website-sandbox pilot remains conditional on a confirmed deployed provider fix. Provider-reported timeout fixes are locally tested but not deployed; this prototype does not resume that pilot.

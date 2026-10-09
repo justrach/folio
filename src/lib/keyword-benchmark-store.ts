@@ -3,7 +3,7 @@ import type { D1Database } from "@cloudflare/workers-types";
 import type { AgentReservationGuard } from "./agent-observation-types";
 import { keywordPublicUrl, keywordRecommendationMetrics, validateKeywordCollectionEvidence } from "./keyword-search-mode";
 import { parseWebsiteResearch } from "./website-research";
-import { KEYWORD_BENCHMARK_SURFACE, KEYWORD_BENCHMARK_QUERY_MAX_LENGTH, isKeywordBenchmarkId, keywordSearchMode, type KeywordBenchmarkAnswer, type KeywordBenchmarkCase,
+import { KEYWORD_BENCHMARK_SURFACE, KEYWORD_BENCHMARK_QUERY_MAX_LENGTH, KEYWORD_SOURCE_CHECK_TRANSITIONS, SOURCE_CHECK_NONE_SUPPORTED, SOURCE_CHECK_REQUIRED, SOURCE_CHECK_UNCONFIRMED, isKeywordBenchmarkId, keywordSearchMode, type KeywordBenchmarkAnswer, type KeywordBenchmarkCase,
   type KeywordBenchmarkCaseInput, type KeywordBenchmarkExecution, type KeywordBenchmarkRun,
   type KeywordBenchmarkRunSummary, type KeywordBenchmarkSuite, type KeywordBenchmarkSuiteSummary,
   type KeywordBenchmarkUsage } from "./keyword-benchmark-types";
@@ -465,6 +465,7 @@ const safeErrors = new Set([
   "Session creation was rejected before a session receipt was confirmed.",
   "The provider session is idle with no saved turn, items or requested action. The initial submission remains unresolved; do not resend it.",
   "The missing receipt was recovered; its final provider outcome is still unresolved.",
+  SOURCE_CHECK_REQUIRED, SOURCE_CHECK_NONE_SUPPORTED, SOURCE_CHECK_UNCONFIRMED,
 ]);
 export function sanitizeKeywordBenchmarkError(value: string | null): string | null {
   return value === null ? null : safeErrors.has(value) ? value : "The provider operation needs attention. Retrieve the saved session before continuing.";
@@ -502,7 +503,13 @@ export async function updateKeywordBenchmarkRun(db: D1Database, ownerId: string,
     ...(searchHosts === undefined ? {} : { searchHosts }),
     ...(suppliedMetadata.creationHttpStatus === undefined ? {} : { creationHttpStatus: suppliedMetadata.creationHttpStatus }),
     ...(suppliedMetadata.creationErrorCode === undefined ? {} : { creationErrorCode: suppliedMetadata.creationErrorCode }),
+    ...(suppliedMetadata.sourceCheck === undefined ? {} : { sourceCheck: suppliedMetadata.sourceCheck }),
   };
+  const priorCheck = existing.providerMetadata.sourceCheck, nextCheck = providerMetadata.sourceCheck;
+  if (nextCheck !== priorCheck && (nextCheck === undefined || !(nextCheck in KEYWORD_SOURCE_CHECK_TRANSITIONS) ||
+    (priorCheck === undefined ? nextCheck !== "eligible" : !KEYWORD_SOURCE_CHECK_TRANSITIONS[priorCheck].includes(nextCheck)) ||
+    !existing.sessionId || !existing.case.websiteResearch))
+    throw new KeywordBenchmarkStoreError("Invalid source-check transition.", 409);
   for (const field of ["environmentId", "requestId", "turnId"] as const) if (providerMetadata[field] !== null) bounded(providerMetadata[field], "provider metadata", 200);
   if (providerMetadata.creationHttpStatus !== undefined && (!Number.isInteger(providerMetadata.creationHttpStatus) || providerMetadata.creationHttpStatus < 100 || providerMetadata.creationHttpStatus > 599))
     throw new KeywordBenchmarkStoreError("Invalid creation HTTP status.", 400);

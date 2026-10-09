@@ -26,7 +26,7 @@ async function setup(db: D1Database) {
     await db.batch(unstable_splitSqlQuery(await readFile(new URL(name, directory), "utf8")).map(sql => db.prepare(sql)));
   for (const id of ["alice", "bob"]) await db.prepare("INSERT INTO user(id,name,email,created_at,updated_at) VALUES(?,?,?,?,?)").bind(id, id, `${id}@example.test`, Date.now(), Date.now()).run();
 }
-const env={OPENAI_API_KEY:'fixture-openai',OPENAI_ALLOWED_USER_IDS:'alice',OPENAI_AGENTS_MODEL:'gpt-6-astra',OPENAI_MAX_RUNS_PER_DAY:'10',TYPESAFE_API_KEY:'fixture-typesafe',TYPESAFE_ALLOWED_USER_IDS:'alice',FOLIO_MCP_URL:'https://folio.example.com/api/mcp'};
+const env={OPENAI_API_KEY:'fixture-openai',OPENAI_ALLOWED_USER_IDS:'alice',OPENAI_AGENTS_MODEL:'gpt-6-astra',OPENAI_MAX_RUNS_PER_DAY:'10',DECISIONS_ALLOWED_USER_IDS:'alice',FOLIO_MCP_URL:'https://folio.example.com/api/mcp'};
 test('Luna crawl: actual D1 bounded pages, one Jev review, saved reconciliation, isolation and deletion',async t=>{
  const dir=await mkdtemp(join(tmpdir(),'folio-crawl-')), mf=runtime(dir);
  try{
@@ -37,7 +37,7 @@ test('Luna crawl: actual D1 bounded pages, one Jev review, saved reconciliation,
   const run=await startEvaluationRun(db,'alice',{mode:'managed',domain:'https://example.com/',websiteCrawl:true},env);
   assert.equal(run.status,'running');assert.equal(run.model,'gpt-6-luna');assert.equal(run.workflow,'website-crawl-v1');assert.equal(creates,1);
   assert.equal(payload.agent.model,'gpt-6-luna');assert.deepEqual(payload.environment,{type:'none'});assert.equal(payload.agent.tools.length,1);
-  assert.deepEqual(payload.agent.tools[0].allowed_tools,['crawl_read_page','crawl_review_pages']);assert.ok(!JSON.stringify(payload).includes(env.TYPESAFE_API_KEY));
+  assert.deepEqual(payload.agent.tools[0].allowed_tools,['crawl_read_page','crawl_review_pages']);assert.ok(!JSON.stringify(payload).includes(env.OPENAI_API_KEY));
   const token=payload.agent.tools[0].transport.authorization.replace('Bearer ',''),p=await authenticateCrawl(db,token);
   assert.ok(!JSON.stringify(await db.prepare('SELECT * FROM website_crawl_grants').all()).includes(token));
   await assert.rejects(startEvaluationRun(db,'bob',{mode:'managed',domain:'https://example.com',websiteCrawl:true},env));

@@ -12,8 +12,8 @@ const MAX_RESPONSE_BYTES = 1_000_000;
 
 export type AgentsEnvironment = {
   FOLIO_MCP_URL?: string;
-  TYPESAFE_API_KEY?: string;
-  TYPESAFE_ALLOWED_USER_IDS?: string;
+  DECISIONS_ALLOWED_USER_IDS?: string;
+  SCAN_ALLOWED_HOSTS?: string;
   DATAFORSEO_LOGIN?: string;
   DATAFORSEO_PASSWORD?: string;
   DATAFORSEO_ALLOWED_USER_IDS?: string;

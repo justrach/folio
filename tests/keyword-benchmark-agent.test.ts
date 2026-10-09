@@ -56,7 +56,13 @@ test("one create POST preserves metadata and treats ambiguous responses as non-r
   await assert.rejects(createKeywordBenchmarkSession(input, env, {fetcher: async () => Response.json({id: session.id})}),
     error => error instanceof KeywordAgentError && error.ambiguous && error.sessionId === session.id);
   await assert.rejects(createKeywordBenchmarkSession(input, env, {fetcher: async () => new Response(env.OPENAI_API_KEY, {status: 307, headers: {location: "https://example.net"}})}),
-    error => error instanceof KeywordAgentError && error.status === 307 && !error.message.includes(env.OPENAI_API_KEY));
+    error => error instanceof KeywordAgentError && error.status === 307 && error.ambiguous && !error.message.includes(env.OPENAI_API_KEY));
+  for (const status of [400, 401, 404, 422, 429])
+    await assert.rejects(createKeywordBenchmarkSession(input, env, {fetcher: async () => Response.json({error: {message: "rejected"}}, {status})}),
+      error => error instanceof KeywordAgentError && error.status === status && !error.ambiguous);
+  for (const status of [408, 500, 502, 503])
+    await assert.rejects(createKeywordBenchmarkSession(input, env, {fetcher: async () => new Response("", {status})}),
+      error => error instanceof KeywordAgentError && error.status === status && error.ambiguous);
 });
 test("completed research requires root final JSON and live search; hosted shells fail; reads are GET only", async () => {
   const seen: RequestInit[] = [];

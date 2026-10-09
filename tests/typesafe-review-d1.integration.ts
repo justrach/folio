@@ -30,7 +30,7 @@ test("semantic review D1 reservations, isolation, failures, deletion and costs",
   for(const name of (await readdir(dir)).filter(n=>n.endsWith('.sql')).sort()) await db.batch(unstable_splitSqlQuery(await readFile(new URL(name,dir),'utf8')).map(sql=>db.prepare(sql)));
   for(const owner of ['alice','bob']) await db.prepare('INSERT INTO user(id,name,email,created_at,updated_at) VALUES(?,?,?,?,?)').bind(owner,owner,`${owner}@example.test`,1,1).run();
   const base={...await createDemoEvaluationRun(),mode:'live' as const};
-  const env={TYPESAFE_API_KEY:'fixture-key',TYPESAFE_ALLOWED_USER_IDS:'alice,bob'};
+  const env={OPENAI_API_KEY:'fixture-key',DECISIONS_ALLOWED_USER_IDS:'alice,bob'};
   const run=await createEvaluationRun(db,'alice',{...base,id:'semantic-1'},{maxLivePerDay:null});
   let calls=0;
   const invoke:Parameters<typeof startSemanticReview>[5]=async request=>{calls++;return parseCitationReview({model:'jev-fixture',answers:Object.fromEntries(Object.keys(request.questions).map(id=>[id,{type:'choice',choice:'supports',confidence:.99,probabilities:{supports:.99,contradicts:0,insufficient:.01}}])),usage:{input_tokens:100,output_tokens:10}},request);};

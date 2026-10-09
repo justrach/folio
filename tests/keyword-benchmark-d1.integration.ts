@@ -35,7 +35,7 @@ async function setup(db: D1Database) {
 const config = { model: "fixture-model", harnessVersion: "fixture-v1", environmentType: "openai_hosted", environmentFingerprint: "fixture-digest" };
 const input = { query: "Synthetic best developer tools question", targetUrl: "https://example.test/", language: "en", locale: "en-US", rubricVersion: "keyword-observation-v1", referenceFacts: [{ id: "private", statement: "Private independent fixture reference." }] };
 
-test("D1 retains safe creation HTTP diagnostics after restart without retrying an unknown submission", { timeout: 90_000 }, async () => {
+test("D1 retains safe creation HTTP diagnostics after restart; a 4xx is a definite rejection and 5xx stays unresolved", { timeout: 90_000 }, async () => {
   const directory = await mkdtemp(join(tmpdir(), "folio-keyword-diagnostics-d1-"));
   let current: Miniflare | undefined;
   try {
@@ -48,17 +48,26 @@ test("D1 retains safe creation HTTP diagnostics after restart without retrying a
       return Response.json({ error: "private-provider-body-marker" }, { status: 429, headers: { "x-request-id": "req_diagnostics_fixture" } });
     }) as typeof fetch };
     const run = await startKeywordBenchmark(db, "alice", { caseId: suite.cases[0].id, kind: "baseline" }, env, options);
-    assert.equal(calls, 1); assert.equal(run.status, "requires_action"); assert.equal(run.sessionId, null);
+    assert.equal(calls, 1); assert.equal(run.status, "failed"); assert.equal(run.sessionId, null);
     assert.equal(run.providerMetadata.creationHttpStatus, 429); assert.equal(run.providerMetadata.creationErrorCode, "UPSTREAM_ERROR");
     assert.equal(run.providerMetadata.requestId, "req_diagnostics_fixture"); assert.equal(run.usage.costUsd, null);
     assert.equal(JSON.stringify(run).includes("private-provider-body-marker"), false);
     await current.dispose(); current = runtime(directory); db = await current.getD1Database("DB");
     const restored = await reconcileKeywordBenchmark(db, "alice", run.id, env, options);
     assert.equal(restored.providerMetadata.creationHttpStatus, 429); assert.equal(restored.providerMetadata.creationErrorCode, "UPSTREAM_ERROR");
-    assert.equal(restored.status, "requires_action"); assert.equal(calls, 1);
+    assert.equal(restored.status, "failed"); assert.equal(calls, 1);
     assert.equal(await getKeywordBenchmarkRun(db, "bob", run.id), null);
-    await assert.rejects(startKeywordBenchmark(db, "alice", { caseId: suite.cases[0].id, kind: "baseline" }, env, options));
-    assert.equal(calls, 1); assert.equal((await getKeywordBenchmarkUsage(db, "alice")).attemptsLast24Hours, 1);
+    // Reconciliation never resubmits; only a later explicit start makes one new attempt after a definite rejection.
+    const explicit = await startKeywordBenchmark(db, "alice", { caseId: suite.cases[0].id, kind: "baseline" }, env, options);
+    assert.notEqual(explicit.id, run.id); assert.equal(explicit.status, "failed");
+    assert.equal(calls, 2); assert.equal((await getKeywordBenchmarkUsage(db, "alice")).attemptsLast24Hours, 2);
+    const unresolvedSuite = await createKeywordBenchmarkSuite(db, "alice", { name: "Creation diagnostics 5xx", cases: [input] });
+    const unresolved = await startKeywordBenchmark(db, "alice", { caseId: unresolvedSuite.cases[0].id, kind: "baseline" }, env, { ...options, fetcher: (async () => {
+      calls++; return new Response("private-provider-body-marker", { status: 503 });
+    }) as typeof fetch });
+    assert.equal(unresolved.status, "requires_action"); assert.equal(unresolved.providerMetadata.creationHttpStatus, 503); assert.equal(calls, 3);
+    await assert.rejects(startKeywordBenchmark(db, "alice", { caseId: unresolvedSuite.cases[0].id, kind: "baseline" }, env, options));
+    assert.equal(calls, 3);
   } finally { try { await current?.dispose(); } finally { await rm(directory, { recursive: true, force: true }); } }
 });
 

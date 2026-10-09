@@ -12,7 +12,7 @@ import { acknowledgeKeywordBenchmarkCancellation, createKeywordBenchmarkSuite, g
   getKeywordBenchmarkSuite, getKeywordBenchmarkUsage, KeywordBenchmarkStoreError, listKeywordBenchmarkRuns,
   listKeywordBenchmarkSuites, markKeywordBenchmarkCreateAttempt, reserveKeywordBenchmarkCancellation,
   reserveKeywordBenchmarkRun, updateKeywordBenchmarkRun, updateKeywordBenchmarkUsage, type KeywordBenchmarkRunPatch } from "./keyword-benchmark-store";
-import { isKeywordBenchmarkId, keywordSearchMode, type KeywordBenchmarkCaseInput, type KeywordBenchmarkRun } from "./keyword-benchmark-types";
+import { SOURCE_CHECK_REQUIRED, isKeywordBenchmarkId, keywordSearchMode, type KeywordBenchmarkCaseInput, type KeywordBenchmarkRun } from "./keyword-benchmark-types";
 import { validateKeywordBenchmarkCase } from "./keyword-benchmark-store";
 import type { WebsiteResearchInput } from "./website-research";
 
@@ -107,7 +107,7 @@ export async function keywordBenchmarkExecutionConfig(trial: KeywordBenchmarkCas
     if (searchMode !== "open-web") throw new KeywordBenchmarkStoreError("SEO tools require an open-web question.", 400);
 
   }
-  if (options.useTypesafeTools && searchMode !== "open-web") throw new KeywordBenchmarkStoreError("TypeSafe tools require an open-web question.",400);
+  if (options.useTypesafeTools && searchMode !== "open-web") throw new KeywordBenchmarkStoreError("Claim-check tools require an open-web question.",400);
   const allowedDomains = searchMode === "open-web" ? [] : keywordAllowedDomains(options.allowedDomains ?? [...KEYWORD_BENCHMARK_ALLOWED_DOMAINS]);
   if (codegraff) {
     const model = searchMode === "open-web" ? selectedModel ?? CODEGRAFF_OPEN_WEB_MODEL : CODEGRAFF_KEYWORD_MODEL;
@@ -228,8 +228,9 @@ export async function reconcileKeywordBenchmark(db: D1Database, ownerId: string,
     const pendingCancel = run.cancelAttemptAt && ["queued", "running", "requires_action"].includes(observation.status);
     run = await updateKeywordBenchmarkRun(db, ownerId, run.id, run.revision, {
       status: pendingCancel ? "requires_action" : observation.status, answer: observation.answer, usage: observation.usage,
-      providerMetadata: observation.providerMetadata,
-      error: observation.initialInputUnconfirmed ? observation.error
+      providerMetadata: observation.sourceCheck && !run.providerMetadata.sourceCheck ? { ...observation.providerMetadata, sourceCheck: "eligible" } : observation.providerMetadata,
+      error: observation.sourceCheck && !pendingCancel ? SOURCE_CHECK_REQUIRED
+        : observation.initialInputUnconfirmed ? observation.error
         : pendingCancel ? "Cancellation was requested. The final provider outcome is not yet confirmed."
         : observation.status === "failed" ? "The completed provider answer could not be validated."
           : observation.initialInputUnconfirmed ? observation.error
@@ -244,7 +245,8 @@ export async function reconcileKeywordBenchmark(db: D1Database, ownerId: string,
     }
   }
   // A saved deadline cannot tell us whether remote work already finished. Retrieve first.
-  if (!initialInputUnconfirmed && !terminal(run) && run.deadlineAt && (options.now ?? new Date()).getTime() >= Date.parse(run.deadlineAt) && !run.cancelAttemptAt)
+  // A finished session awaiting the explicit page check has nothing left to cancel.
+  if (!initialInputUnconfirmed && !run.providerMetadata.sourceCheck && !terminal(run) && run.deadlineAt && (options.now ?? new Date()).getTime() >= Date.parse(run.deadlineAt) && !run.cancelAttemptAt)
     return cancelKeywordBenchmark(db, ownerId, id, env, options);
   return run;
 }

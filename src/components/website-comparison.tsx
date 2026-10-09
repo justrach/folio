@@ -5,9 +5,22 @@ import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import type { KeywordSearchMode } from "@/lib/keyword-benchmark-types";
 import type { WebsiteComparisonSnapshot } from "@/lib/keyword-benchmark-store";
+import type { DomainSeoMetrics } from "@/lib/seo-store";
 import "./website-comparison.css";
 
 type Site = { id: string; name: string; url: string };
+type Row = WebsiteComparisonSnapshot & { seo: DomainSeoMetrics | null };
+const count = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
+const nullableMetric = (value: unknown, max = Number.MAX_SAFE_INTEGER) => value === null || (typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= max);
+/** Saved DataForSEO metrics or null; malformed values reject the whole list rather than displaying a guess. */
+function validSeo(seo: unknown): seo is DomainSeoMetrics | null {
+  if (seo === null) return true;
+  const value = seo as Record<string, unknown>;
+  return typeof value === "object" && typeof value.reportId === "string" && typeof value.retrievedAt === "string" && Number.isFinite(Date.parse(value.retrievedAt)) &&
+    nullableMetric(value.domainRank, 100) && nullableMetric(value.referringDomains) && nullableMetric(value.backlinks) &&
+    nullableMetric(value.organicKeywords) && nullableMetric(value.estimatedMonthlyTraffic);
+}
+const show = (value: number | null | undefined, missing: string) => value === null || value === undefined ? missing : value > 0 && value < 1 ? "<1" : count.format(value);
 
 async function read<T>(url: string, signal: AbortSignal): Promise<T> {
   const response = await fetch(url, { method: "GET", cache: "no-store", signal });
@@ -21,7 +34,7 @@ async function read<T>(url: string, signal: AbortSignal): Promise<T> {
  */
 export function WebsiteComparison({ sites, scope, model }: { sites: Site[]; scope: KeywordSearchMode; model: string }) {
   const [open, setOpen] = useState(false);
-  const [snapshots, setSnapshots] = useState<WebsiteComparisonSnapshot[] | null>(null);
+  const [snapshots, setSnapshots] = useState<Row[] | null>(null);
   const [failed, setFailed] = useState(0);
   const [loading, setLoading] = useState(false);
   const key = `${sites.map((site) => site.id).join(",")}:${scope}:${model}`;
@@ -33,7 +46,7 @@ export function WebsiteComparison({ sites, scope, model }: { sites: Site[]; scop
     setFailed(0);
     const params = new URLSearchParams({ searchMode: scope });
     if (model) params.set("model", model);
-    void read<{ snapshots: WebsiteComparisonSnapshot[]; failedReads: number }>(`/api/benchmarks/comparison?${params}`, controller.signal)
+    void read<{ snapshots: Row[]; failedReads: number }>(`/api/benchmarks/comparison?${params}`, controller.signal)
       .then((page) => {
         if (controller.signal.aborted) return;
         if (!Array.isArray(page.snapshots) || page.snapshots.length > 100) throw new Error("Invalid saved list");
@@ -55,6 +68,7 @@ export function WebsiteComparison({ sites, scope, model }: { sites: Site[]; scop
               (count) => Number.isSafeInteger(count) && count >= 0,
             ) ||
             (row.appearanceRate !== null && !Number.isInteger(row.appearanceRate)) ||
+            !validSeo(row.seo ?? null) ||
             !sites.some((site) => site.id === row.websiteId)
           )
             throw new Error("Invalid saved observation");
@@ -82,8 +96,8 @@ export function WebsiteComparison({ sites, scope, model }: { sites: Site[]; scop
           <h2>Compare your websites</h2>
           <p>
             Side-by-side saved answers per website, latest completed answer per question. Unknown identities are excluded from
-            rates. This describes recorded answers, not search rank or causality. Reads the saved backend summary only when
-            you open it; it starts no paid work.
+            rates. Domain rank, referring domains and traffic come from each site's latest saved DataForSEO report. This
+            describes recorded observations, not causality. Reads saved data only when you open it; it starts no paid work.
           </p>
         </div>
         {!open && (
@@ -109,6 +123,9 @@ export function WebsiteComparison({ sites, scope, model }: { sites: Site[]; scop
               <thead>
                 <tr>
                   <th scope="col">Website</th>
+                  <th scope="col">Domain rank <small>DataForSEO · 0–100</small></th>
+                  <th scope="col">Referring domains</th>
+                  <th scope="col">Est. monthly traffic</th>
                   <th scope="col">Appeared</th>
                   <th scope="col">Completed answers</th>
                   <th scope="col">Distinct cited pages</th>
@@ -121,6 +138,12 @@ export function WebsiteComparison({ sites, scope, model }: { sites: Site[]; scop
                   return (
                     <tr key={row.websiteId}>
                       <th scope="row">{site?.name || row.url}</th>
+                      <td>
+                        {row.seo ? show(row.seo.domainRank, "Unavailable") : "No saved report"}
+                        {row.seo && <small> · {new Date(row.seo.retrievedAt).toLocaleDateString(undefined, { dateStyle: "medium" })}</small>}
+                      </td>
+                      <td>{row.seo ? show(row.seo.referringDomains, "Unavailable") : "—"}</td>
+                      <td>{row.seo ? show(row.seo.estimatedMonthlyTraffic, "Unavailable") : "—"}</td>
                       <td>
                         {row.appearanceRate === null
                           ? "Not measured"

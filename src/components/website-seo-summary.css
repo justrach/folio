@@ -5,7 +5,7 @@
 .website-seo-summary p { color: var(--folio-text-secondary); font-size: 12px; line-height: 1.8; }
 .website-seo-summary > p { margin-top: 16px; }
 .website-seo-summary p a { text-decoration: underline; text-underline-offset: 3px; }
-.website-seo-metrics { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); margin: 24px 0 18px; border-block: 1px solid var(--line); }
+.website-seo-metrics { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); margin: 24px 0 18px; border-block: 1px solid var(--line); }
 .website-seo-metrics > div { padding: 19px 16px; min-width: 0; border-right: 1px solid var(--line); }
 .website-seo-metrics > div:first-child { padding-left: 0; }
 .website-seo-metrics > div:last-child { border: 0; }
@@ -23,7 +23,7 @@
   .website-seo-metrics > div { padding: 16px 12px; }
   .website-seo-metrics > div:nth-child(odd) { padding-left: 0; }
   .website-seo-metrics > div:nth-child(even) { border-right: 0; }
-  .website-seo-metrics > div:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+  .website-seo-metrics > div:nth-child(-n+4) { border-bottom: 1px solid var(--line); }
   .website-seo-metrics dd { font-size: 24px; }
   .website-seo-actions { align-items: stretch; flex-direction: column; }
 }

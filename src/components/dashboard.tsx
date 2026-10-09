@@ -522,6 +522,8 @@ function WorkspaceDashboard({ section }: { section: string }) {
             <span>
               {section === "leaderboard"
                 ? "The Folio Index"
+                : section === "overview"
+                ? (demoRequested ? "Demo report" : "My website results")
                 : (navigation.find((n) => n.section === section)?.label ??
                   (section === "agents" ? "Your agents" : "Settings"))}
             </span>

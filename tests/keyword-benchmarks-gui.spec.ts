@@ -536,7 +536,7 @@ test('TypeSafe tool authorization is opt-in and sent only on explicit question l
  state.suites=[{...suite,cases:suite.cases.map(c=>({...c,searchMode:'open-web' as const}))}];
  state.openWebModels=[{id:'gpt-6-luna',label:'Luna 6',validation:'experimental'},{id:'gpt-6-sol',label:'Sol 6',validation:'experimental'}];
  await page.goto(`/benchmarks?suite=${suite.id}`);
- const check=page.getByRole('checkbox',{name:/Let this agent check claims with TypeSafe/});
+ const check=page.getByRole('checkbox',{name:/Let this agent check claims with the OpenAI Decisions API/});
  await expect(check).not.toBeChecked();await check.check();expect(state.starts).toHaveLength(0);
  await page.getByRole('combobox',{name:'Model for the next observation'}).selectOption('gpt-6-sol');expect(state.starts).toHaveLength(0);
  await noOverflow(page);

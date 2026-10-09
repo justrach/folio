@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { DomainRankTable, domainOf } from "./domain-rank-table";
+import { announceWebsiteProgress } from "./website-checklist";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type { KeywordBenchmarkRun, KeywordBenchmarkRunSummary } from "@/lib/keyword-benchmark-types";
@@ -112,6 +114,14 @@ export function WebsiteResearchPanel({ websiteId, targetUrl }: { websiteId: stri
       }
     } finally { lock.current = false; if (!signal.aborted) setBusy(false); }
   }
+  // While visible, check a running session about every ten seconds. This retrieves existing work only (GET to the provider).
+  const retrieveRef = useRef<() => Promise<void>>(async () => {});
+  const polling = !!run && ["queued", "running"].includes(run.status) && !!run.sessionId;
+  useEffect(() => {
+    if (!polling) return;
+    const timer = window.setInterval(() => { if (document.visibilityState === "visible") void retrieveRef.current(); }, 10_000);
+    return () => window.clearInterval(timer);
+  }, [polling, run?.id]);
   async function retrieve() {
     const signal = lifetime.current?.signal; if (!run || !signal || signal.aborted || lock.current) return;
     const id = run.id; lock.current = true; setBusy(true); setError("");
@@ -119,8 +129,20 @@ export function WebsiteResearchPanel({ websiteId, targetUrl }: { websiteId: stri
       const next = (await request<{ run: KeywordBenchmarkRun }>(`/api/benchmarks/runs/${encodeURIComponent(id)}/reconcile`, signal, { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" })).run;
       if (signal.aborted || selection.current !== id) return;
       if (next.id !== id || !belongs(next, targetUrl)) throw new Error("The retrieved research does not match this website.");
-      setRun(next); setRefresh(value => value + 1);
+      setRun(next); setRefresh(value => value + 1); announceWebsiteProgress();
     } catch (failure) { if (!signal.aborted) setError(failure instanceof Error ? failure.message : "Saved progress could not be retrieved."); }
+    finally { lock.current = false; if (!signal.aborted) setBusy(false); }
+  }
+  retrieveRef.current = retrieve;
+  async function checkSources() {
+    const signal = lifetime.current?.signal; if (!run || !signal || signal.aborted || lock.current) return;
+    const id = run.id; lock.current = true; setBusy(true); setError("");
+    try {
+      const next = (await request<{ run: KeywordBenchmarkRun }>(`/api/benchmarks/runs/${encodeURIComponent(id)}/check-sources`, signal, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ confirmSpend: true, revision: run.revision }) })).run;
+      if (signal.aborted || selection.current !== id) return;
+      if (next.id !== id || !belongs(next, targetUrl)) throw new Error("The checked research does not match this website.");
+      setRun(next); setRefresh(value => value + 1); announceWebsiteProgress();
+    } catch (failure) { if (!signal.aborted) setError(failure instanceof Error ? failure.message : "The page check could not be completed."); }
     finally { lock.current = false; if (!signal.aborted) setBusy(false); }
   }
   async function more() {
@@ -142,8 +164,8 @@ export function WebsiteResearchPanel({ websiteId, targetUrl }: { websiteId: stri
   const brief = run?.answer?.websiteResearch?.stage === "competitor-research" ? run.answer.websiteResearch : null;
   const activeQuery = suggestions?.queries[queryIndex];
   const currentStep = run?.case.websiteResearch?.stage === "competitor-research" ? 3 : suggestions ? 2 : 1;
-  const savedBrief = run && <section className="panel website-research-stage" aria-label="Saved private research brief"><h3>Saved private research brief</h3><p><strong>Saved run ID for agents:</strong> <code>{run.id}</code></p><p><strong>Status:</strong> {run.status.replaceAll("_", " ")}</p><p><strong>Recorded query:</strong> {run.case.query}</p><p><strong>Model / date:</strong> {run.model} · {new Date(run.createdAt).toLocaleString()}</p>{run.case.websiteResearch?.discoveryRunId && <p>Discovery provenance: {run.case.websiteResearch.discoveryRunId}</p>}<p>Reported provider usage cost (not a checkout charge): {run.usage.costUsd == null ? "Unknown charges" : `$${run.usage.costUsd.toFixed(4)}`}</p><p className="website-research-note">Provider tokens: input {run.usage.inputTokens ?? "Unknown"} · output {run.usage.outputTokens ?? "Unknown"} · total {run.usage.totalTokens ?? "Unknown"}</p>{run.error && <p role="status">{run.error}</p>}{run.status !== "completed" && <div className="website-research-notice"><p>{run.status === "requires_action" ? "Needs attention. The provider outcome or save may be unresolved." : "This is the saved state, not live progress."} No automatic retrieval or replacement work runs here.</p><button className="button secondary" disabled={busy || !run.sessionId} onClick={() => void retrieve()}>Retrieve saved provider progress</button>{!run.sessionId && <p>No saved provider session is available for retrieval. Check history or retry the retained attempt.</p>}</div>}
-      {brief && <><Sources urls={brief.targetSourceUrls} label="Target evidence" /><h4>Top returned sites · recorded order only</h4><ol className="website-research-competitors">{brief.competitors.map((site, index) => <li key={`${site.url}-${index}`}><h4>{safeUrl(site.url) ? <a href={safeUrl(site.url)!} target="_blank" rel="noopener noreferrer">{site.name}</a> : site.name}</h4><p>Returned position: {site.position} (not a measured ranking)</p><Sources urls={site.sourceUrls} />{site.strengths.map((strength, i) => <div className="website-research-finding" key={i}><p><strong>Source-linked strength:</strong> {strength.finding}</p><p>{strength.comparison === "target_not_established" ? "Target evidence not established — this does not prove the target lacks this strength." : "Observed difference in the recorded sources, not a proved cause."}</p><Sources urls={strength.sourceUrls} label="Competitor evidence" /><Sources urls={strength.targetSourceUrls} label="Target comparison evidence" /><p><strong>Actionable suggestion (advisory):</strong> {strength.suggestion}</p></div>)}</li>)}</ol></>}
+  const savedBrief = run && <section className="panel website-research-stage" aria-label="Saved private research brief"><h3>Saved private research brief</h3><p><strong>Saved run ID for agents:</strong> <code>{run.id}</code></p><p><strong>Status:</strong> {run.status.replaceAll("_", " ")}</p><p><strong>Recorded query:</strong> {run.case.query}</p><p><strong>Model / date:</strong> {run.model} · {new Date(run.createdAt).toLocaleString()}</p>{run.case.websiteResearch?.discoveryRunId && <p>Discovery provenance: {run.case.websiteResearch.discoveryRunId}</p>}<p>Reported provider usage cost (not a checkout charge): {run.usage.costUsd == null ? "Unknown charges" : `$${run.usage.costUsd.toFixed(4)}`}</p><p className="website-research-note">Provider tokens: input {run.usage.inputTokens ?? "Unknown"} · output {run.usage.outputTokens ?? "Unknown"} · total {run.usage.totalTokens ?? "Unknown"}</p>{run.error && <p role="status">{run.error}</p>}{run.providerMetadata.sourceCheck === "eligible" && run.status === "requires_action" && <div className="website-research-notice"><p>Luna answered but did not open the pages it cited. Folio can fetch up to ten cited pages on this website and ask the OpenAI Decisions API whether each supports its query. Only supported queries are saved.</p><button className="button primary" disabled={busy} onClick={() => void checkSources()}>Verify cited pages (paid · Decisions)</button><small>One explicit check; it is never retried automatically.</small></div>}{run.status !== "completed" && run.providerMetadata.sourceCheck !== "eligible" && <div className="website-research-notice"><p>{run.status === "requires_action" ? "Needs attention. The provider outcome or save may be unresolved. No automatic retrieval or replacement work runs here." : ["queued", "running"].includes(run.status) ? "Luna is working. Folio checks progress about every 10 seconds while this page is open; this usually takes one to three minutes." : "This is the saved state, not live progress."}</p><button className="button secondary" disabled={busy || !run.sessionId} onClick={() => void retrieve()}>Retrieve saved provider progress</button>{!run.sessionId && <p>No saved provider session is available for retrieval. Check history or retry the retained attempt.</p>}</div>}
+      {brief && <><Sources urls={brief.targetSourceUrls} label="Target evidence" /><DomainRankTable targetDomain={domainOf(targetUrl) ?? ""} domains={[targetUrl, ...brief.competitors.map(site => site.url)].map(domainOf).filter((domain): domain is string => !!domain)} /><h4>Top returned sites · recorded order only</h4><ol className="website-research-competitors">{brief.competitors.map((site, index) => <li key={`${site.url}-${index}`}><h4>{safeUrl(site.url) ? <a href={safeUrl(site.url)!} target="_blank" rel="noopener noreferrer">{site.name}</a> : site.name}</h4><p>Returned position: {site.position} (not a measured ranking)</p><Sources urls={site.sourceUrls} />{site.strengths.map((strength, i) => <div className="website-research-finding" key={i}><p><strong>Source-linked strength:</strong> {strength.finding}</p><p>{strength.comparison === "target_not_established" ? "Target evidence not established — this does not prove the target lacks this strength." : "Observed difference in the recorded sources, not a proved cause."}</p><Sources urls={strength.sourceUrls} label="Competitor evidence" /><Sources urls={strength.targetSourceUrls} label="Target comparison evidence" /><p><strong>Actionable suggestion (advisory):</strong> {strength.suggestion}</p></div>)}</li>)}</ol></>}
       {!run.answer?.websiteResearch && run.status === "completed" && <p>No structured research brief was recorded.</p>}<p className="website-research-note">{limitations}</p>{run.answer?.limitations?.map((text, index) => <p className="website-research-note" key={index}>{text}</p>)}<div className="website-research-next"><Link className="button primary" href={`/evaluations?view=search&website=${encodeURIComponent(websiteId)}`}>Ask this as a search question</Link><button className="button secondary" onClick={() => download(run)}>Download private JSON brief</button></div><p className="website-research-note">Track the reviewed query as a saved search observation, or keep a readable copy for your agents. Neither publishes nor starts research.</p>
     </section>;
   return <section id="website-research" className="website-research" aria-label="Private website research" aria-busy={busy}>
@@ -158,7 +180,7 @@ export function WebsiteResearchPanel({ websiteId, targetUrl }: { websiteId: stri
     <div className="website-research-stages">
       <section className="panel website-research-stage" aria-label="Suggested query discovery"><h3>Discover customer queries</h3><p>Target: {targetUrl}</p>
         {suggestions && <p className="website-research-notice">Your saved queries are ready. Review one below; there is no need to pay for discovery again.</p>}
-        <label>Managed OpenAI model for the next paid step<select aria-label="Website research model" value={model} disabled={busy || !!attempt || !access?.openWebModels.length} onChange={event => setModel(event.target.value)}>{!access?.openWebModels.length && <option value="">No managed model available</option>}{access?.openWebModels.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}</select></label>
+        <p className="website-research-note"><strong>Model:</strong> {access?.openWebModels[0]?.label ?? "Luna 6"} · OpenAI live web search</p>
         <p className="website-research-note">By clicking a paid button, you approve use of this account’s provider credits. Charges may be unknown until reported. No checkout or paid billing is implemented. Each step is a separate request.</p>
         {access?.message && <p>{access.message}</p>}
         {access && <p className="website-research-note">Account limits: {access.maxRunsPerDay == null ? "No daily run cap" : `${access.maxRunsPerDay} runs per day`}; {access.maxActiveRuns} active runs.</p>}

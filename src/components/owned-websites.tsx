@@ -9,6 +9,7 @@ import { evaluationHref } from "@/lib/evaluation-navigation";
 import type { SearchConsoleReportSummary } from "@/lib/search-console-types";
 import { WebsiteSeoSummary } from "./website-seo-summary";
 import { WebsiteResearchPanel } from "./website-research-panel";
+import { WebsiteChecklist } from "./website-checklist";
 import "./owned-websites.css";
 
 type Site = { id: string; name: string; url: string; isPublic: boolean; seoScore: number | null };
@@ -126,15 +127,15 @@ function OwnerWebsites({ onAudit }: { onAudit?: (url: string) => void }) {
         {selected && <>
           <div className="owned-website-title"><h3>{new URL(selected.url).hostname}</h3><span>{selected.isPublic ? "Technical scan shared" : "Private website"}</span></div>
           <p>{selected.seoScore == null ? "Technical readiness has not been measured yet." : `Latest technical readiness: ${selected.seoScore}/100.`}</p>
-          <p className="owned-website-next">Next: discover customer queries and review one before starting research. Technical checks are optional and separate.</p>
-          <div className="owned-website-actions">
-            <a href="#website-research" className="button primary">Open website research <ArrowRight size={15} /></a>
-            <Link href={`/overview?view=workspace&website=${encodeURIComponent(selected.id)}`} className="button secondary">View results <ArrowRight size={15} /></Link>
-            {onAudit && <button className="button secondary" onClick={() => onAudit(selected.url)}>Audit website</button>}
-            <Link href={evaluationHref({ targetUrl: selected.url })} className="button secondary">Evaluate website <ArrowRight size={15} /></Link>
-            <Link href={`/evaluations?view=search&website=${encodeURIComponent(selected.id)}`} className="button secondary">Search questions <ArrowRight size={15} /></Link>
-            {matchingReport && <Link href={`/search-console?report=${encodeURIComponent(matchingReport.id)}`} className="button secondary">Open search report</Link>}
-          </div>
+          <WebsiteChecklist key={`checklist:${selected.id}`} websiteId={selected.id} targetUrl={selected.url} />
+          <nav className="owned-website-more" aria-label="More tools">
+            <span>More tools</span>
+            <Link href={`/overview?view=workspace&website=${encodeURIComponent(selected.id)}`}>Results overview <ArrowRight size={12} /></Link>
+            <Link href={`/evaluations?view=search&website=${encodeURIComponent(selected.id)}`}>Track search questions <ArrowRight size={12} /></Link>
+            <Link href={evaluationHref({ targetUrl: selected.url })}>Evaluate a page <ArrowRight size={12} /></Link>
+            {onAudit && <button type="button" className="text-link" onClick={() => onAudit(selected.url)}>Technical audit</button>}
+            {matchingReport && <Link href={`/search-console?report=${encodeURIComponent(matchingReport.id)}`}>Search Console report <ArrowRight size={12} /></Link>}
+          </nav>
           {matchingReport && <p className="owned-website-note">Your saved Search Console report covers {matchingReport.startDate} – {matchingReport.endDate}. Evaluations use separately captured website evidence.</p>}
         </>}
         {!loading && !sites.length && !connected.length && <p>No saved websites yet. Save a URL above to prepare private research, or <Link href="/search-console">open Search Console</Link>.</p>}
@@ -143,7 +144,7 @@ function OwnerWebsites({ onAudit }: { onAudit?: (url: string) => void }) {
         </div>}
       </div>
     </section>
-    {selected && <WebsiteResearchPanel key={`research:${selected.id}`} websiteId={selected.id} targetUrl={selected.url} />}
     {selected && <WebsiteSeoSummary key={selected.id} targetUrl={selected.url} />}
+    {selected && <WebsiteResearchPanel key={`research:${selected.id}`} websiteId={selected.id} targetUrl={selected.url} />}
   </div>;
 }

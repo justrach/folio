@@ -5,8 +5,9 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Loader2, RefreshCw } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 import "./website-seo-summary.css";
+import { announceWebsiteProgress } from "./website-checklist";
 
-type Metrics = { backlinks: number | null; referringDomains: number | null; organicKeywords: number | null; estimatedVisits: number | null };
+type Metrics = { domainRank: number | null; backlinks: number | null; referringDomains: number | null; organicKeywords: number | null; estimatedVisits: number | null };
 type Summary = { domain: string; fetchedAt: string; metrics: Metrics; partial: boolean; saved: boolean; result: Record<string, unknown> };
 type View = { key: string; loading: boolean; ready: boolean; updating: boolean; summary: Summary | null; notice: string | null; error: string | null };
 const record = (value: unknown): Record<string, unknown> | null => value !== null && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : null;
@@ -35,6 +36,8 @@ function readSummary(value: unknown, domain: string, saved: boolean): Summary {
   const organicData = organic.status === "success" ? record(organic.data) : null;
   const backlinkData = backlinks.status === "success" ? record(backlinks.data) : null;
   return { domain, fetchedAt: result.fetchedAt, saved, result, partial: result.status !== "complete", metrics: {
+    // DataForSEO Domain Rank is the domain-authority source of truth; only its 0–100 scale is accepted.
+    domainRank: backlinkData?.authorityRankScale === 100 && number(backlinkData?.authorityRank) !== null && (backlinkData?.authorityRank as number) <= 100 ? backlinkData.authorityRank as number : null,
     backlinks: number(backlinkData?.backlinks), referringDomains: number(backlinkData?.referringDomains),
     organicKeywords: number(organicData?.organicKeywords), estimatedVisits: number(organicData?.estimatedMonthlyTraffic),
   } };
@@ -99,6 +102,7 @@ export function WebsiteSeoSummary({ targetUrl }: { targetUrl?: string }) {
         : response.status === 401 || response.status === 403 ? "Website data updates are unavailable for this account."
         : "The update could not be confirmed. Its outcome and charge are unknown; review saved reports before trying again.");
       const summary = readSummary(payload, domain, payload?.saved === true);
+      announceWebsiteProgress();
       setState(previous => previous.key === requestedKey ? { ...previous, summary, updating: false,
         notice: summary.saved ? null : "This result was not saved. Download it before leaving; another update can charge again." } : previous);
     } catch (error) {
@@ -113,7 +117,7 @@ export function WebsiteSeoSummary({ targetUrl }: { targetUrl?: string }) {
     const link = document.createElement("a"); link.href = url; link.download = `folio-seo-${domain}-${view.summary.fetchedAt.slice(0, 10)}.json`; link.click(); URL.revokeObjectURL(url);
   }
   const href = domain ? `/search-data?target=${encodeURIComponent(`https://${domain}/`)}` : "/search-data";
-  return <section className="panel website-seo-summary" aria-label="Website search and backlinks">
+  return <section id="website-seo" className="panel website-seo-summary" aria-label="Website search and backlinks">
     <div className="website-seo-heading"><div><h2>Search and backlinks</h2><p>{domain ?? "Choose a saved website to see its search data."}</p></div>
       {ownerId && domain && <Link className="button secondary" href={href}>Open reports <ArrowUpRight size={13} /></Link>}
     </div>
@@ -123,11 +127,12 @@ export function WebsiteSeoSummary({ targetUrl }: { targetUrl?: string }) {
       : <>
         {view.loading ? <p role="status">Loading saved website data…</p> : view.summary ? <>
           <dl className="website-seo-metrics">{([
+            ["Domain rank (DataForSEO, 0–100)", view.summary.metrics.domainRank],
             ["Backlinks", view.summary.metrics.backlinks], ["Referring domains", view.summary.metrics.referringDomains],
             ["Ranking keywords", view.summary.metrics.organicKeywords], ["Estimated monthly visits", view.summary.metrics.estimatedVisits],
           ] as const).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value === null ? "Unavailable" : format.format(value)}</dd></div>)}</dl>
           <p className="website-seo-captured">Captured {new Date(view.summary.fetchedAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })} · {view.summary.saved ? "Private saved report" : "Not saved"}</p>
-          <p className="website-seo-note">Search estimates use Google · United States · English. Counts reflect indexed data; unavailable values are not zero.</p>
+          <p className="website-seo-note">Domain rank is DataForSEO’s 0–100 link-authority metric, not Google PageRank or a search position. Search estimates use Google · United States · English. Unavailable values are not zero.</p>
           {view.summary.partial && <p role="status">Some data is unavailable. The available results are shown above.</p>}
           {!view.summary.saved && <button type="button" className="button secondary" onClick={download}>Download private report</button>}
         </> : !view.error && <p>No saved search report is available for this website. Update it to see search estimates and backlinks.</p>}

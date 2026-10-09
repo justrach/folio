@@ -58,7 +58,9 @@ async function fixture(page: Page) {
         return { websiteId: site.id, url: site.url, answered: answered.length, identified: known.length, appeared, unknown: answered.length - known.length,
           sourceCount: new Set(answered.flatMap(value => value.answer!.citations.map(item => item.url))).size,
           appearanceRate: known.length ? Math.round((appeared / known.length) * 100) : null, failedReads: 0,
-          latestRuns: answered.map(value => ({ id: value.id, suiteId: value.suiteId })) };
+          latestRuns: answered.map(value => ({ id: value.id, suiteId: value.suiteId })),
+          seo: site.id === "site-alpha" ? { domain: new URL(site.url).hostname, reportId: "seo-alpha", retrievedAt: "2026-10-01T00:00:00.000Z",
+            domainRank: 42, referringDomains: 1234, backlinks: 9000, organicKeywords: 310, estimatedMonthlyTraffic: 5600 } : null };
       });
       return route.fulfill({ json: { snapshots, failedReads: 0 } });
     }
@@ -300,6 +302,10 @@ test("explicit website comparison opens side-by-side saved summaries without spe
   const detailsAfterOpen = state.detailReads.length;
   await expect(comparison.getByRole("table")).toContainText("50% (1 of 2)");
   await expect(comparison.getByRole("table")).toContainText("100% (1 of 1)");
+  const alphaRow = comparison.getByRole("row").filter({ hasText: "1,234" });
+  await expect(alphaRow).toContainText("42"); await expect(alphaRow).toContainText("5,600");
+  await expect(comparison.getByRole("table")).toContainText("No saved report");
+  await expect(comparison.getByRole("columnheader", { name: /Domain rank/ })).toBeVisible();
   await expect(comparison.getByRole("link", { name: "Open website", exact: true }).first()).toHaveAttribute("href", "/overview?view=workspace&website=site-alpha");
   const comparisonReads = state.historyReads.slice(historyBefore);
   expect(comparisonReads.length).toBeGreaterThanOrEqual(1);
