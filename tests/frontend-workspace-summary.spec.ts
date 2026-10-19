@@ -76,9 +76,11 @@ async function fixture(page: Page, initialRuns: EvaluationRun[]) {
 async function navigate(page: Page, href: string) {
   const menu = page.getByRole("button", { name: "Open navigation", exact: true });
   if (await menu.isVisible()) await menu.click();
-  await page.locator(`.nav-link[href="${href}"]`).click();
-  await expect(page).toHaveURL(new RegExp(`${href}$`));
-  if (href === "/overview") await page.getByRole("link", { name: "My website results", exact: true }).click();
+  const destination = href === "/overview" ? "/overview?view=workspace" : href;
+  const targetLink = page.locator(`.nav-link[href="${destination}"]`);
+  if (!(await targetLink.isVisible())) await page.getByRole("button", { name: "More tools", exact: true }).click();
+  await targetLink.click();
+  await expect(page).toHaveURL(url => `${url.pathname}${url.search}` === destination);
 }
 
 test("overview shows the three recent private evaluations without requiring a technical audit", async ({ page }, testInfo) => {
@@ -131,8 +133,7 @@ test("summary errors can be retried and an update event refreshes empty saved st
   await expect(summary.getByRole("alert")).toContainText("saved evaluations are unavailable");
   state.failReads = false;
   await summary.getByRole("button", { name: "Retry evaluations", exact: true }).click();
-  await expect(summary.getByRole("heading", { name: "Your first evaluation starts here.", exact: true })).toBeVisible();
-  await expect(summary.getByRole("listitem")).toHaveCount(0);
+  await expect(summary).toHaveCount(0);
   state.runs = [completed];
   const readsBefore = state.reads;
   await page.evaluate(() => window.dispatchEvent(new Event("folio-evaluations-changed")));
@@ -149,7 +150,7 @@ test("loading and late responses cannot restore one owner's summary after logout
   state.holdReads = new Promise<void>(resolve => { release = resolve; });
   await page.goto("/overview?view=workspace");
   const summary = page.getByRole("region", { name: "Workspace evaluations", exact: true });
-  await expect(summary.getByRole("status")).toHaveText("Loading your saved evaluations…");
+  await expect(page.getByRole("status").filter({ hasText: "Loading saved evaluations…" })).toBeVisible();
   await expect(summary.getByRole("listitem")).toHaveCount(0);
   await navigate(page, "/settings");
   await page.getByRole("button", { name: "Sign out", exact: true }).click();

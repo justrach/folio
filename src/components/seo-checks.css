@@ -1,8 +1,8 @@
 .seo-checks-panel .seo-check-filters { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 24px 18px; }
 .seo-checks-panel .seo-check-filters button { display: inline-flex; align-items: center; gap: 8px; padding: 8px 11px; border: 1px solid transparent; border-radius: 6px; background: transparent; color: var(--folio-text-secondary); font: 500 13px/1.3 var(--sans); cursor: pointer; }
 .seo-checks-panel .pass { --check-color: var(--folio-text-secondary); --check-bg: var(--folio-inverse-text); }
-.seo-checks-panel .warning { --check-color: var(--folio-accent); --check-bg: var(--folio-inverse-text); }
-.seo-checks-panel .fail { --check-color: var(--folio-accent); --check-bg: var(--folio-inverse-text); }
+.seo-checks-panel .warning { --check-color: var(--folio-accent-text); --check-bg: var(--folio-inverse-text); }
+.seo-checks-panel .fail { --check-color: var(--folio-accent-text); --check-bg: var(--folio-inverse-text); }
 .seo-checks-panel .optional { --check-color: var(--folio-text-secondary); --check-bg: var(--folio-inverse-text); }
 .seo-checks-panel .seo-check-filters button[aria-pressed="true"] { background: var(--check-bg); color: var(--check-color); border-color: currentColor; }
 .seo-checks-panel .seo-check-filters button > span { font-size: 11px; font-weight: 650; background: var(--check-bg); color: var(--check-color); padding: 2px 6px; border-radius: 4px; }

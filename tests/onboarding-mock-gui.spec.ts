@@ -1,7 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 
-const BASE_PATH = "/onboarding";
+const BASE_PATH = "/onboarding?example=1";
 
 async function watchForForbiddenRequests(page: Page) {
   const violations: string[] = [];
@@ -243,7 +243,7 @@ test("B: tracked competitors keep open mode with table sample positions and disc
   expect(violations).toEqual([]);
 
   await page.reload();
-  await expect(page.getByRole("heading", { name: "Which website should we look at?" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Your first report preview" })).toBeVisible();
 });
 
 test("C: invalid site, blank edit, question gate, and site change clears sample evidence", async ({ page }) => {
@@ -553,6 +553,7 @@ async function textContrast(locator: Locator) {
         .reduce((sum, channel, i) => sum + channel * [0.2126, 0.7152, 0.0722][i], 0);
     const foreground = parse(getComputedStyle(node).color);
     let ancestor: Element | null = node;
+    const layers: number[][] = [];
     let background: number[] | undefined;
     while (ancestor) {
       const color = parse(getComputedStyle(ancestor).backgroundColor);
@@ -560,10 +561,17 @@ async function textContrast(locator: Locator) {
         background = color;
         break;
       }
-      if (color[3] !== 0) throw new Error("Contrast assertion needs an opaque or transparent background");
+      if (color[3] > 0) layers.push(color);
       ancestor = ancestor.parentElement;
     }
     if (!background) throw new Error("No opaque background found");
+    // Paint ancestor washes from back to front before measuring the text.
+    // Codegraff's accent wash is deliberately translucent in both appearances.
+    for (const layer of layers.reverse()) {
+      background = layer.slice(0, 3).map((channel, i) =>
+        channel * layer[3] + background![i] * (1 - layer[3]),
+      );
+    }
     const text = foreground
       .slice(0, 3)
       .map((channel, i) => channel * foreground[3] + background![i] * (1 - foreground[3]));
@@ -575,7 +583,7 @@ async function textContrast(locator: Locator) {
 
 async function expectReadable(locator: Locator) {
   await expect(locator).toBeVisible();
-  expect(await textContrast(locator)).toBeGreaterThanOrEqual(4.5);
+  expect(await textContrast(locator), await locator.evaluate(el => `${el.className}: ${el.textContent?.slice(0, 100)}; color ${getComputedStyle(el).color}; background ${getComputedStyle(el).backgroundColor}`)).toBeGreaterThanOrEqual(4.5);
 }
 
 async function assertNoHorizontalOverflow(page: Page) {
@@ -593,6 +601,15 @@ for (const scheme of ["dark", "light"] as const) {
     await page.emulateMedia({ colorScheme: scheme });
     await openOnboarding(page);
 
+    const clearDraft = page.getByRole("button", { name: "Clear local draft" });
+    await expectReadable(clearDraft);
+    await clearDraft.focus();
+    const clearOutline = await clearDraft.evaluate(el => {
+      const style = getComputedStyle(el);
+      return { style: style.outlineStyle, width: parseFloat(style.outlineWidth) };
+    });
+    expect(clearOutline.style).not.toBe("none");
+    expect(clearOutline.width).toBeGreaterThanOrEqual(2);
     const urlInput = page.getByLabel("Website address");
     await expectReadable(urlInput);
     await urlInput.focus();
@@ -794,14 +811,49 @@ test("M: report overview counts, hatched chart, snapshot-matched brief and print
     await page.evaluate(() => (window as unknown as { __obPrinted: number }).__obPrinted),
   ).toBe(1);
   await page.emulateMedia({ media: "print" });
-  await expect(page.locator(".ob-actions")).toBeHidden();
+  for (const actions of await page.locator(".ob-actions").all()) await expect(actions).toBeHidden();
   await expect(page.locator(".ob-rail")).toBeHidden();
   await expect(page.locator(".ob-aside")).toBeHidden();
-  await expect(page.locator(".ob-banner p")).toBeVisible();
+  for (const notice of await page.locator(".ob-banner p").all()) await expect(notice).toBeVisible();
+  await expect(page.getByRole("button", { name: "Clear local draft" })).toBeHidden();
   await expect(overview).toBeVisible();
   await expect(page.locator(".ob-table")).toBeVisible();
   await expect(page.getByText("Make the website’s identity clear")).toBeVisible();
   await page.emulateMedia({ media: "screen" });
-  await assertNoHorizontalOverflow(page);
+  // The responsive chart uses ResizeObserver; wait for it to resize after print layout.
+  await expect.poll(() => page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  )).toBeLessThanOrEqual(1);
+  expect(violations).toEqual([]);
+});
+
+test("local draft resumes pending topic and only validated website reaches evaluation handoff", async ({ page }) => {
+  const violations = await watchForForbiddenRequests(page);
+  await openOnboarding(page);
+  await page.getByLabel("Website address").fill("https://example.org/docs#intro");
+  await page.getByLabel("Business name").fill("Fleet Studio");
+  await page.reload();
+  await previewSiteAndWait(page);
+  await expect(page.getByText("Fleet Studio", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
+  await expect(page.locator(".ob-alert")).toContainText("Select at least one topic");
+  await page.getByLabel("Add another topic").fill("fleet dashboards");
+  await page.reload();
+  await expect(page.getByLabel("Add another topic")).toHaveValue("fleet dashboards");
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
+  await expect(page.getByLabel("Candidate question 1", { exact: true })).toHaveValue("Which tools are suitable for fleet dashboards?");
+  await page.getByRole("button", { name: "Preview first report" }).click();
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Your first report preview" })).toBeVisible();
+  const link = page.getByRole("link", { name: "Prepare website evaluation" });
+  const href = new URL((await link.getAttribute("href"))!, "http://localhost:3001");
+  expect(href.pathname).toBe("/evaluations");
+  expect([...href.searchParams.keys()]).toEqual(["target"]);
+  expect(href.searchParams.get("target")).toBe("https://example.org/docs");
+  await expect(page.getByText(/Only the website address carries forward/)).toBeVisible();
+  await page.getByRole("button", { name: "Clear local draft" }).click();
+  await page.reload();
+  await expect(page.getByLabel("Website address")).toHaveValue("codegraff.com");
   expect(violations).toEqual([]);
 });

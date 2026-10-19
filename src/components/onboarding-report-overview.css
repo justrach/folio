@@ -25,7 +25,7 @@
   border-radius: 999px;
   background: var(--folio-accent-soft);
   border: 1px solid var(--folio-accent-edge);
-  color: var(--folio-accent-hover);
+  color: var(--folio-ink);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -139,8 +139,8 @@
 
 @media print {
   .ob-report {
-    border-color: #999;
-    background: #fff;
+    border-color: var(--folio-control-edge);
+    background: var(--folio-white);
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }

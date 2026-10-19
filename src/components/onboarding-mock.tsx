@@ -20,7 +20,9 @@ import {
   RotateCcw,
   Sparkles,
 } from "lucide-react";
-import { readEvaluationIntent } from "@/lib/evaluation-navigation";
+import Link from "next/link";
+import { ONBOARDING_DRAFT_KEY, parseOnboardingDraft } from "@/lib/onboarding-draft";
+import { evaluationHref, readEvaluationIntent } from "@/lib/evaluation-navigation";
 import {
   CLAIM_ORDER,
   PREVIEW_DISCLAIMER,
@@ -104,7 +106,49 @@ export default function OnboardingMock() {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const skipFocusRef = useRef(true);
 
-  useEffect(() => setReady(true), []);
+  const [draftNotice, setDraftNotice] = useState("Draft stays in this browser tab for up to 24 hours. Nothing is saved to your account.");
+
+  useEffect(() => {
+    try {
+      const draft = parseOnboardingDraft(sessionStorage.getItem(ONBOARDING_DRAFT_KEY));
+      if (draft) {
+        setStep(draft.step);
+        setSiteInput(draft.siteInput);
+        setConfirmedUrl(draft.confirmedUrl);
+        setBusinessName(draft.businessName);
+        setNameEdit(draft.nameEdit ? { normalized: draft.nameEdit.normalized, value: draft.nameEdit.value } : null);
+        setDecisions(draft.decisions);
+        setEditDrafts(draft.editDrafts);
+        setKnowsCompetitors(draft.knowsCompetitors);
+        setCompetitorMode(draft.competitorMode);
+        setCompetitorsRaw(draft.competitorsRaw);
+        setCustomTopicInput(draft.customTopicInput);
+        setCustomTopics(draft.customTopics);
+        setKeywordsRaw(draft.keywordsRaw);
+        setTopics(draft.topics);
+        setTopicsSignature(draft.topicsSignature);
+        parkedTopics.current = new Map(draft.parkedTopics.map(topic => [`${topic.origin}:${topic.id}`, topic]));
+      } else sessionStorage.removeItem(ONBOARDING_DRAFT_KEY);
+    } catch {
+      setDraftNotice("Browser storage is unavailable. Keep this tab open or download your brief; refreshing will reset the preview.");
+    }
+    setReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!ready) return;
+    try {
+      sessionStorage.setItem(ONBOARDING_DRAFT_KEY, JSON.stringify({
+        version: 1, savedAt: Date.now(), step, siteInput, confirmedUrl, businessName, nameEdit,
+        decisions, editDrafts, knowsCompetitors, competitorMode, competitorsRaw,
+        customTopicInput, customTopics, keywordsRaw, topics, topicsSignature,
+        parkedTopics: [...parkedTopics.current.values()],
+      }));
+    } catch {
+      setDraftNotice("Browser storage is unavailable. Keep this tab open or download your brief; refreshing will reset the preview.");
+    }
+  }, [ready, step, siteInput, confirmedUrl, businessName, nameEdit, decisions, editDrafts, knowsCompetitors,
+    competitorMode, competitorsRaw, customTopicInput, customTopics, keywordsRaw, topics, topicsSignature]);
 
   useEffect(() => {
     if (skipFocusRef.current) {
@@ -220,7 +264,7 @@ export default function OnboardingMock() {
     reconcileNow(customTopics, keywordList.entries);
   };
 
-  const addCustomTopic = () => {
+  const addCustomTopic = (): string[] | undefined => {
     const parsed = parseLineList(customTopicInput, { maxEntries: 1 });
     if (parsed.errors.length > 0 || parsed.entries.length === 0) {
       setTopicError(parsed.errors[0] ?? "Enter a topic before adding it.");
@@ -241,6 +285,7 @@ export default function OnboardingMock() {
     setCustomTopics(nextCustom);
     setCustomTopicInput("");
     reconcileNow(nextCustom, keywordList.entries);
+    return nextCustom;
   };
 
   const continueFromGoals = () => {
@@ -250,7 +295,19 @@ export default function OnboardingMock() {
     ];
     setListErrors(errors);
     if (errors.length > 0) return;
-    refreshTopics();
+    const custom = customTopicInput.trim() ? addCustomTopic() : customTopics;
+    if (!custom) return;
+    const { topics: next, parked } = reconcileTopics(topics, parkedTopics.current, {
+      includeSample: includeSampleTopics, customLabels: custom, keywordGoals: keywordList.entries,
+    });
+    if (!next.some(topic => topic.selected && topic.question.trim())) {
+      setTopicError("Select at least one topic with a nonblank question, or add your own topic to continue.");
+      return;
+    }
+    setTopicError(null);
+    parkedTopics.current = parked;
+    setTopics(next);
+    setTopicsSignature(JSON.stringify([includeSampleTopics, custom, keywordList.entries]));
     setStep(4);
   };
 
@@ -696,8 +753,8 @@ export default function OnboardingMock() {
         <p className="ob-kicker">Step 3 · Goals & competitors</p>
         <h1 className="ob-title" ref={headingRef} tabIndex={-1}>What would you like people to discover you for?</h1>
         <p className="ob-lede">
-          Topics become the questions in your report plan. Everything here is optional — a report can
-          also start from the suggested topics alone.
+          Topics become the questions in your report plan. Select at least one topic or add your own.
+          Competitors and keyword goals are optional.
         </p>
         <section className="ob-card" aria-label="Reviewed description">
           <span className="ob-label">Your reviewed description</span>
@@ -954,7 +1011,7 @@ export default function OnboardingMock() {
           </p>
         ) : null}
         <p className="ob-hint">
-          Demo only: no collection starts, no charge, nothing is saved. A production report allowance
+          Demo only: no collection starts and no charge. This draft stays in this browser tab only. A production report allowance
           is not implemented in this preview.
         </p>
         <div className="ob-actions">
@@ -993,14 +1050,21 @@ export default function OnboardingMock() {
         <p className="ob-kicker">Report preview</p>
         <h1 className="ob-title" ref={headingRef} tabIndex={-1}>Your first report preview</h1>
         <p className="ob-lede">
-          Everything below is illustrative sample output. Refreshing the page resets it — nothing was
-          fetched, measured, or saved.
+          This is a plan with illustrative sample output where available. Your own topics have no sample answers.
+          Nothing was fetched or measured; the draft stays in this browser tab only.
         </p>
         {anyObservation ? (
           <p className="ob-caption" id="ob-report-caption">
             <Info size={14} aria-hidden /> Illustrative AI-answer order, not Google rankings
           </p>
         ) : null}
+        <section className="ob-card" aria-label="Continue to a real evaluation">
+          <h2 className="ob-brief-title">Ready to check your website?</h2>
+          <p className="ob-hint">Prepare a real website evidence evaluation in your private workspace. Only the website address carries forward. This checks page evidence; it does not run this preview’s competitor questions or measure AI rankings. Download the brief to keep your profile and questions. Sign in if needed, review the setup, and explicitly choose whether to start a paid run.</p>
+          <div className="ob-actions">
+            <Link className="ob-button ob-button-primary" href={evaluationHref({ targetUrl: confirmedUrl })}>Prepare website evaluation <ChevronRight size={16} aria-hidden /></Link>
+          </div>
+        </section>
         <OnboardingReportOverview report={packet} />
         {needsScroll ? (
           <p className="ob-hint" id="ob-table-scroll-hint">Scroll to see all tracked competitors.</p>
@@ -1243,6 +1307,7 @@ export default function OnboardingMock() {
           <EyeOff size={12} aria-hidden /> Onboarding preview · Sample data
         </span>
         <p>{PREVIEW_DISCLAIMER}</p>
+        <p>{draftNotice} <button type="button" className="ob-link" onClick={startOver}>Clear local draft</button></p>
       </header>
       <div className="ob-shell" data-report={step === 5}>
         <nav aria-label="Onboarding steps">

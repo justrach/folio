@@ -70,9 +70,13 @@ async function openEditor(page: Page, owner = "alice") {
   await expect(editor(page)).toBeVisible();
 }
 async function navigate(page: Page, path: string) {
+  // Legacy URLs remain supported through direct entry; Questions uses the unified hub.
+  if (path === "/benchmarks") { await page.goto(path); await expect(page).toHaveURL(/\/benchmarks$/); return; }
   const opener = page.getByRole("button", { name: "Open navigation", exact: true });
   if (await opener.isVisible()) await opener.click();
-  await page.locator(`.nav-link[href="${path}"]`).click();
+  const targetLink = page.locator(`.nav-link[href="${path}"]`);
+  if (!(await targetLink.isVisible())) await page.getByRole("button", { name: "More tools", exact: true }).click();
+  await targetLink.click();
 }
 async function noWorkOrOverflow(page: Page, state: Awaited<ReturnType<typeof fixture>>) {
   expect(state.forbidden).toEqual([]);
@@ -161,9 +165,20 @@ test("owner-context drafts are editable and remain unstarted", async ({ page }) 
   await form.getByLabel("What do they need to do?").fill("review prototypes");
   await form.getByRole("button", { name: "Add three scenario drafts" }).click();
   await expect(form).toContainText("3 / 10 questions");
-  await expect(form.getByRole("textbox", { name: "Questions, one per line", exact: true })).toHaveValue(/design teams/);
+  const expected = [
+    "Which products should design teams shortlist to review prototypes? Explain the tradeoffs.",
+    "For design teams who need to review prototypes, which options are easiest to start using?",
+    "What costs and limitations should design teams compare before choosing a product to review prototypes?",
+  ];
+  const questions = form.getByRole("textbox", { name: "Questions, one per line", exact: true });
+  await expect(questions).toHaveValue(expected.join("\n"));
+  await form.getByRole("button", { name: "Add three scenario drafts" }).click();
+  await expect(questions).toHaveValue(expected.join("\n"));
+  expected[0] = "Which products help design teams review prototypes privately?";
+  await questions.fill(expected.join("\n"));
   await form.getByRole("button", { name: "Save questions", exact: true }).click();
-  expect(state.saves[0].questions).toHaveLength(3);
+  await expect(page.getByText("Questions saved. No observation has been started.", { exact: true })).toBeVisible();
+  expect(state.saves[0].questions).toEqual(expected);
   await noWorkOrOverflow(page, state);
 });
 
@@ -187,5 +202,30 @@ test("published question selection preserves exact wording and locale without sp
   await expect(form.getByLabel("Customer location", { exact: true })).toHaveValue("en-GB");
   await form.getByRole("button", { name: "Save questions", exact: true }).click();
   expect(state.saves[0]).toMatchObject({ questions: [query.query], language: "en", locale: "en-GB" });
+  await noWorkOrOverflow(page, state);
+});
+
+
+test("scenario drafts append to existing questions and preserve the ten-question limit", async ({ page }) => {
+  const state = await fixture(page);
+  await page.goto("/benchmarks");
+  await openEditor(page);
+  const form = editor(page);
+  const questions = form.getByRole("textbox", { name: "Questions, one per line", exact: true });
+  await form.getByText("Prepare new questions for your website", { exact: true }).click();
+  await form.getByLabel("Who are your customers?").fill("design teams");
+  await form.getByLabel("What do they need to do?").fill("review prototypes");
+  const add = form.getByRole("button", { name: "Add three scenario drafts" });
+  await add.click();
+  const appended = (await questions.inputValue()).split("\n");
+  expect(appended.slice(0, template.cases.length)).toEqual(template.cases.map(value => value.query));
+  expect(appended).toHaveLength(template.cases.length + 3);
+  await expect(form).toContainText(`${appended.length} / 10 questions`);
+  const full = Array.from({ length: 8 }, (_, index) => `Owner question ${index + 1}?`).join("\n");
+  await questions.fill(full);
+  await add.click();
+  await expect(form.getByRole("alert")).toHaveText("Remove some questions before adding three new drafts; a suite holds up to ten.");
+  await expect(questions).toHaveValue(full);
+  expect(state.saves).toEqual([]);
   await noWorkOrOverflow(page, state);
 });

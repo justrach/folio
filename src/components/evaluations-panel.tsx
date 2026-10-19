@@ -57,11 +57,14 @@ export function EvaluationsPanel({ initialTargetUrl = "" }: { initialTargetUrl?:
     window.history.pushState(null, "", `/evaluations?${params}`);
   }
 
-  return <div className="evaluation-hub">
+  const evaluationSwitch = (
     <div className="evaluation-hub-switch" role="group" aria-label="Evaluation view">
       <button id={`${ids}-search-control`} type="button" aria-pressed={!pageView} aria-controls={`${ids}-search`} onClick={() => switchView("search")}>Search questions</button>
       <button id={`${ids}-page-control`} type="button" aria-pressed={pageView} aria-controls={`${ids}-page`} onClick={() => switchView("page")}>Page evidence</button>
     </div>
+  );
+  return <div className="evaluation-hub">
+    {pageView ? evaluationSwitch : <details className="evaluation-hub-other-tools"><summary>Other evaluation tools</summary>{evaluationSwitch}</details>}
     {pageView ? <section id={`${ids}-page`} className="evaluation-hub-view" aria-labelledby={`${ids}-page-control`}>
       {!intent.runId && <p className="evaluation-hub-intent">Inspect one page’s captured content, reference answers, and verification checks.</p>}
       <EvaluationWorkspacePanel key={workspace.ownerId ?? "anonymous"} initialTargetUrl={targetUrl ?? ""} workspace={workspace} onTargetChange={url => { pageTarget.current = { ownerId: workspace.ownerId, url }; }} />

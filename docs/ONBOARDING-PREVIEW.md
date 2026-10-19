@@ -1,20 +1,21 @@
 # Onboarding preview
 
-`/onboarding` is a fixture-only, unauthenticated walkthrough of Folio's website-onboarding flow.
-It exists so the UX can be reviewed before the real capture, evaluation, and account plumbing is
-attached. The route is excluded from indexing (`noindex`/`nofollow`) and is not linked from the
-product navigation.
+`/onboarding?example=1` is the explicit fixture-only, unauthenticated walkthrough of Folio's website-onboarding flow. Its Codegraff content lets visitors review an illustrative setup and report. It is excluded from indexing (`noindex`/`nofollow`).
+
+The landing page's **Set up your business** actions open the real default `/onboarding` flow instead. That blank flow accepts owner-reviewed business details and customer questions, then explicitly saves a private business profile, website, and question suite after sign-in. It does not fetch a website, verify claims, measure visibility, or start paid research. Saved setup and question-suite handoffs are documented in [frontend workflow](FRONTEND-WORKFLOW.md#start-from-the-homepage). The boundaries below apply to the explicit example only.
 
 ## Boundaries
 
 - **No programmatic network work.** The page makes no external or `/api` calls — nothing is fetched,
-  collected, or submitted. The only outbound link is a clearly labelled source URL the reader may
-  choose to open. The address only decides whether the bundled Codegraff sample applies.
+  collected, or submitted. Source URLs and an explicit completion link to the evaluation workspace are user-controlled navigation. The address only decides whether the bundled Codegraff sample applies.
 - **No measurement.** Positions shown in the report preview are static fixture data, labelled
   "Illustrative AI-answer order, not Google rankings". Edited, custom, keyword, and named-comparison
   questions always show "No sample observation" — sample positions are never fuzzy-reused.
-- **No persistence.** All state lives in component memory. Refresh resets the preview; nothing is
-  saved to an account, cookie, or storage.
+- **Local draft only.** Preview inputs resume after same-tab refresh using `sessionStorage` for up to
+  24 hours. Nothing is saved to an account or synchronized across devices. The page explains this
+  limit and offers “Clear local draft”; storage failures show a refresh warning. Bounded
+  schema validation rejects malformed, expired, invalid-target, or empty advanced-step drafts. No
+  authenticated records, provider results, credentials, or account identifiers enter this draft.
 - **No paid or implied entitlement.** The report plan states plainly that no collection starts, no
   charge applies, and a production report allowance is not implemented.
 
@@ -37,7 +38,8 @@ preview (not a fifth step).
    the sample capabilities statement is accepted, three rule-based demo topics are offered
    (explicitly not AI-generated research); otherwise the user is told to add their own. Custom
    topics can be removed in place and use the fixed template
-   `Which tools are suitable for <topic>?`. Question wording itself is edited on the plan step.
+   `Which tools are suitable for <topic>?`. Question wording itself is edited on the plan step. Continue includes valid pending topic text
+   even without clicking Add topic, and requires at least one selected nonblank question.
    Competitors default to *Track competitors* (open discovery); the explicit
    *Compare specific businesses* choice switches to named comparison only when names exist, and is
    labelled non-neutral.
@@ -45,7 +47,7 @@ preview (not a fifth step).
    "Preview first report" CTA with the demo-only notice.
 5. **Report preview**: clicking "Preview first report" captures a single report packet
    (`buildOnboardingReport(buildOnboardingExport(...))` from `src/lib/onboarding-report.ts`) that is
-   reused by the on-screen report, the brief panel, and the JSON download — it is regenerated only
+   reused by the on-screen report, the brief panel, and the JSON download — it is regenerated on same-tab refresh or
    on an explicit re-preview and cleared by start-over/site changes. An overview card labels the
    report as an illustrative fixture with "No live capture or collection date", lists target site,
    business, mode, and three counts — selected questions, sample answers available, and questions
@@ -66,18 +68,23 @@ preview (not a fifth step).
    names, and final question prompts), a "Download agent brief" JSON export flagged `mock: true`,
    `measured: false`, `persisted: false`, and a "Print report / Save PDF" button (calls
    `window.print`; print styles hide controls/navigation and keep the report, evidence, and
-   disclaimers on paper) complete the preview.
+   disclaimers on paper) complete the preview. “Prepare website evaluation” opens `/evaluations`
+   with only a validated target URL. It explains that the real workflow checks page evidence, does
+   not run these competitor questions, and requires sign-in and an explicit paid start. Profiles
+   and questions stay in the local preview/download; they are not saved to the evaluation workspace.
 
 ## Tests
 
 ```sh
-node --conditions=react-server --import tsx --test tests/onboarding-mock.test.ts tests/onboarding-report.test.ts
+node --conditions=react-server --import tsx --test tests/onboarding-mock.test.ts tests/onboarding-report.test.ts tests/onboarding-draft.test.ts
 bunx playwright test tests/onboarding-mock-gui.spec.ts
 ```
 
 Unit tests cover the fixture helpers in `src/lib/onboarding-mock.ts` (claim decisions, list limits,
-topic reconciliation, sample observations, export shape) and the report aggregation in
+topic reconciliation, sample observations, export shape), local draft validation (expiry, malformed
+state, unsafe targets, pending inputs and edited questions), and the report aggregation in
 `src/lib/onboarding-report.ts` (counts, per-brand appearances/positions, dedupe, non-mutation).
 GUI tests run on desktop and mobile projects, drive the full flow including the JSON download,
-dark/light contrast, and print emulation, and abort-and-assert against any `/api` or
+same-tab refresh including pending topics and edited website names, target-only handoff,
+dark/light contrast and keyboard focus, and print emulation, and abort-and-assert against any `/api` or
 external-origin request.

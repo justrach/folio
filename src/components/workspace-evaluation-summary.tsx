@@ -41,7 +41,7 @@ function readRecentRuns(value: unknown, target: string | null): RecentEvaluation
 }
 
 /** A saved-state preview only. The separate agent dock reconciles provider sessions. */
-export function WorkspaceEvaluationSummary({ initialTargetUrl, filterTargetUrl }: { initialTargetUrl?: string; filterTargetUrl?: string }) {
+export function WorkspaceEvaluationSummary({ initialTargetUrl, filterTargetUrl, hideSuccessfulEmpty = false }: { initialTargetUrl?: string; filterTargetUrl?: string; hideSuccessfulEmpty?: boolean }) {
   const { data: session, isPending } = useSession();
   const ownerId = session?.user.id ?? null;
   const target = normalizedTarget(filterTargetUrl);
@@ -87,6 +87,9 @@ export function WorkspaceEvaluationSummary({ initialTargetUrl, filterTargetUrl }
   const runs = owned ? snapshot.runs : [];
   const loading = !owned || snapshot.status === "loading";
   const error = owned && snapshot.status === "error" ? snapshot.error : "";
+
+  if (hideSuccessfulEmpty && owned && snapshot.status === "ready" && runs.length === 0) return null;
+  if (hideSuccessfulEmpty && loading && runs.length === 0) return <p className="wes-loading" role="status"><Loader2 size={14} aria-hidden="true" />Loading saved evaluations…</p>;
 
   return <section className="workspace-evaluation-summary panel" aria-label="Workspace evaluations" aria-busy={loading}>
     <header className="wes-heading">

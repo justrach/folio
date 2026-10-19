@@ -472,12 +472,13 @@ select {
   transform: translateY(-1px);
 }
 .button.primary {
-  background: var(--green);
-  color: var(--folio-inverse-text);
-  border-color: var(--green);
+  background: var(--folio-accent);
+  color: var(--folio-on-accent);
+  border-color: var(--folio-accent);
 }
 .button.primary:hover {
-  background: var(--folio-inverse-surface);
+  background: var(--folio-accent-hover);
+  color: var(--folio-on-accent);
 }
 .button.secondary {
   border-color: var(--folio-edge);
@@ -662,7 +663,7 @@ select {
   white-space: nowrap;
 }
 .change.down {
-  color: var(--folio-accent);
+  color: var(--folio-accent-text);
 }
 .primary .change {
   color: var(--folio-inverse-text);
@@ -1182,7 +1183,7 @@ td:last-child {
 .status-pill.fail {
   background: var(--folio-surface);
   border-color: var(--folio-edge);
-  color: var(--folio-accent);
+  color: var(--folio-accent-text);
 }
 .status-pill.optional {
   background: var(--folio-canvas);
@@ -1911,7 +1912,7 @@ td:last-child {
 .check-status.warning,
 .check-status.fail {
   background: var(--folio-canvas);
-  color: var(--folio-accent);
+  color: var(--folio-accent-text);
 }
 .check-status.optional {
   background: var(--folio-canvas);
@@ -2352,7 +2353,7 @@ td:last-child {
 }
 .form-error {
   font-size: 12px !important;
-  color: var(--folio-accent) !important;
+  color: var(--folio-accent-text) !important;
   background: var(--folio-canvas);
   border: 1px solid var(--folio-accent-edge);
   padding: 10px 12px;

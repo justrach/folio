@@ -63,10 +63,10 @@ export function Landing() {
           <h1>See which competitors <span>AI recommends.</span></h1>
           <p className="landing-hero-description">See which companies appear for your customers’ questions. Inspect the sources and your own pages, then decide what to improve.</p>
           <div className="landing-actions">
-            <UiButton asChild className="button primary"><Link href="/evaluations">Evaluate your website <ArrowUpRight size={16} aria-hidden="true" /></Link></UiButton>
+            <UiButton asChild className="button primary"><Link href="/onboarding">Set up your business <ArrowUpRight size={16} aria-hidden="true" /></Link></UiButton>
             <Link href="/leaderboard">Explore real results</Link>
           </div>
-          <p className="landing-access">Sign in to prepare an evaluation. You choose when to run it.</p>
+          <p className="landing-access">Explore a sample setup first. Sign in to prepare a real evaluation; you choose when to run it.</p>
         </div>
         <RecommendationPreview />
       </section>
@@ -136,8 +136,8 @@ export function Landing() {
       </section>
 
       <section className="landing-next">
-        <div><h2>What will AI say about your website?</h2><p>Choose the questions that matter to your customers.</p></div>
-        <UiButton asChild className="button primary"><Link href="/evaluations">Evaluate your website <ArrowUpRight size={16} aria-hidden="true" /></Link></UiButton>
+        <div><h2>What will AI say about your website?</h2><p>Preview a sample setup, then prepare the questions that matter to your customers.</p></div>
+        <UiButton asChild className="button primary"><Link href="/onboarding">Set up your business <ArrowUpRight size={16} aria-hidden="true" /></Link></UiButton>
       </section>
     </main>
 

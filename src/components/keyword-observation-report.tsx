@@ -15,12 +15,12 @@ const date = (value: string) => new Date(value).toLocaleString();
 function safeLink(value: string | null | undefined) {
   try { const url = new URL(value ?? ""); return ["https:", "http:"].includes(url.protocol) && !url.username && !url.password ? url.href : null; } catch { return null; }
 }
-function modelLabel(run: KeywordBenchmarkRun) { return run.model === "gpt-6-astra" ? "Astra" : run.model; }
+function modelLabel(run: KeywordBenchmarkRun) { return run.model === "gpt-6-astra" ? "Astra" : run.model === "gpt-6.1-sol" ? "GPT 6.1 Sol" : run.model; }
 function presenceLabel(value: "yes" | "no" | "unknown") { return value === "yes" ? "Yes" : value === "no" ? "Not listed" : "Unknown"; }
 function citationLabel(value: boolean | null) { return value === true ? "Yes" : value === false ? "Not cited" : "Unknown"; }
 
-export function KeywordObservationReport({ run, baseline, busy, onRefresh, onCancel, onArchive, onPrepare }: {
-  run: KeywordBenchmarkRun; baseline: KeywordBenchmarkRun | null; busy: boolean;
+export function KeywordObservationReport({ run, baseline, busy, onRefresh, onCancel, onArchive, onPrepare, guided = false }: {
+  run: KeywordBenchmarkRun; baseline: KeywordBenchmarkRun | null; busy: boolean; guided?: boolean;
   onRefresh: () => void; onCancel: () => void; onArchive?: () => void; onPrepare: () => void;
 }) {
   const metrics = keywordRecommendationMetrics(run);
@@ -29,29 +29,68 @@ export function KeywordObservationReport({ run, baseline, busy, onRefresh, onCan
   const codegraff = run.providerMetadata.searchProvider?.startsWith("codegraff-") || run.harnessVersion.includes("codegraff");
   const providerLabel = codegraff ? "Codegraff API" : "OpenAI API";
   const searchLabel = codegraff ? run.providerMetadata.searchProvider === "codegraff-responses-web-search" ? "Codegraff model-native web search" : "Codegraff hosted search" : "OpenAI web search";
-  return <section className="panel benchmark-report" aria-label="Keyword observation" data-status={run.status}>
-    <header className="benchmark-report-heading"><div className="benchmark-report-kind"><span>{run.kind === "baseline" ? "Baseline observation" : "Fresh observation"}</span><span>{statusLabel(run.status)} · {date(run.createdAt)}</span></div><h2>{run.case.query}</h2><p className="benchmark-target">Your website <strong>{run.case.targetUrl ?? "No website target supplied"}</strong></p></header>
-    <div className="benchmark-report-actions">
-      {completed ? <button className="button primary" type="button" onClick={() => {
-        const url = URL.createObjectURL(new Blob([JSON.stringify({format:"folio-private-keyword-observation-v1",run},null,2)],{type:"application/json"}));
-        const anchor = document.createElement("a"); anchor.href=url;anchor.download=`folio-keyword-${run.id}.json`;anchor.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
-      }}><ArrowDownToLine size={14}/> Download private observation</button> : <button className="button primary" type="button" disabled={busy} onClick={onRefresh}>Refresh progress</button>}
-      {completed && <button className="button secondary" type="button" disabled={busy} onClick={onRefresh}>Refresh recorded usage</button>}
-      <button className="button secondary" type="button" disabled={busy} onClick={onPrepare}>Prepare another observation <ArrowRight size={14}/></button>
+  const targetHref = safeLink(run.case.targetUrl);
+  const sourceHref = (metrics.recommendations.find(item => item.matchesTarget)?.citationUrls ?? []).map(safeLink).find(Boolean)
+    ?? run.answer?.citations.map(item => safeLink(item.url)).find(Boolean);
+  const outcomeHeading = metrics.targetNamed === "yes" ? "Your site was recommended in this answer"
+    : metrics.targetNamed === "unknown" ? "Your site’s recommendation status is unclear"
+    : metrics.targetCited === true ? "Your site was cited, but wasn’t recommended"
+    : "Your site wasn’t listed as a recommendation";
+  const recommendationMeaning = metrics.targetNamed === "yes"
+    ? "A website address in the returned recommendations matched your site."
+    : metrics.targetNamed === "unknown"
+      ? "Folio could not match every recommendation to a website, or no valid target address was supplied. An unknown match does not mean your site was absent."
+      : "None of the website addresses in the returned recommendations matched your site.";
+  const citationMeaning = metrics.targetCited === true ? "Your site appears in the returned source links. A source citation is separate from a recommendation."
+    : metrics.targetCited === false ? "Your site does not appear in the returned source links. Source citations and recommendations are checked separately."
+    : "Whether your site was cited is unknown because a target or source address could not be matched.";
+  const reviewSource = metrics.targetNamed !== "no" && Boolean(sourceHref);
+  const nextHref = reviewSource ? sourceHref! : targetHref ?? sourceHref ?? "/overview?view=workspace";
+  const nextLabel = reviewSource ? "Review a returned source" : targetHref ? "Review your page" : sourceHref ? "Review a returned source" : "Open your workspace";
+  const nextReason = reviewSource ? "Compare the source with the recorded answer to check what it actually supports. A citation alone does not verify a claim."
+    : targetHref ? "Compare your page with the exact question and the answer below. Check which details are present before deciding whether any change is useful."
+    : sourceHref ? "Read a source alongside the answer to check what it supports."
+    : "Return to your saved website context before deciding what to investigate next.";
+  const download = <button className={guided ? "button secondary" : "button primary"} type="button" onClick={() => {
+    const url = URL.createObjectURL(new Blob([JSON.stringify({format:"folio-private-keyword-observation-v1",run},null,2)],{type:"application/json"}));
+    const anchor = document.createElement("a"); anchor.href=url;anchor.download=`folio-keyword-${run.id}.json`;anchor.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }}><ArrowDownToLine size={14}/> Download private observation</button>;
+  const runDetails = <>
+    <section className="benchmark-flow-section" aria-label="Observation method"><h3>Search setup for this observation</h3><ol className="benchmark-flow"><li><span>Question</span><strong>Your saved query</strong></li><li aria-hidden="true"><ArrowRight size={18}/></li><li><span>{modelLabel(run)} · {providerLabel}</span><strong>{openWeb ? searchLabel : "Reviewed documentation"}</strong></li><li aria-hidden="true"><ArrowRight size={18}/></li><li><span>{completed ? "Recorded output" : "Requested output"}</span><strong>Ordered recommendations + citations</strong></li></ol><p className="benchmark-muted">{openWeb ? `${searchLabel} · no domain filter.` : "Search was limited to reviewed domains. This saved run cannot establish visibility across the wider web."}</p></section>
+    <section className="benchmark-coverage" aria-label="Provider coverage"><h3>Where this was measured</h3><dl><div><dt>{providerLabel} · {modelLabel(run)}</dt><dd>{completed ? "Recorded answer" : "No completed answer yet"}</dd></div><div><dt>Claude · Gemini · Perplexity</dt><dd>Not connected · unmeasured</dd></div></dl><p>API observations; consumer chat websites are not measured.</p></section>
+    <details className="benchmark-disclosure benchmark-method-details"><summary>Matching, evidence and run details<ChevronDown size={15}/></summary><div><p>Target matching compares returned URL hostnames after removing www and a trailing dot. It does not infer aliases or match subdomains. Missing or invalid recommendation URLs leave identity unknown; a named tool, a recommendation, and a source citation are distinct observations.</p><p>Recommendation position is only the order returned for this query and source corpus. It is not Google rank, a quality score, or proof that a website change caused an answer to change. Returned excerpts have not been independently matched against captured source text; citation presence does not establish factual or semantic support.</p>{!openWeb && <p>Reviewed domains: {run.allowedDomains.join(", ") || "Not recorded"}.</p>}{run.answer?.evidence?.length ? <><h4>Recorded evidence annotations</h4><ul>{run.answer.evidence.map(item => <li key={item.id}><strong>{item.outcome}</strong> · {item.detail}</li>)}</ul></> : null}{run.answer?.limitations?.length ? <><h4>Returned limitations</h4><ul>{run.answer.limitations.map((item,index) => <li key={index}>{item}</li>)}</ul></> : null}<p>Reported cost: {run.usage.costUsd === null ? "Not available" : `$${run.usage.costUsd.toFixed(4)}`}. Unknown cost is not zero.</p><p>Saved {date(run.createdAt)} · last updated {date(run.updatedAt)}.</p>{completed && <button className="button secondary" type="button" disabled={busy} onClick={onRefresh}>Refresh progress</button>}</div></details>
+  </>;
+  return <section className={`panel benchmark-report${guided ? " benchmark-report-guided" : ""}`} aria-label="Keyword observation" data-status={run.status}>
+    <header className="benchmark-report-heading"><div className="benchmark-report-kind"><span>{guided ? "Your private answer" : run.kind === "baseline" ? "Baseline observation" : "Fresh observation"}</span><span>{statusLabel(run.status)} · {date(run.createdAt)}</span></div><h2>{run.case.query}</h2><p className="benchmark-target">Your website <strong>{run.case.targetUrl ?? "No website target supplied"}</strong></p></header>
+    {guided && <p className="benchmark-guided-status">{completed ? "Answer recorded. Review what the model returned below." : run.status === "requires_action" ? "This attempt needs attention. Review its saved status before starting again." : active(run) ? "Your question is saved. Waiting for a recorded answer." : "This attempt did not record a completed answer."} Reported cost: {run.usage.costUsd === null ? "Unknown; unknown cost is not zero." : `$${run.usage.costUsd.toFixed(4)}.`}</p>}
+    {(!guided || !completed) && <div className="benchmark-report-actions">
+      {completed ? download : <button className="button primary" type="button" disabled={busy} onClick={onRefresh}>Refresh progress</button>}
+      {completed && !guided && <button className="button secondary" type="button" disabled={busy} onClick={onRefresh}>Refresh recorded usage</button>}
+      {(!guided || !active(run)) && <button className="button secondary" type="button" disabled={busy} onClick={onPrepare}>Prepare another observation <ArrowRight size={14}/></button>}
       {active(run) && run.sessionId && <button className="button secondary" type="button" disabled={busy || Boolean(run.cancelAttemptAt)} onClick={onCancel}>Cancel observation</button>}
-    </div>
+    </div>}
     {onArchive && run.status === "requires_action" && !run.archivedAt && Date.now()-Date.parse(run.createdAt)>=86400000 && (!run.sessionId || run.cancelAttemptAt) && <div className="benchmark-report-actions"><p>Remove this old attempt from the active queue while retaining its unknown cost and provider records. Remote cancellation is not confirmed.</p><button type="button" className="button secondary" disabled={busy} onClick={onArchive}>Archive unresolved attempt</button></div>}
     {run.archivedAt && <p role="status">Archived from the active queue. Provider outcome and cost remain unresolved; saved evidence is retained. This does not confirm remote cancellation.</p>}
     {run.error && <p role="alert" className="benchmark-error">{run.error}</p>}
     {run.cancelAttemptAt && active(run) && <p role="status" className="benchmark-inline-note">Cancellation was requested; stopping is not yet confirmed.</p>}
+    {guided && completed && <section className="benchmark-guided-outcome" aria-label="What this answer means">
+      <span className="research-eyebrow">What this answer means</span><h3>{outcomeHeading}</h3>
+      <p className="benchmark-guided-meaning">{recommendationMeaning} {citationMeaning}</p>
+      <p className="benchmark-muted">{metrics.recommendations.length ? `${metrics.recommendations.length} recommendation${metrics.recommendations.length === 1 ? " was" : "s were"} recorded.` : "No recommendations were recorded."} {metrics.citationCount ? `${metrics.citationCount} valid source link${metrics.citationCount === 1 ? " was" : "s were"} recorded.` : "No valid source links were recorded."} These counts describe the saved output.</p>
+      <p className="benchmark-muted">This describes one answer to this exact question. It does not measure Google rank, website quality, or visibility in consumer chat apps.</p>
+      <div className="benchmark-guided-next"><h4>What to do next</h4><p>{nextReason}</p><Link className="button primary" href={nextHref} {...(nextHref.startsWith("http") ? {target:"_blank",rel:"noreferrer"} : {})}>{nextLabel} <ExternalLink size={14}/></Link><small>Opening this link does not start another paid run.</small></div>
+    </section>}
+    {guided && completed && run.answer && <section className="benchmark-guided-answer" aria-label="Recorded answer"><h3>Answer to your question</h3><p className="benchmark-muted">Returned by {modelLabel(run)}. This is one recorded API observation; sources have not been independently verified.</p><p className="benchmark-answer-text">{run.answer.text}</p></section>}
     {completed ? <>
       <section className="benchmark-presence" aria-label="Target presence"><div><h3>Did your site appear?</h3><p>Matched by website address.</p></div><dl><div><dt>Target in recommendations</dt><dd>{presenceLabel(metrics.targetNamed)}</dd><small>{metrics.targetNamed === "yes" ? `Returned at ${metrics.targetPositions.map(value => `position ${value}`).join(", ")}` : metrics.targetNamed === "unknown" ? "Some identities could not be matched." : "No listed URL matched your site."}</small></div><div><dt>Target cited as a source</dt><dd>{citationLabel(metrics.targetCited)}</dd><small>In the returned source links.</small></div></dl></section>
-      {metrics.targetNamed === "no" && run.case.targetUrl && (
-        <p className="benchmark-next-step">Not listed here. <Link href={`/overview?view=workspace&website=${encodeURIComponent(run.suiteId)}`}>Review this website over time</Link> or <Link href={run.case.targetUrl} target="_blank" rel="noreferrer">open your page <ExternalLink size={12} /></Link> to check whether the answer’s topic is covered.</p>
+      {!guided && metrics.targetNamed === "no" && targetHref && (
+        <p className="benchmark-next-step">Not listed here. <Link href="/overview?view=workspace">Review this website over time</Link> or <Link href={targetHref!} target="_blank" rel="noreferrer">open your page <ExternalLink size={12} /></Link> to check whether the answer’s topic is covered.</p>
       )}
+      {!guided && <>
       <PublicWebsiteComparison key={run.id} run={run} />
       <KeywordPublication key={`publication-${run.id}`} runId={run.id} />
       {baseline && <Comparison baseline={baseline} fresh={run}/>}
+      </>}
     </> : <KeywordProgress run={run}/>}
 
     {completed && run.answer && <div className="benchmark-evidence-layout">
@@ -63,10 +102,18 @@ export function KeywordObservationReport({ run, baseline, busy, onRefresh, onCan
       </section>
       <aside className="benchmark-sources" aria-label="Returned citations"><h3>Sources in the answer <span>{metrics.citationCount}</span></h3>{run.answer.citations.length ? <ol>{run.answer.citations.map((item,index) => <li key={`${item.url}-${index}`}><SourceLink url={item.url} title={item.title}/>{item.quote && <details><summary>Read returned excerpt<ChevronDown size={12}/></summary><blockquote>{item.quote}</blockquote></details>}</li>)}</ol> : <p>No citations were returned.</p>}</aside>
     </div>}
-    {completed && run.answer && <details className="benchmark-disclosure benchmark-full-answer"><summary>Read the full recorded answer<ChevronDown size={15}/></summary><p className="benchmark-answer-text">{run.answer.text}</p></details>}
-    <section className="benchmark-flow-section" aria-label="Observation method"><h3>Search setup for this observation</h3><ol className="benchmark-flow"><li><span>Question</span><strong>Your saved query</strong></li><li aria-hidden="true"><ArrowRight size={18}/></li><li><span>{modelLabel(run)} · {providerLabel}</span><strong>{openWeb ? searchLabel : "Reviewed documentation"}</strong></li><li aria-hidden="true"><ArrowRight size={18}/></li><li><span>{completed ? "Recorded output" : "Requested output"}</span><strong>Ordered recommendations + citations</strong></li></ol><p className="benchmark-muted">{openWeb ? `${searchLabel} · no domain filter.` : "Search was limited to reviewed domains. This saved run cannot establish visibility across the wider web."}</p></section>
-    <section className="benchmark-coverage" aria-label="Provider coverage"><h3>Where this was measured</h3><dl><div><dt>{providerLabel} · {modelLabel(run)}</dt><dd>{completed ? "Recorded answer" : "No completed answer yet"}</dd></div><div><dt>Claude · Gemini · Perplexity</dt><dd>Not connected · unmeasured</dd></div></dl><p>API observations; consumer chat websites are not measured.</p></section>
-    <details className="benchmark-disclosure benchmark-method-details"><summary>Matching, evidence and run details<ChevronDown size={15}/></summary><div><p>Target matching compares returned URL hostnames after removing www and a trailing dot. It does not infer aliases or match subdomains. Missing or invalid recommendation URLs leave identity unknown; a named tool, a recommendation, and a source citation are distinct observations.</p><p>Recommendation position is only the order returned for this query and source corpus. It is not Google rank, a quality score, or proof that a website change caused an answer to change. Returned excerpts have not been independently matched against captured source text; citation presence does not establish factual or semantic support.</p>{!openWeb && <p>Reviewed domains: {run.allowedDomains.join(", ") || "Not recorded"}.</p>}{run.answer?.evidence?.length ? <><h4>Recorded evidence annotations</h4><ul>{run.answer.evidence.map(item => <li key={item.id}><strong>{item.outcome}</strong> · {item.detail}</li>)}</ul></> : null}{run.answer?.limitations?.length ? <><h4>Returned limitations</h4><ul>{run.answer.limitations.map((item,index) => <li key={index}>{item}</li>)}</ul></> : null}<p>Reported cost: {run.usage.costUsd === null ? "Not available" : `$${run.usage.costUsd.toFixed(4)}`}. Unknown cost is not zero.</p><p>Saved {date(run.createdAt)} · last updated {date(run.updatedAt)}.</p>{completed && <button className="button secondary" type="button" disabled={busy} onClick={onRefresh}>Refresh progress</button>}</div></details>
+    {!guided && completed && run.answer && <details className="benchmark-disclosure benchmark-full-answer"><summary>Read the full recorded answer<ChevronDown size={15}/></summary><p className="benchmark-answer-text">{run.answer.text}</p></details>}
+    {guided && completed && <section className="benchmark-guided-followup" aria-label="Another observation"><button className="button secondary" type="button" disabled={busy} onClick={onPrepare}>Prepare another observation <ArrowRight size={14}/></button><p>Review the question and settings first. Starting another observation is a separate paid request; preparing it does not start a run.</p></section>}
+    {guided ? <details className="benchmark-disclosure benchmark-guided-details"><summary>Run details<ChevronDown size={15}/></summary><div>
+      {completed && <>
+      {download}
+      <PublicWebsiteComparison key={run.id} run={run} />
+      <KeywordPublication key={`publication-${run.id}`} runId={run.id} />
+      {baseline && <Comparison baseline={baseline} fresh={run}/>}
+      </>}
+      {runDetails}
+    </div></details> : runDetails}
+
   </section>;
 }
 

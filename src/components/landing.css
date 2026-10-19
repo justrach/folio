@@ -202,7 +202,7 @@
 .landing .button.primary { background: var(--folio-accent); border-color: var(--folio-accent); color: var(--folio-on-accent); border-radius: var(--folio-radius-control); font-weight: 700; }
 .landing .button.primary:hover { background: var(--folio-accent-hover); border-color: var(--folio-accent-hover); }
 .landing-preview { border-color: var(--folio-edge); border-radius: var(--folio-radius-card); }
-.landing-preview-rank { background: var(--folio-accent-soft); color: var(--folio-accent); border-color: var(--folio-accent-edge); }
+.landing-preview-rank { background: var(--folio-accent-soft); color: var(--folio-accent-text); border-color: var(--folio-accent-edge); }
 .landing-preview-heading span:last-child { color: var(--folio-text-secondary); font-weight: 600; }
 .landing-benefits { border-block: 1px solid var(--folio-edge); }
 @media (max-width: 700px) {

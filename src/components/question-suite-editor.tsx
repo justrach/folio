@@ -21,6 +21,7 @@ export function QuestionSuiteEditor({ websiteId, initialName, initialQuestions, 
   const [error, setError] = useState("");
   const [audience, setAudience] = useState("");
   const [task, setTask] = useState("");
+  const scenarioDrafts = websiteQuestionDrafts(audience, task).slice(0, 3);
   const lines = questions.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
   return <form className="question-suite-editor" aria-label="Write a question suite" onSubmit={async event => {
     event.preventDefault();
@@ -38,8 +39,8 @@ export function QuestionSuiteEditor({ websiteId, initialName, initialQuestions, 
       <p>Describe your customers and their task. These editable drafts use your words; they do not fetch or infer facts about your website.</p>
       <label>Who are your customers?<input maxLength={60} value={audience} onChange={event => setAudience(event.target.value)} disabled={busy} placeholder="small design teams" /></label>
       <label>What do they need to do?<input maxLength={120} value={task} onChange={event => setTask(event.target.value)} disabled={busy} placeholder="collect feedback on prototypes" /></label>
-      <button type="button" className="button secondary" disabled={busy || !websiteQuestionDrafts(audience, task).length} onClick={() => {
-        const next = [...new Set([...lines, ...websiteQuestionDrafts(audience, task)])];
+      <button type="button" className="button secondary" disabled={busy || !scenarioDrafts.length} onClick={() => {
+        const next = [...new Set([...lines, ...scenarioDrafts])];
         if (next.length > 10) { setError("Remove some questions before adding three new drafts; a suite holds up to ten."); return; }
         setQuestions(next.join("\n")); setError("");
       }}>Add three scenario drafts</button>

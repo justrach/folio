@@ -65,9 +65,11 @@ async function fixture(page: Page, options: { signedIn?: boolean; failFirstAudit
 async function navigate(page: Page, path: string) {
   const menu = page.getByRole("button", { name: "Open navigation", exact: true });
   if (await menu.isVisible()) await menu.click();
-  await page.locator(`.nav-link[href="${path}"]`).click();
-  await expect(page).toHaveURL(new RegExp(`${path}$`));
-  if (path === "/overview") await page.getByRole("link", { name: "My website results", exact: true }).click();
+  const destination = path === "/overview" ? "/overview?view=workspace" : path;
+  const targetLink = page.locator(`.nav-link[href="${destination}"]`);
+  if (!(await targetLink.isVisible())) await page.getByRole("button", { name: "More tools", exact: true }).click();
+  await targetLink.click();
+  await expect(page).toHaveURL(url => `${url.pathname}${url.search}` === destination);
 }
 
 function noStartedWork(state: Awaited<ReturnType<typeof fixture>>) {
@@ -263,11 +265,11 @@ test("a selected website opens its combined results and prefills only an explici
   const state = await fixture(page);
   await page.goto("/websites");
   await page.getByLabel("Selected website", { exact: true }).selectOption("owned-older");
-  await page.getByRole("button", { name: "Audit website", exact: true }).click();
-  await expect(page.getByLabel("Website URL", { exact: true })).toHaveValue(olderUrl);
+  await page.getByRole("button", { name: "Technical audit", exact: true }).click();
+  await expect(page.getByRole("dialog").getByLabel("Website URL", { exact: true })).toHaveValue(olderUrl);
   noStartedWork(state);
   await page.getByRole("button", { name: "Close dialog", exact: true }).click();
-  await page.getByRole("link", { name: "View results", exact: true }).click();
+  await page.getByRole("link", { name: "Results overview", exact: true }).click();
   await expect(page).toHaveURL(/\/overview\?view=workspace&website=owned-older$/);
   await expect(page.getByLabel("Selected website", { exact: true })).toHaveValue("owned-older");
   await page.reload();

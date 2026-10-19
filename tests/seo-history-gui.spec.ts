@@ -29,7 +29,9 @@ const savedReport = {
 async function navigate(page: Page, path: string) {
   const opener = page.getByRole("button", { name: "Open navigation", exact: true });
   if (await opener.isVisible()) await opener.click();
-  await page.locator(`.nav-link[href="${path}"]`).click();
+  const targetLink = page.locator(`.nav-link[href="${path}"]`);
+  if (!(await targetLink.isVisible())) await page.getByRole("button", { name: "More tools", exact: true }).click();
+  await targetLink.click();
   await expect(page).toHaveURL(new RegExp(`${path}$`));
 }
 

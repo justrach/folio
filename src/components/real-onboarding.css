@@ -1,0 +1,235 @@
+.business-setup {
+  min-height: 100dvh;
+  background: var(--folio-canvas);
+  color: var(--folio-ink);
+  font-family: var(--folio-font-body);
+}
+.business-setup header {
+  max-width: 1120px;
+  margin: auto;
+  padding: 28px 24px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+.business-setup header > a:first-child {
+  font-size: 32px;
+  font-weight: 750;
+  text-decoration: none;
+}
+.business-setup header span {
+  font-size: 12px;
+  vertical-align: super;
+}
+.business-setup main {
+  max-width: 850px;
+  margin: auto;
+  padding: 40px 24px 72px;
+}
+.setup-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+}
+.business-setup h1 {
+  font-family: var(--folio-font-display);
+  font-size: clamp(38px, 6vw, 64px);
+  line-height: 1.06;
+  letter-spacing: -0.04em;
+  margin: 18px 0;
+}
+.setup-intro {
+  font-size: 18px;
+  line-height: 1.6;
+  max-width: 650px;
+}
+.setup-honesty {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--folio-text-secondary);
+}
+.setup-steps {
+  display: flex;
+  padding: 24px 0;
+  gap: 18px;
+  list-style: none;
+  border-bottom: 1px solid var(--folio-edge);
+  margin-bottom: 28px;
+}
+.setup-steps li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  flex: 1;
+  color: var(--folio-text-secondary);
+}
+.setup-steps li[aria-current] {
+  font-weight: 700;
+  color: var(--folio-ink);
+}
+.setup-steps span {
+  width: 25px;
+  height: 25px;
+  border: 1px solid;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.setup-card {
+  background: var(--folio-surface);
+  border: 1px solid var(--folio-edge);
+  padding: 32px;
+  border-radius: 12px;
+}
+.setup-card h2 {
+  font-family: var(--folio-font-display);
+  font-size: 28px;
+  margin: 0 0 28px;
+}
+.setup-card label {
+  display: block;
+  font-size: 14px;
+  font-weight: 650;
+  margin: 22px 0;
+}
+.setup-card input,
+.setup-card textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 9px;
+  background: var(--folio-surface);
+  border: 1px solid var(--folio-edge-strong);
+  border-radius: 6px;
+  padding: 12px;
+  font: inherit;
+  color: var(--folio-ink);
+  resize: vertical;
+}
+.setup-card input:focus,
+.setup-card textarea:focus {
+  outline: 2px solid var(--folio-focus);
+  outline-offset: 2px;
+}
+.setup-card p,
+.setup-card li {
+  line-height: 1.65;
+}
+.setup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 26px;
+}
+.setup-actions .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  padding: 11px 17px;
+  border: 1px solid var(--folio-edge-strong);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--folio-ink);
+  font-size: 13px;
+  cursor: pointer;
+}
+.setup-actions .primary {
+  background: var(--folio-accent);
+  color: var(--folio-on-accent);
+  border-color: var(--folio-accent);
+}
+.setup-actions button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.setup-review dt {
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 18px;
+}
+.setup-review dd {
+  margin: 6px 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+}
+.setup-error {
+  color: var(--folio-danger);
+  background: var(--folio-surface-muted);
+  padding: 12px;
+  border-radius: 5px;
+}
+.setup-example {
+  margin: 26px 0;
+  font-size: 13px;
+}
+.saved-business-profile {
+  margin-bottom: 24px;
+}
+.saved-business-profile h2 {
+  margin: 8px 0;
+}
+.saved-business-profile p {
+  line-height: 1.6;
+}
+@media (max-width: 600px) {
+  .business-setup main {
+    padding: 20px 16px 48px;
+  }
+  .business-setup header {
+    padding: 18px 16px;
+    font-size: 12px;
+  }
+  .setup-steps {
+    gap: 8px;
+  }
+  .setup-steps li {
+    display: block;
+    font-size: 10px;
+    line-height: 1.4;
+  }
+  .setup-steps span {
+    margin-bottom: 7px;
+  }
+  .setup-card {
+    padding: 22px 18px;
+  }
+  .setup-actions .button {
+    width: 100%;
+  }
+}
+
+.business-setup a { color: inherit; }
+.business-setup .setup-actions .primary { color: var(--folio-on-accent); }
+.setup-actions .primary:hover { background: var(--folio-accent-hover); border-color: var(--folio-accent-hover); }
+.setup-actions .button { min-height: 44px; }
+.setup-card input::placeholder, .setup-card textarea::placeholder { color: var(--folio-text-muted); }
+.setup-sign-in-note { margin: 24px 0 0; color: var(--folio-text-secondary); font-size: 14px; }
+@media (max-width: 600px) { .setup-card input, .setup-card textarea { font-size: 16px; } }
+
+/* Current setup step uses the same orange action cue as the workspace. */
+.setup-steps li[aria-current] span { background: var(--folio-accent); border-color: var(--folio-accent); color: var(--folio-on-accent); }
+
+/* Reviewed input can contain long URLs or single-word customer questions. */
+.business-setup .setup-card {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.business-setup .setup-card > ol {
+  margin: 16px 0 24px;
+  padding-inline-start: 24px;
+  list-style: decimal;
+}
+.business-setup .setup-card > ol > li + li {
+  margin-top: 12px;
+}
+.business-setup .setup-card h3 {
+  margin-top: 28px;
+}
+.business-setup .setup-actions .button {
+  box-sizing: border-box;
+  text-align: center;
+}

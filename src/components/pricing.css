@@ -177,7 +177,7 @@
   color: var(--folio-text-secondary);
 }
 .featured li svg {
-  color: var(--folio-accent);
+  color: var(--folio-accent-text);
 }
 .plan-action {
   margin-top: auto;

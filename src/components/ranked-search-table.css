@@ -29,7 +29,7 @@
 .ranked-search-row-content { display: grid; grid-template-columns: minmax(180px, .38fr) minmax(0, 1fr); gap: 24px; min-width: 0; }
 .ranked-search-website { min-width: 0; overflow-wrap: anywhere; }
 .ranked-search .ranked-search-position { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 10px; background: var(--folio-surface-muted); color: var(--folio-ink); font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
-.ranked-search-row:first-child .ranked-search-position { background: var(--folio-accent-soft); color: var(--folio-accent); }
+.ranked-search-row:first-child .ranked-search-position { background: var(--folio-accent-soft); color: var(--folio-accent-text); }
 .ranked-search .ranked-search-name { color: var(--ranked-ink); font-size: 17px; font-weight: 600; text-decoration: none; line-height: 1.4; }
 .ranked-search-row-evidence { min-width: 0; }
 .ranked-search a { color: var(--folio-ink); text-decoration: underline; text-underline-offset: 3px; overflow-wrap: anywhere; }

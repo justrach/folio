@@ -279,7 +279,7 @@
   margin: 18px 24px 0;
   font-size: 12px;
   line-height: 1.7;
-  color: var(--folio-accent);
+  color: var(--folio-accent-text);
 }
 .published-feedback {
   margin: 0;

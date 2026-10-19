@@ -3,6 +3,7 @@ import { ScanError } from "./scanner";
 /** Bound JSON inputs even when clients omit Content-Length. */
 export async function readJsonBody(
   request: Request,
+  maxBytes = 4096,
 ): Promise<Record<string, unknown>> {
   const origin = request.headers.get("origin");
   const requestUrl = new URL(request.url);
@@ -15,7 +16,6 @@ export async function readJsonBody(
     "application/json"
   )
     throw new ScanError("Send a JSON request body.", 415);
-  const maxBytes = 4096;
   if (Number(request.headers.get("content-length")) > maxBytes)
     throw new ScanError("The request body is too large.", 413);
   const reader = request.body?.getReader();

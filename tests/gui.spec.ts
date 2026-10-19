@@ -75,6 +75,7 @@ async function navigate(page: Page, route: (typeof routes)[number]) {
     exact: true,
   });
   if (await menu.isVisible()) await menu.click();
+  if (!(await link.isVisible()) && await page.getByRole("button", { name: "More tools", exact: true }).count()) await page.getByRole("button", { name: "More tools", exact: true }).click();
   await link.click();
   await expect(page).toHaveURL(new RegExp(`${route.path}$`));
   await expect(

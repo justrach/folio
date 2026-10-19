@@ -1,11 +1,11 @@
-/* Plaster, lamplight, charcoal and foliage from the owner's moodboard.
+/* Codegraff's warm surfaces, dark ink and orange accent.
    Shared presentation only: records, launch controls and evidence states retain
    their existing behavior. Keep these rules scoped to the application shell. */
 .app-shell {
   --paper: var(--folio-canvas);
   --panel: var(--folio-surface);
   --ink: var(--folio-ink);
-  --green: var(--folio-text-secondary);
+  --green: var(--folio-accent-text);
   --deep: var(--folio-ink);
   --muted: var(--folio-text-secondary);
   --line: var(--folio-edge);
@@ -26,7 +26,7 @@
   --line: var(--folio-edge);
 }
 .app-shell .sidebar > .wordmark { margin: 0 13px 36px; }
-.app-shell .wordmark-period { color: var(--folio-text-secondary); }
+.app-shell .wordmark-period { color: var(--folio-accent-text); }
 .app-shell .workspace-switch {
   background: transparent;
   border-color: var(--folio-edge);
@@ -34,7 +34,7 @@
   padding: 13px 10px;
   margin-bottom: 32px;
 }
-.app-shell .workspace-avatar { background: var(--folio-text-secondary); color: var(--folio-inverse-text); border-radius: 7px; }
+.app-shell .workspace-avatar { background: var(--folio-accent); color: var(--folio-on-accent); border-radius: 7px; }
 .app-shell .workspace-switch > span:nth-child(2) { font-size: 13px; }
 .app-shell .workspace-switch small, .app-shell .profile small { font-size: 11px; }
 .app-shell .nav-caption { color: var(--folio-text-secondary); font-size: 10px; letter-spacing: .5px; }
@@ -73,7 +73,7 @@
 .app-shell .button:active:not(:disabled) { transform: translateY(1px); }
 .app-shell .button.secondary { background: var(--folio-surface); border-color: var(--folio-edge); color: var(--folio-ink); }
 .app-shell .button.secondary:hover { background: var(--folio-canvas); }
-.app-shell .button.primary:hover { background: var(--folio-inverse-surface); }
+.app-shell .button.primary:hover { background: var(--folio-accent-hover); }
 .app-shell .button.cream { background: var(--folio-canvas); color: var(--folio-ink); }
 .app-shell .report-context { height: 45px; margin-bottom: 0; border-bottom: 0; }
 .app-shell .report-tabs button { font-size: 13px; color: var(--folio-text-secondary); }
@@ -218,7 +218,7 @@
 /* The workspace is a task list first: keep wayfinding and actions legible. */
 .app-shell .sidebar { border-right: 1px solid var(--folio-edge); }
 .app-shell .nav-link { min-height: 44px; height: auto; font-size: 14px; font-weight: 500; padding-inline: 12px; }
-.app-shell .nav-link[aria-current="page"] { background: var(--folio-surface); color: var(--folio-ink); font-weight: 650; box-shadow: inset 3px 0 0 var(--folio-accent); }
+.app-shell .nav-link[aria-current="page"] { background: var(--folio-accent-soft); color: var(--folio-ink); font-weight: 650; box-shadow: inset 3px 0 0 var(--folio-accent); }
 .app-shell .nav-link > svg { display: block; flex: none; }
 .app-shell .nav-caption { font-size: 11px; letter-spacing: .08em; }
 .app-shell .breadcrumb, .app-shell .search-trigger { font-size: 13px; }
@@ -234,4 +234,30 @@
   .app-shell .page-heading p { font-size: 14px; }
   .app-shell .heading-actions { width: 100%; }
   .app-shell .heading-actions > :is(a, button) { flex: 1 1 auto; justify-content: center; }
+}
+
+.app-shell .sidebar { overflow-y: auto; overscroll-behavior: contain; }
+.app-shell .sidebar-tools-toggle { width: 100%; border: 0; background: transparent; text-align: left; cursor: pointer; font-family: inherit; margin-top: 12px; }
+.app-shell .sidebar-tools-toggle > svg:last-child { margin-left: auto; }
+.app-shell #workspace-more-tools .nav-link { font-size: 13px; }
+
+.app-shell .page-heading h1 { font-family: var(--folio-font-display); font-weight: 400; }
+
+/* Login links remain easy to tap while preserving the compact form rhythm. */
+.login-page .back-demo {
+  min-height: 44px;
+  padding-inline: 4px;
+}
+.login-page .auth-switch button {
+  min-height: 44px;
+  padding: 8px 4px;
+  vertical-align: middle;
+}
+.login-page :is(.back-demo, .auth-switch button):focus-visible {
+  outline: 2px solid var(--folio-focus);
+  outline-offset: 3px;
+}
+.login-page form {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }

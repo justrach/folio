@@ -2,7 +2,7 @@ export const SAMPLE_WEBSITE_URL = "https://codegraff.com/";
 export const SAMPLE_BUSINESS_NAME = "Codegraff";
 
 export const PREVIEW_DISCLAIMER =
-  "No website is fetched, no results are measured, nothing is saved to an account. Refresh resets this preview.";
+  "No website is fetched, no results are measured, nothing is saved to an account.";
 
 export type ClaimId = "description" | "audience" | "capabilities";
 
@@ -308,7 +308,7 @@ export const SAMPLE_AGENT_ACTION = {
 } as const;
 
 export const EXPORT_DISCLAIMER =
-  "Illustrative onboarding sample. Not measured, not persisted, and not based on live retrieval.";
+  "Illustrative onboarding sample. Not measured, not saved to an account, and not based on live retrieval.";
 
 export interface OnboardingExport {
   mock: true;

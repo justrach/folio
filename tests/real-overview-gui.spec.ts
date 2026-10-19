@@ -116,7 +116,7 @@ test("overview uses exact selected-site observations, preserves completed answer
   await page.screenshot({ path: info.outputPath("real-overview.png"), fullPage: true });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   await page.getByText("Details and history", { exact: true }).click();
-  await expect(page.locator(".real-overview-history")).toContainText("No comparable history");
+  await expect(page.locator(".real-overview-history").filter({ has: page.getByText("Details and history", { exact: true }) })).toContainText("No comparable history");
   await page.getByRole("button", { name: "Reviewed documentation", exact: true }).click();
   await expect(search(page)).toContainText("Legacy documentation question");
   await expect(metric(page, "Appeared in answers").locator("dd")).toHaveText("100%");
@@ -127,7 +127,9 @@ test("overview uses exact selected-site observations, preserves completed answer
   await expect(evaluations.getByRole("listitem")).toHaveCount(3);
   await expect(evaluations).not.toContainText("Alpha saved evaluation");
   await expect(page.locator(".breadcrumb")).not.toContainText("alpha-fixture.dev");
-  await expect(evidence).toContainText("0 saved audits"); await expect(evidence).toContainText("0 saved snapshots");
+  await expect(evidence.getByRole("heading", { name: "Technical audits", exact: true })).toHaveCount(0);
+  await expect(evidence.getByRole("heading", { name: "Search Console", exact: true })).toHaveCount(0);
+  await expect(evidence).toContainText("1 saved reports");
   await page.goBack(); await expect(page.getByLabel("Selected website", { exact: true })).toHaveValue(alpha.id);
   await expect(metric(page, "Appeared in answers").locator("dd")).toHaveText("50%");
   await page.reload(); await expect(metric(page, "Appeared in answers").locator("dd")).toHaveText("50%");
@@ -247,7 +249,8 @@ test("website overview separates models, keeps the filter through navigation and
   await expect(search(page)).not.toContainText("astra-answer");
   await page.getByRole("button", { name: "Reviewed documentation", exact: true }).click();
   await expect(picker).toHaveValue("gpt-5.6-luna");
-  await expect(metric(page, "Appeared in answers").locator("dd")).toHaveText("Not measured");
+  await expect(page.locator(".real-overview-metrics")).toHaveCount(0);
+  await expect(search(page)).toContainText("All matching saved attempts loaded.");
   await page.getByLabel("Selected website", { exact: true }).selectOption(beta.id);
   expect(new URL(page.url()).searchParams.get("model")).toBe("gpt-5.6-luna");
   await page.goBack();
@@ -274,7 +277,7 @@ test("website history filters before paging and loads older completed answers wi
   const state=await fixture(page);
   state.runs=[...Array.from({length:101},(_,index)=>({...run(`newer-${index}`,0,false,"2026-09-14T00:00:00.000Z"),status:"failed" as const,answer:null})),run("old-answer",1,true)];
   await page.goto("/overview?view=workspace&website=site-alpha&model=fixture-model");
-  await expect(metric(page,"Appeared in answers").locator("dd")).toHaveText("Not measured");
+  await expect(page.locator(".real-overview-metrics")).toHaveCount(0);
   await expect(page.getByLabel("Saved history coverage")).toContainText("Older attempts remain");
   await expect(page.getByLabel("Latest attempt states")).toContainText("2 with no attempt loaded");
   await expect(page.getByLabel("Latest attempt states")).not.toContainText("not run");
@@ -294,6 +297,7 @@ test("website history filters before paging and loads older completed answers wi
 test("explicit website comparison opens side-by-side saved summaries without spending", async ({ page }) => {
   const state = await fixture(page);
   await page.goto("/overview?view=workspace&website=site-alpha");
+  await page.getByText("Compare saved websites", { exact: true }).click();
   const comparison = page.getByRole("region", { name: "Compare your websites over time", exact: true });
   const historyBefore = state.historyReads.length;
   const detailsBefore = state.detailReads.length;

@@ -8,6 +8,8 @@ import { ArrowDownToLine, ArrowRight, ChevronDown, Loader2, RefreshCw } from "lu
 import { useSession } from "@/lib/auth-client";
 import { isKeywordBenchmarkBlocking, isKeywordBenchmarkId, type KeywordBenchmarkRun, type KeywordBenchmarkRunSummary, type KeywordBenchmarkSuite, type KeywordBenchmarkSuiteSummary } from "@/lib/keyword-benchmark-types";
 import { KeywordObservationReport } from "./keyword-observation-report";
+import { SavedQuestionMap } from "./saved-question-map";
+import { GuidedQuestionRun } from "./guided-question-run";
 import { QuestionSuiteEditor } from "./question-suite-editor";
 import "./keyword-benchmarks-panel.css";
 
@@ -27,6 +29,7 @@ const date = (value: string) => new Date(value).toLocaleString();
 function safeLink(value: string | null | undefined) {
   try { const url = new URL(value ?? ""); return ["https:", "http:"].includes(url.protocol) && !url.username && !url.password ? url.href : null; } catch { return null; }
 }
+class KeywordRequestError extends Error { constructor(message: string, readonly status: number) { super(message); } }
 async function request<T>(url: string, signal: AbortSignal, init?: RequestInit): Promise<T> {
   const response = await fetch(url, { ...init, signal, cache: "no-store" });
   const body = await response.json().catch(() => null);
@@ -38,7 +41,7 @@ async function request<T>(url: string, signal: AbortSignal, init?: RequestInit):
       recovery: { runId: body.recovery.runId, sessionId: body.recovery.sessionId }, run: body.run, receivedAt: new Date().toISOString(),
     });
   }
-  if (!response.ok || !body) throw new Error(body?.error ?? "This request could not be confirmed. Refresh the saved state before trying again.");
+  if (!response.ok || !body) throw new KeywordRequestError(body?.error ?? "This request could not be confirmed. Refresh the saved state before trying again.", response.status);
   return body as T;
 }
 
@@ -46,7 +49,7 @@ export function KeywordBenchmarksPanel({ targetUrl, websiteId, basePath = "/benc
   const { data: session, isPending } = useSession();
   const query = useSearchParams();
   const returnParams = new URLSearchParams();
-  for (const key of ["suite", "run", "website"]) {
+  for (const key of ["suite", "run", "case", "website"]) {
     const values = query.getAll(key);
     if (values.length === 1 && isKeywordBenchmarkId(values[0])) returnParams.set(key, values[0]);
   }
@@ -61,6 +64,8 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
   const query = useSearchParams();
   const suiteHint = query.get("suite");
   const runHint = query.get("run");
+  const caseHints = query.getAll("case");
+  const caseHint = caseHints.length === 1 ? caseHints[0] : null;
   const targetHint = safeLink(targetUrl ?? query.get("target"));
   const [overview, setOverview] = useState<Overview | null>(null);
   const [sites, setSites] = useState<Site[]>([]);
@@ -70,6 +75,7 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
   const [automaticSuiteId, setAutomaticSuiteId] = useState("");
   const [automaticSuiteContext, setAutomaticSuiteContext] = useState<string | null>(null);
   const appliedSiteContext = useRef<string | null>(null);
+  const [historyRead, setHistoryRead] = useState<{ suiteId: string; ready: boolean }>({ suiteId: "", ready: false });
   const [runs, setRuns] = useState<KeywordBenchmarkRunSummary[]>([]);
   const [run, setRun] = useState<KeywordBenchmarkRun | null>(null);
   const [baseline, setBaseline] = useState<KeywordBenchmarkRun | null>(null);
@@ -80,12 +86,15 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [uncertainStart, setUncertainStart] = useState(false);
+  const currentStartContext = useRef("");
   const [recovery, setRecovery] = useState<RecoverySnapshot | null>(null);
   const [refresh, setRefresh] = useState(0);
-  const [caseChoice, setCaseChoice] = useState("");
+  const [caseChoice, setCaseChoice] = useState<{ context: string; id: string } | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [customQuestionsOpen, setCustomQuestionsOpen] = useState(false);
   const settingsRef = useRef<HTMLDetailsElement>(null);
+  const advancedRef = useRef<HTMLDetailsElement>(null);
   const lifetime = useRef<AbortController | null>(null);
   const pendingAction = useRef(false);
   const retrievalLock = useRef(false);
@@ -97,7 +106,7 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
   const currentSuite = suite?.id === suiteId ? suite : null;
   const currentRun = run?.id === runId && run.suiteId === suiteId ? run : null;
   const site = sites.find(item => item.id === siteId);
-  const ready = Boolean(!recovery && overview?.access.canRun && (overview.usage.remainingRuns === null || overview.usage.remainingRuns > 0) && overview.usage.remainingActiveRuns > 0 && runs.filter(active).length < overview.access.maxActiveRuns);
+  const ready = Boolean(historyRead.suiteId === suiteId && historyRead.ready && !recovery && !uncertainStart && overview?.access.canRun && (overview.usage.remainingRuns === null || overview.usage.remainingRuns > 0) && overview.usage.remainingActiveRuns > 0 && runs.filter(active).length < overview.access.maxActiveRuns);
 
   useEffect(() => { const controller = new AbortController(); lifetime.current = controller; return () => controller.abort(); }, []);
   useEffect(() => {
@@ -127,7 +136,7 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
   }, [refresh, targetHint, websiteId, suiteHint]);
 
   useEffect(() => {
-    setSuite(null); setRuns([]); setBaselineChoices({});
+    setSuite(null); setRuns([]); setBaselineChoices({}); setHistoryRead({ suiteId, ready: false });
     if (!suiteId) return;
     const controller = new AbortController();
     let reading = false;
@@ -136,13 +145,19 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
       if (reading || document.visibilityState === "hidden") return;
       reading = true;
       try {
-        const [detail, history] = await Promise.all([
+        const [detailRead, historyResult] = await Promise.allSettled([
           request<{suite:KeywordBenchmarkSuite}>(`/api/benchmarks/${encodeURIComponent(suiteId)}`, controller.signal),
           request<{runs:KeywordBenchmarkRunSummary[]}>(`/api/benchmarks/runs?suiteId=${encodeURIComponent(suiteId)}`, controller.signal),
         ]);
         if (controller.signal.aborted) return;
-        if (detail.suite.id !== suiteId || history.runs.some(item => item.suiteId !== suiteId || item.publication !== "private")) throw new Error("The saved observations do not match this suite.");
-        setSuite(detail.suite); setRuns(history.runs); hasActive = history.runs.some(active);
+        if (detailRead.status === "rejected") throw detailRead.reason;
+        const detail = detailRead.value;
+        if (detail.suite.id !== suiteId) throw new Error("The saved questions do not match this suite.");
+        setSuite(detail.suite);
+        if (historyResult.status === "rejected") throw historyResult.reason;
+        const history = historyResult.value;
+        if (history.runs.some(item => item.suiteId !== suiteId || item.publication !== "private")) throw new Error("The saved observations do not match this suite.");
+        setRuns(history.runs); setHistoryRead({ suiteId, ready: true }); hasActive = history.runs.some(active);
       } catch (failure) { if (!controller.signal.aborted) setError(failure instanceof Error ? failure.message : "Saved observations could not be loaded."); }
       finally { reading = false; }
     }
@@ -188,9 +203,21 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
     const params = new URLSearchParams({ suite: nextSuite });
     if (basePath === "/evaluations") params.set("view", "search");
     if (nextRun) { params.set("run", nextRun); setSettingsOpen(false); }
-    setCaseChoice("");
+    setCaseChoice(null);
     window.history.pushState(null, "", `${basePath}?${params}`);
     setError(""); setNotice("");
+  }
+  function selectMappedQuestion(caseId: string, nextRunId?: string) {
+    if (busy || !currentSuite) return;
+    const question = currentSuite.cases.find(item => item.id === caseId);
+    if (!question) return;
+    const params = new URLSearchParams({ suite: currentSuite.id, case: question.id });
+    if (basePath === "/evaluations") params.set("view", "search");
+    const ownedSite = sites.find(item => safeLink(item.url) === safeLink(question.targetUrl));
+    if (ownedSite && question.searchMode === "open-web") params.set("website", ownedSite.id);
+    if (nextRunId && runs.some(item => item.id === nextRunId && item.suiteId === currentSuite.id && item.caseId === question.id)) params.set("run", nextRunId);
+    setCaseChoice(null); setError(""); setNotice(""); setSettingsOpen(false);
+    window.history.pushState(null, "", `${basePath}?${params}`);
   }
   async function action(name: string, work: (signal: AbortSignal) => Promise<void>) {
     const signal = lifetime.current?.signal;
@@ -212,12 +239,18 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
   const selectedManagedModel = managedOpenWebModels.find(item => item.id === modelChoice) ?? managedOpenWebModels.find(item => item.id === "gpt-6-luna");
   const managedCase = (caseId: string) => seoCase === `${suiteId}/${caseId}` || typesafeCase === `${suiteId}/${caseId}`;
   function start(caseId: string, kind: "baseline" | "fresh", baselineRunId?: string) {
-    if (!ready || runs.some(item => item.caseId === caseId && item.status === "requires_action" && (item.archivedAt || (item.holdReleasedAt && !item.sessionId)))
+    if (currentStartContext.current !== guideContext || !ready || runs.some(item => item.caseId === caseId && item.status === "requires_action" && (item.archivedAt || (item.holdReleasedAt && !item.sessionId)))
       || (kind === "fresh" && !baselineRunId)) return;
     void action(`start-${caseId}`, async signal => {
-      const result = await request<{run:KeywordBenchmarkRun}>("/api/benchmarks/runs", signal, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({caseId,kind,...(currentSuite?.cases.find(item => item.id === caseId)?.searchMode === "open-web" && (managedCase(caseId) ? selectedManagedModel : selectedModel) ? {model:(managedCase(caseId) ? selectedManagedModel : selectedModel)?.id} : {}),...(seoCase === `${suiteId}/${caseId}` ? {useSeoTools:true} : {}),...(typesafeCase === `${suiteId}/${caseId}` ? {useTypesafeTools:true} : {}),...(baselineRunId ? {baselineRunId} : {})}) });
+      let result: { run: KeywordBenchmarkRun };
+      try { result = await request<{run:KeywordBenchmarkRun}>("/api/benchmarks/runs", signal, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({caseId,kind,...(currentSuite?.cases.find(item => item.id === caseId)?.searchMode === "open-web" && (managedCase(caseId) ? selectedManagedModel : selectedModel) ? {model:(managedCase(caseId) ? selectedManagedModel : selectedModel)?.id} : {}),...(seoCase === `${suiteId}/${caseId}` ? {useSeoTools:true} : {}),...(typesafeCase === `${suiteId}/${caseId}` ? {useTypesafeTools:true} : {}),...(baselineRunId ? {baselineRunId} : {})}) }); }
+      catch (failure) { if (!signal.aborted) {
+        if (!(failure instanceof KeywordRequestError && [400, 401, 403, 404, 409, 429].includes(failure.status))) setUncertainStart(true);
+        setRefresh(value => value + 1);
+      } throw failure; }
       if (signal.aborted) return;
-      if (result.run.suiteId !== suiteId || result.run.caseId !== caseId || result.run.publication !== "private") throw new Error("The returned observation does not match this question.");
+      if (result.run.suiteId !== suiteId || result.run.caseId !== caseId || result.run.publication !== "private") { setUncertainStart(true); setRefresh(value => value + 1); throw new Error("The returned observation does not match this question."); }
+      if (currentStartContext.current !== guideContext) { setRefresh(value => value + 1); return; }
       select(result.run.suiteId, result.run.id); setRun(result.run); setRefresh(value => value + 1);
       setNotice("Observation saved. Its progress and answer stay in your private history.");
     });
@@ -233,7 +266,18 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
       setNotice(kind === "cancel" && active(result.run) ? "Cancellation requested. The run is not yet confirmed as stopped." : "Saved progress updated.");
     });
   }
-  const selectedCase = currentSuite?.cases.find(item => item.id === caseChoice) ?? currentSuite?.cases.find(item => item.id === currentRun?.caseId) ?? currentSuite?.cases[0];
+  // Hints select only records returned by the authenticated suite/site reads.
+  // A local choice applies only to this URL context, so history changes restore its hint.
+  const caseContext = JSON.stringify([suiteId, runId, caseHints, targetContext]);
+  useEffect(() => { setCaseChoice(null); }, [caseContext]);
+  const hintedWebsite = websiteId ? sites.find(item => item.id === websiteId) : null;
+  const hintedCase = isKeywordBenchmarkId(caseHint) ? currentSuite?.cases.find(item => item.id === caseHint
+    && (!websiteId || (hintedWebsite && safeLink(item.targetUrl) === safeLink(hintedWebsite.url) && item.searchMode === "open-web"))
+    && (!targetHint || safeLink(item.targetUrl) === targetHint)) : undefined;
+  const selectedCase = currentSuite?.cases.find(item => caseChoice?.context === caseContext && item.id === caseChoice.id)
+    ?? currentSuite?.cases.find(item => item.id === currentRun?.caseId)
+    ?? (caseHints.length ? hintedCase : currentSuite?.cases[0]);
+  const unavailableCaseHint = currentSuite && caseHints.length > 0 && !hintedCase && !currentRun && caseChoice?.context !== caseContext;
   const displayedModels = selectedCase && managedCase(selectedCase.id) ? managedOpenWebModels : openWebModels;
   const displayedModel = selectedCase && managedCase(selectedCase.id) ? selectedManagedModel : selectedModel;
   const selectedCaseUnresolved = runs.some(item => item.caseId === selectedCase?.id && item.status === "requires_action" && (item.archivedAt || (item.holdReleasedAt && !item.sessionId)));
@@ -243,14 +287,22 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
   const answeredQuestions = currentSuite?.cases.filter(item => caseRuns(item.id).some(value => value.status === "completed")).length ?? 0;
   const attentionQuestions = currentSuite?.cases.filter(item => ["requires_action", "failed"].includes(caseRuns(item.id)[0]?.status ?? "")).length ?? 0;
   const selectedTemplate = overview?.templates.find(item => item.id === templateId);
-  return <div className="benchmark-workspace">
-    {error && <p className="benchmark-error" role="alert">{error}</p>}
-    {recovery && <section className="panel benchmark-recovery" aria-label="Unsaved observation recovery"><h2>Keep this private recovery snapshot</h2><p>The latest returned state could not be saved. This snapshot is held only in this browser view; it is not a confirmed saved report. Download it before leaving.</p><p>The task may already be running and incurring charges. Do not start a replacement. The saved reservation may contain an earlier state; the download preserves the returned recovery identifiers and candidate outcome.</p><div className="benchmark-actions"><button className="button primary" type="button" onClick={() => {
-      const url = URL.createObjectURL(new Blob([JSON.stringify({format:"folio-private-keyword-recovery-v1",persisted:false,...recovery},null,2)],{type:"application/json"}));
-      const anchor = document.createElement("a"); anchor.href=url; anchor.download=`folio-keyword-recovery-${recovery.recovery.runId}.json`; anchor.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
-    }}><ArrowDownToLine size={14}/> Download private recovery snapshot</button><button className="button secondary" type="button" onClick={() => select(recovery.run.suiteId,recovery.recovery.runId)}>Open saved reservation</button></div></section>}
-    {notice && <p className="benchmark-notice" role="status">{notice}</p>}
-    {(suiteHint && !isKeywordBenchmarkId(suiteHint)) || (runHint && !isKeywordBenchmarkId(runHint)) ? <p role="alert">This saved-observation link is invalid. Choose a suite below.</p> : null}
+  const firstRunGuide = Boolean(basePath === "/evaluations" && selectedCase?.searchMode === "open-web" && selectedCase.targetUrl
+    && historyRead.suiteId === suiteId && historyRead.ready && !runId && !recovery && caseRuns(selectedCase.id).length === 0);
+  const guidedLayout = firstRunGuide || (basePath === "/evaluations" && currentRun?.case.searchMode === "open-web");
+  const guideContext = JSON.stringify([caseContext, selectedCase?.id, selectedCase?.query, selectedCase?.targetUrl, siteId, displayedModel?.id, typesafeCase, seoCase]);
+  currentStartContext.current = guideContext;
+  useEffect(() => { setTypesafeCase(""); setSeoCase(""); }, [suiteId, selectedCase?.id, selectedCase?.targetUrl, targetContext]);
+  const runOptions = selectedCase ? <>
+        {selectedCase.searchMode === "open-web" && displayedModel && <>
+          <label>Model for the next observation<select value={displayedModel.id} disabled={!!busy} aria-describedby="benchmark-model-note" onChange={event => setModelChoice(event.target.value)}>{displayedModels.map(item => <option key={item.id} value={item.id}>{item.label}{item.validation === "experimental" ? " · Experimental" : ""}</option>)}</select></label>
+          <p id="benchmark-model-note" className="benchmark-muted">{displayedModel.validation === "experimental" ? `${displayedModel.label} is experimental in this workflow. A paid attempt may fail or return incomplete evidence.` : `${displayedModel.label} uses the validated open-web workflow.`} Changing the model starts no work. Results from different models are separate observations.</p>
+        </>}
+        {selectedCase.searchMode === "open-web" && <label className="research-tool-card"><input type="checkbox" checked={typesafeCase === `${suiteId}/${selectedCase.id}`} disabled={!!busy} onChange={event => setTypesafeCase(event.target.checked ? `${suiteId}/${selectedCase.id}` : "")}/><span><strong>Check the evidence</strong>Let this agent check claims with the OpenAI Decisions API before answering. Authorizes up to three additional paid checks of agent-supplied source excerpts. Judgments are advisory.</span></label>}
+        {selectedCase.searchMode === "open-web" && selectedCase.targetUrl && <label className="research-tool-card"><input type="checkbox" checked={seoCase === `${suiteId}/${selectedCase.id}`} disabled={!!busy} onChange={event => setSeoCase(event.target.checked ? `${suiteId}/${selectedCase.id}` : "")}/><span><strong>Explore search demand</strong>Let this agent research keywords and search data for this website. Allows up to 3 paid keyword lookups and 1 search/backlinks overview (2 provider tasks), Google US/English. Repeated calls reuse saved results.</span></label>}
+        {selectedCase.searchMode === "open-web" && selectedCase.targetUrl && <p className="benchmark-muted">Search volumes are estimates, not guaranteed traffic. Advertising competition does not measure organic ranking difficulty.</p>}
+  </> : null;
+  const advancedControls = <>
     <nav className="benchmark-notebook" aria-label="Keyword notebook"><div className="benchmark-notebook-heading">
       {overview?.suites.length ? <label>Keyword suite<select value={suiteId} disabled={!!busy} onChange={event => select(event.target.value)}><option value="" disabled>Choose a saved suite</option>{overview.suites.map(item => <option key={item.id} value={item.id}>{item.name} · {item.caseCount} questions</option>)}</select></label> : <p>{overview ? "Save a suite to begin." : "Loading your saved suites…"}</p>}
       <button type="button" className="benchmark-refresh" disabled={!!busy} onClick={() => setRefresh(value => value + 1)} aria-label="Refresh saved history"><RefreshCw size={15}/></button>
@@ -266,20 +318,12 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
         </div>
       </section>
     )}
-    {runId && !currentRun && <p role="status" className="benchmark-loading">Opening saved observation…</p>}
-    {busy.startsWith("start-") && <ResearchActivity model={displayedModel?.label ?? "Luna"}/>}
-    {currentRun && <KeywordObservationReport run={currentRun} baseline={baseline} busy={!!busy} onRefresh={() => refreshRun("reconcile")} onCancel={() => refreshRun("cancel")} onArchive={() => refreshRun("archive")} onPrepare={() => {setSettingsOpen(true); requestAnimationFrame(() => {settingsRef.current?.scrollIntoView({behavior:"smooth",block:"start"}); settingsRef.current?.querySelector("summary")?.focus();});}}/>}
     {currentSuite && <details ref={settingsRef} className="panel benchmark-question-settings" open={!runId || settingsOpen} onToggle={event => { if (runId) setSettingsOpen(event.currentTarget.open); }}><summary>{runId ? "Questions and run settings" : "Choose a question to observe"}<ChevronDown size={16}/></summary><section className="benchmark-cases" aria-label="Keyword questions">
       <p className="benchmark-question-coverage">{answeredQuestions} of {currentSuite.cases.length} questions have a completed answer{attentionQuestions > 0 ? ` · ${attentionQuestions} latest ${attentionQuestions === 1 ? "attempt needs" : "attempts need"} attention` : ""}.</p>
-      <div className="benchmark-question-list" aria-label="Saved questions">{currentSuite.cases.map(item => <button key={item.id} type="button" aria-label={item.query} aria-pressed={item.id===selectedCase?.id} onClick={() => setCaseChoice(item.id)}>{item.query}<span className="question-result-state">{caseRuns(item.id)[0] ? statusLabel(caseRuns(item.id)[0].status) : "Draft · not started"}</span></button>)}</div>
-      {selectedCase && <div className="benchmark-selected-question"><h2>{selectedCase.query}</h2><p className="benchmark-muted">{selectedCase.targetUrl ?? "No website target"} · {selectedCase.language} · {selectedCase.locale}</p><p className="benchmark-muted">{selectedCase.searchMode === "open-web" ? "Search scope: open web" : "Search scope: reviewed documentation"}. The recorded answer is private.</p>
-        {selectedCase.searchMode === "open-web" && displayedModel && <>
-          <label>Model for the next observation<select value={displayedModel.id} disabled={!!busy} aria-describedby="benchmark-model-note" onChange={event => setModelChoice(event.target.value)}>{displayedModels.map(item => <option key={item.id} value={item.id}>{item.label}{item.validation === "experimental" ? " · Experimental" : ""}</option>)}</select></label>
-          <p id="benchmark-model-note" className="benchmark-muted">{displayedModel.validation === "experimental" ? `${displayedModel.label} is experimental in this workflow. A paid attempt may fail or return incomplete evidence.` : `${displayedModel.label} uses the validated open-web workflow.`} Changing the model starts no work. Results from different models are separate observations.</p>
-        </>}
-        {selectedCase.searchMode === "open-web" && <label className="research-tool-card"><input type="checkbox" checked={typesafeCase === `${suiteId}/${selectedCase.id}`} disabled={!!busy} onChange={event => setTypesafeCase(event.target.checked ? `${suiteId}/${selectedCase.id}` : "")}/><span><strong>Check the evidence</strong>Let this agent check claims with the OpenAI Decisions API before answering. Authorizes up to three additional paid checks of agent-supplied source excerpts. Judgments are advisory.</span></label>}
-        {selectedCase.searchMode === "open-web" && selectedCase.targetUrl && <label className="research-tool-card"><input type="checkbox" checked={seoCase === `${suiteId}/${selectedCase.id}`} disabled={!!busy} onChange={event => setSeoCase(event.target.checked ? `${suiteId}/${selectedCase.id}` : "")}/><span><strong>Explore search demand</strong>Let this agent research keywords and search data for this website. Allows up to 3 paid keyword lookups and 1 search/backlinks overview (2 provider tasks), Google US/English. Repeated calls reuse saved results.</span></label>}
-        {selectedCase.searchMode === "open-web" && selectedCase.targetUrl && <p className="benchmark-muted">Search volumes are estimates, not guaranteed traffic. Advertising competition does not measure organic ranking difficulty.</p>}
+      <div className="benchmark-question-list" aria-label="Saved questions">{currentSuite.cases.map(item => <button key={item.id} type="button" aria-label={item.query} aria-pressed={item.id===selectedCase?.id} disabled={!!busy} onClick={() => setCaseChoice({ context: caseContext, id: item.id })}>{item.query}<span className="question-result-state">{caseRuns(item.id)[0] ? statusLabel(caseRuns(item.id)[0].status) : "Draft · not started"}</span></button>)}</div>
+      {unavailableCaseHint && <p role="alert">The linked question is unavailable for this website and suite. Choose a saved question to continue.</p>}
+      {selectedCase && !firstRunGuide && <div className="benchmark-selected-question"><h2>{selectedCase.query}</h2><p className="benchmark-muted">{selectedCase.targetUrl ?? "No website target"} · {selectedCase.language} · {selectedCase.locale}</p><p className="benchmark-muted">{selectedCase.searchMode === "open-web" ? "Search scope: open web" : "Search scope: reviewed documentation"}. The recorded answer is private.</p>
+        {runOptions}
         {baselines.length > 0 && <label>Baseline for {selectedCase.query}<select value={baselineId} onChange={event => setBaselineChoices(value => ({...value,[selectedCase.id]:event.target.value}))}>{baselines.map(item => <option value={item.id} key={item.id}>{item.model} · {date(item.createdAt)}</option>)}</select></label>}
         {selectedCase.searchMode === "open-web" && displayedModel && baselineId && baselines.find(item => item.id === baselineId)?.model !== displayedModel.id && <p className="benchmark-muted">The selected baseline uses a different model. A fresh run will retain that baseline link, but it will not be a matched comparison. Run a baseline with {displayedModel.label} for a same-model comparison.</p>}
         <div className="benchmark-actions"><button className="button secondary" type="button" disabled={!ready || selectedCaseUnresolved || !!busy} onClick={() => start(selectedCase.id,"baseline")}>{busy === `start-${selectedCase.id}` ? <><Loader2 size={14} className="research-button-spinner"/> Starting observation…</> : "Run baseline"}</button><button className="button primary" type="button" disabled={!ready || selectedCaseUnresolved || !baselineId || !!busy} onClick={() => start(selectedCase.id,"fresh",baselineId)}>Run fresh observation</button></div>
@@ -312,6 +356,27 @@ function OwnedBenchmarks({ targetUrl, websiteId, basePath }: { targetUrl?: strin
       {overview && !sites.length && <p>No saved websites are available in this account. <Link href="/websites">Open My websites</Link>.</p>}
     </section>
     </details>}
+  </>;
+  return <div className="benchmark-workspace">
+    {uncertainStart && <p className="benchmark-error" role="alert">The start could not be confirmed. It may already be running and incurring charges. Review saved history or the recovery snapshot; do not start a replacement.</p>}
+    {error && <p className="benchmark-error" role="alert">{error}</p>}
+    {recovery && <section className="panel benchmark-recovery" aria-label="Unsaved observation recovery"><h2>Keep this private recovery snapshot</h2><p>The latest returned state could not be saved. This snapshot is held only in this browser view; it is not a confirmed saved report. Download it before leaving.</p><p>The task may already be running and incurring charges. Do not start a replacement. The saved reservation may contain an earlier state; the download preserves the returned recovery identifiers and candidate outcome.</p><div className="benchmark-actions"><button className="button primary" type="button" onClick={() => {
+      const url = URL.createObjectURL(new Blob([JSON.stringify({format:"folio-private-keyword-recovery-v1",persisted:false,...recovery},null,2)],{type:"application/json"}));
+      const anchor = document.createElement("a"); anchor.href=url; anchor.download=`folio-keyword-recovery-${recovery.recovery.runId}.json`; anchor.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
+    }}><ArrowDownToLine size={14}/> Download private recovery snapshot</button><button className="button secondary" type="button" onClick={() => select(recovery.run.suiteId,recovery.recovery.runId)}>Open saved reservation</button></div></section>}
+    {notice && <p className="benchmark-notice" role="status">{notice}</p>}
+    {(suiteHint && !isKeywordBenchmarkId(suiteHint)) || (runHint && !isKeywordBenchmarkId(runHint)) ? <p role="alert">This saved-observation link is invalid. Choose a suite below.</p> : null}
+    {firstRunGuide && selectedCase && overview && <GuidedQuestionRun key={guideContext} question={selectedCase.query} target={selectedCase.targetUrl!}
+      language={selectedCase.language} locale={selectedCase.locale} model={displayedModel?.label ?? "Configured provider model"}
+      allowance={`${overview.usage.remainingRuns === null ? "No daily run limit" : `${overview.usage.remainingRuns} runs remaining`}; ${overview.usage.activeRuns} active; up to ${overview.access.maxActiveRuns} active observations.`}
+      available={ready && !selectedCaseUnresolved} busy={!!busy} options={runOptions} onStart={() => start(selectedCase.id, "baseline")}/>}
+    {guidedLayout && currentRun && <section className="guided-run-status" aria-label="Your observation progress"><p className="guided-run-eyebrow">Your search observation</p><h2>{currentRun.status === "running" ? "Your agent is working" : currentRun.status === "queued" ? "Your request is saved" : currentRun.status === "requires_action" ? "This run needs attention" : currentRun.status === "completed" ? "Read your returned answer" : "Review this observation’s status"}</h2><p>{currentRun.status === "completed" ? "Read the returned answer and its sources below." : "Opening this page retrieves saved status and starts no new run. Review the report below for progress, costs and any required actions."}</p></section>}
+    {runId && !currentRun && <p role="status" className="benchmark-loading">Opening saved observation…</p>}
+    {busy.startsWith("start-") && <ResearchActivity model={displayedModel?.label ?? "Luna"}/>}
+    {currentRun && <KeywordObservationReport guided={basePath === "/evaluations"} run={currentRun} baseline={baseline} busy={!!busy} onRefresh={() => refreshRun("reconcile")} onCancel={() => refreshRun("cancel")} onArchive={() => refreshRun("archive")} onPrepare={() => {if (advancedRef.current) advancedRef.current.open = true; setSettingsOpen(true); requestAnimationFrame(() => {settingsRef.current?.scrollIntoView({behavior:"smooth",block:"start"}); settingsRef.current?.querySelector("summary")?.focus();});}}/>}
+    {basePath === "/evaluations" && currentSuite && <SavedQuestionMap suite={currentSuite} history={historyRead.suiteId === suiteId && historyRead.ready ? runs : null}
+      selectedId={selectedCase?.id} busy={!!busy} onSelect={selectMappedQuestion}/>}
+    {guidedLayout ? <details ref={advancedRef} className="guided-run-advanced"><summary>Advanced workspace controls</summary>{advancedControls}</details> : advancedControls}
     <p className="benchmark-footer-note">Saved observations belong to this account. Opening, selecting or comparing them starts no new agent work.</p>
   </div>;
 }

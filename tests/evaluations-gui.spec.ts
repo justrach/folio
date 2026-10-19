@@ -35,6 +35,7 @@ async function mockAccount(page: Page, signedIn = true) {
     authenticated = false;
     return route.fulfill({ json: { success: true } });
   });
+  await page.route("**/api/costs", route => route.fulfill({ json: { groups: [], recent: [], recentLimit: 50 } }));
   await page.route("**/api/seo-reports", (route) => route.fulfill({ json: { reports: [] } }));
   await page.route("**/api/scans", (route) => route.fulfill({ json: { scans: [] } }));
   await page.route("**/api/benchmarks/runs**", (route) => route.fulfill({ json: { runs: [] } }));
@@ -61,7 +62,9 @@ async function screenshot(page: Page, info: TestInfo, name: string) {
 async function navigate(page: Page, path: string) {
   const opener = page.getByRole("button", { name: "Open navigation", exact: true });
   if (await opener.isVisible()) await opener.click();
-  await page.locator(`.nav-link[href="${path}"]`).click();
+  const targetLink = page.locator(`.nav-link[href="${path}"]`);
+  if (!(await targetLink.isVisible())) await page.getByRole("button", { name: "More tools", exact: true }).click();
+  await targetLink.click();
   await expect(page).toHaveURL(new RegExp(`${path}$`));
   if (path === "/evaluations") await page.getByRole("button", { name: "Page evidence", exact: true }).click();
 }
@@ -191,6 +194,8 @@ test("managed session starts once, follows navigation, exposes private returns, 
     } else if (path.endsWith("/reconcile") && method === "POST") {
       if (allowCompletion) saved = completed;
       await route.fulfill({ json: { run: saved } });
+    } else if (path.endsWith("/semantic-review") && method === "GET") {
+      await route.fulfill({ json: { review: null, available: false } });
     } else if (path.endsWith("/export") && method === "GET") {
       exports += 1;
       await route.fulfill({ json: { format: "folio-evidence-bundle", run: saved, suite: EVAL_SUITE } });
@@ -291,7 +296,7 @@ test("pricing saves only an explicit private preference and preserves it across 
   await expect(builder.getByRole("button", { name: "Register interest", exact: true })).toBeVisible();
   expect(writes).toEqual([]);
   await builder.getByRole("button", { name: "Register interest", exact: true }).click();
-  await expect(page.getByRole("status")).toContainText("No subscription or charge has been created");
+  await expect(page.locator(".pricing-confirmation[role=status]")).toContainText("No subscription or charge has been created");
   await expect(builder.getByRole("button", { name: "Preference saved", exact: true })).toBeVisible();
   expect(writes).toEqual([{ plan: "builder" }]);
   await page.reload();

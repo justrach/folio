@@ -58,7 +58,9 @@ async function fixture(page: Page, options: { signedIn?: boolean; unsavedLookup?
 async function navigate(page: Page, href: string) {
   const menu = page.getByRole("button", { name: "Open navigation", exact: true });
   if (await menu.isVisible()) await menu.click();
-  await page.locator(`.nav-link[href="${href}"]`).click();
+  const targetLink = page.locator(`.nav-link[href="${href}"]`);
+  if (!(await targetLink.isVisible())) await page.getByRole("button", { name: "More tools", exact: true }).click();
+  await targetLink.click();
   await expect(page).toHaveURL(new RegExp(`${href}$`));
 }
 

@@ -23,7 +23,6 @@ import {
   ExternalLink,
   FileCode2,
   FileText,
-  FlaskConical,
   Globe2,
   Info,
   LayoutDashboard,
@@ -78,39 +77,20 @@ import { WorkspaceLoader } from "./workspace-loader";
 
 type Modal = "scan" | "methodology" | "notifications" | "search" | null;
 const navigation = [
-  {
-    label: "My websites",
-    href: "/websites",
-    section: "websites",
-    icon: Globe2,
-  },
-  {
-    label: "AI visibility",
-    href: "/visibility",
-    section: "visibility",
-    icon: Sparkles,
-  },
+  { label: "My workspace", href: "/overview?view=workspace", section: "overview", icon: LayoutDashboard },
+  { label: "My websites", href: "/websites", section: "websites", icon: Globe2 },
+  { label: "Questions", href: "/evaluations", section: "evaluations", icon: CircleHelp },
+];
+const advancedNavigation = [
   { label: "SEO health", href: "/seo", section: "seo", icon: BarChart3 },
-  {
-    label: "Search & backlinks",
-    href: "/search-data",
-    section: "search-data",
-    icon: Search,
-  },
-  {
-    label: "Evaluations",
-    href: "/evaluations",
-    section: "evaluations",
-    icon: FlaskConical,
-  },
-  { label: "Keyword evaluations", href: "/benchmarks", section: "benchmarks", icon: FlaskConical },
+  { label: "Search & backlinks", href: "/search-data", section: "search-data", icon: Search },
   { label: "Search Console", href: "/search-console", section: "search-console", icon: Search },
-  {
-    label: "Patch studio",
-    href: "/patches",
-    section: "patches",
-    icon: WandSparkles,
-  },
+  { label: "Patch studio", href: "/patches", section: "patches", icon: WandSparkles },
+  { label: "AI visibility", href: "/visibility", section: "visibility", icon: Sparkles },
+  { label: "Your agents", href: "/agents", section: "agents", icon: Bot },
+  { label: "The Folio Index", href: "/leaderboard", section: "leaderboard", icon: Trophy },
+  { label: "API reference", href: "/docs/api", section: "api", icon: Code2 },
+  { label: "Plans & usage", href: "/pricing", section: "pricing", icon: BookOpen },
 ];
 const titles: Record<
   string,
@@ -118,8 +98,8 @@ const titles: Record<
 > = {
   overview: {
     eyebrow: "THE BIG PICTURE",
-    title: "My website results",
-    description: "Saved results for your website.",
+    title: "My workspace",
+    description: "Your website, saved research, and next step.",
   },
   websites: {
     eyebrow: "YOUR DIGITAL FOOTPRINT",
@@ -306,6 +286,10 @@ function WorkspaceDashboard({ section }: { section: string }) {
   const [loadingScans, setLoadingScans] = useState(false);
   const [scanRefresh, setScanRefresh] = useState(0);
   const ownerId = session?.user.id ?? null;
+  const [toolsDisclosure, setToolsDisclosure] = useState<{ ownerId: string | null; section: string; open: boolean } | null>(null);
+  const advancedRoute = advancedNavigation.some(item => item.section === section);
+  const toolsOpen = toolsDisclosure?.ownerId === ownerId && toolsDisclosure.section === section ? toolsDisclosure.open : advancedRoute;
+  useEffect(() => { setToolsDisclosure(null); }, [ownerId]);
   const scans = !isPending && scanOwnerId === ownerId ? storedScans : [];
   const activeScan = !isPending && scanOwnerId === ownerId ? storedActiveScan : null;
   const [search, setSearch] = useState("");
@@ -438,44 +422,40 @@ function WorkspaceDashboard({ section }: { section: string }) {
               key={item.section}
               href={item.href}
               onClick={() => setMobileOpen(false)}
-              className={`nav-link ${section === item.section ? "active" : ""}`}
-              aria-current={section === item.section ? "page" : undefined}
+              className={`nav-link ${(section === item.section || (item.section === "evaluations" && section === "benchmarks")) ? "active" : ""}`}
+              aria-current={section === item.section || (item.section === "evaluations" && section === "benchmarks") ? "page" : undefined}
             >
               <item.icon size={17} />
               <span>{item.label}</span>
             </Link>
           ))}
         </nav>
-        <span className="nav-caption explore-caption">EXPLORE</span>
-        <nav aria-label="Explore">
-          <Link
-            href="/leaderboard"
-            className={`nav-link ${section === "leaderboard" ? "active" : ""}`}
-            aria-current={section === "leaderboard" ? "page" : undefined}
-            onClick={() => setMobileOpen(false)}
-          >
-            <Trophy size={17} />
-            <span>The Folio Index</span>
-          </Link>
-          <Link
-            href="/agents"
-            className={`nav-link ${section === "agents" ? "active" : ""}`}
-            aria-current={section === "agents" ? "page" : undefined}
-            onClick={() => setMobileOpen(false)}
-          >
-            <Bot size={17} />
-            <span>Your agents</span>
-          </Link>
-          <Link href="/docs/api" className="nav-link" onClick={() => setMobileOpen(false)}>
-            <Code2 size={17} />
-            <span>API reference</span>
-          </Link>
-        </nav>
+        <button
+          type="button"
+          className="nav-link sidebar-tools-toggle"
+          aria-expanded={toolsOpen}
+          aria-controls="workspace-more-tools"
+          onClick={() => setToolsDisclosure({ ownerId, section, open: !toolsOpen })}
+        >
+          <MoreHorizontal size={17} />
+          <span>More tools</span>
+          <ChevronDown size={14} aria-hidden="true" />
+        </button>
+        <div id="workspace-more-tools" hidden={!toolsOpen}>
+          <nav aria-label="More tools">
+            {advancedNavigation.map(item => <Link
+              key={item.section}
+              href={item.href}
+              className={`nav-link ${section === item.section ? "active" : ""}`}
+              aria-current={section === item.section ? "page" : undefined}
+              onClick={() => setMobileOpen(false)}
+            ><item.icon size={17} /><span>{item.label}</span></Link>)}
+          </nav>
+          <button className="nav-link help-link" onClick={() => { setMobileOpen(false); setModal("methodology"); }}>
+            <CircleHelp size={17} /><span>A little guidance</span>
+          </button>
+        </div>
         <div className="sidebar-bottom">
-          <Link href="/pricing" className="nav-link">
-            <BookOpen size={17} />
-            <span>Plans & usage</span>
-          </Link>
           <Link
             href="/settings"
             className={`nav-link ${section === "settings" ? "active" : ""}`}
@@ -485,13 +465,6 @@ function WorkspaceDashboard({ section }: { section: string }) {
             <Settings2 size={17} />
             <span>Settings & connections</span>
           </Link>
-          <button
-            className="nav-link help-link"
-            onClick={() => setModal("methodology")}
-          >
-            <CircleHelp size={17} />
-            <span>A little guidance</span>
-          </button>
           <Link href={session ? "/settings" : "/login"} className="profile">
             <span className="avatar">
               {session?.user.name?.slice(0, 1) ?? (privateOverview ? "—" : "A")}
@@ -523,8 +496,8 @@ function WorkspaceDashboard({ section }: { section: string }) {
               {section === "leaderboard"
                 ? "The Folio Index"
                 : section === "overview"
-                ? (demoRequested ? "Demo report" : "My website results")
-                : (navigation.find((n) => n.section === section)?.label ??
+                ? (demoRequested ? "Demo report" : "My workspace")
+                : (section === "benchmarks" ? "Questions" : [...navigation, ...advancedNavigation].find((n) => n.section === section)?.label ??
                   (section === "agents" ? "Your agents" : "Settings"))}
             </span>
           </div>
@@ -566,7 +539,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
               ) : section === "benchmarks" ? (
                 <Link href="/docs/api" className="button secondary">API reference <ArrowRight size={14} /></Link>
               ) : section === "overview" && !demoRequested ? (
-                <><Link href="/websites" className="button secondary">My websites <ArrowRight size={14} /></Link><Button onClick={() => prepareAudit()}><Plus size={16} />Run an audit</Button></>
+                <Link href="/overview?view=demo" className="panel-link" onClick={() => setMode("sample")}>Demo report <ArrowUpRight size={14} /></Link>
               ) : section === "agents" ? (
                 <Link href="/pricing" className="button secondary">
                   Plans & usage <ArrowUpRight size={14} />
@@ -593,7 +566,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
               )}
             </div>
           </div>
-          {section === "overview" && <nav className="real-overview-tabs" aria-label="Overview view"><Link href={workspaceOverviewHref(query)} aria-current={!demoRequested ? "page" : undefined}>My website results</Link><Link href="/overview?view=demo" aria-current={demoRequested ? "page" : undefined} onClick={() => setMode("sample")}>Demo report</Link></nav>}
+          {section === "overview" && demoRequested && <nav className="real-overview-tabs" aria-label="Overview view"><Link href={workspaceOverviewHref(query)} aria-current={!demoRequested ? "page" : undefined}>My workspace</Link><Link href="/overview?view=demo" aria-current={demoRequested ? "page" : undefined} onClick={() => setMode("sample")}>Demo report</Link></nav>}
           {section === "overview" && !demoRequested ? <RealOverview ownerId={ownerId} scans={scans} scansLoading={loadingScans} scansError={scanOwnerId === ownerId ? scanError : ""} onRetryScans={() => setScanRefresh(value => value + 1)} onOpenScan={openScan} /> : <>
 
           {scanOwnerId === ownerId && scanError && ["overview", "websites", "seo", "patches"].includes(section) && (
@@ -1107,18 +1080,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
               <div className="search-results">
                 {[
                   ...navigation,
-                  {
-                    label: "The Folio Index",
-                    href: "/leaderboard",
-                    section: "leaderboard",
-                    icon: Trophy,
-                  },
-                  {
-                    label: "Your agents",
-                    href: "/agents",
-                    section: "agents",
-                    icon: Bot,
-                  },
+                  ...advancedNavigation,
                 ]
                   .filter((n) =>
                     n.label.toLowerCase().includes(search.toLowerCase()),
@@ -1632,6 +1594,11 @@ function Settings({
               <Button
                 kind="secondary"
                 onClick={async () => {
+                  try {
+                    for (const storageKey of Object.keys(sessionStorage)) {
+                      if (storageKey.startsWith("folio:business-setup:v1")) sessionStorage.removeItem(storageKey);
+                    }
+                  } catch { /* Sign-out remains available when browser storage is blocked. */ }
                   await authClient.signOut();
                   onNotify("You have been signed out.");
                 }}
@@ -1813,12 +1780,13 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
       const next = new URL(nextValues[0], "https://folio.invalid");
       if (next.origin === "https://folio.invalid" && next.pathname === "/benchmarks") {
         const params = new URLSearchParams();
-        for (const key of ["suite", "run", "website"]) {
+        for (const key of ["suite", "run", "case", "website"]) {
           const values = next.searchParams.getAll(key);
           if (values.length === 1 && /^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/.test(values[0])) params.set(key, values[0]);
         }
         returnTo = `/benchmarks${params.size ? `?${params}` : ""}`;
       }
+      if (next.origin === "https://folio.invalid" && next.pathname === "/onboarding") returnTo = "/onboarding";
       if (next.origin === "https://folio.invalid" && next.pathname === "/search-console") returnTo = "/search-console";
       if (next.origin === "https://folio.invalid" && next.pathname === "/overview") {
         const views = next.searchParams.getAll("view");
@@ -1831,7 +1799,7 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
         const view = views.length === 1 && ["search", "page"].includes(views[0]) ? views[0] : null;
         if (next.pathname === "/evaluations" && view === "search") {
           const params = new URLSearchParams({ view: "search" });
-          for (const key of ["suite", "run", "website"]) {
+          for (const key of ["suite", "run", "case", "website"]) {
             const values = next.searchParams.getAll(key);
             if (values.length === 1 && /^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/.test(values[0])) params.set(key, values[0]);
           }
@@ -1930,11 +1898,11 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
         >
           <FolioMark />
           <span className="eyebrow">MAKE YOURSELF AT HOME</span>
-          <h2>{signup ? "Start your next chapter." : "Welcome back."}</h2>
+          <h2>{returnTo === "/onboarding" ? "Save your setup privately." : signup ? "Start your next chapter." : "Welcome back."}</h2>
           <p>
-            {signup
-              ? "A little clarity for your corner of the internet."
-              : "A clearer picture is waiting for you."}
+            {returnTo === "/onboarding"
+              ? "Sign in or create an account to keep your business profile and questions together. You’ll return to review and save your setup."
+              : "Sign in or create an account to return to your private websites, questions, and saved results."}
           </p>
           {googleConfigured && <button className="button secondary" type="button" disabled={busy} onClick={async () => {
             setBusy(true); setError("");

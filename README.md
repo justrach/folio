@@ -48,6 +48,7 @@ Start a hackathon walkthrough at `/hackathon`: public saved rankings, the GPT-6.
 | Route          | Purpose                                                                                |
 | -------------- | -------------------------------------------------------------------------------------- |
 | `/`            | Product story and evidence-based positioning                                           |
+| `/onboarding` | Reviewed business profile and customer questions saved privately; explicit sample at `?example=1`, no provider work |
 | `/overview`    | Public task progress and published per-question recommendations; no account required |
 | `/overview?view=workspace` | Private saved website search observations, audits and connected reports |
 | `/overview?view=demo` | Explicitly illustrative dashboard |

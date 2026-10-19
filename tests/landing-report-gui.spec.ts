@@ -97,3 +97,18 @@ test("landing check sorting, pagination, keyboard disclosure, and source data st
   await page.screenshot({ path: testInfo.outputPath("landing-report.png"), fullPage: true, scale: "css" });
   verifyReadOnly();
 });
+
+test("homepage setup actions open business onboarding without starting work", async ({ page }) => {
+  const verifyReadOnly = await readOnlyFixture(page);
+  await page.goto("/");
+  const entries = page.getByRole("link", { name: "Set up your business", exact: true });
+  await expect(entries).toHaveCount(2);
+  for (const entry of await entries.all()) await expect(entry).toHaveAttribute("href", "/onboarding");
+  await expect(page.locator(".landing-access")).toContainText("Explore a sample setup first.");
+  await expect(page.locator(".landing-signin")).toHaveAttribute("href", "/login");
+  await noOverflow(page);
+  await entries.first().click();
+  await expect(page).toHaveURL(/\/onboarding$/);
+  await expect(page.getByRole("textbox", { name: /website/i }).first()).toBeVisible();
+  verifyReadOnly();
+});

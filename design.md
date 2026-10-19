@@ -2,7 +2,7 @@
 
 ## Direction
 
-The September 2026 palette takes black type, a vivid orange accent, and cool near-white surfaces from a Swiss graphic-design reference. Folio now uses those colors in a minimal product UI: quiet rules, ordinary cards, and no offset shadows or ornamental circles. A generated orange/red editorial collage sits behind the landing hero, with a pale wash under the copy so the product explanation remains legible. The question, evidence, uncertainty, and next action come before decoration.
+The October 2026 palette follows Codegraff Light and Dark from the local Harness theme registry (`/Users/rachpradhan/harness/crates/theme/src/builtins.rs`, `codegraff_light` and `codegraff_dark`; resolved values in `apps/ios/Harness/Theme/themes.json`). The source is `justrach/codegraff` revision `20652a1f7587971a07349b2e26ef12aaf2cdf443`. Light uses warm off-white `#faf8f3`, shell/card `#f0ece3`, ink `#1a1813` and orange `#c77d20`; dark uses `#16140f`, `#1f1c16`, `#edeae2` and `#e8a33d`. Orange controls use black labels, while small orange text uses the deeper Codegraff glyph `#935d18` for contrast. Muted text replaces the source's faint tone where copy must remain readable. Quiet rules, ordinary cards, and the existing editorial collage keep attention on the question, evidence, uncertainty, and next action.
 
 This is a Folio web choice, not an Apple native control specification. The project Apple HIG design notes inform readable hierarchy, explicit state, recoverable actions, visible focus, adaptive appearance, and enlarged-text reflow. The 44 CSS-pixel minimum control height is a Folio touch-friendly choice.
 

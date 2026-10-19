@@ -1,0 +1,46 @@
+/* Saved business context is a quiet summary, below the next action. */
+.panel.saved-business-profile {
+  padding: 24px 4px 8px;
+  margin: 28px 0 20px;
+  min-width: 0;
+  color: var(--folio-ink);
+  border: 0;
+  border-top: 1px solid var(--folio-edge);
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+}
+.saved-business-profile .setup-eyebrow { margin: 0 0 10px; color: var(--folio-text-muted); font-size: 11px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; }
+.saved-profile-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px 24px; }
+.saved-business-profile h2 { margin: 0; font: 400 23px/1.3 var(--folio-font-display); overflow-wrap: anywhere; }
+.saved-profile-private { flex-shrink: 0; color: var(--folio-text-muted); font-size: 12px; line-height: 1.5; }
+.saved-business-profile .saved-profile-description { max-width: 80ch; margin: 9px 0; color: var(--folio-text-secondary); font-size: 13px; line-height: 1.7; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.saved-business-profile .saved-profile-question-count { margin: 0; font-size: 12px; color: var(--folio-text-muted); }
+.saved-profile-facts { display: grid; grid-template-columns: minmax(0,1.7fr) minmax(0,1fr) minmax(0,.8fr); gap: 20px 28px; margin: 0; }
+.saved-profile-facts > div { min-width: 0; }
+.saved-profile-facts dt { margin-bottom: 7px; font-size: 12px; color: var(--folio-text-muted); }
+.saved-profile-facts dd { margin: 0; font-size: 13px; line-height: 1.65; overflow-wrap: anywhere; }
+.saved-profile-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px 24px; border-top: 1px solid var(--folio-edge); padding-top: 18px; margin-top: 23px; }
+.saved-business-profile .saved-profile-note { margin: 0; font-size: 12px; color: var(--folio-text-muted); }
+.saved-profile-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.saved-business-profile .button { min-height: 44px; padding: 10px 12px; font-size: 13px; line-height: 1.5; text-align: center; white-space: normal; border: 1px solid var(--folio-edge-strong); border-radius: var(--folio-radius-control); color: var(--folio-ink); background: transparent; }
+.saved-business-profile .button:hover { background: var(--folio-surface-muted); }
+.saved-business-profile > p:not([class]) { margin: 12px 0 18px; font-size: 14px; color: var(--folio-text-secondary); }
+.saved-profile-details { margin-top: 7px; }
+.saved-profile-details > summary { width: fit-content; cursor: pointer; padding: 12px 0; min-height: 44px; color: var(--folio-text-secondary); font-size: 13px; line-height: 1.6; }
+.saved-profile-details > summary:focus-visible { outline: 2px solid var(--folio-ink); outline-offset: 4px; }
+.saved-profile-details[open] > summary { margin-bottom: 12px; }
+.saved-profile-full-description { margin: 0 0 18px; color: var(--folio-text-secondary); font-size: 13px; line-height: 1.7; overflow-wrap: anywhere; }
+@media (max-width:700px) {
+  .panel.saved-business-profile { padding: 22px 2px 8px; margin-top: 24px; }
+  .saved-profile-heading { align-items: flex-start; flex-wrap: wrap; gap: 6px 18px; }
+  .saved-business-profile h2 { font-size: 23px; }
+  .saved-profile-facts { grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap:18px; }
+  .saved-profile-facts > div:first-child { grid-column: 1/-1; }
+  .saved-profile-footer { align-items: flex-start; flex-direction: column; }
+}
+@media (max-width:380px) {
+  .saved-profile-facts { grid-template-columns:minmax(0,1fr); }
+  .saved-profile-actions { width:100%; }
+  .saved-profile-actions .button { width:100%; }
+}

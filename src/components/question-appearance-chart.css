@@ -1,0 +1,42 @@
+.question-appearance-chart{padding:32px;border:1px solid var(--folio-edge);border-radius:8px;background:var(--folio-surface);color:var(--folio-ink);min-width:0;width:100%}
+.question-appearance-heading>p{margin:0 0 12px;color:var(--folio-accent-text);font-size:11px;line-height:1.5;font-weight:600;text-transform:uppercase;letter-spacing:.1em}
+.question-appearance-heading h2{margin:0;font:400 28px/1.3 var(--folio-font-display);text-wrap:balance}
+.question-appearance-intro{max-width:70ch;margin:16px 0 8px;font-size:14px;line-height:1.7;color:var(--folio-text-secondary)}
+.question-appearance-boundary,.question-appearance-footer{max-width:80ch;margin:8px 0 24px;font-size:12px;line-height:1.7;color:var(--folio-text-muted)}
+.question-appearance-matrix{border-collapse:separate;border-spacing:0;width:100%;table-layout:fixed;border-top:1px solid var(--folio-edge)}
+.question-appearance-caption{height:1px;width:1px;overflow:hidden;clip-path:inset(50%);position:absolute;white-space:nowrap}
+.question-appearance-matrix thead th{padding:15px 12px;font-size:12px;line-height:1.5;text-align:left;font-weight:500;color:var(--folio-text-secondary);border-bottom:1px solid var(--folio-edge)}
+.question-appearance-matrix thead th:first-child{width:60%;padding-left:0}
+.question-appearance-matrix thead th:not(:first-child){text-align:center;width:20%}
+.question-appearance-matrix tbody th{padding:22px 20px 22px 0;text-align:left;vertical-align:top;font-weight:400;border-bottom:1px solid var(--folio-edge);overflow-wrap:anywhere}
+.question-appearance-number{display:block;margin-bottom:7px;font:400 18px/1.3 var(--folio-font-display);color:var(--folio-text-muted)}
+.question-appearance-question{display:block;font:400 20px/1.4 var(--folio-font-display);color:var(--folio-ink);text-decoration:none;text-wrap:pretty}
+.question-appearance-question:hover{text-decoration:underline;text-underline-offset:3px}
+.question-appearance-run,.question-appearance-note{display:block;margin-top:9px;font-size:12px;line-height:1.6;color:var(--folio-text-secondary)}
+.question-appearance-note{color:var(--folio-text-muted);margin-top:5px}
+.question-appearance-open{display:inline-flex;align-items:center;min-height:44px;margin-top:5px;font-size:12px;font-weight:600;color:var(--folio-accent-text);text-decoration:none}
+.question-appearance-cell{padding:20px 10px;border-bottom:1px solid var(--folio-edge);text-align:center;vertical-align:middle}
+.question-appearance-value{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-size:12px;line-height:1.5;color:var(--folio-text-secondary)}
+.question-appearance-symbol{display:grid;place-items:center;width:38px;height:38px;font-size:20px;line-height:1;border:1px solid var(--folio-edge-strong);border-radius:4px;background:var(--folio-canvas);color:var(--folio-ink)}
+.question-appearance-yes .question-appearance-symbol{background:var(--folio-accent);border-color:var(--folio-accent);color:var(--folio-on-accent)}
+.question-appearance-unknown .question-appearance-symbol,.question-appearance-unavailable .question-appearance-symbol{border-style:dashed;background:var(--folio-surface-muted)}
+.question-appearance-unmeasured .question-appearance-symbol{border-style:dotted;color:var(--folio-text-muted)}
+.question-appearance-mobile-label{display:none}
+.question-appearance-footer{margin:22px 0 0}
+.question-appearance-loading{font-size:13px;line-height:1.6;color:var(--folio-text-secondary)}
+.question-appearance-chart a:focus-visible{outline:2px solid var(--folio-focus);outline-offset:4px}
+@media(max-width:700px){
+.question-appearance-chart{padding:24px 20px}.question-appearance-heading h2{font-size:25px}
+.question-appearance-matrix,.question-appearance-matrix tbody{display:block}.question-appearance-matrix thead{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden}
+.question-appearance-matrix tbody tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:22px 0;border-bottom:1px solid var(--folio-edge);gap:18px 10px}
+.question-appearance-matrix tbody th{display:block;grid-column:1/-1;width:100%;padding:0;border:0}.question-appearance-question{font-size:21px}
+.question-appearance-cell{display:flex;flex-direction:column;align-items:flex-start;gap:10px;text-align:left;min-width:0;padding:0;border:0}
+.question-appearance-mobile-label{display:block;font-size:12px;line-height:1.5;color:var(--folio-text-secondary)}
+.question-appearance-value{flex-direction:row;align-items:center;gap:8px;font-size:12px;overflow-wrap:anywhere}.question-appearance-symbol{width:30px;height:30px;flex:0 0 30px;font-size:18px}
+}
+.question-appearance-loading-cell .question-appearance-symbol{border-style:dotted;background:var(--folio-canvas);color:var(--folio-text-muted)}
+/* Global dashboard tables use fixed cell heights; this narrative matrix must grow with its content. */
+.question-appearance-matrix th,.question-appearance-matrix td{height:auto;min-height:0;letter-spacing:normal;text-transform:none}
+.question-appearance-matrix td{border-top:0}
+.question-appearance-empty{margin:22px 0 0;padding:18px 0;border-block:1px solid var(--folio-edge);font-size:14px;line-height:1.7;color:var(--folio-text-secondary)}
+.question-appearance-matrix tbody th{background:transparent}

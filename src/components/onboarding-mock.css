@@ -1,16 +1,11 @@
 .onboarding-mock {
-  --ob-control-edge: var(--folio-edge-strong);
+  --ob-control-edge: var(--folio-control-edge);
   min-height: 100vh;
   background: var(--folio-canvas);
   color: var(--folio-ink);
   font-family: var(--folio-font-body);
 }
 
-@media (prefers-color-scheme: dark) {
-  .onboarding-mock {
-    --ob-control-edge: #858585;
-  }
-}
 
 .ob-banner {
   display: flex;
@@ -40,6 +35,17 @@
 .ob-banner p {
   margin: 0;
   color: var(--folio-inverse-text);
+}
+
+.ob-banner .ob-link {
+  color: var(--folio-inverse-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ob-banner .ob-link:focus-visible {
+  outline: 2px solid var(--folio-inverse-text);
+  outline-offset: 3px;
 }
 
 .ob-shell {
@@ -100,7 +106,7 @@
 .ob-rail-step[data-complete="true"] .ob-rail-index {
   background: var(--folio-accent-soft);
   border-color: var(--folio-accent-edge);
-  color: var(--folio-accent-hover);
+  color: var(--folio-accent-text);
 }
 
 .ob-main {
@@ -116,7 +122,7 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--folio-accent);
+  color: var(--folio-accent-text);
 }
 
 .ob-title {
@@ -270,7 +276,7 @@
   align-items: center;
   gap: 4px;
   min-height: 44px;
-  color: var(--folio-accent-hover);
+  color: var(--folio-accent-text);
   font: inherit;
   font-size: 13px;
   font-weight: 600;
@@ -322,7 +328,7 @@
 }
 
 .ob-status[data-tone="confirmed"] {
-  color: var(--folio-accent-hover);
+  color: var(--folio-accent-text);
   border-color: var(--folio-accent-edge);
   background: var(--folio-accent-soft);
 }
@@ -358,7 +364,7 @@
 .ob-revision .ob-label {
   font-size: 12px;
   font-weight: 600;
-  color: var(--folio-accent-hover);
+  color: var(--folio-accent-text);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   margin-bottom: 4px;
@@ -406,7 +412,7 @@
 }
 
 .ob-claim-source a {
-  color: var(--folio-accent-hover);
+  color: var(--folio-accent-text);
 }
 
 .ob-details {
@@ -453,7 +459,7 @@
 }
 
 .ob-tech-list svg {
-  color: var(--folio-accent);
+  color: var(--folio-accent-text);
   flex-shrink: 0;
 }
 
@@ -499,7 +505,7 @@
 .ob-plan svg {
   flex-shrink: 0;
   margin-top: 2px;
-  color: var(--folio-accent);
+  color: var(--folio-accent-text);
 }
 
 .ob-question {
@@ -553,7 +559,7 @@
 .ob-tag[data-tone="sample"] {
   background: var(--folio-accent-soft);
   border-color: var(--folio-accent-edge);
-  color: var(--folio-accent-hover);
+  color: var(--folio-accent-text);
 }
 
 .ob-answer {
@@ -604,7 +610,7 @@
   gap: 8px;
   font-size: 13px;
   font-weight: 600;
-  color: var(--folio-accent-hover);
+  color: var(--folio-accent-text);
 }
 
 .ob-caption svg {
@@ -896,7 +902,7 @@
 .ob-table td[data-target="true"] .ob-position {
   background: var(--folio-accent-soft);
   border-color: var(--folio-accent-edge);
-  color: var(--folio-accent-hover);
+  color: var(--folio-accent-text);
 }
 
 .ob-table-details {
@@ -1229,31 +1235,13 @@
 
 @media print {
   .onboarding-mock {
-    --folio-ink: #171717;
-    --folio-charcoal: #292929;
-    --folio-text-secondary: #4b4b4b;
-    --folio-text-muted: #686868;
-    --folio-text-faint: #858585;
-    --folio-edge-strong: #b5b5b5;
-    --folio-edge: #d1d1d1;
-    --folio-surface-muted: #e6e6e8;
-    --folio-canvas: #ffffff;
-    --folio-surface: #ffffff;
-    --folio-inverse-surface: #202020;
-    --folio-inverse-text: #ffffff;
-    --folio-accent: #d83f00;
-    --folio-accent-hover: #b93400;
-    --folio-accent-soft: #ffe2d4;
-    --folio-accent-edge: #f0b79c;
-    --folio-danger: #ab2f00;
-    --folio-focus: #b93400;
-    --ob-control-edge: #b5b5b5;
-    background: #ffffff;
-    color: #000000;
+    background: var(--folio-canvas);
+    color: var(--folio-ink);
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
+  .ob-banner button,
   .ob-banner .ob-banner-tag,
   .ob-rail,
   .ob-aside,
@@ -1279,3 +1267,6 @@
     break-inside: avoid;
   }
 }
+
+/* Small labels on an orange wash use full-contrast ink. */
+.ob-table td[data-target="true"] .ob-position { color: var(--folio-ink); }

@@ -13,6 +13,12 @@ A database *transaction* makes a set of writes all-or-nothing. Folio uses D1's `
 
 The D1 SQL export may omit hidden SQLite `rowid` values. The importer reconstructs rowids for three historical cost-view branches; it preserves explicit IDs, fields, relationships, and identity sequence watermarks. Do not treat a reconstructed hidden rowid as a stable external ID.
 
+## Owner-reviewed onboarding migration (October 18, 2026)
+
+`migrations/postgres/0003_onboarding_profiles.sql` adds private owner-reviewed business profiles linked to existing saved websites and question suites. Apply this incremental PostgreSQL migration before deploying the onboarding API/UI against PostgreSQL; the base `0001_schema.sql` and the current importer do not include this new table. The equivalent local D1 migration is `0023_onboarding_profiles.sql`.
+
+Only local D1 was migrated, after creating a private ignored backup. The new atomic save, idempotent replay, owner isolation, restart persistence and quota rollback passed actual isolated D1 fixtures. PostgreSQL migration execution, live PostgreSQL onboarding behavior and production deployment remain unvalidated and were not performed. Saving a profile creates draft questions without starting a capture or provider task; these fields remain owner-reviewed inputs, separate from measured observations.
+
 ## Local verification
 
 Use an isolated local PostgreSQL server on port `55432`, never a production connection, for `bun run test:pg`. The test rejects other hosts and ports. The import tests create and remove their own disposable local databases.

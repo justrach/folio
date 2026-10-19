@@ -111,9 +111,13 @@ async function noOverflow(page: Page) {
   expect(dimensions.inner).toBeLessThanOrEqual(dimensions.width + 1);
 }
 async function navigate(page: Page, path: string) {
+  // Legacy evaluation URLs remain accessible by direct entry.
+  if (path === "/benchmarks") { await page.goto(path); return; }
   const opener = page.getByRole("button", { name: "Open navigation", exact: true });
   if (await opener.isVisible()) await opener.click();
-  await page.locator(`.nav-link[href="${path}"]`).click();
+  const targetLink = page.locator(`.nav-link[href="${path}"]`);
+  if (!(await targetLink.isVisible())) await page.getByRole("button", { name: "More tools", exact: true }).click();
+  await targetLink.click();
 }
 
 test("saving questions binds an existing private site; only one explicit baseline starts work", async ({ page }) => {

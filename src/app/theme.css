@@ -1,32 +1,37 @@
-/* Folio design system. Change this file to retheme color and type across routes. */
+/* Codegraff palette: harness/crates/theme/src/builtins.rs, codegraff_light/dark.
+   Resolved colors: harness/apps/ios/Harness/Theme/themes.json.
+   Source: justrach/codegraff, revision 20652a1f7587971a07349b2e26ef12aaf2cdf443.
+   Faint copy uses the readable muted tone; interactive text uses the deep glyph tone. */
 :root {
   color-scheme: light;
   --folio-font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-  --folio-font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --folio-font-display: Georgia, "Times New Roman", serif;
   --folio-font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
-  --folio-ink: #171717;
-  --folio-charcoal: #292929;
-  --folio-text-secondary: #4b4b4b;
-  --folio-text-muted: #686868;
-  --folio-text-faint: #858585;
-  --folio-edge-strong: #b5b5b5;
-  --folio-edge: #d1d1d1;
-  --folio-surface-muted: #e6e6e8;
-  --folio-canvas: #f3f4f5;
-  --folio-surface: #ffffff;
+  --folio-ink: #1a1813;
+  --folio-charcoal: #1a1813;
+  --folio-text-secondary: #6b6557;
+  --folio-text-muted: #6b6557;
+  --folio-text-faint: #6b6557;
+  --folio-control-edge: #6b6557;
+  --folio-edge-strong: #00000038;
+  --folio-edge: #0000001f;
+  --folio-surface-muted: #e7e1d5;
+  --folio-canvas: #faf8f3;
+  --folio-surface: #f0ece3;
   --folio-white: #ffffff;
-  --folio-on-accent: #ffffff;
-  --folio-inverse-surface: #202020;
+  --folio-on-accent: #000000;
+  --folio-inverse-surface: #1a1813;
   --folio-inverse-text: #ffffff;
   --folio-shadow: #161616;
-  --folio-accent: #d83f00;
-  --folio-accent-bright: #fa4e00;
-  --folio-accent-hover: #b93400;
-  --folio-accent-soft: #ffe2d4;
-  --folio-accent-edge: #f0b79c;
-  --folio-focus: #b93400;
-  --folio-danger: #ab2f00;
-  --folio-success: #292929;
+  --folio-accent: #c77d20;
+  --folio-accent-text: #935d18;
+  --folio-accent-bright: #d09346;
+  --folio-accent-hover: #d09346;
+  --folio-accent-soft: #c77d201f;
+  --folio-accent-edge: #c77d2080;
+  --folio-focus: #935d18;
+  --folio-danger: #b14228;
+  --folio-success: #1a1813;
   --folio-radius-control: 8px;
   --folio-radius-card: 14px;
   --folio-control-height: 44px;
@@ -60,29 +65,31 @@
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
-    --folio-ink: #f5f5f5;
-    --folio-charcoal: #ebebeb;
-    --folio-text-secondary: #d1d1d1;
-    --folio-text-muted: #b3b3b3;
-    --folio-text-faint: #939393;
-    --folio-edge-strong: #646464;
-    --folio-edge: #454545;
-    --folio-surface-muted: #343434;
-    --folio-canvas: #171717;
-    --folio-surface: #242424;
+    --folio-ink: #edeae2;
+    --folio-charcoal: #edeae2;
+    --folio-text-secondary: #9a9384;
+    --folio-text-muted: #9a9384;
+    --folio-text-faint: #9a9384;
+    --folio-control-edge: #9a9384;
+    --folio-edge-strong: #ffffff2e;
+    --folio-edge: #ffffff1a;
+    --folio-surface-muted: #2a261e;
+    --folio-canvas: #16140f;
+    --folio-surface: #1f1c16;
     --folio-white: #ffffff;
-    --folio-on-accent: #171717;
-    --folio-inverse-surface: #111111;
+    --folio-on-accent: #000000;
+    --folio-inverse-surface: #16140f;
     --folio-inverse-text: #ffffff;
     --folio-shadow: #050505;
-    --folio-accent: #ff6a27;
-    --folio-accent-bright: #ff6a27;
-    --folio-accent-hover: #ff8248;
-    --folio-accent-soft: #512714;
-    --folio-accent-edge: #a94416;
-    --folio-focus: #ff9b70;
-    --folio-danger: #ff8757;
-    --folio-success: #f5f5f5;
+    --folio-accent: #e8a33d;
+    --folio-accent-text: #e8a33d;
+    --folio-accent-bright: #e8a33d;
+    --folio-accent-hover: #eebd73;
+    --folio-accent-soft: #e8a33d38;
+    --folio-accent-edge: #e8a33d59;
+    --folio-focus: #eebd73;
+    --folio-danger: #d2674f;
+    --folio-success: #edeae2;
   }
 }
 
@@ -101,12 +108,12 @@ body { background: var(--folio-canvas); color: var(--folio-ink); font-family: va
 .folio-button[data-variant="primary"]:hover { background: var(--folio-accent-hover); }
 .folio-button[data-variant="secondary"] { background: var(--folio-surface); color: var(--folio-ink); border-color: var(--folio-edge-strong); }
 .folio-button[data-variant="secondary"]:hover { background: var(--folio-surface-muted); }
-.folio-button[data-variant="quiet"] { background: transparent; color: var(--folio-accent); }
+.folio-button[data-variant="quiet"] { background: transparent; color: var(--folio-accent-text); }
 .folio-button[data-variant="quiet"]:hover { background: var(--folio-accent-soft); }
 .folio-field { display: grid; gap: 6px; color: var(--folio-text-secondary); font-weight: 600; }
 .folio-field :is(input, select, textarea) { min-height: var(--folio-control-height); width: 100%; padding: 10px 12px; color: var(--folio-ink); background: var(--folio-surface); border: 1px solid var(--folio-edge-strong); border-radius: var(--folio-radius-control); }
 .folio-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 9px; color: var(--folio-charcoal); background: var(--folio-surface-muted); border-radius: 999px; font-size: .76rem; font-weight: 700; }
-.folio-badge[data-tone="accent"] { color: var(--folio-accent); background: var(--folio-accent-soft); }
+.folio-badge[data-tone="accent"] { color: var(--folio-accent-text); background: var(--folio-accent-soft); }
 
 /* Existing shared component classes take their values from the same contracts. */
 .button.primary { background: var(--folio-accent); color: var(--folio-on-accent); border-color: var(--folio-accent); }
@@ -118,9 +125,63 @@ body { background: var(--folio-canvas); color: var(--folio-ink); font-family: va
 .app-shell .nav-link { color: var(--folio-text-secondary); }
 .app-shell .nav-link:hover, .app-shell .nav-link.active { color: var(--folio-ink); background: var(--folio-accent-soft); }
 .app-shell .nav-link.active { box-shadow: inset 3px 0 var(--folio-accent); }
-.wordmark-period { color: var(--folio-accent); }
+.wordmark-period { color: var(--folio-accent-text); }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+/* Onboarding, sign-in and the workspace share one visual language. */
+.login-page { background: var(--folio-canvas); color: var(--folio-ink); }
+.login-story { background: var(--folio-canvas); color: var(--folio-ink); border-right: 1px solid var(--folio-edge); }
+.login-story :is(.eyebrow, p, .login-edition) { color: var(--folio-text-secondary); }
+.login-story h1 em { color: var(--folio-accent-text); }
+.login-bars > span { background: var(--folio-accent-soft); }
+.login-form-side { background: var(--folio-surface); }
+.login-form-side input { color: var(--folio-ink); min-height: 44px; }
+.login-form-side form > label { font-size: 14px; }
+.login-form-side form > p:not(.form-error) { font-size: 14px; }
+.login-form-side input, .login-form-side .button { font-size: 14px; }
+.login-page :is(.back-demo, .auth-security, .login-bottom) { color: var(--folio-text-secondary); }
+@media (max-width: 760px) {
+  .login-form-side { background: var(--folio-canvas); }
+  .login-form-side input { font-size: 16px; }
+}
+
+/* Color-bearing status text uses the readable Codegraff glyph shade. */
+:is(.change.down, .check-status.warning, .check-status.fail, .status-pill.warning, .status-pill.fail, .landing-preview-rank) { color: var(--folio-accent-text); }
+.form-error { color: var(--folio-danger) !important; }
+.landing .button.primary:hover { background: var(--folio-accent-hover); border-color: var(--folio-accent-hover); color: var(--folio-on-accent); }
+
+/* Printed previews retain a light Codegraff palette regardless of OS appearance. */
+@media print {
+  :root {
+    color-scheme: light;
+    --folio-ink: #1a1813;
+    --folio-charcoal: #1a1813;
+    --folio-text-secondary: #6b6557;
+    --folio-text-muted: #6b6557;
+    --folio-text-faint: #6b6557;
+    --folio-control-edge: #6b6557;
+    --folio-edge-strong: #00000038;
+    --folio-edge: #0000001f;
+    --folio-surface-muted: #e7e1d5;
+    --folio-canvas: #faf8f3;
+    --folio-surface: #f0ece3;
+    --folio-inverse-surface: #1a1813;
+    --folio-inverse-text: #ffffff;
+    --folio-on-accent: #000000;
+    --folio-accent: #c77d20;
+    --folio-accent-text: #935d18;
+    --folio-accent-hover: #d09346;
+    --folio-accent-soft: #c77d201f;
+    --folio-accent-edge: #c77d2080;
+    --folio-danger: #b14228;
+    --folio-focus: #935d18;
+  }
+}
+
+/* Route-local link colors must preserve contrast on orange primary controls. */
+:is(.app-shell, .business-setup, .login-page, .landing) :is(a, button).button.primary { color: var(--folio-on-accent); }
+:is(.app-shell, .business-setup, .login-page, .landing) :is(a, button).button.primary:hover { color: var(--folio-on-accent); background: var(--folio-accent-hover); }
