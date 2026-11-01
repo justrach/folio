@@ -5,6 +5,7 @@ import { Dashboard } from "@/components/dashboard";
 import { Landing } from "@/components/landing";
 import { Pricing } from "@/components/pricing";
 import { Privacy } from "@/components/privacy";
+import { OnboardingPage } from "@/components/onboarding-page";
 import { WorkspaceLoader } from "@/components/workspace-loader";
 
 const routes = [
@@ -23,13 +24,14 @@ const routes = [
   "settings",
   "login",
   "privacy",
+  "start",
 ];
 export async function generateMetadata({params}:{params:Promise<{slug?:string[]}>}):Promise<Metadata> {
   const {slug} = await params;
   const path = slug?.length ? `/${slug.join("/")}` : "/";
   const isPublic = ["/", "/privacy", "/pricing", "/leaderboard"].includes(path);
   return { alternates: isPublic ? {canonical:path} : undefined, robots: {index:isPublic,follow:isPublic},
-    ...(path === "/privacy" ? {title:"Privacy | Folio"} : {}) };
+    ...(path === "/privacy" ? {title:"Privacy | Folio"} : path === "/start" ? {title:"Get started | Folio"} : {}) };
 }
 export default async function Page({
   params,
@@ -42,5 +44,6 @@ export default async function Page({
   if ((slug?.length ?? 0) > 1 || !routes.includes(section)) notFound();
   if (section === "pricing") return <Pricing />;
   if (section === "privacy") return <Privacy />;
+  if (section === "start") return <OnboardingPage />;
   return <Suspense fallback={<WorkspaceLoader />}><Dashboard section={section} /></Suspense>;
 }

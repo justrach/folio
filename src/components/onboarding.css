@@ -1,0 +1,129 @@
+/* Guided onboarding (/start). Uses theme.css tokens only. */
+.ob{min-height:100vh;background:var(--folio-canvas);color:var(--folio-ink);font-family:var(--folio-font-body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.ob *,.ob *::before,.ob *::after{box-sizing:border-box}
+.ob h1,.ob h2,.ob p,.ob ol,.ob ul{margin:0;padding:0}
+.ob a{color:inherit}
+.ob-mark{display:inline-block;width:26px;height:26px;position:relative;flex-shrink:0}
+.ob-mark i{position:absolute;border:1.25px solid currentColor;border-radius:50%;inset:0}
+.ob-mark i:nth-child(2){inset:3px}.ob-mark i:nth-child(3){inset:6px}.ob-mark i:nth-child(4){inset:9px;background:currentColor}
+.ob-wordmark{display:inline-flex;align-items:center;gap:8px;font-family:var(--folio-font-display);font-weight:800;letter-spacing:-.075em;font-size:30px;line-height:1;text-decoration:none;color:var(--folio-ink)}
+.ob-wordmark .dot{color:var(--folio-accent)}
+.ob-top{display:flex;align-items:center;gap:28px;height:76px;padding:0 48px;border-bottom:1px solid var(--folio-edge);background:var(--folio-canvas)}
+.ob-progress{display:flex;align-items:center;gap:14px;margin-left:auto;font-size:13px;color:var(--folio-text-secondary);font-weight:600}
+.ob-bars{display:flex;gap:6px}.ob-bars span{width:34px;height:4px;border-radius:2px;background:var(--folio-edge)}
+.ob-bars span.on{background:var(--folio-accent)}
+.ob-exit{font-size:13px;color:var(--folio-text-secondary);text-decoration:underline;text-underline-offset:3px;background:none;border:0;cursor:pointer;font:inherit;font-size:13px;padding:0}
+.ob-main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:72px;align-items:center;max-width:1240px;margin:0 auto;padding:64px 48px;min-height:calc(100vh - 76px)}
+.ob-copy{min-width:0}
+.ob-eyebrow{font-size:13px;font-weight:700;color:var(--folio-accent);margin-bottom:14px!important;display:flex;align-items:center;gap:8px}
+.ob h1{font-family:var(--folio-font-display);font-weight:700;letter-spacing:-.05em;line-height:1.04;font-size:52px;text-wrap:balance;max-width:600px;outline:none}
+.ob-lede{font-size:17px;line-height:1.6;color:var(--folio-text-secondary);margin-top:18px!important;max-width:500px}
+.ob-field{display:grid;gap:7px;margin-top:28px;font-weight:600;font-size:14px;color:var(--folio-text-secondary);max-width:520px}
+.ob-field + .ob-field{margin-top:16px}
+.ob-input{display:flex;align-items:center;gap:6px;min-height:52px;padding:0 14px;background:var(--folio-surface);border:1px solid var(--folio-edge-strong);border-radius:var(--folio-radius-control);color:var(--folio-ink)}
+.ob-input:focus-within{outline:3px solid var(--folio-focus);outline-offset:2px;border-color:var(--folio-ink)}
+.ob-input span{color:var(--folio-text-faint);font-size:17px}
+.ob-input input{flex:1;min-width:0;border:0;background:transparent;font:inherit;font-size:17px;font-weight:500;color:var(--folio-ink);outline:none;height:50px;padding:0}
+.ob-input input::placeholder{color:var(--folio-text-faint);font-weight:400}
+.ob-hint{font-size:12.5px;font-weight:500;color:var(--folio-text-muted)}
+.ob-actions{display:flex;align-items:center;gap:20px;margin-top:26px;flex-wrap:wrap}
+.ob-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 22px;border-radius:var(--folio-radius-control);font:inherit;font-weight:700;font-size:15.5px;border:1px solid transparent;text-decoration:none;white-space:nowrap;cursor:pointer}
+.ob-btn:focus-visible{outline:3px solid var(--folio-focus);outline-offset:2px}
+.ob-btn:disabled{opacity:.6;cursor:not-allowed}
+.ob-btn.primary{background:var(--folio-accent);color:var(--folio-on-accent)}
+.ob-btn.primary:hover:not(:disabled){background:var(--folio-accent-hover)}
+.ob-btn.secondary{background:var(--folio-surface);border-color:var(--folio-edge-strong);color:var(--folio-ink)}
+.ob-btn.wide{width:100%;max-width:520px}
+.ob-quiet{font:inherit;font-size:14px;text-decoration:underline;text-underline-offset:3px;color:var(--folio-text-secondary);background:none;border:0;padding:0;cursor:pointer}
+.ob-trust{display:flex;align-items:center;gap:7px;margin-top:14px!important;font-size:12.5px;color:var(--folio-text-muted)}
+.ob-trust svg{flex:0 0 auto}
+.ob-error{margin-top:14px!important;font-size:14px;color:var(--folio-danger);max-width:520px}
+.ob-card{background:var(--folio-surface);border:1px solid var(--folio-edge);border-radius:var(--folio-radius-card);padding:26px 28px;min-width:0}
+.ob-card-head{display:flex;justify-content:space-between;gap:12px;font-size:12px;color:var(--folio-text-muted);margin-bottom:16px}
+.ob-card-head b{color:var(--folio-text-secondary);font-weight:600}
+.ob-card h2{font-size:21px;letter-spacing:-.02em;line-height:1.3}
+.ob-rows{list-style:none;margin-top:14px!important}
+.ob-rows li{display:flex;align-items:center;gap:14px;padding:13px 0;border-top:1px solid var(--folio-edge)}
+.ob-rows li:first-child{border-top:0}
+.ob-grow{flex:1;min-width:0}
+.ob-rows strong{display:block;font-size:15px}
+.ob-rows small,.ob-tbl small{display:block;font-size:12.5px;color:var(--folio-text-muted);line-height:1.45;margin-top:2px}
+.ob-pill{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:30px;padding:0 9px;border-radius:999px;font-weight:700;font-size:13px;background:var(--folio-accent-soft);color:var(--folio-accent);border:1px solid var(--folio-accent-edge)}
+.ob-pill.neutral{background:var(--folio-surface-muted);color:var(--folio-charcoal);border-color:transparent}
+.ob-pts{font-variant-numeric:tabular-nums;font-weight:700;font-size:14px;white-space:nowrap;color:var(--folio-danger)}
+.ob-more{margin-top:10px}
+.ob-more summary{cursor:pointer;font-size:13.5px;font-weight:600;color:var(--folio-accent);list-style:none}
+.ob-more summary::-webkit-details-marker{display:none}
+.ob-score{display:flex;align-items:baseline;gap:6px;font-family:var(--folio-font-display);letter-spacing:-.05em}
+.ob-score b{font-size:96px;line-height:.9;font-weight:700}
+.ob-score span{font-size:28px;color:var(--folio-text-muted);font-weight:600}
+.ob-score.small b{font-size:64px}.ob-score.small span{font-size:22px}
+.ob-meter{height:8px;border-radius:4px;background:var(--folio-surface-muted);margin:18px 0 6px;overflow:hidden}
+.ob-meter i{display:block;height:100%;background:var(--folio-accent);border-radius:4px}
+.ob-backdrop{position:relative;isolation:isolate;border-radius:var(--folio-radius-card);padding:40px;min-height:520px;display:flex;align-items:center;overflow:hidden}
+.ob-backdrop::before{content:"";position:absolute;inset:0;z-index:-1;background-image:linear-gradient(90deg,color-mix(in srgb,var(--folio-canvas) 55%,transparent),color-mix(in srgb,var(--folio-canvas) 10%,transparent)),url('/images/folio-hero-collage.webp');background-size:cover;background-position:center}
+.ob-backdrop .ob-card{width:100%}
+.ob-check{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-top:1px solid var(--folio-edge);font-size:14.5px;line-height:1.45;cursor:pointer}
+.ob-check:first-of-type{border-top:0}
+.ob-check input{position:absolute;opacity:0;width:1px;height:1px}
+.ob-box{flex:0 0 auto;width:20px;height:20px;border-radius:5px;border:1.5px solid var(--folio-edge-strong);margin-top:1px;display:grid;place-items:center;background:var(--folio-surface);color:var(--folio-on-accent)}
+.ob-check input:checked + .ob-box{background:var(--folio-accent);border-color:var(--folio-accent)}
+.ob-check input:focus-visible + .ob-box{outline:3px solid var(--folio-focus);outline-offset:2px}
+.ob-check input:not(:checked) ~ span:last-child{color:var(--folio-text-secondary)}
+.ob-check .ob-box svg{display:none}.ob-check input:checked + .ob-box svg{display:block}
+.ob-quote{margin-top:12px!important;padding:16px 18px;border-radius:10px;background:var(--folio-canvas);border:1px solid var(--folio-edge);font-size:15.5px;line-height:1.55}
+.ob-social{display:grid;gap:10px;margin-top:28px;max-width:520px}
+.ob-or{display:flex;align-items:center;gap:12px;margin:20px 0 0!important;max-width:520px;font-size:12.5px;color:var(--folio-text-muted)}
+.ob-or::before,.ob-or::after{content:"";flex:1;height:1px;background:var(--folio-edge)}
+.ob-tbl{width:100%;border-collapse:collapse;margin-top:6px;font-size:14.5px}
+.ob-tbl td{padding:13px 0;border-top:1px solid var(--folio-edge);vertical-align:middle}
+.ob-tbl tr:first-child td{border-top:0}
+.ob-tbl td.num{text-align:right}
+.ob-tbl .ob-check{border:0;padding:0}
+.ob-you{display:inline-block;margin-left:8px;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--folio-surface-muted);color:var(--folio-charcoal)}
+.ob-note{font-size:12.5px;color:var(--folio-text-muted);margin-top:14px!important;line-height:1.5}
+.ob-sum{display:grid;grid-template-columns:repeat(3,1fr);margin-top:6px;border:1px solid var(--folio-edge);border-radius:10px;overflow:hidden}
+.ob-sum div{padding:16px 18px;border-left:1px solid var(--folio-edge)}.ob-sum div:first-child{border-left:0}
+.ob-sum b{display:block;font-size:26px;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.ob-sum span{font-size:12.5px;color:var(--folio-text-muted)}
+.ob-run{display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid var(--folio-edge);font-size:14px;list-style:none}
+.ob-run:first-child{border-top:0}
+.ob-run .ob-grow{overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.ob-dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto;background:var(--folio-edge-strong)}
+.ob-dot.done{background:var(--folio-ink)}.ob-dot.live{background:var(--folio-accent);box-shadow:0 0 0 4px var(--folio-accent-soft)}.ob-dot.bad{background:var(--folio-danger)}
+.ob-state{margin-left:auto;font-size:12.5px;color:var(--folio-text-muted);white-space:nowrap}
+.ob-tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.02em;color:var(--folio-accent);background:var(--folio-accent-soft);border-radius:999px;padding:3px 9px}
+.ob-add{display:grid;gap:10px;margin-top:16px;padding-top:16px;border-top:1px solid var(--folio-edge)}
+.ob-add .ob-input{min-height:44px}.ob-add .ob-input input{height:42px;font-size:15px}
+.ob-packs{display:grid;gap:8px;margin-top:12px}
+.ob-packs button{text-align:left;font:inherit;font-size:14px;padding:12px 14px;border-radius:var(--folio-radius-control);border:1px solid var(--folio-edge-strong);background:var(--folio-surface);color:var(--folio-ink);cursor:pointer}
+.ob-packs button small{display:block;color:var(--folio-text-muted);font-size:12.5px}
+.ob-loading{display:grid;place-items:center;min-height:60vh;color:var(--folio-text-muted)}
+@media (max-width:600px){
+ .ob-top{height:60px;padding:0 20px;gap:12px}
+ .ob-wordmark{font-size:25px}.ob-mark{width:22px;height:22px}.ob-mark i:nth-child(2){inset:3px}.ob-mark i:nth-child(3){inset:5.5px}.ob-mark i:nth-child(4){inset:8px}
+ .ob-bars span{width:16px}.ob-exit{display:none}
+ .ob-main{display:block;padding:26px 20px 40px;min-height:0}
+ .ob h1{font-size:34px;letter-spacing:-.045em}
+ .ob-lede{font-size:15.5px;margin-top:12px!important}
+ .ob-field{margin-top:20px}.ob-input input{font-size:16px}
+ .ob-actions{margin-top:20px}.ob-actions .ob-btn.primary{width:100%}
+ .ob-side{margin-top:30px}
+ .ob-backdrop{padding:18px;min-height:0}
+ .ob-card{padding:20px}
+ .ob-score b{font-size:76px}
+ .ob-sum b{font-size:22px}.ob-sum div{padding:12px}
+}
+/* Workspace checklist */
+.ob-checklist{margin-bottom:20px}
+.ob-checklist .ob-card-head{align-items:center}
+.ob-todo{display:flex;align-items:center;gap:14px;padding:13px 0;border-top:1px solid var(--folio-edge);list-style:none}
+.ob-todo:first-child{border-top:0}
+.ob-todo strong{font-size:14.5px;display:block}.ob-todo small{font-size:12.5px;color:var(--folio-text-muted)}
+.ob-todo.done strong{color:var(--folio-text-secondary);font-weight:600}
+.ob-todo a{font-size:13.5px;font-weight:600;color:var(--folio-accent);text-decoration:none;white-space:nowrap}
+.ob-circle{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--folio-edge-strong);display:grid;place-items:center;flex:0 0 auto;color:var(--folio-canvas)}
+.ob-circle.done{background:var(--folio-ink);border-color:var(--folio-ink)}
+.ob-circle.live{border-color:var(--folio-accent);border-width:2px}
+.ob-circle.live::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--folio-accent)}
+.ob-complete{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:14px}
