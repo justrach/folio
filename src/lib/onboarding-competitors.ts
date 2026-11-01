@@ -47,7 +47,7 @@ export function publicCompetitorSuggestions(websiteUrl: string, data: { queries:
       const host = hostOf(rec.url), key = host ? siteKey(host) : `name:${rec.name.toLowerCase()}`;
       if (seen.has(key)) continue;
       seen.add(key);
-      const site = sites.get(key) ?? { names: new Map(), positions: [], named: 0 };
+      const site: { names: Map<string, number>; positions: number[]; named: number } = sites.get(key) ?? { names: new Map<string, number>(), positions: [], named: 0 };
       if ((queryText.get(answer.queryId) ?? "").includes(rec.name.toLowerCase().split(" ")[0])) site.named += 1;
       site.names.set(rec.name, (site.names.get(rec.name) ?? 0) + 1);
       site.positions.push(rec.position);
