@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { authClient } from "@/lib/auth-client";
 import { websiteQuestionDrafts } from "@/lib/website-question-drafts";
+import { evaluationMethodology } from "@/lib/evaluation";
 import type { CompetitorSuggestion } from "@/lib/onboarding-competitors";
 import { BaselineProgress, useBaselineQueue } from "./onboarding-progress";
 import "./onboarding.css";
@@ -12,7 +13,7 @@ import "./onboarding.css";
 export type OnboardingProof = { category: string; totalAnswers: number; firstObservedAt: string | null; lastObservedAt: string | null; rows: { name: string; answers: number; totalAnswers: number; averagePosition: number }[] };
 export type StarterPack = { id: string; name: string; questions: string[]; companies: { name: string; aliases: string[] }[] };
 type Fix = { id: string; label: string; points: number; maxPoints: number; gap: number; detail: string };
-type Check = { id: string; url: string; host: string; createdAt: string; seoScore: number; scoredChecks: number; fixes: Fix[];
+type Check = { id: string; url: string; host: string; createdAt: string; seoScore: number; scoredChecks: number; fixes: Fix[]; passed?: { id: string; label: string }[];
   suggestion: { audience: string; task: string };
   competitors: { category: string | null; questions: number; totalAnswers: number; rows: CompetitorSuggestion[] } };
 type Summary = { state: { siteId: string | null; audience: string; task: string; suiteId: string | null; competitorsSavedAt: string | null; baselineRequestedAt: string | null; completedAt: string | null } | null;
@@ -21,7 +22,8 @@ type Summary = { state: { siteId: string | null; audience: string; task: string;
 type Access = { canRun: boolean; message: string };
 type Candidate = { name: string; aliases: string[]; answers?: number; totalAnswers?: number; averagePosition?: number; source: "public-index" | "starter-pack" | "manual"; checked: boolean };
 
-const TOTAL = 7;
+const STEPS = ["Website", "Report", "Account", "Customers", "Questions", "Competitors", "Baseline"];
+const TOTAL = STEPS.length;
 const STORE = "folio-onboarding-v1";
 const LANGUAGE = "English", LOCALE = "United States";
 
@@ -46,21 +48,29 @@ async function api<T>(url: string, init?: { method?: string; body?: unknown }): 
   return body as T;
 }
 
-function TopBar({ step, onExit }: { step: number; onExit?: () => void }) {
+type Nav = { can: (step: number) => boolean; go: (step: number) => void; dir: "forward" | "back" };
+
+function TopBar({ step, onExit, nav }: { step: number; onExit?: () => void; nav?: Nav }) {
   return <header className="ob-top">
     <Link href="/" className="ob-wordmark" aria-label="Folio home"><Mark /><span>folio<span className="dot">.</span></span></Link>
-    <div className="ob-progress"><span>{step <= TOTAL ? `Step ${step} of ${TOTAL}` : "Optional"}</span>
+    <nav className="ob-steps" aria-label="Setup steps"><ol>{STEPS.map((label, index) => {
+      const n = index + 1, state = n < step ? "done" : n === step ? "now" : "next";
+      const inner = <><span className="ob-step-dot" aria-hidden="true">{state === "done" ? <Tick /> : n}</span><span>{label}</span></>;
+      return <li key={label} className={state} aria-current={state === "now" ? "step" : undefined}>
+        {nav?.can(n) ? <button type="button" onClick={() => nav.go(n)} aria-label={`Back to ${label}`}>{inner}</button> : <span className="ob-step">{inner}</span>}</li>;
+    })}</ol></nav>
+    <div className="ob-progress"><span>{step <= TOTAL ? `Step ${step} of ${TOTAL}` : "Optional"}<span className="ob-progress-label">{step <= TOTAL ? ` · ${STEPS[step - 1]}` : ""}</span></span>
       <div className="ob-bars" role="progressbar" aria-label="Setup progress" aria-valuemin={1} aria-valuemax={TOTAL} aria-valuenow={Math.min(step, TOTAL)}>{Array.from({ length: TOTAL }, (_, index) => <span key={index} className={index < step ? "on" : ""} />)}</div></div>
     {onExit && <button type="button" className="ob-exit" onClick={onExit}>Save and exit</button>}
   </header>;
 }
 
-function Screen({ step, onExit, eyebrow, title, children, side }: { step: number; onExit?: () => void; eyebrow: ReactNode; title: string; children: ReactNode; side: ReactNode }) {
+function Screen({ step, onExit, nav, eyebrow, title, children, side }: { step: number; onExit?: () => void; nav?: Nav; eyebrow: ReactNode; title: string; children: ReactNode; side: ReactNode }) {
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => { heading.current?.focus({ preventScroll: true }); }, [step]);
   return <div className="ob">
-    <TopBar step={step} onExit={onExit} />
-    <main className="ob-main" id="main-content">
+    <TopBar step={step} onExit={onExit} nav={nav} />
+    <main className="ob-main" id="main-content" key={step} data-dir={nav?.dir ?? "forward"}>
       <div className="ob-copy"><p className="ob-eyebrow">{eyebrow}</p><h1 ref={heading} tabIndex={-1}>{title}</h1>{children}</div>
       <aside className="ob-side">{side}</aside>
     </main>
@@ -73,6 +83,9 @@ export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | n
   const { data: session, isPending } = authClient.useSession();
   const signedIn = Boolean(session);
   const [step, setStepState] = useState(0);
+  const [dir, setDir] = useState<"forward" | "back">("forward");
+  const current = useRef(0);
+  useEffect(() => { current.current = step; }, [step]);
   const [url, setUrl] = useState("");
   const [check, setCheck] = useState<Check | null>(null);
   const [siteId, setSiteId] = useState<string | null>(null);
@@ -98,7 +111,7 @@ export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | n
   const booted = useRef(false);
 
   const setStep = useCallback((next: number) => {
-    setStepState(next); setError(""); setShowMore(false);
+    setDir(next < current.current ? "back" : "forward"); setStepState(next); setError(""); setShowMore(false);
     const query = new URLSearchParams(window.location.search); query.set("step", String(next));
     window.history.replaceState(null, "", `/start?${query}`);
     window.scrollTo({ top: 0 });
@@ -165,10 +178,12 @@ export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | n
     finally { setBusy(false); }
   }
   const exit = signedIn ? () => router.push("/websites") : undefined;
+  // Completed steps can be revisited; the account step and anything before it are closed once signed in.
+  const nav: Nav = { can: target => target < step && (signedIn ? target >= 4 : target <= 2), go: target => setStep(target), dir };
 
   if (!step) return <div className="ob"><TopBar step={1} /><p className="ob-loading" role="status">Loading your setup…</p></div>;
 
-  if (step === 1) return <Screen step={1} eyebrow="Free page check" title="Which website should AI recommend?" side={<ProofCard proof={proof} />}>
+  if (step === 1) return <Screen nav={nav} step={1} eyebrow="Free page check" title="Which website should AI recommend?" side={url.trim() ? <LivePreview input={url} checking={busy} /> : <ProofCard proof={proof} />}>
     <p className="ob-lede">Enter your address. Folio checks your page in seconds and shows who AI already recommends for your kind of product.</p>
     <form onSubmit={event => { event.preventDefault(); void run(async () => {
       const result = await api<{ check: Check; siteId: string | null }>("/api/onboarding/check", { method: "POST", body: { url: url.includes("://") ? url : `https://${url}` } });
@@ -187,11 +202,11 @@ export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | n
 
   if (step === 2 && check) {
     const top = check.fixes.slice(0, 3), rest = check.fixes.slice(3), worth = top.reduce((sum, fix) => sum + fix.gap, 0);
-    return <Screen step={2} eyebrow={check.host} title={`Your page scores ${Math.round(check.seoScore)} out of 100.`} side={<div className="ob-card">
-      <div className="ob-score"><b>{Math.round(check.seoScore)}</b><span>/ 100</span></div>
-      <div className="ob-meter"><i style={{ width: `${check.seoScore}%` }} /></div>
+    return <Screen nav={nav} step={2} eyebrow={check.host} title={`Your page scores ${Math.round(check.seoScore)} out of 100.`} side={<div className="ob-card">
+      <ScoreReveal score={check.seoScore} />
       <p className="ob-hint">Captured {date(check.createdAt)}</p>
       {top.length > 0 && <ol className="ob-rows" style={{ marginTop: 18 }} aria-label="Top fixes">{top.map(fix => <FixRow key={fix.id} fix={fix} />)}</ol>}
+      {!top.length && check.passed?.length ? <ul className="ob-passed" aria-label="Passed checks">{check.passed.map(item => <li key={item.id}><span className="ob-step-dot" aria-hidden="true"><Tick /></span>{item.label}</li>)}</ul> : null}
       {rest.length > 0 && <details className="ob-more" open={showMore} onToggle={event => setShowMore((event.target as HTMLDetailsElement).open)}>
         <summary>{showMore ? "Hide" : "Show"} {plural(rest.length, "more check")}</summary><ol className="ob-rows">{rest.map(fix => <FixRow key={fix.id} fix={fix} />)}</ol></details>}
     </div>}>
@@ -207,7 +222,7 @@ export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | n
       if (result.error) throw new Error(result.error.message ?? "Sign-in could not be completed.");
     });
     const primarySocial = providers.google ? "google" : providers.github ? "github" : null;
-    return <Screen step={3} eyebrow="Save your report" title="Keep this report and track it over time." side={<div className="ob-card">
+    return <Screen nav={nav} step={3} eyebrow="Save your report" title="Keep this report and track it over time." side={<div className="ob-card">
       <div className="ob-card-head"><span>Saved to your account</span><b>Private</b></div>
       <h2>{check.host}</h2>
       <div className="ob-score small" style={{ marginTop: 14 }}><b>{Math.round(check.seoScore)}</b><span>/ 100</span></div>
@@ -238,9 +253,11 @@ export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | n
 
   if (step === 4) {
     const preview = websiteQuestionDrafts(audience, task)[0];
-    return <Screen step={4} onExit={exit} eyebrow="Your customers" title="Who should find you, and what do they need?" side={<div className="ob-card">
+    return <Screen nav={nav} step={4} onExit={exit} eyebrow="Your customers" title="Who should find you, and what do they need?" side={<div className="ob-card">
       <div className="ob-card-head"><span>Your first question</span><b>Updates as you type</b></div>
-      <p className="ob-quote">{preview ?? "Fill in both fields to preview your first question."}</p>
+      {audience.trim() || task.trim()
+        ? <p className="ob-quote"><QuestionPreview audience={audience} task={task} /></p>
+        : <p className="ob-quote empty">Start typing and your first question appears here.</p>}
       <p className="ob-note">Folio drafts 10 questions like this. You pick which ones to track next.</p>
       {starterPacks.length > 0 && <details className="ob-more" style={{ marginTop: 18 }}><summary>Use a starter pack instead</summary>
         <div className="ob-packs">{starterPacks.map(pack => <button key={pack.id} type="button" disabled={busy} onClick={() => {
@@ -267,9 +284,9 @@ export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | n
   if (step === 5) {
     const selected = drafts.filter((_, index) => chosen[index]);
     const visible = showMore ? drafts : drafts.slice(0, 7);
-    return <Screen step={5} onExit={exit} eyebrow="Questions to track" title="Pick the questions your buyers ask." side={<div className="ob-card">
+    return <Screen nav={nav} step={5} onExit={exit} eyebrow="Questions to track" title="Pick the questions your buyers ask." side={<div className="ob-card">
       <div className="ob-card-head"><span>{selected.length} of {drafts.length} selected</span><b>{LANGUAGE}, {LOCALE}</b></div>
-      <fieldset style={{ border: 0, padding: 0, margin: 0 }}><legend className="ob-hint" style={{ position: "absolute", left: -9999 }}>Questions</legend>
+      <fieldset className="ob-qlist" style={{ border: 0, padding: 0, margin: 0 }}><legend className="ob-hint" style={{ position: "absolute", left: -9999 }}>Questions</legend>
         {visible.map((question, index) => <label className="ob-check" key={question}><input type="checkbox" checked={Boolean(chosen[index])} onChange={() => setChosen(value => value.map((item, i) => i === index ? !item : item))} /><span className="ob-box"><Tick /></span><span>{question}</span></label>)}
       </fieldset>
       {drafts.length > 7 && <button type="button" className="ob-quiet" style={{ marginTop: 10, color: "var(--folio-accent)", textDecoration: "none", fontWeight: 600, fontSize: 13.5 }} onClick={() => setShowMore(value => !value)}>{showMore ? "Show fewer" : `Show ${drafts.length - 7} more`}</button>}
@@ -292,28 +309,42 @@ export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | n
     const allNamed = fromIndex && check ? [...candidates.filter(item => item.source === "public-index"), ...(target ? [target] : [])].every(item => {
       const row = check.competitors.rows.find(value => value.name === item.name); return row && row.namedInQuestion >= row.answers;
     }) : false;
-    return <Screen step={6} onExit={exit} eyebrow="Competitors" title={fromIndex ? "Here is who AI already recommends." : "Who do you want to watch?"} side={<div className="ob-card">
+    const draftName = newName.trim(), draftAliases = newAliases.split(",").map(value => value.trim()).filter(Boolean);
+    const ghost = (adding || !candidates.length) && draftName && !candidates.some(item => item.name.toLowerCase() === draftName.toLowerCase())
+      ? <tr className="ob-ghost" aria-hidden="true"><td style={{ width: 34 }}><span className="ob-box" /></td><td><strong>{draftName}</strong><small>{draftAliases.length ? `Also matches ${draftAliases.join(", ")}` : "Press Add to track this company"}</small></td><td /></tr> : null;
+    return <Screen nav={nav} step={6} onExit={exit} eyebrow="Competitors" title={fromIndex ? "Here is who AI already recommends." : "Who do you want to watch?"} side={<div className="ob-card">
       {fromIndex && check && <div className="ob-card-head"><span>{plural(check.competitors.totalAnswers, "saved answer")}</span><b>Avg. position</b></div>}
       {candidates.length > 0 ? <table className="ob-tbl"><tbody>
         {candidates.map((item, index) => <tr key={item.name}><td style={{ width: 34 }}><label className="ob-check"><input type="checkbox" aria-label={`Track ${item.name}`} checked={item.checked} onChange={() => setCandidates(list => list.map((value, i) => i === index ? { ...value, checked: !value.checked } : value))} /><span className="ob-box"><Tick /></span></label></td>
           <td><strong>{item.name}</strong><small>{item.answers ? `${item.answers} of ${item.totalAnswers} answers${item.aliases.length ? `, also listed as ${item.aliases.join(", ")}` : ""}` : item.aliases.length ? `Also matches ${item.aliases.join(", ")}` : item.source === "starter-pack" ? "From the starter pack" : "Added by you"}</small></td>
           <td className="num">{item.averagePosition !== undefined && <span className="ob-pill">{item.averagePosition.toFixed(1)}</span>}</td></tr>)}
+        {ghost}
         {target && <tr><td /><td><strong>{target.name}</strong><span className="ob-you">You</span><small>{target.answers} of {target.totalAnswers} answers</small></td><td className="num"><span className="ob-pill neutral">{target.averagePosition.toFixed(1)}</span></td></tr>}
-      </tbody></table> : <p className="ob-note" style={{ marginTop: 0 }}>No saved public answers mention {check?.host ?? "your website"} yet. Add the companies you compete with, and Folio will look for them in your answers.</p>}
+      </tbody></table> : <>
+        <div className="ob-card-head"><span>Not in the Folio index yet</span><b>{check?.host ?? "Your website"}</b></div>
+        <p className="ob-note" style={{ marginTop: 0 }}>No saved public answers mention {check?.host ?? "your website"} yet. Name the companies you compete with, and Folio will look for them in your answers.</p>
+        {ghost && <table className="ob-tbl" style={{ marginTop: 10 }}><tbody>{ghost}</tbody></table>}
+      </>}
       {fromIndex && <p className="ob-note">{allNamed ? `These public questions named all ${candidates.filter(item => item.source === "public-index").length + (target ? 1 : 0)} products, so being listed is expected. Your own questions do not name anyone.` : "Average position in the returned list. Lower is earlier."}</p>}
-      {adding ? <form className="ob-add" onSubmit={event => { event.preventDefault(); const name = newName.trim(); if (!name || candidates.some(item => item.name.toLowerCase() === name.toLowerCase())) return;
+      {adding || !candidates.length ? <form className="ob-add" onSubmit={event => { event.preventDefault(); const name = newName.trim(); if (!name || candidates.some(item => item.name.toLowerCase() === name.toLowerCase())) return;
         setCandidates(list => [...list, { name, aliases: newAliases.split(",").map(value => value.trim()).filter(Boolean), source: "manual", checked: true }]); setNewName(""); setNewAliases(""); setAdding(false); }}>
-        <label className="ob-field" style={{ marginTop: 0 }}>Company name<div className="ob-input"><input autoFocus required maxLength={80} value={newName} onChange={event => setNewName(event.target.value)} placeholder="Acme" /></div></label>
+        <label className="ob-field" style={{ marginTop: 0 }}>Company name<div className="ob-input"><input autoFocus={adding} required maxLength={80} value={newName} onChange={event => setNewName(event.target.value)} placeholder="Acme" /></div></label>
         <label className="ob-field">Other names (optional)<div className="ob-input"><input maxLength={200} value={newAliases} onChange={event => setNewAliases(event.target.value)} placeholder="Acme Cloud, acme.com" /></div><span className="ob-hint">Separate with commas. Folio counts any of these as the same company.</span></label>
-        <div className="ob-actions" style={{ marginTop: 6 }}><button type="submit" className="ob-btn secondary">Add</button><button type="button" className="ob-quiet" onClick={() => setAdding(false)}>Cancel</button></div>
+        <div className="ob-actions" style={{ marginTop: 6 }}><button type="submit" className="ob-btn secondary">Add</button>{candidates.length > 0 && <button type="button" className="ob-quiet" onClick={() => setAdding(false)}>Cancel</button>}</div>
       </form> : null}
+      {!candidates.length && starterPacks.length > 0 && <div className="ob-start-from"><p className="ob-hint">Or start from a category</p>
+        <div className="ob-chips">{starterPacks.map(pack => <button key={pack.id} type="button" onClick={() => setCandidates(pack.companies.filter(company => !check || !company.aliases.some(alias => alias.toLowerCase() === check.host)).slice(0, 5).map((company, index) => ({ ...company, source: "starter-pack", checked: index < 3 })))}>
+          {pack.name.replace(/\s*·.*$/, "").replace(/ discovery$/i, "")}<small>{pack.companies.slice(0, 3).map(company => company.name).join(", ")}</small></button>)}</div></div>}
     </div>}>
       <p className="ob-lede">{fromIndex && check?.competitors.category ? `From the public Folio index for ${check.competitors.category.toLowerCase()}. Track them to see where they appear and you do not.` : "Track up to 10 companies. Folio looks for them, and any other names you add, in every saved answer."}</p>
-      <div className="ob-actions"><button className="ob-btn primary" type="button" disabled={busy || !siteId} onClick={() => void run(async () => {
+      <div className="ob-actions"><button className="ob-btn primary" type="button" disabled={busy || !siteId || !candidates.length} onClick={() => void run(async () => {
         await api("/api/competitors", { method: "PUT", body: { siteId, competitors: picked.map(item => ({ name: item.name, aliases: item.aliases, source: item.source })) } });
         setStep(7);
-      })}>{picked.length ? (picked.length === candidates.length && picked.length > 1 ? `Track these ${picked.length}` : `Track ${plural(picked.length, "competitor")}`) : "Continue without competitors"} <Arrow /></button>
-        {!adding && candidates.length < 10 && <button type="button" className="ob-quiet" onClick={() => setAdding(true)}>Add another</button>}</div>
+      })}>{picked.length ? (picked.length === candidates.length && picked.length > 1 ? `Track these ${picked.length}` : `Track ${plural(picked.length, "competitor")}`) : candidates.length ? "Continue without competitors" : "Track competitors"} <Arrow /></button>
+        {!adding && candidates.length > 0 && candidates.length < 10 && <button type="button" className="ob-quiet" onClick={() => setAdding(true)}>Add another</button>}
+        {!candidates.length && <button type="button" className="ob-quiet" disabled={busy || !siteId} onClick={() => void run(async () => {
+          await api("/api/competitors", { method: "PUT", body: { siteId, competitors: [] } }); setStep(7);
+        })}>Skip for now</button>}</div>
       {error && <p className="ob-error" role="alert">{error}</p>}
       <Trust>You can change this list any time.</Trust>
     </Screen>;
@@ -321,7 +352,7 @@ export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | n
 
   if (step === 7) {
     const count = suite?.cases.length ?? 0, canRun = access?.canRun === true;
-    return <Screen step={7} onExit={exit} eyebrow="First baseline" title={`Ask AI your ${plural(count, "question")} now.`} side={<div className="ob-card">
+    return <Screen nav={nav} step={7} onExit={exit} eyebrow="First baseline" title={`Ask AI your ${plural(count, "question")} now.`} side={<div className="ob-card">
       <div className="ob-card-head"><span>What runs</span><b>GPT-6.0 Astra</b></div>
       <div className="ob-sum"><div><b>{count}</b><span>{count === 1 ? "question" : "questions"}</span></div><div><b>{candidates.filter(item => item.checked).length}</b><span>competitors</span></div><div><b>{check ? 1 : 0}</b><span>page check</span></div></div>
       <p className="ob-note" style={{ marginTop: 18 }}>{access ? access.message : "Checking your run access…"}</p>
@@ -343,7 +374,7 @@ export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | n
 
   // Step 8: optional Search Console while the baseline runs.
   const finish = async (skipped: boolean) => { await api("/api/onboarding", { method: "PUT", body: skipped ? { searchConsoleSkipped: true, completed: true } : { completed: true } }); };
-  return <Screen step={8} eyebrow={baselineRequested ? "While your baseline runs" : "One more thing"} title="Add your real Google clicks." side={<div className="ob-card">
+  return <Screen nav={nav} step={8} eyebrow={baselineRequested ? "While your baseline runs" : "One more thing"} title="Add your real Google clicks." side={<div className="ob-card">
     <div className="ob-card-head"><span>Baseline</span><b>{!baselineRequested ? "Not started" : queue.saved === (suite?.cases.length ?? 0) && queue.saved > 0 ? "Complete" : queue.active ? "Running" : "Queued"}</b></div>
     {suite?.cases.length ? <BaselineProgress rows={queue.rows} error={queue.error} /> : <p className="ob-note">No questions saved yet.</p>}
     {baselineRequested && <p className="ob-note">One question runs at a time while Folio is open. Cancel any run from Evaluations.</p>}
@@ -363,9 +394,70 @@ export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | n
   </Screen>;
 }
 
+/** Counts 0 → score on the meter's curve. Reduced motion shows the final value at once. */
+function useCountUp(target: number, ms = 700) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setValue(target); return; }
+    let frame = 0; const start = performance.now();
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / ms);
+      setValue(Math.round(target * (1 - Math.pow(1 - t, 3))));
+      if (t < 1) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [target, ms]);
+  return value;
+}
+
+function ScoreReveal({ score }: { score: number }) {
+  const final = Math.round(score), shown = useCountUp(final);
+  return <>
+    <div className="ob-score" role="img" aria-label={`${final} out of 100`}><b aria-hidden="true">{shown}</b><span aria-hidden="true">/ 100</span></div>
+    <div className="ob-meter reveal"><i style={{ width: `${score}%` }} /></div>
+  </>;
+}
+
+const WHO = "\uE000", NEED = "\uE001";
+/** First draft question while typing: the owner's words highlighted, a labelled blank for whatever is still empty. */
+function QuestionPreview({ audience, task }: { audience: string; task: string }) {
+  const who = audience.trim(), need = task.trim();
+  const text = websiteQuestionDrafts(WHO, need || NEED)[0] ?? "";
+  return <>{text.split(new RegExp(`(${WHO}|${NEED})`)).map((part, index) => {
+    if (part === WHO) return who ? <mark key={index} className="ob-fill">{who}</mark> : <span key={index} className="ob-slot">your customers</span>;
+    if (part === NEED) return <span key={index} className="ob-slot">what they want to do</span>;
+    const at = need ? part.indexOf(need) : -1;
+    return at < 0 ? part : <span key={index}>{part.slice(0, at)}<mark className="ob-fill">{need}</mark>{part.slice(at + need.length)}</span>;
+  })}</>;
+}
+
 function FixRow({ fix }: { fix: Fix }) {
   const detail = fix.detail.replace(/\s*This does not change the HTML score\.?/, "").trim();
   return <li><div className="ob-grow"><strong>{fix.label}</strong>{detail && <small>{detail}</small>}</div><span className="ob-pts">{fix.points} / {fix.maxPoints}</span></li>;
+}
+
+/** The address as typed, shown as a valid host (and path) or null while it is still incomplete. */
+function previewHost(input: string) {
+  const value = input.trim().replace(/^https?:\/\//i, "");
+  if (!value || /\s/.test(value)) return null;
+  try {
+    const url = new URL(`https://${value}`), host = url.hostname.replace(/^www\./, "");
+    return /^(?:[a-z0-9-]+\.)+[a-z]{2,}$/i.test(host) ? host + (url.pathname === "/" ? "" : url.pathname) : null;
+  } catch { return null; }
+}
+
+/** Step 1 side card once typing starts: the report this address will get, before any request is made. */
+function LivePreview({ input, checking }: { input: string; checking: boolean }) {
+  const host = previewHost(input);
+  return <div className="ob-card ob-live" data-checking={checking || undefined} aria-live="polite">
+    <div className="ob-card-head"><span>{checking ? "Checking your page…" : "Your free check"}</span><b>Private</b></div>
+    <h2 className="ob-live-host"><span aria-hidden="true">https://</span>{host ?? input.trim()}</h2>
+    <p className={`ob-hint ob-live-state${host ? " ready" : ""}`}>{checking ? "Reading the page now. This takes a few seconds." : host ? "Ready to check. Folio reads this one public page." : "Keep typing a domain, like yourwebsite.com"}</p>
+    <div className="ob-score small pending" aria-hidden="true"><b>—</b><span>/ 100</span></div>
+    <div className="ob-meter pending"><i /></div>
+    <ul className="ob-passed ob-pending" aria-label="Checks Folio will run">{evaluationMethodology.weights.map(check => <li key={check.id}><span className="ob-step-dot" aria-hidden="true" />{check.label}<small>{check.weight} pts</small></li>)}</ul>
+  </div>;
 }
 
 function ProofCard({ proof }: { proof: OnboardingProof | null }) {
