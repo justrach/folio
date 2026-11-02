@@ -26,6 +26,7 @@ export function onboardingCheckView(result: ScanResult) {
     id: result.id, url: result.url, host: new URL(result.url).hostname.replace(/^www\./, ""), createdAt: result.createdAt, seoScore: result.seoScore,
     scoredChecks: scoredCheckCount(checks),
     fixes: fixes.map(fix => ({ id: fix.id, label: fix.label, points: fix.points, maxPoints: fix.maxPoints, gap: fix.gap, detail: fix.detail ?? "" })),
+    passed: checks.filter(check => check.maxPoints > 0 && check.status !== "optional" && check.points >= check.maxPoints).map(check => ({ id: check.id, label: check.label })),
     suggestion: suggestAudienceTask({ title, description }),
     competitors: publicCompetitorSuggestions(result.url),
   };

@@ -2,6 +2,23 @@
 export function websiteQuestionDrafts(audience: string, task: string): string[] {
   const who = audience.trim(), need = task.trim();
   if (!who || !need || who.length > 60 || need.length > 120 || /[\u0000-\u001f\u007f]/.test(who + need)) return [];
+  // "choose a library" is already a buying decision; "shortlist to choose a library" reads badly.
+  const choice = /^choos(?:e|ing)\s+(?:(?:a|an|the)\s+)?(.+)$/i.exec(need);
+  if (choice) {
+    const [head, tail = ""] = choice[1].split(/(?=\s(?:for|to)\s)/, 2), thing = `${/^[aeio]/i.test(head) ? "an" : "a"} ${head}${tail}`;
+    return [
+      `Which ${head}${tail} should ${who} choose? Explain the tradeoffs.`,
+      `For ${who} choosing ${thing}, which options are easiest to start using?`,
+      `What costs and limitations should ${who} compare before choosing ${thing}?`,
+      `Which ${head} options${tail} have the clearest pricing and limits for ${who}?`,
+      `What setup work does each leading ${head}${tail} need for ${who}?`,
+      `Which ${head} options${tail} help ${who} keep control of their data?`,
+      `How can ${who} test ${thing} before paying?`,
+      `What support is available when ${who} use ${thing}?`,
+      `What would make ${thing} unsuitable for ${who}?`,
+      `How can ${who} switch to a different ${head} later?`,
+    ];
+  }
   return [
     `Which products should ${who} shortlist to ${need}? Explain the tradeoffs.`,
     `For ${who} who need to ${need}, which options are easiest to start using?`,
