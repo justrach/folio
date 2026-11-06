@@ -22,6 +22,14 @@ This guide describes the current UI. The [evaluation loop](EVALUATION-LOOP.md) e
 
 The `/seo` checks panel shows a left-hand percentage breakdown of all checks (including optional checks), with status filters and an inspector on the right. No tests appear until a user selects Pass, Needs improvement, Fail, or Optional using a bar or filter. Rows then expand to show findings, short supporting notes, and points. Optional checks are labeled Not scored; these count-based percentages are not the weighted SEO score. On mobile the breakdown stacks above the inspector. Saved evidence and scoring remain unchanged.
 
+## Customer groups in onboarding
+
+Step 4 of `/start` begins with one input under **Customer group(s)**. **+ Add more** adds closely stacked inputs, up to four rows (including unused blank rows). At four, the add control is replaced by **Max customer groups added.** in the same accent color. Red cross buttons remove rows when more than one exists; removing a row restores the add control and keeps keyboard focus in the remaining list.
+
+**Draft my questions** saves all nonblank groups separately with the shared **What they want to do** task. Optional blank rows are ignored; at least one group is required. Drafting interleaves the groups into ten total questions so the initial five selections represent every group, rather than multiplying the suite size. The preview identifies its first nonblank-group context. Drafting and editing start no provider work.
+
+Saved groups reopen through the owner-scoped onboarding API. Migration `0024_onboarding_customer_groups.sql` adds group storage while existing single-audience records reopen as one group. Client and server enforce four groups; the existing 60-character per-group and 120-character task bounds remain unchanged (the separate text-limit issue is not implemented here). Owner changes remount private onboarding state, abort outstanding reads, and discard old unkeyed browser drafts; only an explicitly anonymous page check is retained in tab storage for the sign-in handoff.
+
 ## Start from your workspace
 
 `/overview` defaults to the public benchmark dashboard. **My website results** is the explicit `/overview?view=workspace` view. Signed-out visitors to that view see a sign-in prompt; signed-in owners choose an existing saved website. The overview loads saved application records with GET requests only. It does not reconcile provider sessions, start a search, or import an SEO report.

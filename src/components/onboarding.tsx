@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { authClient } from "@/lib/auth-client";
-import { websiteQuestionDrafts } from "@/lib/website-question-drafts";
+import { websiteCustomerGroupDrafts, websiteQuestionDrafts } from "@/lib/website-question-drafts";
+import { MAX_CUSTOMER_GROUPS, MAX_CUSTOMER_GROUP_LENGTH } from "@/lib/onboarding-customers";
 import { evaluationMethodology } from "@/lib/evaluation";
 import type { CompetitorSuggestion } from "@/lib/onboarding-competitors";
 import { BaselineProgress, useBaselineQueue } from "./onboarding-progress";
@@ -16,7 +17,7 @@ type Fix = { id: string; label: string; points: number; maxPoints: number; gap: 
 type Check = { id: string; url: string; host: string; createdAt: string; seoScore: number; scoredChecks: number; fixes: Fix[]; passed?: { id: string; label: string }[];
   suggestion: { audience: string; task: string };
   competitors: { category: string | null; questions: number; totalAnswers: number; rows: CompetitorSuggestion[] } };
-type Summary = { state: { siteId: string | null; audience: string; task: string; suiteId: string | null; competitorsSavedAt: string | null; baselineRequestedAt: string | null; completedAt: string | null } | null;
+type Summary = { state: { siteId: string | null; audience: string; customerGroups?: string[]; task: string; suiteId: string | null; competitorsSavedAt: string | null; baselineRequestedAt: string | null; completedAt: string | null } | null;
   site: { id: string; url: string; name: string } | null; check: Check | null; suite: { id: string; cases: { id: string; query: string }[] } | null;
   competitors: { name: string; aliases: string[] }[] };
 type Access = { canRun: boolean; message: string };
@@ -41,8 +42,8 @@ const dateRange = (from: string | null, to: string | null) => {
 };
 const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
 
-async function api<T>(url: string, init?: { method?: string; body?: unknown }): Promise<T> {
-  const response = await fetch(url, { method: init?.method ?? "GET", cache: "no-store", headers: init?.body !== undefined ? { "Content-Type": "application/json" } : undefined, body: init?.body !== undefined ? JSON.stringify(init.body) : undefined });
+async function api<T>(url: string, init?: { method?: string; body?: unknown; signal?: AbortSignal }): Promise<T> {
+  const response = await fetch(url, { signal: init?.signal, method: init?.method ?? "GET", cache: "no-store", headers: init?.body !== undefined ? { "Content-Type": "application/json" } : undefined, body: init?.body !== undefined ? JSON.stringify(init.body) : undefined });
   const body = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error((body as { error?: string }).error ?? "Something went wrong. Please try again.");
   return body as T;
@@ -77,11 +78,19 @@ function Screen({ step, onExit, nav, eyebrow, title, children, side }: { step: n
   </div>;
 }
 
-export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | null; starterPacks: StarterPack[] }) {
+type OnboardingProps = { proof: OnboardingProof | null; starterPacks: StarterPack[] };
+
+export function Onboarding(props: OnboardingProps) {
+  const { data: session, isPending } = authClient.useSession();
+  if (isPending) return <div className="ob"><TopBar step={1} /><p className="ob-loading" role="status">Loading your setup…</p></div>;
+  // Remount all private form state when the authenticated owner changes.
+  return <OnboardingFlow key={session?.user.id ?? "anonymous"} {...props} signedIn={Boolean(session)} />;
+}
+
+function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { signedIn: boolean }) {
   const router = useRouter();
   const params = useSearchParams();
-  const { data: session, isPending } = authClient.useSession();
-  const signedIn = Boolean(session);
+  const requestedStep = useRef(Number(params.get("step")));
   const [step, setStepState] = useState(0);
   const [dir, setDir] = useState<"forward" | "back">("forward");
   const current = useRef(0);
@@ -89,7 +98,10 @@ export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | n
   const [url, setUrl] = useState("");
   const [check, setCheck] = useState<Check | null>(null);
   const [siteId, setSiteId] = useState<string | null>(null);
-  const [audience, setAudience] = useState("");
+  const [customerGroups, setCustomerGroups] = useState<string[]>([""]);
+  const groupInputs = useRef<(HTMLInputElement | null)[]>([]);
+  const pendingGroupFocus = useRef<number | null>(null);
+  const requests = useRef<AbortController | null>(null);
   const [task, setTask] = useState("");
   const [drafts, setDrafts] = useState<string[]>([]);
   const [chosen, setChosen] = useState<boolean[]>([]);
@@ -108,9 +120,9 @@ export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | n
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [haveAccount, setHaveAccount] = useState(false);
-  const booted = useRef(false);
 
   const setStep = useCallback((next: number) => {
+    if (requests.current?.signal.aborted) return;
     setDir(next < current.current ? "back" : "forward"); setStepState(next); setError(""); setShowMore(false);
     const query = new URLSearchParams(window.location.search); query.set("step", String(next));
     window.history.replaceState(null, "", `/start?${query}`);
@@ -119,54 +131,70 @@ export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | n
 
   // Keep the anonymous check across OAuth redirects in this tab only.
   useEffect(() => {
-    if (!step) return;
-    try { sessionStorage.setItem(STORE, JSON.stringify({ url, check, audience, task })); } catch { /* storage may be unavailable */ }
-  }, [step, url, check, audience, task]);
+    if (!step || signedIn) return;
+    try { sessionStorage.setItem(STORE, JSON.stringify({ ownerId: null, url, check, customerGroups, task })); } catch { /* storage may be unavailable */ }
+  }, [step, signedIn, url, check, customerGroups, task]);
+
+  useEffect(() => {
+    if (pendingGroupFocus.current === null) return;
+    groupInputs.current[pendingGroupFocus.current]?.focus();
+    pendingGroupFocus.current = null;
+  }, [customerGroups]);
 
   const candidatesFrom = useCallback((source: Check | null, pinned: { name: string; aliases: string[] }[] = []) => {
     if (pinned.length) return pinned.map(item => ({ ...item, source: "manual" as const, checked: true }));
     return (source?.competitors.rows ?? []).filter(row => !row.isTarget).slice(0, 5).map((row, index) => ({ name: row.name, aliases: row.aliases, answers: row.answers, totalAnswers: row.totalAnswers, averagePosition: row.averagePosition, source: "public-index" as const, checked: index < 3 }));
   }, []);
 
-  const applyDrafts = useCallback((who: string, need: string) => {
-    const next = websiteQuestionDrafts(who, need);
+  const applyDrafts = useCallback((groups: string[], need: string) => {
+    const next = websiteCustomerGroupDrafts(groups, need);
     setDrafts(next); setChosen(next.map((_, index) => index < 5));
   }, []);
 
   useEffect(() => {
-    if (isPending || booted.current) return;
-    booted.current = true;
-    fetch("/api/search-console", { cache: "no-store" }).then(r => r.ok ? r.json() : null).then(data => { setProviders(value => ({ ...value, google: data?.configured === true })); setScConnected(data?.connected === true); }).catch(() => {});
-    fetch("/api/github", { cache: "no-store" }).then(r => r.ok ? r.json() : null).then(data => setProviders(value => ({ ...value, github: data?.configured === true }))).catch(() => {});
-    let saved: { url?: string; check?: Check | null; audience?: string; task?: string } = {};
-    try { saved = JSON.parse(sessionStorage.getItem(STORE) ?? "{}"); } catch { /* ignore */ }
-    const requested = Number(params.get("step"));
+    const controller = new AbortController(), signal = controller.signal;
+    requests.current = controller;
+    fetch("/api/search-console", { cache: "no-store", signal }).then(r => r.ok ? r.json() : null).then(data => { if (!signal.aborted) { setProviders(value => ({ ...value, google: data?.configured === true })); setScConnected(data?.connected === true); } }).catch(() => {});
+    fetch("/api/github", { cache: "no-store", signal }).then(r => r.ok ? r.json() : null).then(data => { if (!signal.aborted) setProviders(value => ({ ...value, github: data?.configured === true })); }).catch(() => {});
+    let saved: { ownerId?: null; url?: string; check?: Check | null } = {};
+    try {
+      const stored = JSON.parse(sessionStorage.getItem(STORE) ?? "{}");
+      if (stored?.ownerId === null) saved = stored;
+      if (signedIn || stored?.ownerId !== null) sessionStorage.removeItem(STORE);
+    } catch { /* ignore unavailable or invalid storage */ }
+    const requested = requestedStep.current;
     (async () => {
       if (!signedIn) {
         if (saved.check && requested >= 2 && requested <= 3) { setUrl(saved.url ?? ""); setCheck(saved.check); setStepState(requested); return; }
         setStepState(1); return;
       }
       try {
-        let summary = await api<Summary>("/api/onboarding");
+        let summary = await api<Summary>("/api/onboarding", { signal });
+        if (signal.aborted) return;
         if (saved.check && !summary.site) {
-          try { await api("/api/onboarding/claim", { method: "POST", body: {} }); summary = await api<Summary>("/api/onboarding"); }
+          try { await api("/api/onboarding/claim", { method: "POST", body: {}, signal }); summary = await api<Summary>("/api/onboarding", { signal }); }
           catch { /* No pending check on this browser: start from the website step. */ }
         }
+        if (signal.aborted) return;
         const state = summary.state;
-        setCheck(summary.check ?? saved.check ?? null); setSiteId(summary.site?.id ?? null); setUrl(summary.site?.url.replace(/^https:\/\//, "").replace(/\/$/, "") ?? saved.url ?? "");
-        const who = state?.audience || saved.audience || summary.check?.suggestion.audience || "", need = state?.task || saved.task || summary.check?.suggestion.task || "";
-        setAudience(who); setTask(need); applyDrafts(who, need);
+        setCheck(summary.check); setSiteId(summary.site?.id ?? null); setUrl(summary.site?.url.replace(/^https:\/\//, "").replace(/\/$/, "") ?? "");
+        const groups = state?.customerGroups?.length ? state.customerGroups : [state?.audience || summary.check?.suggestion.audience || ""];
+        const need = state?.task || summary.check?.suggestion.task || "";
+        setCustomerGroups(groups); setTask(need); applyDrafts(groups, need);
         setSuite(summary.suite); setBaselineRequested(Boolean(state?.baselineRequestedAt));
         setCandidates(candidatesFrom(summary.check, summary.competitors));
-        const natural = !summary.site ? 1 : !state?.audience ? 4 : !summary.suite ? 5 : !state.competitorsSavedAt ? 6 : !state.baselineRequestedAt ? 7 : 8;
+        const natural = !summary.site ? 1 : !state?.customerGroups?.length && !state?.audience ? 4 : !summary.suite ? 5 : !state?.competitorsSavedAt ? 6 : !state.baselineRequestedAt ? 7 : 8;
         setStepState(requested >= 1 && requested <= 8 && requested !== 3 && (requested <= natural || requested === 8) ? (requested === 2 && !summary.check ? 1 : requested) : natural);
-      } catch (failure) { setError(failure instanceof Error ? failure.message : "Setup could not be loaded."); setStepState(1); }
+      } catch (failure) { if (!signal.aborted) { setError(failure instanceof Error ? failure.message : "Setup could not be loaded."); setStepState(1); } }
     })();
-  }, [isPending, signedIn, params, applyDrafts, candidatesFrom]);
+    return () => controller.abort();
+  }, [signedIn, applyDrafts, candidatesFrom]);
 
   useEffect(() => {
     if (step !== 7 || access) return;
-    api<{ access: Access }>("/api/benchmarks").then(data => setAccess(data.access)).catch(failure => setAccess({ canRun: false, message: failure instanceof Error ? failure.message : "Runs are unavailable right now." }));
+    const controller = new AbortController();
+    api<{ access: Access }>("/api/benchmarks", { signal: controller.signal }).then(data => { if (!controller.signal.aborted) setAccess(data.access); }).catch(failure => { if (!controller.signal.aborted) setAccess({ canRun: false, message: failure instanceof Error ? failure.message : "Runs are unavailable right now." }); });
+    return () => controller.abort();
   }, [step, access]);
 
   const queue = useBaselineQueue(step === 8 ? suite?.id ?? null : null, suite?.cases ?? [], baselineRequested);
@@ -189,7 +217,7 @@ export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | n
       const result = await api<{ check: Check; siteId: string | null }>("/api/onboarding/check", { method: "POST", body: { url: url.includes("://") ? url : `https://${url}` } });
       setCheck(result.check); setSiteId(result.siteId);
       const { audience: who, task: need } = result.check.suggestion;
-      setAudience(who); setTask(need); applyDrafts(who, need); setCandidates(candidatesFrom(result.check));
+      setCustomerGroups([who]); setTask(need); applyDrafts([who], need); setCandidates(candidatesFrom(result.check));
       setStep(2);
     }); }}>
       <label className="ob-field">Website address<div className="ob-input"><span aria-hidden="true">https://</span><input name="url" inputMode="url" autoComplete="url" autoFocus required value={url} onChange={event => setUrl(event.target.value.replace(/^https?:\/\//, ""))} placeholder="yourwebsite.com" /></div></label>
@@ -252,13 +280,14 @@ export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | n
   }
 
   if (step === 4) {
-    const preview = websiteQuestionDrafts(audience, task)[0];
+    const groups = customerGroups.map(value => value.trim()).filter(Boolean);
+    const audience = groups[0] ?? "", preview = websiteCustomerGroupDrafts(groups, task)[0];
     return <Screen nav={nav} step={4} onExit={exit} eyebrow="Your customers" title="Who should find you, and what do they need?" side={<div className="ob-card">
       <div className="ob-card-head"><span>Your first question</span><b>Updates as you type</b></div>
       {audience.trim() || task.trim()
         ? <p className="ob-quote"><QuestionPreview audience={audience} task={task} /></p>
         : <p className="ob-quote empty">Start typing and your first question appears here.</p>}
-      <p className="ob-note">Folio drafts 10 questions like this. You pick which ones to track next.</p>
+      <p className="ob-note">{groups.length > 1 ? `Preview for your first nonblank group. Folio drafts 10 questions across all ${groups.length} customer groups.` : "Folio drafts 10 questions like this. You pick which ones to track next."}</p>
       {starterPacks.length > 0 && <details className="ob-more" style={{ marginTop: 18 }}><summary>Use a starter pack instead</summary>
         <div className="ob-packs">{starterPacks.map(pack => <button key={pack.id} type="button" disabled={busy} onClick={() => {
           setDrafts(pack.questions); setChosen(pack.questions.map(() => true));
@@ -267,11 +296,27 @@ export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | n
         }}>{pack.name}<small>{plural(pack.questions.length, "question")}</small></button>)}</div></details>}
     </div>}>
       <form onSubmit={event => { event.preventDefault(); void run(async () => {
-        await api("/api/onboarding", { method: "PUT", body: { audience, task } });
-        applyDrafts(audience, task); setStep(5);
+        await api("/api/onboarding", { method: "PUT", body: { customerGroups: groups, task }, signal: requests.current?.signal });
+        if (requests.current?.signal.aborted) return;
+        setCustomerGroups(groups); applyDrafts(groups, task); setStep(5);
       }); }}>
-        <label className="ob-field">Your customers<div className="ob-input"><input required maxLength={60} value={audience} onChange={event => setAudience(event.target.value)} placeholder="small design teams" /></div>
-          {check?.suggestion.audience && audience === check.suggestion.audience && <span className="ob-hint">Suggested from your page. Edit if it is wrong.</span>}</label>
+        <fieldset className="ob-customer-groups" disabled={busy}>
+          <legend>Customer group(s)</legend>
+          <div className="ob-group-list">{customerGroups.map((value, index) => <div className="ob-input ob-group-input" key={index}>
+            <input ref={element => { groupInputs.current[index] = element; }} aria-label={`Customer group ${index + 1}`} required={index === 0 && !groups.length} maxLength={MAX_CUSTOMER_GROUP_LENGTH} value={value} onChange={event => setCustomerGroups(values => values.map((item, at) => at === index ? event.target.value : item))} placeholder={index === 0 ? "small design teams" : "Another customer group"} />
+            {customerGroups.length > 1 && <button className="ob-group-remove" type="button" aria-label={`Remove customer group ${index + 1}`} onClick={() => {
+              pendingGroupFocus.current = Math.min(index, customerGroups.length - 2);
+              setCustomerGroups(values => values.filter((_, at) => at !== index));
+            }}><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="m4 4 8 8M12 4l-8 8" /></svg></button>}
+          </div>)}</div>
+          <div className="ob-group-action">{customerGroups.length < MAX_CUSTOMER_GROUPS
+            ? <button type="button" className="ob-group-add" onClick={() => {
+              pendingGroupFocus.current = customerGroups.length;
+              setCustomerGroups(values => values.length < MAX_CUSTOMER_GROUPS ? [...values, ""] : values);
+            }}>+ Add more</button>
+            : <p role="status">Max customer groups added.</p>}</div>
+          {check?.suggestion.audience && customerGroups.length === 1 && audience === check.suggestion.audience && <span className="ob-hint">Suggested from your page. Edit if it is wrong.</span>}
+        </fieldset>
         <label className="ob-field">What they want to do<div className="ob-input"><input required maxLength={120} value={task} onChange={event => setTask(event.target.value)} placeholder="collect feedback on prototypes" /></div>
           {check?.suggestion.task && task === check.suggestion.task && <span className="ob-hint">Suggested from your page. Edit if it is wrong.</span>}</label>
         <div className="ob-actions"><button className="ob-btn primary" type="submit" disabled={busy || !preview}>Draft my questions <Arrow /></button></div>
