@@ -20,7 +20,7 @@ type Summary = { state: { siteId: string | null; audience: string; task: string;
   site: { id: string; url: string; name: string } | null; check: Check | null; suite: { id: string; cases: { id: string; query: string }[] } | null;
   competitors: { name: string; aliases: string[] }[] };
 type Access = { canRun: boolean; message: string };
-type Candidate = { name: string; aliases: string[]; answers?: number; totalAnswers?: number; averagePosition?: number; source: "public-index" | "starter-pack" | "manual"; checked: boolean };
+type Candidate = { name: string; domain?: string; aliases: string[]; answers?: number; totalAnswers?: number; averagePosition?: number; source: "public-index" | "starter-pack" | "manual"; checked: boolean };
 
 const STEPS = ["Website", "Report", "Account", "Customers", "Questions", "Competitors", "Baseline"];
 const TOTAL = STEPS.length;
@@ -40,6 +40,17 @@ const dateRange = (from: string | null, to: string | null) => {
   return m1 === m2 && y1 === y2 ? `${d1} and ${d2} ${m2} ${y2}` : `${a} and ${b}`;
 };
 const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
+const websiteOf = (company: { domain?: string; aliases: string[] }) => {
+  for (const value of [company.domain, ...company.aliases]) {
+    if (!value || /\s/.test(value)) continue;
+    try {
+      const url = new URL(value.includes("://") ? value : `https://${value}`);
+      if (!["http:", "https:"].includes(url.protocol) || url.username || url.password || !url.hostname.includes(".")) continue;
+      return url.hostname.replace(/^www\./, "").replace(/\.$/, "");
+    } catch { /* A company name is not a website. */ }
+  }
+  return "Website not provided";
+};
 
 async function api<T>(url: string, init?: { method?: string; body?: unknown }): Promise<T> {
   const response = await fetch(url, { method: init?.method ?? "GET", cache: "no-store", headers: init?.body !== undefined ? { "Content-Type": "application/json" } : undefined, body: init?.body !== undefined ? JSON.stringify(init.body) : undefined });
@@ -124,8 +135,8 @@ export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | n
   }, [step, url, check, audience, task]);
 
   const candidatesFrom = useCallback((source: Check | null, pinned: { name: string; aliases: string[] }[] = []) => {
-    if (pinned.length) return pinned.map(item => ({ ...item, source: "manual" as const, checked: true }));
-    return (source?.competitors.rows ?? []).filter(row => !row.isTarget).slice(0, 5).map((row, index) => ({ name: row.name, aliases: row.aliases, answers: row.answers, totalAnswers: row.totalAnswers, averagePosition: row.averagePosition, source: "public-index" as const, checked: index < 3 }));
+    if (pinned.length) return pinned.map(item => ({ ...item, domain: source?.competitors.rows.find(row => row.name === item.name)?.domain, source: "manual" as const, checked: true }));
+    return (source?.competitors.rows ?? []).filter(row => !row.isTarget).slice(0, 5).map((row, index) => ({ name: row.name, domain: row.domain, aliases: row.aliases, answers: row.answers, totalAnswers: row.totalAnswers, averagePosition: row.averagePosition, source: "public-index" as const, checked: index < 3 }));
   }, []);
 
   const applyDrafts = useCallback((who: string, need: string) => {
@@ -311,15 +322,15 @@ export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | n
     }) : false;
     const draftName = newName.trim(), draftAliases = newAliases.split(",").map(value => value.trim()).filter(Boolean);
     const ghost = (adding || !candidates.length) && draftName && !candidates.some(item => item.name.toLowerCase() === draftName.toLowerCase())
-      ? <tr className="ob-ghost" aria-hidden="true"><td style={{ width: 34 }}><span className="ob-box" /></td><td><strong>{draftName}</strong><small>{draftAliases.length ? `Also matches ${draftAliases.join(", ")}` : "Press Add to track this company"}</small></td><td /></tr> : null;
+      ? <tr className="ob-ghost" aria-hidden="true"><td style={{ width: 34 }}><span className="ob-box" /></td><td><strong>{draftName}</strong><small className="ob-website">{websiteOf({ aliases: draftAliases })}</small></td><td /></tr> : null;
     return <Screen nav={nav} step={6} onExit={exit} eyebrow="Competitors" title={fromIndex ? "Here is who AI already recommends." : "Who do you want to watch?"} side={<div className="ob-card">
       {fromIndex && check && <div className="ob-card-head"><span>{plural(check.competitors.totalAnswers, "saved answer")}</span><b>Avg. position</b></div>}
       {candidates.length > 0 ? <table className="ob-tbl"><tbody>
         {candidates.map((item, index) => <tr key={item.name}><td style={{ width: 34 }}><label className="ob-check"><input type="checkbox" aria-label={`Track ${item.name}`} checked={item.checked} onChange={() => setCandidates(list => list.map((value, i) => i === index ? { ...value, checked: !value.checked } : value))} /><span className="ob-box"><Tick /></span></label></td>
-          <td><strong>{item.name}</strong><small>{item.answers ? `${item.answers} of ${item.totalAnswers} answers${item.aliases.length ? `, also listed as ${item.aliases.join(", ")}` : ""}` : item.aliases.length ? `Also matches ${item.aliases.join(", ")}` : item.source === "starter-pack" ? "From the starter pack" : "Added by you"}</small></td>
+          <td><strong>{item.name}</strong><small className="ob-website">{websiteOf(item)}</small>{item.answers !== undefined && <small>{item.answers} of {item.totalAnswers} answers</small>}</td>
           <td className="num">{item.averagePosition !== undefined && <span className="ob-pill">{item.averagePosition.toFixed(1)}</span>}</td></tr>)}
         {ghost}
-        {target && <tr><td /><td><strong>{target.name}</strong><span className="ob-you">You</span><small>{target.answers} of {target.totalAnswers} answers</small></td><td className="num"><span className="ob-pill neutral">{target.averagePosition.toFixed(1)}</span></td></tr>}
+        {target && <tr><td /><td><strong>{target.name}</strong><span className="ob-you">You</span><small className="ob-website">{websiteOf(target)}</small><small>{target.answers} of {target.totalAnswers} answers</small></td><td className="num"><span className="ob-pill neutral">{target.averagePosition.toFixed(1)}</span></td></tr>}
       </tbody></table> : <>
         <div className="ob-card-head"><span>Not in the Folio index yet</span><b>{check?.host ?? "Your website"}</b></div>
         <p className="ob-note" style={{ marginTop: 0 }}>No saved public answers mention {check?.host ?? "your website"} yet. Name the companies you compete with, and Folio will look for them in your answers.</p>
