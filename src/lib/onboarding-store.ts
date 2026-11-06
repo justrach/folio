@@ -5,6 +5,8 @@ import { normalizeScanUrl, ScanError, type ScanResult } from "./scanner";
 import { getKeywordBenchmarkSuite } from "./keyword-benchmark-store";
 import { normaliseCompetitor, onboardingFixes, scoredCheckCount, suggestAudienceTask } from "./onboarding-suggest";
 import { publicCompetitorSuggestions } from "./onboarding-competitors";
+import { MAX_CUSTOMER_GROUPS } from "./onboarding-customers";
+import { competitorDomain, competitorWebsite } from "./competitor-domain";
 
 export const PENDING_CHECK_COOKIE = "folio_pending_check";
 export const PENDING_CHECK_MAX_AGE_SECONDS = 60 * 60 * 24;
@@ -74,30 +76,52 @@ export async function claimPendingScan(db: D1Database, userId: string, cookieVal
   return { siteId, check: onboardingCheckView(result) };
 }
 
-type StateRow = { user_id: string; site_id: string | null; audience: string | null; task: string | null; suite_id: string | null; competitors_saved_at: number | null;
+type StateRow = { user_id: string; site_id: string | null; audience: string | null; customer_groups_json: string | null; task: string | null; suite_id: string | null; competitors_saved_at: number | null;
   baseline_requested_at: number | null; search_console_skipped_at: number | null; completed_at: number | null; dismissed_at: number | null; created_at: number; updated_at: number };
-export type OnboardingPatch = { siteId?: string; audience?: string; task?: string; suiteId?: string; baselineRequested?: boolean; searchConsoleSkipped?: boolean; completed?: boolean; dismissed?: boolean };
+export type OnboardingPatch = { siteId?: string; audience?: string; customerGroups?: string[]; task?: string; suiteId?: string; baselineRequested?: boolean; searchConsoleSkipped?: boolean; completed?: boolean; dismissed?: boolean };
 
 const iso = (value: number | null) => value ? new Date(value).toISOString() : null;
 function serializeState(row: StateRow | null) {
   if (!row) return null;
-  return { siteId: row.site_id, audience: row.audience ?? "", task: row.task ?? "", suiteId: row.suite_id, competitorsSavedAt: iso(row.competitors_saved_at),
+  const customerGroups: string[] = row.customer_groups_json == null
+    ? (row.audience?.trim() ? [row.audience] : [])
+    : JSON.parse(row.customer_groups_json);
+  return { siteId: row.site_id, customerGroups, audience: customerGroups[0] ?? "", task: row.task ?? "", suiteId: row.suite_id, competitorsSavedAt: iso(row.competitors_saved_at),
     baselineRequestedAt: iso(row.baseline_requested_at), searchConsoleSkippedAt: iso(row.search_console_skipped_at), completedAt: iso(row.completed_at), dismissedAt: iso(row.dismissed_at) };
 }
 export type OnboardingState = NonNullable<ReturnType<typeof serializeState>>;
 
 export function parseOnboardingPatch(body: Record<string, unknown>): OnboardingPatch {
-  const allowed = ["siteId", "audience", "task", "suiteId", "baselineRequested", "searchConsoleSkipped", "completed", "dismissed"];
+  const allowed = ["siteId", "audience", "customerGroups", "task", "suiteId", "baselineRequested", "searchConsoleSkipped", "completed", "dismissed"];
   if (Object.keys(body).some(key => !allowed.includes(key))) throw new ScanError("This request contains an unsupported field.");
+  if (body.audience !== undefined && body.customerGroups !== undefined) throw new ScanError("Provide customerGroups or audience, not both.");
   const patch: OnboardingPatch = {};
+  if (body.customerGroups !== undefined) {
+    // Bound the raw array before filtering optional blank rows.
+    if (!Array.isArray(body.customerGroups) || body.customerGroups.length > MAX_CUSTOMER_GROUPS)
+      throw new ScanError(`Add up to ${MAX_CUSTOMER_GROUPS} customer groups.`);
+    const groups = Array.from(body.customerGroups, raw => {
+      const value = typeof raw === "string" ? raw : null;
+      if (value === null || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(value))
+        throw new ScanError("Provide customer descriptions without control characters other than line breaks or tabs.");
+      return value;
+    }).filter(value => value.trim());
+    if (!groups.length) throw new ScanError("Add at least one customer group.");
+    patch.customerGroups = groups;
+  }
   for (const key of ["siteId", "suiteId"] as const) if (body[key] !== undefined) {
     if (typeof body[key] !== "string" || !/^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/.test(body[key] as string)) throw new ScanError(`Provide a valid ${key}.`);
     patch[key] = body[key] as string;
   }
-  for (const [key, max] of [["audience", 60], ["task", 120]] as const) if (body[key] !== undefined) {
-    const value = typeof body[key] === "string" ? (body[key] as string).replace(/\s+/g, " ").trim() : null;
-    if (value === null || value.length > max || /[\u0000-\u001f\u007f]/.test(value)) throw new ScanError(`Use up to ${max} characters for ${key}.`);
-    patch[key] = value;
+  if (body.audience !== undefined) {
+    if (typeof body.audience !== "string" || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(body.audience))
+      throw new ScanError("Provide a customer description without control characters other than line breaks or tabs.");
+    patch.audience = body.audience;
+  }
+  if (body.task !== undefined) {
+    const value = typeof body.task === "string" ? body.task.replace(/\s+/g, " ").trim() : null;
+    if (value === null || value.length > 120 || /[\u0000-\u001f\u007f]/.test(value)) throw new ScanError("Use up to 120 characters for task.");
+    patch.task = value;
   }
   for (const key of ["baselineRequested", "searchConsoleSkipped", "completed", "dismissed"] as const) if (body[key] !== undefined) {
     if (body[key] !== true) throw new ScanError(`${key} can only be set to true.`);
@@ -112,6 +136,8 @@ export async function getOnboardingState(db: D1Database, userId: string) {
 
 /** Owner-scoped upsert. Referenced sites and suites must belong to the same account. */
 export async function updateOnboarding(db: D1Database, userId: string, patch: OnboardingPatch) {
+  // Internal callers must enforce the same bounds and compatibility rules as the API.
+  patch = parseOnboardingPatch(patch);
   if (patch.siteId && !await db.prepare("SELECT id FROM sites WHERE id = ? AND user_id = ?").bind(patch.siteId, userId).first())
     throw new ScanError("Choose a website saved in your account.", 404);
   if (patch.suiteId && !await getKeywordBenchmarkSuite(db, userId, patch.suiteId)) throw new ScanError("Choose a question suite saved in your account.", 404);
@@ -120,7 +146,13 @@ export async function updateOnboarding(db: D1Database, userId: string, patch: On
   const sets: string[] = [], values: unknown[] = [];
   const set = (column: string, value: unknown) => { sets.push(`${column} = ?`); values.push(value); };
   if (patch.siteId !== undefined) set("site_id", patch.siteId);
-  if (patch.audience !== undefined) set("audience", patch.audience);
+  if (patch.customerGroups !== undefined) {
+    set("customer_groups_json", JSON.stringify(patch.customerGroups));
+    set("audience", patch.customerGroups[0]);
+  } else if (patch.audience !== undefined) {
+    set("audience", patch.audience);
+    set("customer_groups_json", JSON.stringify(patch.audience.trim() ? [patch.audience] : []));
+  }
   if (patch.task !== undefined) set("task", patch.task);
   if (patch.suiteId !== undefined) set("suite_id", patch.suiteId);
   if (patch.baselineRequested) set("baseline_requested_at", now);
@@ -132,30 +164,39 @@ export async function updateOnboarding(db: D1Database, userId: string, patch: On
   return getOnboardingState(db, userId);
 }
 
-export type TrackedCompetitor = { id: string; name: string; aliases: string[]; source: string };
+/** Customer-facing records omit provenance; developers can inspect the private source column. */
+export type TrackedCompetitor = { id: string; name: string; aliases: string[]; domain?: string };
 export async function listTrackedCompetitors(db: D1Database, userId: string, siteId: string): Promise<TrackedCompetitor[]> {
-  const { results } = await db.prepare("SELECT id, name, aliases_json, source FROM tracked_competitors WHERE user_id = ? AND site_id = ? ORDER BY created_at, name")
-    .bind(userId, siteId).all<{ id: string; name: string; aliases_json: string; source: string }>();
-  return results.map(row => ({ id: row.id, name: row.name, aliases: JSON.parse(row.aliases_json) as string[], source: row.source }));
+  const { results } = await db.prepare("SELECT id, name, aliases_json, domain FROM tracked_competitors WHERE user_id = ? AND site_id = ? ORDER BY created_at, name")
+    .bind(userId, siteId).all<{ id: string; name: string; aliases_json: string; domain: string | null }>();
+  return results.map(row => ({ id: row.id, name: row.name, aliases: JSON.parse(row.aliases_json) as string[], ...(row.domain ? { domain: row.domain } : {}) }));
 }
 
 /** Replaces the pinned competitors for one owned website. */
 export async function replaceTrackedCompetitors(db: D1Database, userId: string, siteId: string, raw: unknown) {
   if (!await db.prepare("SELECT id FROM sites WHERE id = ? AND user_id = ?").bind(siteId, userId).first()) throw new ScanError("Choose a website saved in your account.", 404);
   if (!Array.isArray(raw) || raw.length > MAX_TRACKED_COMPETITORS) throw new ScanError(`Track up to ${MAX_TRACKED_COMPETITORS} competitors.`);
+  const { results: existing } = await db.prepare("SELECT name, source, domain FROM tracked_competitors WHERE user_id = ? AND site_id = ?")
+    .bind(userId, siteId).all<{ name: string; source: string; domain: string | null }>();
+  const previous = new Map(existing.map(item => [item.name.toLowerCase(), item]));
   const list = raw.map(item => {
     const value = item && typeof item === "object" ? item as Record<string, unknown> : {};
     const competitor = normaliseCompetitor(value.name, value.aliases);
     if (!competitor) throw new ScanError("Each competitor needs a name of up to 80 characters.");
-    const source = ["manual", "public-index", "starter-pack"].includes(String(value.source)) ? String(value.source) : "manual";
-    return { ...competitor, source };
+    // Reopening/resaving a selection must not reclassify its original provenance.
+    const saved = previous.get(competitor.name.toLowerCase());
+    const source = saved?.source ??
+      (["manual", "public-index", "starter-pack"].includes(String(value.source)) ? String(value.source) : "manual");
+    if (value.domain !== undefined && !competitorDomain(value.domain)) throw new ScanError("Provide a valid competitor website.");
+    const domain = competitorDomain(value.domain) ?? saved?.domain ?? competitorWebsite({ aliases: Array.isArray(value.aliases) ? value.aliases.filter((alias): alias is string => typeof alias === "string") : [] });
+    return { ...competitor, source, domain };
   });
   if (new Set(list.map(item => item.name.toLowerCase())).size !== list.length) throw new ScanError("Remove duplicate competitors.");
   const now = Date.now();
   await db.batch([
     db.prepare("DELETE FROM tracked_competitors WHERE user_id = ? AND site_id = ?").bind(userId, siteId),
-    ...list.map((item, index) => db.prepare("INSERT INTO tracked_competitors (id, user_id, site_id, name, aliases_json, source, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)")
-      .bind(crypto.randomUUID(), userId, siteId, item.name, JSON.stringify(item.aliases), item.source, now + index)),
+    ...list.map((item, index) => db.prepare("INSERT INTO tracked_competitors (id, user_id, site_id, name, aliases_json, source, created_at, domain) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+      .bind(crypto.randomUUID(), userId, siteId, item.name, JSON.stringify(item.aliases), item.source, now + index, item.domain ?? null)),
   ]);
   await db.prepare("INSERT INTO onboarding_state (user_id, created_at, updated_at) VALUES (?, ?, ?) ON CONFLICT(user_id) DO NOTHING").bind(userId, now, now).run();
   await db.prepare("UPDATE onboarding_state SET competitors_saved_at = ?, updated_at = ? WHERE user_id = ?").bind(now, now, userId).run();
