@@ -340,7 +340,7 @@ export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | n
       <div className="ob-actions"><button className="ob-btn primary" type="button" disabled={busy || !siteId || !candidates.length} onClick={() => void run(async () => {
         await api("/api/competitors", { method: "PUT", body: { siteId, competitors: picked.map(item => ({ name: item.name, aliases: item.aliases, source: item.source })) } });
         setStep(7);
-      })}>{picked.length ? (picked.length === candidates.length && picked.length > 1 ? `Track these ${picked.length}` : `Track ${plural(picked.length, "competitor")}`) : candidates.length ? "Continue without competitors" : "Track competitors"} <Arrow /></button>
+      })}>{picked.length ? `Track ${plural(picked.length, "competitor")}` : candidates.length ? "Continue without competitors" : "Track competitors"} <Arrow /></button>
         {!adding && candidates.length > 0 && candidates.length < 10 && <button type="button" className="ob-quiet" onClick={() => setAdding(true)}>Add another</button>}
         {!candidates.length && <button type="button" className="ob-quiet" disabled={busy || !siteId} onClick={() => void run(async () => {
           await api("/api/competitors", { method: "PUT", body: { siteId, competitors: [] } }); setStep(7);
