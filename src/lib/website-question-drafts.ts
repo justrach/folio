@@ -1,7 +1,7 @@
 /** Deterministic drafts from owner-supplied context; no inferred website facts or model call. */
 export function websiteQuestionDrafts(audience: string, task: string): string[] {
-  const who = audience.trim(), need = task.trim();
-  if (!who || !need || who.length > 60 || need.length > 120 || /[\u0000-\u001f\u007f]/.test(who + need)) return [];
+  const who = audience.trim().replace(/\s+/g, " "), need = task.trim();
+  if (!who || !need || need.length > 120 || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(audience) || /[\u0000-\u001f\u007f]/.test(need)) return [];
   // "choose a library" is already a buying decision; "shortlist to choose a library" reads badly.
   const choice = /^choos(?:e|ing)\s+(?:(?:a|an|the)\s+)?(.+)$/i.exec(need);
   if (choice) {

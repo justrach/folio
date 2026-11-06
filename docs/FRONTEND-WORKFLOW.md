@@ -62,6 +62,12 @@ Plain `/evaluations` opens **Search questions**, using the same private workspac
 
 The question editor saves 1–10 questions against an existing owned website, with a suite name, language and locale. Starter packs cover work, shopping, services, learning and coding harnesses. Questions can be edited before saving. Saving a suite stores drafts only; each later baseline or fresh observation remains an explicit start with the same active-run safeguards.
 
+## Describe customers during onboarding
+
+At `/start?step=4`, **Your customers** starts as a compact single-row field without a field-specific character cap. It grows and shrinks with the description (including when saved text reopens or the available width changes), up to 16rem tall, then scrolls internally. No resize handle or character-cap helper line is shown. Saving preserves the description, including paragraph breaks and tabs. Question drafting uses all its words, with whitespace normalized into sentences; it does not cut the audience to 60 characters. **What they want to do** retains its separate 120-character limit.
+
+The existing 4 KB JSON request-size safeguard still applies to saving setup; this is not an unbounded-upload promise. Individual saved questions retain their 300-character limit and suites their 4 KB limit. Step 5 offers **Edit question wording**, automatically opened for overlong drafts, so the owner can refine questions without shortening the saved customer description. Drafting and saving do not start provider work.
+
 ## Open a saved report or prepare a new run
 
 A selected evaluation opens directly into its report. Authentication loading shows no launch/demo form. A signed-out `?run=` link presents **Sign in to open this private report** and preserves its validated return context; browser back to a saved run clears the previous preparation notice. The compact **Notebook** keeps saved runs available without placing the launch form above the result. **New evaluation** opens a blank form; **Evaluate current website** prepares that form for the selected target and clears its old reference answers and SEO selection. Back/forward navigation and refresh preserve the selected saved run through validated URL context.
