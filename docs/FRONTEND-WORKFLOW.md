@@ -22,6 +22,10 @@ This guide describes the current UI. The [evaluation loop](EVALUATION-LOOP.md) e
 
 The `/seo` checks panel shows a left-hand percentage breakdown of all checks (including optional checks), with status filters and an inspector on the right. No tests appear until a user selects Pass, Needs improvement, Fail, or Optional using a bar or filter. Rows then expand to show findings, short supporting notes, and points. Optional checks are labeled Not scored; these count-based percentages are not the weighted SEO score. On mobile the breakdown stacks above the inspector. Saved evidence and scoring remain unchanged.
 
+## Guided setup questions
+
+In `/start` Step 5, the right-hand questions panel keeps its collapsed seven-row footprint (including the former expansion-control space). All questions are rendered and scroll within the panel; there is no **Show More** action. A partial blur/fade at the bottom edge indicates more questions below, clears as questions scroll into view, and disappears at the end or when the list fits. Mouse, touch, and keyboard scrolling preserve the panel size and surrounding layout. Selecting or scrolling questions starts no provider work; saving still stores drafts only.
+
 ## Start from your workspace
 
 `/overview` defaults to the public benchmark dashboard. **My website results** is the explicit `/overview?view=workspace` view. Signed-out visitors to that view see a sign-in prompt; signed-in owners choose an existing saved website. The overview loads saved application records with GET requests only. It does not reconcile provider sessions, start a search, or import an SEO report.
