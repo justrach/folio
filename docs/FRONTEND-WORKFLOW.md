@@ -24,7 +24,7 @@ The `/seo` checks panel shows a left-hand percentage breakdown of all checks (in
 
 ## Customer question preview
 
-In `/start`, step 4 (**Customers**) previews the first question as the owner edits their customer and task descriptions. Long words and URLs wrap inside the preview on desktop and mobile without clipping, truncation, or changing the entered text. Editing this preview starts no paid work; the existing 60-character customer and 120-character task limits are unchanged.
+In `/start`, step 4 (**Customers**) previews the first question as the owner edits their customer and task descriptions. Long words and URLs wrap inside the preview on desktop and mobile without clipping, truncation, or changing the entered text. Editing this preview starts no paid work; customer descriptions are preserved without a field-length cap, while the shared task retains its 120-character limit.
 
 ## Onboarding competitor display
 
@@ -35,6 +35,14 @@ At `/start?step=6`, competitor rows and the live add-company preview show the we
 At `/start?step=6`, users can select suggested companies or add competitors themselves. Competitor rows do not display provenance labels such as **Added by you** or a replacement badge/tooltip. Names, alternate-name matching, and measured public-answer counts remain unchanged.
 
 Provenance stays in the private `tracked_competitors.source` column (`manual`, `public-index`, or `starter-pack`), alongside `user_id` and `site_id`, for authorized developer inspection. Customer-facing competitor and onboarding responses omit it. Saving a new selection records its origin; reopening and resaving an existing selection preserves its stored origin rather than reclassifying it as manual. Existing records are not backfilled or inferred from their names. Viewing or saving competitors starts no provider work.
+
+## Customer groups in onboarding
+
+Step 4 of `/start` begins with one content-sized input under **Customer group(s)**. **+ Add more** adds closely stacked inputs, up to four rows (including unused blank rows). At four, the add control is replaced by **Max customer groups added.** in the same accent color. Red cross buttons remove rows when more than one exists; removing a row restores the add control and keeps keyboard focus in the remaining list.
+
+**Draft my questions** saves all nonblank groups separately with the shared **What they want to do** task. Optional blank rows are ignored; at least one group is required. Drafting interleaves the groups into ten total questions so the initial five selections represent every group, rather than multiplying the suite size. The preview identifies its first nonblank-group context. Drafting and editing start no provider work.
+
+Saved groups reopen through the owner-scoped onboarding API. Migration `0024_onboarding_customer_groups.sql` adds group storage while existing single-audience records reopen as one group. Client and server enforce four groups; each group uses a content-sized textarea and preserves its full description, including line breaks. The shared task remains limited to 120 characters; the existing request-size limit and saved-question limits still apply. Owner changes remount private onboarding state, abort outstanding reads, and discard old unkeyed browser drafts; only an explicitly anonymous page check is retained in tab storage for the sign-in handoff.
 
 ## Start from your workspace
 

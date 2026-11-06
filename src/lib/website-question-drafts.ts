@@ -1,3 +1,22 @@
+import { MAX_CUSTOMER_GROUPS } from "./onboarding-customers";
+
+/** Ten drafts, interleaved so every customer group appears before any group repeats. */
+export function websiteCustomerGroupDrafts(customerGroups: string[], task: string): string[] {
+  if (customerGroups.length > MAX_CUSTOMER_GROUPS) return [];
+  const groups = customerGroups.map(value => value.trim()).filter(Boolean);
+  if (!groups.length) return [];
+  const drafts = groups.map(group => websiteQuestionDrafts(group, task));
+  if (drafts.some(questions => !questions.length)) return [];
+  const questions: string[] = [];
+  for (let index = 0; questions.length < 10; index++) {
+    for (const group of drafts) {
+      questions.push(group[index]);
+      if (questions.length === 10) break;
+    }
+  }
+  return questions;
+}
+
 /** Deterministic drafts from owner-supplied context; no inferred website facts or model call. */
 export function websiteQuestionDrafts(audience: string, task: string): string[] {
   const who = audience.trim().replace(/\s+/g, " "), need = task.trim();

@@ -5,6 +5,7 @@ import { normalizeScanUrl, ScanError, type ScanResult } from "./scanner";
 import { getKeywordBenchmarkSuite } from "./keyword-benchmark-store";
 import { normaliseCompetitor, onboardingFixes, scoredCheckCount, suggestAudienceTask } from "./onboarding-suggest";
 import { publicCompetitorSuggestions } from "./onboarding-competitors";
+import { MAX_CUSTOMER_GROUPS } from "./onboarding-customers";
 
 export const PENDING_CHECK_COOKIE = "folio_pending_check";
 export const PENDING_CHECK_MAX_AGE_SECONDS = 60 * 60 * 24;
@@ -74,22 +75,39 @@ export async function claimPendingScan(db: D1Database, userId: string, cookieVal
   return { siteId, check: onboardingCheckView(result) };
 }
 
-type StateRow = { user_id: string; site_id: string | null; audience: string | null; task: string | null; suite_id: string | null; competitors_saved_at: number | null;
+type StateRow = { user_id: string; site_id: string | null; audience: string | null; customer_groups_json: string | null; task: string | null; suite_id: string | null; competitors_saved_at: number | null;
   baseline_requested_at: number | null; search_console_skipped_at: number | null; completed_at: number | null; dismissed_at: number | null; created_at: number; updated_at: number };
-export type OnboardingPatch = { siteId?: string; audience?: string; task?: string; suiteId?: string; baselineRequested?: boolean; searchConsoleSkipped?: boolean; completed?: boolean; dismissed?: boolean };
+export type OnboardingPatch = { siteId?: string; audience?: string; customerGroups?: string[]; task?: string; suiteId?: string; baselineRequested?: boolean; searchConsoleSkipped?: boolean; completed?: boolean; dismissed?: boolean };
 
 const iso = (value: number | null) => value ? new Date(value).toISOString() : null;
 function serializeState(row: StateRow | null) {
   if (!row) return null;
-  return { siteId: row.site_id, audience: row.audience ?? "", task: row.task ?? "", suiteId: row.suite_id, competitorsSavedAt: iso(row.competitors_saved_at),
+  const customerGroups: string[] = row.customer_groups_json == null
+    ? (row.audience ? [row.audience] : [])
+    : JSON.parse(row.customer_groups_json);
+  return { siteId: row.site_id, customerGroups, audience: customerGroups[0] ?? "", task: row.task ?? "", suiteId: row.suite_id, competitorsSavedAt: iso(row.competitors_saved_at),
     baselineRequestedAt: iso(row.baseline_requested_at), searchConsoleSkippedAt: iso(row.search_console_skipped_at), completedAt: iso(row.completed_at), dismissedAt: iso(row.dismissed_at) };
 }
 export type OnboardingState = NonNullable<ReturnType<typeof serializeState>>;
 
 export function parseOnboardingPatch(body: Record<string, unknown>): OnboardingPatch {
-  const allowed = ["siteId", "audience", "task", "suiteId", "baselineRequested", "searchConsoleSkipped", "completed", "dismissed"];
+  const allowed = ["siteId", "audience", "customerGroups", "task", "suiteId", "baselineRequested", "searchConsoleSkipped", "completed", "dismissed"];
   if (Object.keys(body).some(key => !allowed.includes(key))) throw new ScanError("This request contains an unsupported field.");
+  if (body.audience !== undefined && body.customerGroups !== undefined) throw new ScanError("Provide customerGroups or audience, not both.");
   const patch: OnboardingPatch = {};
+  if (body.customerGroups !== undefined) {
+    // Bound the raw array before filtering optional blank rows.
+    if (!Array.isArray(body.customerGroups) || body.customerGroups.length > MAX_CUSTOMER_GROUPS)
+      throw new ScanError(`Add up to ${MAX_CUSTOMER_GROUPS} customer groups.`);
+    const groups = Array.from(body.customerGroups, raw => {
+      const value = typeof raw === "string" ? raw : null;
+      if (value === null || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(value))
+        throw new ScanError("Provide customer descriptions without control characters other than line breaks or tabs.");
+      return value;
+    }).filter(value => value.trim());
+    if (!groups.length) throw new ScanError("Add at least one customer group.");
+    patch.customerGroups = groups;
+  }
   for (const key of ["siteId", "suiteId"] as const) if (body[key] !== undefined) {
     if (typeof body[key] !== "string" || !/^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/.test(body[key] as string)) throw new ScanError(`Provide a valid ${key}.`);
     patch[key] = body[key] as string;
@@ -117,6 +135,8 @@ export async function getOnboardingState(db: D1Database, userId: string) {
 
 /** Owner-scoped upsert. Referenced sites and suites must belong to the same account. */
 export async function updateOnboarding(db: D1Database, userId: string, patch: OnboardingPatch) {
+  // Internal callers must enforce the same bounds and compatibility rules as the API.
+  patch = parseOnboardingPatch(patch);
   if (patch.siteId && !await db.prepare("SELECT id FROM sites WHERE id = ? AND user_id = ?").bind(patch.siteId, userId).first())
     throw new ScanError("Choose a website saved in your account.", 404);
   if (patch.suiteId && !await getKeywordBenchmarkSuite(db, userId, patch.suiteId)) throw new ScanError("Choose a question suite saved in your account.", 404);
@@ -125,7 +145,13 @@ export async function updateOnboarding(db: D1Database, userId: string, patch: On
   const sets: string[] = [], values: unknown[] = [];
   const set = (column: string, value: unknown) => { sets.push(`${column} = ?`); values.push(value); };
   if (patch.siteId !== undefined) set("site_id", patch.siteId);
-  if (patch.audience !== undefined) set("audience", patch.audience);
+  if (patch.customerGroups !== undefined) {
+    set("customer_groups_json", JSON.stringify(patch.customerGroups));
+    set("audience", patch.customerGroups[0]);
+  } else if (patch.audience !== undefined) {
+    set("audience", patch.audience);
+    set("customer_groups_json", JSON.stringify(patch.audience.trim() ? [patch.audience] : []));
+  }
   if (patch.task !== undefined) set("task", patch.task);
   if (patch.suiteId !== undefined) set("suite_id", patch.suiteId);
   if (patch.baselineRequested) set("baseline_requested_at", now);
