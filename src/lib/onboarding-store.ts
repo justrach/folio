@@ -6,6 +6,7 @@ import { getKeywordBenchmarkSuite } from "./keyword-benchmark-store";
 import { normaliseCompetitor, onboardingFixes, scoredCheckCount, suggestAudienceTask } from "./onboarding-suggest";
 import { publicCompetitorSuggestions } from "./onboarding-competitors";
 import { MAX_CUSTOMER_GROUPS } from "./onboarding-customers";
+import { competitorDomain, competitorWebsite } from "./competitor-domain";
 
 export const PENDING_CHECK_COOKIE = "folio_pending_check";
 export const PENDING_CHECK_MAX_AGE_SECONDS = 60 * 60 * 24;
@@ -83,7 +84,7 @@ const iso = (value: number | null) => value ? new Date(value).toISOString() : nu
 function serializeState(row: StateRow | null) {
   if (!row) return null;
   const customerGroups: string[] = row.customer_groups_json == null
-    ? (row.audience ? [row.audience] : [])
+    ? (row.audience?.trim() ? [row.audience] : [])
     : JSON.parse(row.customer_groups_json);
   return { siteId: row.site_id, customerGroups, audience: customerGroups[0] ?? "", task: row.task ?? "", suiteId: row.suite_id, competitorsSavedAt: iso(row.competitors_saved_at),
     baselineRequestedAt: iso(row.baseline_requested_at), searchConsoleSkippedAt: iso(row.search_console_skipped_at), completedAt: iso(row.completed_at), dismissedAt: iso(row.dismissed_at) };
@@ -164,35 +165,38 @@ export async function updateOnboarding(db: D1Database, userId: string, patch: On
 }
 
 /** Customer-facing records omit provenance; developers can inspect the private source column. */
-export type TrackedCompetitor = { id: string; name: string; aliases: string[] };
+export type TrackedCompetitor = { id: string; name: string; aliases: string[]; domain?: string };
 export async function listTrackedCompetitors(db: D1Database, userId: string, siteId: string): Promise<TrackedCompetitor[]> {
-  const { results } = await db.prepare("SELECT id, name, aliases_json FROM tracked_competitors WHERE user_id = ? AND site_id = ? ORDER BY created_at, name")
-    .bind(userId, siteId).all<{ id: string; name: string; aliases_json: string }>();
-  return results.map(row => ({ id: row.id, name: row.name, aliases: JSON.parse(row.aliases_json) as string[] }));
+  const { results } = await db.prepare("SELECT id, name, aliases_json, domain FROM tracked_competitors WHERE user_id = ? AND site_id = ? ORDER BY created_at, name")
+    .bind(userId, siteId).all<{ id: string; name: string; aliases_json: string; domain: string | null }>();
+  return results.map(row => ({ id: row.id, name: row.name, aliases: JSON.parse(row.aliases_json) as string[], ...(row.domain ? { domain: row.domain } : {}) }));
 }
 
 /** Replaces the pinned competitors for one owned website. */
 export async function replaceTrackedCompetitors(db: D1Database, userId: string, siteId: string, raw: unknown) {
   if (!await db.prepare("SELECT id FROM sites WHERE id = ? AND user_id = ?").bind(siteId, userId).first()) throw new ScanError("Choose a website saved in your account.", 404);
   if (!Array.isArray(raw) || raw.length > MAX_TRACKED_COMPETITORS) throw new ScanError(`Track up to ${MAX_TRACKED_COMPETITORS} competitors.`);
-  const { results: existing } = await db.prepare("SELECT name, source FROM tracked_competitors WHERE user_id = ? AND site_id = ?")
-    .bind(userId, siteId).all<{ name: string; source: string }>();
-  const sources = new Map(existing.map(item => [item.name.toLowerCase(), item.source]));
+  const { results: existing } = await db.prepare("SELECT name, source, domain FROM tracked_competitors WHERE user_id = ? AND site_id = ?")
+    .bind(userId, siteId).all<{ name: string; source: string; domain: string | null }>();
+  const previous = new Map(existing.map(item => [item.name.toLowerCase(), item]));
   const list = raw.map(item => {
     const value = item && typeof item === "object" ? item as Record<string, unknown> : {};
     const competitor = normaliseCompetitor(value.name, value.aliases);
     if (!competitor) throw new ScanError("Each competitor needs a name of up to 80 characters.");
     // Reopening/resaving a selection must not reclassify its original provenance.
-    const source = sources.get(competitor.name.toLowerCase()) ??
+    const saved = previous.get(competitor.name.toLowerCase());
+    const source = saved?.source ??
       (["manual", "public-index", "starter-pack"].includes(String(value.source)) ? String(value.source) : "manual");
-    return { ...competitor, source };
+    if (value.domain !== undefined && !competitorDomain(value.domain)) throw new ScanError("Provide a valid competitor website.");
+    const domain = competitorDomain(value.domain) ?? saved?.domain ?? competitorWebsite({ aliases: Array.isArray(value.aliases) ? value.aliases.filter((alias): alias is string => typeof alias === "string") : [] });
+    return { ...competitor, source, domain };
   });
   if (new Set(list.map(item => item.name.toLowerCase())).size !== list.length) throw new ScanError("Remove duplicate competitors.");
   const now = Date.now();
   await db.batch([
     db.prepare("DELETE FROM tracked_competitors WHERE user_id = ? AND site_id = ?").bind(userId, siteId),
-    ...list.map((item, index) => db.prepare("INSERT INTO tracked_competitors (id, user_id, site_id, name, aliases_json, source, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)")
-      .bind(crypto.randomUUID(), userId, siteId, item.name, JSON.stringify(item.aliases), item.source, now + index)),
+    ...list.map((item, index) => db.prepare("INSERT INTO tracked_competitors (id, user_id, site_id, name, aliases_json, source, created_at, domain) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+      .bind(crypto.randomUUID(), userId, siteId, item.name, JSON.stringify(item.aliases), item.source, now + index, item.domain ?? null)),
   ]);
   await db.prepare("INSERT INTO onboarding_state (user_id, created_at, updated_at) VALUES (?, ?, ?) ON CONFLICT(user_id) DO NOTHING").bind(userId, now, now).run();
   await db.prepare("UPDATE onboarding_state SET competitors_saved_at = ?, updated_at = ? WHERE user_id = ?").bind(now, now, userId).run();

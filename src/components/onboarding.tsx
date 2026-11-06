@@ -6,6 +6,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNo
 import { authClient } from "@/lib/auth-client";
 import { websiteCustomerGroupDrafts, websiteQuestionDrafts } from "@/lib/website-question-drafts";
 import { MAX_CUSTOMER_GROUPS } from "@/lib/onboarding-customers";
+import { competitorWebsite } from "@/lib/competitor-domain";
 import { QUESTION_SUITE_MAX_QUESTION_LENGTH } from "@/lib/question-suite-input";
 import { evaluationMethodology } from "@/lib/evaluation";
 import type { CompetitorSuggestion } from "@/lib/onboarding-competitors";
@@ -20,7 +21,7 @@ type Check = { id: string; url: string; host: string; createdAt: string; seoScor
   competitors: { category: string | null; questions: number; totalAnswers: number; rows: CompetitorSuggestion[] } };
 type Summary = { state: { siteId: string | null; audience: string; customerGroups?: string[]; task: string; suiteId: string | null; competitorsSavedAt: string | null; baselineRequestedAt: string | null; completedAt: string | null } | null;
   site: { id: string; url: string; name: string } | null; check: Check | null; suite: { id: string; cases: { id: string; query: string }[] } | null;
-  competitors: { name: string; aliases: string[] }[] };
+  competitors: { name: string; aliases: string[]; domain?: string }[] };
 type Access = { canRun: boolean; message: string };
 type Candidate = { name: string; domain?: string; aliases: string[]; answers?: number; totalAnswers?: number; averagePosition?: number; source?: "public-index" | "starter-pack" | "manual"; checked: boolean };
 
@@ -42,21 +43,12 @@ const dateRange = (from: string | null, to: string | null) => {
   return m1 === m2 && y1 === y2 ? `${d1} and ${d2} ${m2} ${y2}` : `${a} and ${b}`;
 };
 const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
-const websiteOf = (company: { domain?: string; aliases: string[] }) => {
-  for (const value of [company.domain, ...company.aliases]) {
-    if (!value || /\s/.test(value)) continue;
-    try {
-      const url = new URL(value.includes("://") ? value : `https://${value}`);
-      if (!["http:", "https:"].includes(url.protocol) || url.username || url.password || !url.hostname.includes(".")) continue;
-      return url.hostname.replace(/^www\./, "").replace(/\.$/, "");
-    } catch { /* A company name is not a website. */ }
-  }
-  return "Website not provided";
-};
+const websiteOf = (company: { domain?: string; aliases: string[] }) => competitorWebsite(company) ?? "Website not provided";
 
-async function api<T>(url: string, init?: { method?: string; body?: unknown; signal?: AbortSignal }): Promise<T> {
+async function requestApi<T>(url: string, init?: { method?: string; body?: unknown; signal?: AbortSignal }): Promise<T> {
   const response = await fetch(url, { signal: init?.signal, method: init?.method ?? "GET", cache: "no-store", headers: init?.body !== undefined ? { "Content-Type": "application/json" } : undefined, body: init?.body !== undefined ? JSON.stringify(init.body) : undefined });
   const body = await response.json().catch(() => ({}));
+  init?.signal?.throwIfAborted();
   if (!response.ok) throw new Error((body as { error?: string }).error ?? "Something went wrong. Please try again.");
   return body as T;
 }
@@ -127,6 +119,11 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
     return () => observer.disconnect();
   }, [step, customerGroups]);
   const requests = useRef<AbortController | null>(null);
+  const api = useCallback(<T,>(url: string, init?: Parameters<typeof requestApi>[1]) => {
+    const signal = init?.signal ?? requests.current?.signal;
+    signal?.throwIfAborted();
+    return requestApi<T>(url, { ...init, signal });
+  }, []);
   const [task, setTask] = useState("");
   const [drafts, setDrafts] = useState<string[]>([]);
   const [chosen, setChosen] = useState<boolean[]>([]);
@@ -166,8 +163,8 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
     pendingGroupFocus.current = null;
   }, [customerGroups]);
 
-  const candidatesFrom = useCallback((source: Check | null, pinned: { name: string; aliases: string[] }[] = []) => {
-    if (pinned.length) return pinned.map(item => ({ name: item.name, aliases: item.aliases, domain: source?.competitors.rows.find(row => row.name === item.name)?.domain, checked: true }));
+  const candidatesFrom = useCallback((source: Check | null, pinned: Summary["competitors"] = []) => {
+    if (pinned.length) return pinned.map(item => ({ name: item.name, aliases: item.aliases, domain: item.domain, checked: true }));
     return (source?.competitors.rows ?? []).filter(row => !row.isTarget).slice(0, 5).map((row, index) => ({ name: row.name, domain: row.domain, aliases: row.aliases, answers: row.answers, totalAnswers: row.totalAnswers, averagePosition: row.averagePosition, source: "public-index" as const, checked: index < 3 }));
   }, []);
 
@@ -409,7 +406,7 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
     </div>}>
       <p className="ob-lede">{fromIndex && check?.competitors.category ? `From the public Folio index for ${check.competitors.category.toLowerCase()}. Track them to see where they appear and you do not.` : "Track up to 10 companies. Folio looks for them, and any other names you add, in every saved answer."}</p>
       <div className="ob-actions"><button className="ob-btn primary" type="button" disabled={busy || !siteId || !candidates.length} onClick={() => void run(async () => {
-        await api("/api/competitors", { method: "PUT", body: { siteId, competitors: picked.map(item => ({ name: item.name, aliases: item.aliases, source: item.source })) } });
+        await api("/api/competitors", { method: "PUT", body: { siteId, competitors: picked.map(item => ({ name: item.name, aliases: item.aliases, source: item.source, domain: competitorWebsite(item) })) } });
         setStep(7);
       })}>{picked.length ? `Track ${plural(picked.length, "competitor")}` : candidates.length ? "Continue without competitors" : "Track competitors"} <Arrow /></button>
         {!adding && candidates.length > 0 && candidates.length < 10 && <button type="button" className="ob-quiet" onClick={() => setAdding(true)}>Add another</button>}

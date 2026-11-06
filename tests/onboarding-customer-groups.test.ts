@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import type { D1Database } from "@cloudflare/workers-types";
-import { MAX_CUSTOMER_GROUPS, MAX_CUSTOMER_GROUP_LENGTH } from "../src/lib/onboarding-customers";
+import { MAX_CUSTOMER_GROUPS } from "../src/lib/onboarding-customers";
 import { parseOnboardingPatch, updateOnboarding, type OnboardingPatch } from "../src/lib/onboarding-store";
 import { ScanError } from "../src/lib/scanner";
 
@@ -11,25 +11,25 @@ const invalidGroups: unknown[] = [
   null, "Customers", {}, 4, [], ["", "  ", "\t\n"],
   ["a", "b", "c", "d", "e"], ["Customers", "", "", "", ""],
   [null], [undefined], [42], [false], [{}], [["Customers"]], [, "Customers"],
-  ["x".repeat(61)], ["valid", "x".repeat(61)], ["before\u0000after"], ["before\u007fafter"],
+  ["before\u0000after"], ["before\u007fafter"],
 ];
 
 test("customer group bounds are browser-safe and parsing preserves one through four groups in order", () => {
   assert.equal(MAX_CUSTOMER_GROUPS, 4);
-  assert.equal(MAX_CUSTOMER_GROUP_LENGTH, 60);
   for (let count = 1; count <= MAX_CUSTOMER_GROUPS; count++) {
     const input = { customerGroups: Array.from({ length: count }, (_, i) => `  Customer \t group ${i + 1} \n`), task: " Find\t a service " };
     const before = JSON.stringify(input);
     const result = parseOnboardingPatch(input);
-    assert.deepEqual(result, { customerGroups: Array.from({ length: count }, (_, i) => `Customer group ${i + 1}`), task: "Find a service" });
+    assert.deepEqual(result, { customerGroups: input.customerGroups, task: "Find a service" });
     assert.equal(JSON.stringify(input), before, "Parsing must not mutate caller input.");
     assert.notEqual(result.customerGroups, input.customerGroups);
   }
-  assert.deepEqual(parseOnboardingPatch({ customerGroups: [" ", "  First  group ", "\t", " Second\n group "] }), { customerGroups: ["First group", "Second group"] });
-  assert.deepEqual(parseOnboardingPatch({ customerGroups: ["x".repeat(60), "日本の購入者"] }).customerGroups, ["x".repeat(60), "日本の購入者"]);
+  assert.deepEqual(parseOnboardingPatch({ customerGroups: [" ", "  First  group ", "\t", " Second\n group "] }), { customerGroups: ["  First  group ", " Second\n group "] });
+  const longDescription = `  ${"Customers comparing detailed product requirements. ".repeat(12)}\r\n\t日本の購入者\nSecond line with  repeated spaces.  `;
+  assert.deepEqual(parseOnboardingPatch({ customerGroups: ["x".repeat(61), longDescription] }).customerGroups, ["x".repeat(61), longDescription]);
 });
 
-test("customer group parsing rejects excessive raw counts, invalid types, blanks, and overlong entries without truncation", () => {
+test("customer group parsing rejects excessive raw counts, invalid types, all-blank groups, and control characters", () => {
   for (const customerGroups of invalidGroups)
     assert.throws(() => parseOnboardingPatch({ customerGroups }), badRequest, JSON.stringify(customerGroups));
   assert.throws(() => parseOnboardingPatch({ customerGroups: ["Customers"], audience: "Customers" }), /not both/);
@@ -37,11 +37,13 @@ test("customer group parsing rejects excessive raw counts, invalid types, blanks
   assert.throws(() => parseOnboardingPatch({ customerGroups: ["Customers"], userId: "other-owner" }), /unsupported field/);
 });
 
-test("legacy audience remains writable, normalized, bounded, and optional independently of task", () => {
-  assert.deepEqual(parseOnboardingPatch({ audience: "  Small\n teams ", task: " Buy a service " }), { audience: "Small teams", task: "Buy a service" });
-  assert.deepEqual(parseOnboardingPatch({ audience: " \t " }), { audience: "" });
+test("legacy audience preserves raw descriptions and remains optional independently of task", () => {
+  assert.deepEqual(parseOnboardingPatch({ audience: "  Small\n teams ", task: " Buy a service " }), { audience: "  Small\n teams ", task: "Buy a service" });
+  assert.deepEqual(parseOnboardingPatch({ audience: " \t " }), { audience: " \t " });
   assert.deepEqual(parseOnboardingPatch({ task: "Only change the task" }), { task: "Only change the task" });
-  for (const audience of [null, 4, {}, [], "x".repeat(61), "before\u0000after"])
+  const longDescription = `  ${"Legacy customers with detailed requirements. ".repeat(12)}\n\tSecond line  `;
+  assert.deepEqual(parseOnboardingPatch({ audience: longDescription }), { audience: longDescription });
+  for (const audience of [null, 4, {}, [], "before\u0000after"])
     assert.throws(() => parseOnboardingPatch({ audience }), badRequest);
 });
 

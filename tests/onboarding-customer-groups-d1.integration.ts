@@ -36,10 +36,11 @@ test("real D1 preserves legacy audience through additive migration and persists 
     const db = await current.getD1Database("DB");
     const migrationNames = (await readdir(new URL("../migrations/", import.meta.url))).filter(name => /^\d+_.+\.sql$/.test(name)).sort();
     for (const name of migrationNames.filter(name => name < "0024_")) await migrate(db, name);
-    for (const owner of ["alice", "bob", "new-owner"])
+    const legacyAudience = `  ${"Existing customers comparing products. ".repeat(10)}\r\n\t日本の購入者  `;
+    for (const owner of ["alice", "bob", "blank-owner", "new-owner"])
       await db.prepare("INSERT INTO user(id,name,email,created_at,updated_at) VALUES(?,?,?,?,?)")
         .bind(owner, owner, `${owner}@example.test`, 1, 1).run();
-    for (const [owner, audience] of [["alice", "Existing customers"], ["bob", null]])
+    for (const [owner, audience] of [["alice", legacyAudience], ["bob", null], ["blank-owner", " \t\n "]])
       await db.prepare("INSERT INTO onboarding_state(user_id,audience,task,created_at,updated_at) VALUES(?,?,?,?,?)")
         .bind(owner, audience, "Existing task", 1, 1).run();
     await db.prepare("INSERT INTO sites(id,user_id,url,name,created_at) VALUES(?,?,?,?,?)")
@@ -47,15 +48,16 @@ test("real D1 preserves legacy audience through additive migration and persists 
     for (const name of migrationNames.filter(name => name >= "0024_")) await migrate(db, name);
 
     const legacyRow = await db.prepare("SELECT audience,customer_groups_json FROM onboarding_state WHERE user_id = ?").bind("alice").first();
-    assert.deepEqual(legacyRow, { audience: "Existing customers", customer_groups_json: null }, "Migration preserves the old column with a NULL fallback marker, not an empty-array default.");
-    assert.deepEqual((await getOnboardingState(db, "alice"))?.customerGroups, ["Existing customers"]);
-    assert.equal((await getOnboardingState(db, "alice"))?.audience, "Existing customers");
+    assert.deepEqual(legacyRow, { audience: legacyAudience, customer_groups_json: null }, "Migration preserves the old column with a NULL fallback marker, not an empty-array default.");
+    assert.deepEqual((await getOnboardingState(db, "alice"))?.customerGroups, [legacyAudience]);
+    assert.equal((await getOnboardingState(db, "alice"))?.audience, legacyAudience);
     assert.deepEqual((await getOnboardingState(db, "bob"))?.customerGroups, []);
+    assert.deepEqual((await getOnboardingState(db, "blank-owner"))?.customerGroups, [], "Whitespace-only legacy audience is not a customer group.");
     assert.equal(await getOnboardingState(db, "new-owner"), null);
     assert.equal(await getOnboardingState(db, "unknown-owner"), null);
 
     const untouchedBob = await getOnboardingState(db, "bob");
-    const groups = ["Small teams", "Growing shops", "日本の購入者", "x".repeat(60)];
+    const groups = [`  ${"Small teams comparing detailed product requirements. ".repeat(12)}\r\n\tSecond line with  spaces.  `, " Growing\n shops ", "日本の購入者", "x".repeat(61)];
     const saved = await updateOnboarding(db, "alice", parseOnboardingPatch({ customerGroups: groups, task: "Find a product" }));
     assert.deepEqual(saved?.customerGroups, groups);
     assert.equal(saved?.audience, groups[0], "Legacy consumers see only the first group.");
@@ -63,7 +65,7 @@ test("real D1 preserves legacy audience through additive migration and persists 
     assert.deepEqual(await getOnboardingState(db, "alice"), saved, "A separate read reopens every group in order.");
     assert.deepEqual(await db.prepare("SELECT audience,customer_groups_json FROM onboarding_state WHERE user_id = ?").bind("alice").first(), { audience: groups[0], customer_groups_json: JSON.stringify(groups) });
 
-    for (const customerGroups of [["a", "b", "c", "d", "e"], ["a", "", "", "", ""], [], [" ", "\t\n"], ["x".repeat(61)], ["a", null], "Customers", null]) {
+    for (const customerGroups of [["a", "b", "c", "d", "e"], ["a", "", "", "", ""], [], [" ", "\t\n"], ["a", null], "Customers", null]) {
       await assert.rejects(updateOnboarding(db, "alice", { customerGroups } as OnboardingPatch), badRequest);
       assert.deepEqual(await getOnboardingState(db, "alice"), saved, "Rejected direct writes cannot change persisted state.");
     }
@@ -75,16 +77,17 @@ test("real D1 preserves legacy audience through additive migration and persists 
     assert.deepEqual(await getOnboardingState(db, "bob"), untouchedBob, "Another owner's state is unchanged by writes and rejected references.");
 
     const filtered = await updateOnboarding(db, "alice", { customerGroups: ["  Small\t teams ", " ", "\n", " Growing\n shops "] });
-    assert.deepEqual(filtered?.customerGroups, ["Small teams", "Growing shops"]);
-    assert.equal(filtered?.audience, "Small teams");
+    assert.deepEqual(filtered?.customerGroups, ["  Small\t teams ", " Growing\n shops "]);
+    assert.equal(filtered?.audience, "  Small\t teams ");
     assert.equal(filtered?.task, "Find a product", "A groups-only patch preserves task.");
-    const legacyWrite = await updateOnboarding(db, "alice", { audience: "  Legacy\t buyers  " });
-    assert.deepEqual(legacyWrite?.customerGroups, ["Legacy buyers"], "Legacy writes replace all earlier groups.");
-    assert.equal(legacyWrite?.audience, "Legacy buyers");
-    assert.equal((await db.prepare("SELECT customer_groups_json FROM onboarding_state WHERE user_id = ?").bind("alice").first<{ customer_groups_json: string }>())?.customer_groups_json, '["Legacy buyers"]');
+    const legacyWrite = await updateOnboarding(db, "alice", { audience: legacyAudience });
+    assert.deepEqual(legacyWrite?.customerGroups, [legacyAudience], "Legacy writes replace all earlier groups without rewriting the description.");
+    assert.equal(legacyWrite?.audience, legacyAudience);
+    assert.deepEqual(await db.prepare("SELECT audience,customer_groups_json FROM onboarding_state WHERE user_id = ?").bind("alice").first(), { audience: legacyAudience, customer_groups_json: JSON.stringify([legacyAudience]) });
     const cleared = await updateOnboarding(db, "alice", { audience: " \t " });
     assert.deepEqual(cleared?.customerGroups, []);
     assert.equal(cleared?.audience, "");
+    assert.equal((await db.prepare("SELECT audience FROM onboarding_state WHERE user_id = ?").bind("alice").first<{ audience: string }>())?.audience, " \t ", "Legacy storage retains raw whitespace even when it represents no groups.");
     assert.equal((await db.prepare("SELECT customer_groups_json FROM onboarding_state WHERE user_id = ?").bind("alice").first<{ customer_groups_json: string }>())?.customer_groups_json, "[]");
     const finalAlice = await updateOnboarding(db, "alice", { customerGroups: groups });
     const finalBob = await updateOnboarding(db, "bob", { customerGroups: ["Bob customers"], task: "Bob task" });

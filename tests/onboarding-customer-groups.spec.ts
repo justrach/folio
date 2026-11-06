@@ -1,6 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
 
 const groups = ["small design teams", "freelance designers", "design agencies", "in-house product teams"];
+const multilineGroup = "  small design teams\n\tcomparing prototype feedback\nacross distributed projects\nwith  detailed requirements\nfor international customers\nincluding 日本の購入者\nand sharing client decisions  ";
+const normalized = (value: string) => value.trim().replace(/\s+/g, " ");
 const at = "2026-09-13T08:00:00.000Z";
 
 type Saved = { audience: string; customerGroups?: string[]; task: string; suiteId: string | null };
@@ -33,7 +35,11 @@ async function fixture(page: Page, holdAlice = false) {
       }
     }
     if (path === "/api/benchmarks" && request.method() === "POST") {
-      const body = request.postDataJSON(); state.questions = body.questions;
+      const body = request.postDataJSON();
+      const questions = body.questions as string[];
+      if (new Set(questions.map(question => normalized(question).toLowerCase())).size !== questions.length)
+        return route.fulfill({ status: 400, json: { error: "Remove duplicate questions." } });
+      state.questions = questions;
       return route.fulfill({ json: { suite: { id: "fixture-suite", cases: state.questions.map((query, i) => ({ id: `question-${i}`, query })) } } });
     }
     state.forbidden.push(`${request.method()} ${path}`);
@@ -45,6 +51,12 @@ async function fixture(page: Page, holdAlice = false) {
 }
 
 const input = (page: Page, number: number) => page.getByRole("textbox", { name: `Customer group ${number}`, exact: true });
+async function expectFittedTextarea(page: Page, number: number) {
+  const field = input(page, number);
+  expect(await field.evaluate(element => element.tagName)).toBe("TEXTAREA");
+  expect(await field.getAttribute("maxlength")).toBeNull();
+  await expect.poll(() => field.evaluate(element => element.scrollHeight <= element.clientHeight + 1)).toBe(true);
+}
 const add = (page: Page) => page.getByRole("button", { name: "+ Add more", exact: true });
 async function open(page: Page) {
   await page.goto("/start?step=4");
@@ -59,9 +71,10 @@ async function refreshSession(page: Page) {
   await page.evaluate(() => window.dispatchEvent(new StorageEvent("storage", { key: "better-auth.message", newValue: JSON.stringify({ event: "session", data: { trigger: "account-change" } }) })));
 }
 
-test("compact customer inputs stop at four, use red crosses, and restore adding after removal", async ({ page }, info) => {
+test("compact customer textareas stop at four, use red crosses, and restore adding after removal", async ({ page }, info) => {
   const state = await fixture(page); await open(page);
   await expect(input(page, 1)).toHaveValue(groups[0]);
+  await expectFittedTextarea(page, 1);
   await expect(page.getByRole("button", { name: /Remove customer group/ })).toHaveCount(0);
   await expect(page.getByText("Customer group 1", { exact: true })).toHaveCount(0);
   await add(page).focus(); await page.keyboard.press("Enter");
@@ -86,22 +99,29 @@ test("compact customer inputs stop at four, use red crosses, and restore adding 
 
 test("all four groups survive saving, revisiting, refresh, and bounded question drafting", async ({ page }) => {
   const state = await fixture(page); await open(page);
+  const savedGroups = [multilineGroup, ...groups.slice(1)];
+  const initialHeight = await input(page, 1).evaluate(element => element.clientHeight);
+  await input(page, 1).fill(multilineGroup);
+  await expectFittedTextarea(page, 1);
+  expect(await input(page, 1).evaluate(element => element.clientHeight)).toBeGreaterThan(initialHeight);
   for (let i = 2; i <= 4; i++) { await add(page).click(); await input(page, i).fill(groups[i - 1]); }
   await expect(page.locator(".ob-note").first()).toContainText("across all 4 customer groups");
   await page.getByRole("button", { name: "Draft my questions", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Pick the questions your buyers ask." })).toBeVisible();
-  expect(state.writes).toEqual([{ customerGroups: groups, task: "collect feedback on prototypes" }]);
+  expect(state.writes).toEqual([{ customerGroups: savedGroups, task: "collect feedback on prototypes" }]);
   const selected = await page.getByRole("checkbox").evaluateAll(elements => elements.filter(element => (element as HTMLInputElement).checked).map(element => element.closest("label")!.textContent!));
   expect(selected).toHaveLength(5);
-  for (const group of groups) expect(selected.some(question => question.includes(group))).toBe(true);
+  for (const group of savedGroups) expect(selected.some(question => question.includes(normalized(group)))).toBe(true);
   await page.getByRole("button", { name: "Save 5 questions", exact: false }).click();
   await expect(page.getByRole("heading", { name: "Who do you want to watch?" })).toBeVisible();
   expect(state.questions).toHaveLength(5);
-  for (const group of groups) expect(state.questions.some(question => question.includes(group))).toBe(true);
+  for (const group of savedGroups) expect(state.questions.some(question => question.includes(normalized(group)))).toBe(true);
   await page.goto("/start?step=4");
-  for (let i = 1; i <= 4; i++) await expect(input(page, i)).toHaveValue(groups[i - 1]);
+  for (let i = 1; i <= 4; i++) await expect(input(page, i)).toHaveValue(savedGroups[i - 1]);
+  await expectFittedTextarea(page, 1);
   await page.reload();
-  for (let i = 1; i <= 4; i++) await expect(input(page, i)).toHaveValue(groups[i - 1]);
+  for (let i = 1; i <= 4; i++) await expect(input(page, i)).toHaveValue(savedGroups[i - 1]);
+  await expectFittedTextarea(page, 1);
   await expect(add(page)).toHaveCount(0);
   await noWorkOrOverflow(page, state);
 });
@@ -109,12 +129,34 @@ test("all four groups survive saving, revisiting, refresh, and bounded question 
 test("unused blank rows do not block saving but at least one group is required", async ({ page }) => {
   const state = await fixture(page); state.saved.alice.audience = ""; await open(page);
   await expect(page.getByRole("button", { name: "Draft my questions", exact: true })).toBeDisabled();
+  await input(page, 1).fill(" \t\n ");
   await add(page).click(); await input(page, 2).fill("  sole customer group  "); await add(page).click();
+  await input(page, 3).fill("\n\t");
   await page.getByRole("button", { name: "Draft my questions", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Pick the questions your buyers ask." })).toBeVisible();
-  expect(state.writes[0]).toEqual({ customerGroups: ["sole customer group"], task: "collect feedback on prototypes" });
-  await open(page); await expect(input(page, 1)).toHaveValue("sole customer group");
+  expect(state.writes[0]).toEqual({ customerGroups: ["  sole customer group  "], task: "collect feedback on prototypes" });
+  await open(page); await expect(input(page, 1)).toHaveValue("  sole customer group  ");
   await expect(input(page, 2)).toHaveCount(0); await noWorkOrOverflow(page, state);
+});
+
+test("normalized duplicate groups preserve raw rows but save five distinct questions", async ({ page }) => {
+  const state = await fixture(page); await open(page);
+  const duplicates = ["  small\n design teams  ", "SMALL\tDESIGN TEAMS", "freelance designers", " Freelance   DESIGNERS "];
+  await input(page, 1).fill(duplicates[0]);
+  for (let i = 2; i <= 4; i++) { await add(page).click(); await input(page, i).fill(duplicates[i - 1]); }
+  await page.getByRole("button", { name: "Draft my questions", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Pick the questions your buyers ask." })).toBeVisible();
+  expect(state.writes[0]).toEqual({ customerGroups: duplicates, task: "collect feedback on prototypes" });
+  await expect(page.getByRole("checkbox")).toHaveCount(10);
+  const labels = await page.getByRole("checkbox").evaluateAll(elements => elements.map(element => element.closest("label")!.textContent!));
+  expect(new Set(labels.map(label => normalized(label).toLowerCase())).size).toBe(10);
+  await page.getByRole("button", { name: "Save 5 questions", exact: false }).click();
+  await expect(page.getByRole("heading", { name: "Who do you want to watch?" })).toBeVisible();
+  expect(state.questions).toHaveLength(5);
+  expect(new Set(state.questions.map(question => normalized(question).toLowerCase())).size).toBe(5);
+  await open(page);
+  for (let i = 1; i <= 4; i++) await expect(input(page, i)).toHaveValue(duplicates[i - 1]);
+  await noWorkOrOverflow(page, state);
 });
 
 test("owner changes abort old reads and clear private groups on logout", async ({ page }) => {

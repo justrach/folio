@@ -3,7 +3,13 @@ import { MAX_CUSTOMER_GROUPS } from "./onboarding-customers";
 /** Ten drafts, interleaved so every customer group appears before any group repeats. */
 export function websiteCustomerGroupDrafts(customerGroups: string[], task: string): string[] {
   if (customerGroups.length > MAX_CUSTOMER_GROUPS) return [];
-  const groups = customerGroups.map(value => value.trim()).filter(Boolean);
+  const seen = new Set<string>();
+  const groups = customerGroups.filter(value => {
+    const key = value.trim().replace(/\s+/g, " ").toLowerCase();
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
   if (!groups.length) return [];
   const drafts = groups.map(group => websiteQuestionDrafts(group, task));
   if (drafts.some(questions => !questions.length)) return [];

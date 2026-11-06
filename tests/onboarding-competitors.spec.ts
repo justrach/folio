@@ -1,10 +1,10 @@
 import { expect, test, type Page } from "@playwright/test";
 
 const at = "2026-09-13T08:00:00.000Z";
-type Selection = { name: string; aliases: string[]; source?: string };
+type Selection = { name: string; aliases: string[]; domain?: string; source?: string };
 
 async function fixture(page: Page, indexed = false) {
-  const state = { saved: [] as Selection[], saves: [] as Selection[][], forbidden: [] as string[], errors: [] as string[] };
+  const state = { indexed, indexedDomain: "indexed.example.test", saved: [] as Selection[], saves: [] as Selection[][], forbidden: [] as string[], errors: [] as string[] };
   page.on("pageerror", error => state.errors.push(error.message));
   await page.route("**/api/**", async route => {
     const request = route.request(), path = new URL(request.url()).pathname, method = request.method();
@@ -17,8 +17,8 @@ async function fixture(page: Page, indexed = false) {
       state: { siteId: "alice-site", audience: "Small teams", task: "manage projects", suiteId: "fixture-suite", competitorsSavedAt: state.saves.length ? at : null, baselineRequestedAt: null, completedAt: null },
       site: { id: "alice-site", url: "https://alice.example.test/", name: "Fixture website" },
       check: { id: "fixture-check", url: "https://alice.example.test/", host: "alice.example.test", createdAt: at, seoScore: 60, scoredChecks: 10, fixes: [],
-        suggestion: { audience: "Small teams", task: "manage projects" }, competitors: { category: indexed ? "Fixture category" : null, questions: indexed ? 2 : 0, totalAnswers: indexed ? 4 : 0,
-          rows: indexed ? [{ name: "Indexed company", domain: "indexed.example.test", aliases: [], aliasCounts: [], answers: 3, totalAnswers: 4, averagePosition: 1.5, isTarget: false, namedInQuestion: 0 }] : [] } },
+        suggestion: { audience: "Small teams", task: "manage projects" }, competitors: { category: state.indexed ? "Fixture category" : null, questions: state.indexed ? 2 : 0, totalAnswers: state.indexed ? 4 : 0,
+          rows: state.indexed ? [{ name: "Indexed company", domain: state.indexedDomain, aliases: [], aliasCounts: [], answers: 3, totalAnswers: 4, averagePosition: 1.5, isTarget: false, namedInQuestion: 0 }] : [] } },
       suite: { id: "fixture-suite", cases: [{ id: "fixture-case", query: "Which tools help a small team manage projects?" }] },
       competitors: state.saved,
     } });
@@ -26,7 +26,7 @@ async function fixture(page: Page, indexed = false) {
       const body = request.postDataJSON() as { siteId: string; competitors: Selection[] };
       expect(body.siteId).toBe("alice-site");
       state.saves.push(body.competitors);
-      state.saved = body.competitors.map(({ name, aliases }) => ({ name, aliases }));
+      state.saved = body.competitors.map(({ name, aliases, domain }) => ({ name, aliases, ...(domain ? { domain } : {}) }));
       return route.fulfill({ json: { competitors: state.saved } });
     }
     if (path === "/api/benchmarks" && method === "GET") return route.fulfill({ json: { access: { canRun: false, message: "Fixture only; no paid runs." } } });
@@ -57,19 +57,20 @@ test("manually added competitors have no provenance label before saving or on re
   await page.getByRole("button", { name: "Add", exact: true }).click();
   const manual = page.getByRole("row").filter({ has: page.getByRole("checkbox", { name: "Track Manual company", exact: true }) });
   await expect(manual).toContainText("Manual company");
-  await expect(manual.locator("small")).toHaveCount(0);
+  await expect(manual.locator(".ob-website")).toHaveText("Website not provided");
   await noProvenance(page);
   await page.getByRole("button", { name: "Add another", exact: true }).click();
   await page.getByLabel("Company name", { exact: true }).fill("Alias company");
   await page.getByRole("textbox", { name: /^Other names \(optional\)/ }).fill("alias.example.test");
   await page.getByRole("button", { name: "Add", exact: true }).click();
-  await expect(page.getByText("Also matches alias.example.test", { exact: true })).toBeVisible();
+  await expect(page.getByText("alias.example.test", { exact: true })).toBeVisible();
+  await expect(page.locator(".ob-tbl")).not.toContainText("Also matches");
   await noProvenance(page);
-  await page.getByRole("button", { name: "Track these 2", exact: true }).click();
+  await page.getByRole("button", { name: "Track 2 competitors", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Ask AI your 1 question now." })).toBeVisible();
   expect(state.saves[0]).toEqual([
     { name: "Manual company", aliases: [], source: "manual" },
-    { name: "Alias company", aliases: ["alias.example.test"], source: "manual" },
+    { name: "Alias company", aliases: ["alias.example.test"], domain: "alias.example.test", source: "manual" },
   ]);
   // Desktop offers step navigation; mobile revisits via the saved step URL.
   if (info.project.name === "desktop") await page.getByRole("button", { name: "Back to Competitors", exact: true }).click();
@@ -78,7 +79,8 @@ test("manually added competitors have no provenance label before saving or on re
   await noProvenance(page);
   await page.reload();
   await expect(page.getByRole("checkbox", { name: "Track Manual company", exact: true })).toBeChecked();
-  await expect(page.getByText("Also matches alias.example.test", { exact: true })).toBeVisible();
+  await expect(page.getByText("alias.example.test", { exact: true })).toBeVisible();
+  await expect(page.locator(".ob-tbl")).not.toContainText("Also matches");
   await noProvenance(page);
   await page.getByRole("checkbox", { name: "Track Alias company", exact: true }).uncheck();
   await page.getByRole("button", { name: "Track 1 competitor", exact: true }).click();
@@ -87,7 +89,7 @@ test("manually added competitors have no provenance label before saving or on re
   await noWorkOrOverflow(page, state);
 });
 
-test("indexed counts remain visible without provenance labels and resuming does not submit a fabricated manual source", async ({ page }) => {
+test("indexed counts have no provenance labels and saved websites survive changed or missing index rows", async ({ page }) => {
   const state = await fixture(page, true);
   await page.goto("/start?step=6");
   await expect(page.getByRole("heading", { name: "Here is who AI already recommends." })).toBeVisible();
@@ -96,12 +98,22 @@ test("indexed counts remain visible without provenance labels and resuming does 
   await noProvenance(page);
   await page.getByRole("button", { name: "Track 1 competitor", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Ask AI your 1 question now." })).toBeVisible();
-  expect(state.saves[0]).toEqual([{ name: "Indexed company", aliases: [], source: "public-index" }]);
+  expect(state.saves[0]).toEqual([{ name: "Indexed company", aliases: [], domain: "indexed.example.test", source: "public-index" }]);
+  // A same-name index entry is not evidence that a saved company changed websites.
+  state.indexedDomain = "unrelated.example.test";
   await page.goto("/start?step=6");
   await expect(page.getByRole("checkbox", { name: "Track Indexed company", exact: true })).toBeChecked();
+  await expect(page.getByText("indexed.example.test", { exact: true })).toBeVisible();
+  await expect(page.locator(".ob-tbl")).not.toContainText("unrelated.example.test");
+  // Reopening must also retain the saved website after the index no longer lists it.
+  state.indexed = false;
+  await page.reload();
+  await expect(page.getByRole("checkbox", { name: "Track Indexed company", exact: true })).toBeChecked();
+  await expect(page.getByText("indexed.example.test", { exact: true })).toBeVisible();
+  expect(state.saves).toHaveLength(1);
   await noProvenance(page);
   await page.getByRole("button", { name: "Track 1 competitor", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Ask AI your 1 question now." })).toBeVisible();
-  expect(state.saves[1]).toEqual([{ name: "Indexed company", aliases: [] }]);
+  expect(state.saves[1]).toEqual([{ name: "Indexed company", aliases: [], domain: "indexed.example.test" }]);
   await noWorkOrOverflow(page, state);
 });

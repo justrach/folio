@@ -30,7 +30,10 @@ test("customer question preview wraps long input without clipping or starting wo
 
   await page.goto("/start?step=4");
   await expect(page.getByRole("heading", { name: "Who should find you, and what do they need?" })).toBeVisible();
-  const audience = page.getByLabel("Your customers", { exact: true });
+  const audience = page.getByRole("textbox", { name: "Customer group 1", exact: true });
+  expect(await audience.evaluate(element => element.tagName)).toBe("TEXTAREA");
+  expect(await audience.getAttribute("maxlength")).toBeNull();
+  const initialHeight = await audience.evaluate(element => element.clientHeight);
   const task = page.getByLabel("What they want to do", { exact: true });
   const preview = page.locator(".ob-quote");
   const token = "collectfeedbackonprototypes".repeat(5).slice(0, 120);
@@ -38,14 +41,31 @@ test("customer question preview wraps long input without clipping or starting wo
     { name: "ordinary", audience: "small design teams", task: "compare prototype feedback across design teams and share clear decisions with clients before the next product release" },
     { name: "unbroken-task", audience: "small design teams", task: token },
     { name: "long-url", audience: "small design teams", task: `https://example.test/${"prototype-feedback".repeat(6)}`.slice(0, 120) },
-    { name: "unbroken-customer-and-task", audience: "designteam".repeat(6), task: token },
+    { name: "unbroken-customer-and-task", audience: "designteam".repeat(20), task: token },
+    { name: "long-multiline-customer", audience: `  ${"design teams comparing prototypes\n".repeat(8)}\twith  international clients  `, task: token },
+    { name: "shortened-customer", audience: "small teams", task: token },
   ]) {
     await test.step(scenario.name, async () => {
       await audience.fill(scenario.audience);
       await task.fill(scenario.task);
       await expect(audience).toHaveValue(scenario.audience);
       await expect(task).toHaveValue(scenario.task);
-      await expect(preview.locator("mark").first()).toHaveText(scenario.audience);
+      await expect(preview.locator("mark").first()).toHaveText(scenario.audience.trim().replace(/\s+/g, " "));
+      await expect.poll(() => audience.evaluate(element => {
+        const style = getComputedStyle(element);
+        return element.scrollHeight <= element.clientHeight + 1 ||
+          (Math.abs(element.clientHeight - parseFloat(style.maxHeight)) <= 1 && style.overflowY === "auto");
+      })).toBe(true);
+      if (scenario.name === "long-multiline-customer") {
+        expect(await audience.evaluate(element => {
+          element.scrollTop = element.scrollHeight;
+          return element.scrollHeight - element.clientHeight - element.scrollTop <= 1;
+        })).toBe(true);
+      }
+      if (scenario.name === "long-multiline-customer")
+        expect(await audience.evaluate(element => element.clientHeight)).toBeGreaterThan(initialHeight);
+      if (scenario.name === "shortened-customer")
+        expect(await audience.evaluate(element => element.clientHeight)).toBeLessThanOrEqual(initialHeight + 1);
       await expect(preview.locator("mark").last()).toHaveText(scenario.task);
       const bounds = await preview.evaluate(element => {
         const box = element.getBoundingClientRect();
