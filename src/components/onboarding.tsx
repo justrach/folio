@@ -20,7 +20,7 @@ type Summary = { state: { siteId: string | null; audience: string; task: string;
   site: { id: string; url: string; name: string } | null; check: Check | null; suite: { id: string; cases: { id: string; query: string }[] } | null;
   competitors: { name: string; aliases: string[] }[] };
 type Access = { canRun: boolean; message: string };
-type Candidate = { name: string; aliases: string[]; answers?: number; totalAnswers?: number; averagePosition?: number; source: "public-index" | "starter-pack" | "manual"; checked: boolean };
+type Candidate = { name: string; aliases: string[]; answers?: number; totalAnswers?: number; averagePosition?: number; source?: "public-index" | "starter-pack" | "manual"; checked: boolean };
 
 const STEPS = ["Website", "Report", "Account", "Customers", "Questions", "Competitors", "Baseline"];
 const TOTAL = STEPS.length;
@@ -124,7 +124,7 @@ export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | n
   }, [step, url, check, audience, task]);
 
   const candidatesFrom = useCallback((source: Check | null, pinned: { name: string; aliases: string[] }[] = []) => {
-    if (pinned.length) return pinned.map(item => ({ ...item, source: "manual" as const, checked: true }));
+    if (pinned.length) return pinned.map(item => ({ name: item.name, aliases: item.aliases, checked: true }));
     return (source?.competitors.rows ?? []).filter(row => !row.isTarget).slice(0, 5).map((row, index) => ({ name: row.name, aliases: row.aliases, answers: row.answers, totalAnswers: row.totalAnswers, averagePosition: row.averagePosition, source: "public-index" as const, checked: index < 3 }));
   }, []);
 
@@ -316,7 +316,7 @@ export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | n
       {fromIndex && check && <div className="ob-card-head"><span>{plural(check.competitors.totalAnswers, "saved answer")}</span><b>Avg. position</b></div>}
       {candidates.length > 0 ? <table className="ob-tbl"><tbody>
         {candidates.map((item, index) => <tr key={item.name}><td style={{ width: 34 }}><label className="ob-check"><input type="checkbox" aria-label={`Track ${item.name}`} checked={item.checked} onChange={() => setCandidates(list => list.map((value, i) => i === index ? { ...value, checked: !value.checked } : value))} /><span className="ob-box"><Tick /></span></label></td>
-          <td><strong>{item.name}</strong><small>{item.answers ? `${item.answers} of ${item.totalAnswers} answers${item.aliases.length ? `, also listed as ${item.aliases.join(", ")}` : ""}` : item.aliases.length ? `Also matches ${item.aliases.join(", ")}` : item.source === "starter-pack" ? "From the starter pack" : "Added by you"}</small></td>
+          <td><strong>{item.name}</strong>{(item.answers || item.aliases.length > 0) ? <small>{item.answers ? `${item.answers} of ${item.totalAnswers} answers${item.aliases.length ? `, also listed as ${item.aliases.join(", ")}` : ""}` : `Also matches ${item.aliases.join(", ")}`}</small> : null}</td>
           <td className="num">{item.averagePosition !== undefined && <span className="ob-pill">{item.averagePosition.toFixed(1)}</span>}</td></tr>)}
         {ghost}
         {target && <tr><td /><td><strong>{target.name}</strong><span className="ob-you">You</span><small>{target.answers} of {target.totalAnswers} answers</small></td><td className="num"><span className="ob-pill neutral">{target.averagePosition.toFixed(1)}</span></td></tr>}

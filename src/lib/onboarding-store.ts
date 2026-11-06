@@ -132,22 +132,28 @@ export async function updateOnboarding(db: D1Database, userId: string, patch: On
   return getOnboardingState(db, userId);
 }
 
-export type TrackedCompetitor = { id: string; name: string; aliases: string[]; source: string };
+/** Customer-facing records omit provenance; developers can inspect the private source column. */
+export type TrackedCompetitor = { id: string; name: string; aliases: string[] };
 export async function listTrackedCompetitors(db: D1Database, userId: string, siteId: string): Promise<TrackedCompetitor[]> {
-  const { results } = await db.prepare("SELECT id, name, aliases_json, source FROM tracked_competitors WHERE user_id = ? AND site_id = ? ORDER BY created_at, name")
-    .bind(userId, siteId).all<{ id: string; name: string; aliases_json: string; source: string }>();
-  return results.map(row => ({ id: row.id, name: row.name, aliases: JSON.parse(row.aliases_json) as string[], source: row.source }));
+  const { results } = await db.prepare("SELECT id, name, aliases_json FROM tracked_competitors WHERE user_id = ? AND site_id = ? ORDER BY created_at, name")
+    .bind(userId, siteId).all<{ id: string; name: string; aliases_json: string }>();
+  return results.map(row => ({ id: row.id, name: row.name, aliases: JSON.parse(row.aliases_json) as string[] }));
 }
 
 /** Replaces the pinned competitors for one owned website. */
 export async function replaceTrackedCompetitors(db: D1Database, userId: string, siteId: string, raw: unknown) {
   if (!await db.prepare("SELECT id FROM sites WHERE id = ? AND user_id = ?").bind(siteId, userId).first()) throw new ScanError("Choose a website saved in your account.", 404);
   if (!Array.isArray(raw) || raw.length > MAX_TRACKED_COMPETITORS) throw new ScanError(`Track up to ${MAX_TRACKED_COMPETITORS} competitors.`);
+  const { results: existing } = await db.prepare("SELECT name, source FROM tracked_competitors WHERE user_id = ? AND site_id = ?")
+    .bind(userId, siteId).all<{ name: string; source: string }>();
+  const sources = new Map(existing.map(item => [item.name.toLowerCase(), item.source]));
   const list = raw.map(item => {
     const value = item && typeof item === "object" ? item as Record<string, unknown> : {};
     const competitor = normaliseCompetitor(value.name, value.aliases);
     if (!competitor) throw new ScanError("Each competitor needs a name of up to 80 characters.");
-    const source = ["manual", "public-index", "starter-pack"].includes(String(value.source)) ? String(value.source) : "manual";
+    // Reopening/resaving a selection must not reclassify its original provenance.
+    const source = sources.get(competitor.name.toLowerCase()) ??
+      (["manual", "public-index", "starter-pack"].includes(String(value.source)) ? String(value.source) : "manual");
     return { ...competitor, source };
   });
   if (new Set(list.map(item => item.name.toLowerCase())).size !== list.length) throw new ScanError("Remove duplicate competitors.");
