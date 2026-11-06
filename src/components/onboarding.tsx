@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { authClient } from "@/lib/auth-client";
 import { websiteQuestionDrafts } from "@/lib/website-question-drafts";
+import { QUESTION_SUITE_MAX_QUESTION_LENGTH } from "@/lib/question-suite-input";
 import { evaluationMethodology } from "@/lib/evaluation";
 import type { CompetitorSuggestion } from "@/lib/onboarding-competitors";
 import { BaselineProgress, useBaselineQueue } from "./onboarding-progress";
@@ -109,6 +110,21 @@ export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | n
   const [password, setPassword] = useState("");
   const [haveAccount, setHaveAccount] = useState(false);
   const booted = useRef(false);
+  const audienceField = useRef<HTMLTextAreaElement>(null);
+
+  useLayoutEffect(() => {
+    const field = audienceField.current;
+    if (!field) return;
+    const fit = () => { field.style.height = "auto"; field.style.height = `${field.scrollHeight}px`; };
+    fit();
+    let width = field.clientWidth;
+    const observer = new ResizeObserver(() => {
+      if (field.clientWidth === width) return;
+      width = field.clientWidth; fit();
+    });
+    observer.observe(field);
+    return () => observer.disconnect();
+  }, [step, audience]);
 
   const setStep = useCallback((next: number) => {
     setDir(next < current.current ? "back" : "forward"); setStepState(next); setError(""); setShowMore(false);
@@ -270,7 +286,7 @@ export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | n
         await api("/api/onboarding", { method: "PUT", body: { audience, task } });
         applyDrafts(audience, task); setStep(5);
       }); }}>
-        <label className="ob-field">Your customers<div className="ob-input"><input required maxLength={60} value={audience} onChange={event => setAudience(event.target.value)} placeholder="small design teams" /></div>
+        <label className="ob-field">Your customers<div className="ob-input"><textarea ref={audienceField} className="ob-audience" aria-label="Your customers" required rows={1} value={audience} onChange={event => setAudience(event.target.value)} placeholder="small design teams" /></div>
           {check?.suggestion.audience && audience === check.suggestion.audience && <span className="ob-hint">Suggested from your page. Edit if it is wrong.</span>}</label>
         <label className="ob-field">What they want to do<div className="ob-input"><input required maxLength={120} value={task} onChange={event => setTask(event.target.value)} placeholder="collect feedback on prototypes" /></div>
           {check?.suggestion.task && task === check.suggestion.task && <span className="ob-hint">Suggested from your page. Edit if it is wrong.</span>}</label>
@@ -292,6 +308,11 @@ export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | n
       {drafts.length > 7 && <button type="button" className="ob-quiet" style={{ marginTop: 10, color: "var(--folio-accent)", textDecoration: "none", fontWeight: 600, fontSize: 13.5 }} onClick={() => setShowMore(value => !value)}>{showMore ? "Show fewer" : `Show ${drafts.length - 7} more`}</button>}
     </div>}>
       <p className="ob-lede">{drafts.length > 5 ? "We picked the 5 closest to a buying decision. Fewer, sharper questions give clearer results." : "Keep the questions that sound like your buyers."}</p>
+      <details className="ob-more" open={drafts.some(question => question.length > QUESTION_SUITE_MAX_QUESTION_LENGTH)}>
+        <summary>Edit question wording</summary>
+        <p className="ob-note">Each saved question can contain up to {QUESTION_SUITE_MAX_QUESTION_LENGTH} characters, and the suite must fit within 4 KB. Editing a question does not shorten your saved customer description.</p>
+        {drafts.map((question, index) => <label className="ob-field" key={index}>Question {index + 1}<div className="ob-input"><textarea rows={3} value={question} disabled={busy} onChange={event => setDrafts(values => values.map((value, i) => i === index ? event.target.value : value))} /></div><span className="ob-hint">{question.length} / {QUESTION_SUITE_MAX_QUESTION_LENGTH} characters</span></label>)}
+      </details>
       <div className="ob-actions"><button className="ob-btn primary" type="button" disabled={busy || !selected.length || !siteId} onClick={() => void run(async () => {
         const { suite: saved } = await api<{ suite: { id: string; cases: { id: string; query: string }[] } }>("/api/benchmarks", { method: "POST", body: { name: `${check?.host ?? "Website"} buyer questions`, websiteId: siteId, questions: selected, language: LANGUAGE, locale: LOCALE } });
         await api("/api/onboarding", { method: "PUT", body: { suiteId: saved.id } });

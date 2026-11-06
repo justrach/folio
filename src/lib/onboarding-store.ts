@@ -94,10 +94,15 @@ export function parseOnboardingPatch(body: Record<string, unknown>): OnboardingP
     if (typeof body[key] !== "string" || !/^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/.test(body[key] as string)) throw new ScanError(`Provide a valid ${key}.`);
     patch[key] = body[key] as string;
   }
-  for (const [key, max] of [["audience", 60], ["task", 120]] as const) if (body[key] !== undefined) {
-    const value = typeof body[key] === "string" ? (body[key] as string).replace(/\s+/g, " ").trim() : null;
-    if (value === null || value.length > max || /[\u0000-\u001f\u007f]/.test(value)) throw new ScanError(`Use up to ${max} characters for ${key}.`);
-    patch[key] = value;
+  if (body.audience !== undefined) {
+    if (typeof body.audience !== "string" || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(body.audience))
+      throw new ScanError("Provide a customer description without control characters other than line breaks or tabs.");
+    patch.audience = body.audience;
+  }
+  if (body.task !== undefined) {
+    const value = typeof body.task === "string" ? body.task.replace(/\s+/g, " ").trim() : null;
+    if (value === null || value.length > 120 || /[\u0000-\u001f\u007f]/.test(value)) throw new ScanError("Use up to 120 characters for task.");
+    patch.task = value;
   }
   for (const key of ["baselineRequested", "searchConsoleSkipped", "completed", "dismissed"] as const) if (body[key] !== undefined) {
     if (body[key] !== true) throw new ScanError(`${key} can only be set to true.`);
