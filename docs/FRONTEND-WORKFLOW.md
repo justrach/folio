@@ -30,6 +30,12 @@ In `/start`, step 4 (**Customers**) previews the first question as the owner edi
 
 At `/start?step=6`, competitor rows and the live add-company preview show the website domain rather than alternate company names. Public-index domains are retained when preparing candidates and reopening saved selections; starter-pack and manually entered website aliases supply a domain when available. Rows without a website say **Website not provided** rather than guessing from a company name. Saved-answer counts and average positions remain separate from the website. Alternate names remain matching metadata, not displayed alias lists. Selecting, deselecting, or revisiting this step starts no paid work; saving competitors remains explicit.
 
+## Onboarding competitors
+
+At `/start?step=6`, users can select suggested companies or add competitors themselves. Competitor rows do not display provenance labels such as **Added by you** or a replacement badge/tooltip. Names, alternate-name matching, and measured public-answer counts remain unchanged.
+
+Provenance stays in the private `tracked_competitors.source` column (`manual`, `public-index`, or `starter-pack`), alongside `user_id` and `site_id`, for authorized developer inspection. Customer-facing competitor and onboarding responses omit it. Saving a new selection records its origin; reopening and resaving an existing selection preserves its stored origin rather than reclassifying it as manual. Existing records are not backfilled or inferred from their names. Viewing or saving competitors starts no provider work.
+
 ## Start from your workspace
 
 `/overview` defaults to the public benchmark dashboard. **My website results** is the explicit `/overview?view=workspace` view. Signed-out visitors to that view see a sign-in prompt; signed-in owners choose an existing saved website. The overview loads saved application records with GET requests only. It does not reconcile provider sessions, start a search, or import an SEO report.

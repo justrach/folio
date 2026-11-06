@@ -21,7 +21,7 @@ type Summary = { state: { siteId: string | null; audience: string; task: string;
   site: { id: string; url: string; name: string } | null; check: Check | null; suite: { id: string; cases: { id: string; query: string }[] } | null;
   competitors: { name: string; aliases: string[] }[] };
 type Access = { canRun: boolean; message: string };
-type Candidate = { name: string; domain?: string; aliases: string[]; answers?: number; totalAnswers?: number; averagePosition?: number; source: "public-index" | "starter-pack" | "manual"; checked: boolean };
+type Candidate = { name: string; domain?: string; aliases: string[]; answers?: number; totalAnswers?: number; averagePosition?: number; source?: "public-index" | "starter-pack" | "manual"; checked: boolean };
 
 const STEPS = ["Website", "Report", "Account", "Customers", "Questions", "Competitors", "Baseline"];
 const TOTAL = STEPS.length;
@@ -151,7 +151,7 @@ export function Onboarding({ proof, starterPacks }: { proof: OnboardingProof | n
   }, [step, url, check, audience, task]);
 
   const candidatesFrom = useCallback((source: Check | null, pinned: { name: string; aliases: string[] }[] = []) => {
-    if (pinned.length) return pinned.map(item => ({ ...item, domain: source?.competitors.rows.find(row => row.name === item.name)?.domain, source: "manual" as const, checked: true }));
+    if (pinned.length) return pinned.map(item => ({ name: item.name, aliases: item.aliases, domain: source?.competitors.rows.find(row => row.name === item.name)?.domain, checked: true }));
     return (source?.competitors.rows ?? []).filter(row => !row.isTarget).slice(0, 5).map((row, index) => ({ name: row.name, domain: row.domain, aliases: row.aliases, answers: row.answers, totalAnswers: row.totalAnswers, averagePosition: row.averagePosition, source: "public-index" as const, checked: index < 3 }));
   }, []);
 
