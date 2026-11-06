@@ -353,13 +353,9 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
 
   if (step === 5) {
     const selected = drafts.filter((_, index) => chosen[index]);
-    const visible = showMore ? drafts : drafts.slice(0, 7);
     return <Screen nav={nav} step={5} onExit={exit} eyebrow="Questions to track" title="Pick the questions your buyers ask." side={<div className="ob-card">
       <div className="ob-card-head"><span>{selected.length} of {drafts.length} selected</span><b>{LANGUAGE}, {LOCALE}</b></div>
-      <fieldset className="ob-qlist" style={{ border: 0, padding: 0, margin: 0 }}><legend className="ob-hint" style={{ position: "absolute", left: -9999 }}>Questions</legend>
-        {visible.map((question, index) => <label className="ob-check" key={question}><input type="checkbox" checked={Boolean(chosen[index])} onChange={() => setChosen(value => value.map((item, i) => i === index ? !item : item))} /><span className="ob-box"><Tick /></span><span>{question}</span></label>)}
-      </fieldset>
-      {drafts.length > 7 && <button type="button" className="ob-quiet" style={{ marginTop: 10, color: "var(--folio-accent)", textDecoration: "none", fontWeight: 600, fontSize: 13.5 }} onClick={() => setShowMore(value => !value)}>{showMore ? "Show fewer" : `Show ${drafts.length - 7} more`}</button>}
+      <QuestionList questions={drafts} chosen={chosen} onToggle={index => setChosen(value => value.map((item, i) => i === index ? !item : item))} />
     </div>}>
       <p className="ob-lede">{drafts.length > 5 ? "We picked the 5 closest to a buying decision. Fewer, sharper questions give clearer results." : "Keep the questions that sound like your buyers."}</p>
       <details className="ob-more" open={drafts.some(question => question.length > QUESTION_SUITE_MAX_QUESTION_LENGTH)}>
@@ -467,6 +463,43 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
     {error && <p className="ob-error" role="alert">{error}</p>}
     <Trust>{scConnected ? "Search Console is already connected." : providers.google ? "Read-only. Folio never changes your Google settings. Disconnect any time." : "Search Console sign-in is not configured on this server yet."}</Trust>
   </Screen>;
+}
+
+function QuestionList({ questions, chosen, onToggle }: { questions: string[]; chosen: boolean[]; onToggle: (index: number) => void }) {
+  const viewport = useRef<HTMLDivElement>(null);
+  const list = useRef<HTMLFieldSetElement>(null);
+  const [moreBelow, setMoreBelow] = useState(false);
+  const updateOverflow = useCallback(() => {
+    const node = viewport.current;
+    if (node) setMoreBelow(node.scrollHeight - node.scrollTop - node.clientHeight > 1);
+  }, []);
+
+  useLayoutEffect(() => {
+    const node = viewport.current, content = list.current;
+    if (!node || !content) return;
+    const resize = () => {
+      const rows = Array.from(content.querySelectorAll<HTMLElement>(".ob-check"));
+      // Preserve the collapsed panel: seven rows plus the former control's space.
+      // Measure again on wrapping/font changes, never on selection or scrolling.
+      const height = rows.slice(0, 7).reduce((sum, row) => sum + row.getBoundingClientRect().height, 0)
+        + (rows.length > 7 ? 30.25 : 0);
+      node.style.height = `${Math.ceil(height)}px`;
+      updateOverflow();
+    };
+    resize();
+    const observer = new ResizeObserver(resize);
+    observer.observe(content);
+    return () => observer.disconnect();
+  }, [questions, updateOverflow]);
+
+  return <div className="ob-question-window" data-more-below={moreBelow}>
+    <div className="ob-question-scroll" ref={viewport} role="region" aria-label="Available questions" tabIndex={0} onScroll={updateOverflow}
+      onFocusCapture={event => { if (event.target instanceof HTMLInputElement) event.target.closest("label")?.scrollIntoView({ block: "nearest" }); }}>
+      <fieldset ref={list} className="ob-qlist" style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}><legend className="ob-hint" style={{ position: "absolute", left: -9999 }}>Questions</legend>
+        {questions.map((question, index) => <label className="ob-check" key={question}><input type="checkbox" checked={Boolean(chosen[index])} onChange={() => onToggle(index)} /><span className="ob-box"><Tick /></span><span>{question}</span></label>)}
+      </fieldset>
+    </div>
+  </div>;
 }
 
 /** Counts 0 → score on the meter's curve. Reduced motion shows the final value at once. */

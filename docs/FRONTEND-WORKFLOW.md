@@ -44,6 +44,10 @@ Step 4 of `/start` begins with one content-sized input under **Customer group(s)
 
 Saved groups reopen through the owner-scoped onboarding API. Migration `0024_onboarding_customer_groups.sql` adds group storage while existing single-audience records reopen as one group. Client and server enforce four groups; each group uses a content-sized textarea and preserves its full description, including line breaks. The shared task remains limited to 120 characters; the existing request-size limit and saved-question limits still apply. Owner changes remount private onboarding state, abort outstanding reads, and discard old unkeyed browser drafts; only an explicitly anonymous page check is retained in tab storage for the sign-in handoff.
 
+## Guided setup questions
+
+In `/start` Step 5, the right-hand questions panel keeps its collapsed seven-row footprint (including the former expansion-control space). All questions are rendered and scroll within the panel; there is no **Show More** action. A partial blur/fade at the bottom edge indicates more questions below, clears as questions scroll into view, and disappears at the end or when the list fits. Mouse, touch, and keyboard scrolling preserve the panel size and surrounding layout. Selecting or scrolling questions starts no provider work; saving still stores drafts only.
+
 ## Start from your workspace
 
 `/overview` defaults to the public benchmark dashboard. **My website results** is the explicit `/overview?view=workspace` view. Signed-out visitors to that view see a sign-in prompt; signed-in owners choose an existing saved website. The overview loads saved application records with GET requests only. It does not reconcile provider sessions, start a search, or import an SEO report.
