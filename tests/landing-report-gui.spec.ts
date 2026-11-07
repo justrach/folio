@@ -1,3 +1,4 @@
+import { selectValue } from "./select-helpers";
 import { expect, test, type Page } from "@playwright/test";
 import evaluationBatch from "../src/data/developer-tool-evaluations.json";
 import { DEVELOPER_TOOLS, WEBSITE_AUDIENCES } from "../src/lib/developer-tools-source";
@@ -15,7 +16,7 @@ const pagination = (page: Page, name: string) => report(page).getByRole("navigat
 async function chooseReport(page: Page, id: string, name: string) {
   const heading = report(page).getByRole("heading", { name, exact: true });
   await expect.poll(async () => {
-    await picker(page).selectOption(id);
+    await selectValue(picker(page), id);
     return heading.isVisible().catch(() => false);
   }, { timeout: 15_000, intervals: [300, 600, 1000] }).toBe(true);
 }
@@ -46,9 +47,11 @@ test("landing reports show actual captured results across all audiences without 
   await page.goto("/");
   await page.getByText(htmlChecksLabel, { exact: true }).click();
   await expect(report(page)).toBeVisible();
-  await expect(picker(page)).toHaveValue("allbirds");
-  await expect(picker(page).getByRole("option")).toHaveCount(DEVELOPER_TOOLS.length);
-  await expect(picker(page).locator("optgroup")).toHaveCount(WEBSITE_AUDIENCES.length);
+  await expect(picker(page)).toHaveAttribute("data-value", "allbirds");
+  await picker(page).click();
+  await expect(page.getByRole("listbox").getByRole("option")).toHaveCount(DEVELOPER_TOOLS.length);
+  await expect(page.getByRole("listbox").getByRole("group")).toHaveCount(WEBSITE_AUDIENCES.length);
+  await page.keyboard.press("Escape");
 
   for (const id of ["allbirds", "better-auth", "clerk"]) {
     const observed = observations.find(result => result.toolId === id)!;
@@ -72,7 +75,7 @@ test("landing check sorting, pagination, keyboard disclosure, and source data st
   await page.goto("/");
   await page.getByText(htmlChecksLabel, { exact: true }).click();
   await expect(report(page)).toBeVisible();
-  await expect(picker(page)).toHaveValue("allbirds");
+  await expect(picker(page)).toHaveAttribute("data-value", "allbirds");
   const observed = observations.find(result => result.toolId === "better-auth")!;
   await chooseReport(page, "better-auth", observed.name);
   const checks = table(page, observed.name);
@@ -102,7 +105,7 @@ test("landing check sorting, pagination, keyboard disclosure, and source data st
   await report(page).getByText("Captured source and hash", { exact: true }).click();
   await expect(report(page).locator(".landing-report-source code")).toHaveText(observed.contentHash!);
   await expect(report(page).locator(".landing-report-source")).toContainText(observed.finalUrl!);
-  await picker(page).selectOption("clerk");
+  await selectValue(picker(page), "clerk");
   await expect(report(page).locator(".landing-report-check-detail")).toHaveCount(0);
   await expect(report(page).locator(".landing-report-source")).not.toHaveAttribute("open", "");
   await expect(pagination(page, "Clerk")).toContainText("Page 1 of 2");

@@ -188,7 +188,7 @@
 .folio-workspace .public-benchmark-published-result .ranked-search-chart figcaption strong { font-size: 13px; }
 .folio-workspace .public-benchmark-published-result .ranked-search-chart figcaption span { font-size: 11px; }
 .folio-workspace .website-filter-bar { margin-block: 12px; gap: 12px; }
-.folio-workspace .website-filter-bar select { height: 40px; min-height: 40px; font-size: 12px; border-color: var(--folio-edge); }
+.folio-workspace .website-filter-bar select { height: 44px; min-height: 44px; font-size: 13px; border-color: var(--folio-edge); }
 .folio-workspace .website-filter-bar label { font-size: 11px; gap: 5px; }
 .website-list-toolbar { display: flex; gap: 16px; align-items: end; margin: 18px 0 14px; }
 .website-list-toolbar > div:first-child { margin-right: auto; }
@@ -218,7 +218,9 @@
   .folio-workspace .public-benchmark-mobile-picker { padding-inline: 16px; }
   .folio-workspace .public-benchmark-result { padding: 18px 16px; }
   .folio-workspace .public-benchmark-result h2 { font-size: 17px; }
-  .folio-workspace .public-benchmark-filters select { font-size: 12px; }
+  .folio-workspace .public-benchmark-filters select,
+  .folio-workspace .website-filter-bar select,
+  .folio-workspace .lbi input { font-size: 16px; }
   .folio-workspace .website-filter-bar { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) {

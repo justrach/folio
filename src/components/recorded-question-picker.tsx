@@ -13,9 +13,12 @@ export function RecordedQuestionPicker({ questions, selected, onSelect }: { ques
   const titleId = useId();
   const matches = questions.filter(question => question.query.toLowerCase().includes(search.toLowerCase().trim()));
   return <>
-    <button ref={trigger} type="button" className="ranked-question-trigger" aria-label="Change question" aria-describedby={`${titleId}-selected`} aria-haspopup="dialog" onClick={() => { setSearch(""); dialog.current?.showModal(); }}>
-      <span><span className="ranked-question-label">Question</span><span id={`${titleId}-selected`} className="ranked-search-query">{selected.query}</span></span><ChevronDown size={18} aria-hidden="true" />
-    </button>
+    <div className="ranked-question-selection">
+      <div className="ranked-question-heading"><span className="ranked-question-label">Question</span>
+        <button ref={trigger} type="button" className="ranked-question-trigger" aria-label="Change question" aria-describedby={`${titleId}-selected`} aria-haspopup="dialog" onClick={() => { setSearch(""); dialog.current?.showModal(); }}>Change question <ChevronDown size={15} aria-hidden="true" /></button>
+      </div>
+      <h3 id={`${titleId}-selected`} className="ranked-search-query">{selected.query}</h3>
+    </div>
     <dialog ref={dialog} className="ranked-question-dialog" aria-labelledby={titleId} onKeyDown={event => { if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); dialog.current?.close(); } }} onClose={() => trigger.current?.focus({ preventScroll: true })} onCancel={event => { event.preventDefault(); dialog.current?.close(); }} onClick={event => {
       if (event.target !== event.currentTarget) return;
       const box = event.currentTarget.getBoundingClientRect();

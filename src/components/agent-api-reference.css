@@ -5,6 +5,7 @@
 .api-docs .api-parameters th,.api-docs .api-parameters td{font-size:13px;line-height:1.65;letter-spacing:normal;text-transform:none;color:var(--ink,var(--folio-ink))}
 
 /* Shared Folio identity, with a reading-first documentation layout. */
+.api-docs-menu { display: none; }
 .api-docs { background: var(--folio-canvas); color: var(--folio-ink); font-family: var(--folio-font-body); font-size: 15px; }
 .api-docs-header { min-height: 76px; padding: 16px 32px; background: var(--folio-canvas); gap: 20px; }
 .api-docs-header .api-wordmark { color: var(--folio-ink); font: 700 30px/1 var(--folio-font-display); letter-spacing: -.04em; }
@@ -38,9 +39,14 @@
   .api-docs-header > span { padding-left: 12px; }
   .api-docs-header .api-workspace-link { font-size: 11px; }
   .api-docs .dashboard-appearance span { display: none; }
-  .api-docs-nav { position: static; display: flex; flex-direction: row; flex-wrap: wrap; max-height: 160px; overflow: auto; padding: 12px; border-bottom: 1px solid var(--folio-edge); }
-  .api-docs-nav > strong { width: 100%; padding-top: 12px; }
+  .api-docs-menu { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 48px; padding: 12px 20px; border: 0; border-bottom: 1px solid var(--folio-edge); background: transparent; color: var(--folio-ink); font: 13px var(--folio-font-body); cursor: pointer; }
+  .api-docs-menu[aria-expanded="true"] svg { transform: rotate(180deg); }
+  .api-docs-nav { position: static; display: none; flex-direction: column; flex-wrap: nowrap; max-height: min(480px, 60dvh); overflow: auto; padding: 10px 12px; border-bottom: 1px solid var(--folio-edge); }
+  .api-docs-nav[data-open="true"] { display: flex; }
+  .api-docs-nav a { min-height: 44px; font-size: 13px; white-space: normal; }
+  .api-docs-nav > strong { display: block; width: 100%; padding-top: 12px; }
   .api-docs-main { border-left: 0; padding: 26px 20px 50px; }
   .api-docs h1 { font-size: 27px; }
   .api-example-grid { grid-template-columns: 1fr; }
+  .api-code-heading select, .api-keys input:not([type=checkbox]), .api-keys select { font-size: 16px; }
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { UiSelect } from "./ui/select";
 import Link from "next/link";
 import { OverviewInsights } from "./overview-insights";
 import { LabelInput } from "./bencho/label-input/LabelInput";
@@ -49,7 +50,7 @@ export function PublicBenchmarkDashboard() {
   const [status, setStatus] = useState("All tasks");
   const [taskPage, setTaskPage] = useState<{ context: string; index: number } | null>(null);
   const taskList = useRef<HTMLOListElement>(null);
-  const taskPicker = useRef<HTMLSelectElement>(null);
+  const taskPicker = useRef<HTMLButtonElement>(null);
   const resultHeading = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => { setTaskPage(null); }, [queryId, model]);
@@ -157,10 +158,10 @@ export function PublicBenchmarkDashboard() {
     <OverviewInsights observations={view.observations.filter(observation=>filteredIds.has(observation.queryId))} />
     <div className="public-benchmark-filters">
       <div className="public-benchmark-search public-benchmark-search--bencho"><LabelInput field="Search tasks" value={search} onValueChange={setSearch} corner={10}/></div>
-      <label><span className="sr-only">Model</span><select aria-label="Model" value={model ?? ""} onChange={event => selectModel(event.target.value)}><option value="">All models</option>{model !== null && !models.includes(model) && <option value={model}>{model || "Unknown model"} · no published answers</option>}{models.map(value => <option key={value} value={value}>{value}</option>)}</select></label>
-      <label><span className="sr-only">Audience</span><select value={audience} onChange={event => { setAudience(event.target.value); setCategory("All categories"); }}><option>All audiences</option>{audiences.map(value => <option key={value}>{value}</option>)}</select></label>
-      <label><span className="sr-only">Category</span><select aria-label="Category" value={category} onChange={event => setCategory(event.target.value)}><option>All categories</option>{categories.map(value => <option key={value}>{value}</option>)}</select></label>
-      <label><span className="sr-only">Task status</span><select value={status} onChange={event => setStatus(event.target.value)}>{(model === null ? ["All tasks", "Published", "In progress", "Not started", "Needs attention"] : ["All tasks", "Published", "Unmeasured"]).map(value => <option key={value}>{value}</option>)}</select></label>
+      <label><span className="sr-only">Model</span><UiSelect aria-label="Model" value={model ?? ""} onChange={event => selectModel(event.target.value)}><option value="">All models</option>{model !== null && !models.includes(model) && <option value={model}>{model || "Unknown model"} · no published answers</option>}{models.map(value => <option key={value} value={value}>{value}</option>)}</UiSelect></label>
+      <label><span className="sr-only">Audience</span><UiSelect value={audience} onChange={event => { setAudience(event.target.value); setCategory("All categories"); }}><option>All audiences</option>{audiences.map(value => <option key={value}>{value}</option>)}</UiSelect></label>
+      <label><span className="sr-only">Category</span><UiSelect aria-label="Category" value={category} onChange={event => setCategory(event.target.value)}><option>All categories</option>{categories.map(value => <option key={value}>{value}</option>)}</UiSelect></label>
+      <label><span className="sr-only">Task status</span><UiSelect value={status} onChange={event => setStatus(event.target.value)}>{(model === null ? ["All tasks", "Published", "In progress", "Not started", "Needs attention"] : ["All tasks", "Published", "Unmeasured"]).map(value => <option key={value}>{value}</option>)}</UiSelect></label>
     </div>
 
     <div className="public-benchmark-workbench">
@@ -171,7 +172,7 @@ export function PublicBenchmarkDashboard() {
           <div><button type="button" onClick={() => showPage(pageIndex - 1)} disabled={pageIndex === 0} aria-label="Previous task page">Previous</button><button type="button" onClick={() => showPage(pageIndex + 1)} disabled={pageIndex === pageCount - 1} aria-label="Next task page">Next</button>
           {!selectionOnPage && selected && <button type="button" onClick={revealSelectedTask}>Show selected task</button>}</div>
         </nav>}
-        <div className="public-benchmark-mobile-picker"><label>Task<select ref={taskPicker} value={selectionOnPage ? selected?.id : ""} onChange={event => selectTask(event.target.value, true)}><option value="" disabled>Choose a task on this page</option>{pageTasks.map(task => <option key={task.id} value={task.id}>{task.query} · {taskState(task).label}</option>)}</select></label></div>
+        <div className="public-benchmark-mobile-picker"><label>Task<UiSelect ref={taskPicker} onReselect={id => selectTask(id, true)} value={selectionOnPage ? selected?.id : ""} onChange={event => selectTask(event.target.value, true)}><option value="" disabled>Choose a task on this page</option>{pageTasks.map(task => <option key={task.id} value={task.id}>{task.query} · {taskState(task).label}</option>)}</UiSelect></label></div>
         <ol ref={taskList} start={pageStart + 1} className="public-benchmark-task-list">{pageTasks.map(task => <li key={task.id}><button type="button" onClick={() => selectTask(task.id)} aria-pressed={selected?.id === task.id} aria-label={`Open task: ${task.query}`}>
           <span className="public-task-topline"><span>{task.audience}</span><TaskStatus task={task} /></span><strong>{task.category}</strong><span className="public-task-question">{task.query}</span>
           <span className="public-task-bottomline">{task.latestObservation ? `${task.latestObservation.recommendations.length} recommendations · ${task.latestObservation.citations.length} sources` : task.collection.startedAt ? `Started ${date(task.collection.startedAt)}` : "No result yet"}<ChevronRight size={14} /></span>

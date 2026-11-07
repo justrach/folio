@@ -1,3 +1,4 @@
+import { selectValue } from "./select-helpers";
 import { expect, test, type Page } from "@playwright/test";
 import { EVAL_SUITE } from "../src/lib/evals";
 
@@ -149,7 +150,7 @@ test("Search Console imports only after property selection and one explicit acti
   expect(state.propertyReads).toBe(0);
   expect(state.imports).toEqual([]);
   await load.click();
-  await page.getByLabel("Search Console property", { exact: true }).selectOption(alphaProperty);
+  await selectValue(page.getByLabel("Search Console property", { exact: true }), alphaProperty);
   expect(state.imports).toEqual([]);
   await page.getByRole("button", { name: "Import search data", exact: true }).click();
   await expect(results(page)).toContainText("alpha private search");

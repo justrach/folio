@@ -1,5 +1,6 @@
 "use client";
 
+import { UiSelect } from "./ui/select";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, type RefObject } from "react";
@@ -177,7 +178,7 @@ function OwnerSearchConsole({ ownerId }: { ownerId: string | null }) {
         }}>
           {properties.length ? <>
             <label htmlFor="gsc-property">Search Console property</label>
-            <select id="gsc-property" value={property} onChange={e=>setProperty(e.target.value)} disabled={!!busy}>{properties.map(item=><option value={item.siteUrl} key={item.siteUrl}>{item.siteUrl}</option>)}</select>
+            <UiSelect id="gsc-property" value={property} onChange={e=>setProperty(e.target.value)} disabled={!!busy}>{properties.map(item=><option value={item.siteUrl} key={item.siteUrl}>{item.siteUrl}</option>)}</UiSelect>
             <p className="gsc-muted">Imports finalized data for a 28-day window ending three days ago. A URL-prefix property covers only that prefix. Choose the exact property you want to measure.</p>
             <button className="button primary" type="submit" disabled={!!busy || !property}>{busy === "import" && <Loader2 className="spin" size={16}/>} Import search data</button>
           </> : <p>No Search Console properties are available to this Google account. Add or verify your website in <a href="https://search.google.com/search-console" target="_blank" rel="noreferrer">Google Search Console</a>, then load properties again.</p>}

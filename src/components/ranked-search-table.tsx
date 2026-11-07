@@ -1,5 +1,6 @@
 "use client";
 
+import { UiSelect } from "./ui/select";
 import { Suspense, useId } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -33,14 +34,14 @@ function RankedSearchTableContent({ compact }: { compact: boolean }) {
   return <section className={`ranked-search${compact ? " ranked-search--compact" : ""}`} aria-label="Public search rankings">
     {PUBLIC_SEARCH_QUERIES.length > 0 ? <>
       <div className="ranked-search-controls">
-        <label><span>Model</span><select aria-label="Index model" value={model??""} onChange={event=>{const next=new URLSearchParams(params.toString());if(event.target.value)next.set("model",event.target.value);else next.delete("model");window.history.pushState(null,"",`${window.location.pathname}?${next}`)}}><option value="">All models</option>{model&&!models.includes(model)&&<option value={model}>{model} · unmeasured</option>}{models.map(m=><option key={m} value={m}>{m}</option>)}</select></label>
+        <label><span>Model</span><UiSelect aria-label="Index model" value={model??""} onChange={event=>{const next=new URLSearchParams(params.toString());if(event.target.value)next.set("model",event.target.value);else next.delete("model");window.history.pushState(null,"",`${window.location.pathname}?${next}`)}}><option value="">All models</option>{model&&!models.includes(model)&&<option value={model}>{model} · unmeasured</option>}{models.map(m=><option key={m} value={m}>{m}</option>)}</UiSelect></label>
         <label htmlFor={`${controlId}-category`}><span>Category</span>
-          <select id={`${controlId}-category`} value={category} onChange={event => {
+          <UiSelect id={`${controlId}-category`} value={category} onChange={event => {
             const nextCategory = event.target.value;
             selectQuery(PUBLIC_SEARCH_QUERIES.find(item => item.category === nextCategory)?.id ?? "");
           }}>
             {categories.map(item => <option key={item}>{item}</option>)}
-          </select>
+          </UiSelect>
         </label>
       </div>
       {query && <RecordedQuestionPicker questions={queries} selected={query} onSelect={selectQuery}/>}

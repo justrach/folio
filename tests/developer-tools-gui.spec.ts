@@ -1,3 +1,4 @@
+import { selectValue } from "./select-helpers";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { evaluationMethodology } from "../src/lib/evaluation";
 import { DEVELOPER_TOOLS } from "../src/lib/developer-tools-source";
@@ -134,17 +135,17 @@ test("website search, audience, category, and measurement filters combine and re
   const audience = page.getByRole("combobox", { name: "Audience", exact: true });
   const category = page.getByRole("combobox", { name: "Category", exact: true });
   const measured = page.getByRole("combobox", { name: "Page evaluation status", exact: true });
-  await audience.selectOption("Developer tools");
+  await selectValue(audience, "Developer tools");
   // This matches a purpose statement, not just a product name.
   await search.fill("managed builds");
   await expect(names(page)).toHaveText(["Vercel"]);
-  await category.selectOption("Deployment");
-  await measured.selectOption("Measured pages");
+  await selectValue(category, "Deployment");
+  await selectValue(measured, "Measured pages");
   await expect(names(page)).toHaveText(["Vercel"]);
   await expect(pagination(page).getByRole("status")).toHaveText("1–1 of 1");
 
   await search.fill("");
-  await measured.selectOption("Not measured");
+  await selectValue(measured, "Not measured");
   const unavailableDeployment = DEVELOPER_TOOLS.filter(tool => tool.audience === "Developer tools" && tool.category === "Deployment" && !measuredIds.has(tool.id));
   await expect(names(page)).toHaveText(unavailableDeployment.map(tool => tool.name).sort());
   await search.fill("does-not-exist-in-this-directory");
@@ -154,9 +155,9 @@ test("website search, audience, category, and measurement filters combine and re
 
   await page.getByRole("button", { name: "Clear filters", exact: true }).click();
   await expect(search).toHaveValue("");
-  await expect(audience).toHaveValue("All audiences");
-  await expect(category).toHaveValue("All categories");
-  await expect(measured).toHaveValue("All results");
+  await expect(audience).toHaveAttribute("data-value", "All audiences");
+  await expect(category).toHaveAttribute("data-value", "All categories");
+  await expect(measured).toHaveAttribute("data-value", "All results");
   await expect(pagination(page).getByRole("status")).toHaveText(`1–12 of ${DEVELOPER_TOOLS.length}`);
   await noOverflow(page);
   readOnly(state);
@@ -190,27 +191,27 @@ test("audience selection exposes broader examples and retains a developer-only v
   const audience = page.getByRole("combobox", { name: "Audience", exact: true });
   const category = page.getByRole("combobox", { name: "Category", exact: true });
   const search = page.getByRole("searchbox", { name: "Search websites", exact: true });
-  await audience.selectOption("Software & work");
+  await selectValue(audience, "Software & work");
   await expect(names(page)).toHaveText(DEVELOPER_TOOLS.filter(tool => tool.audience === "Software & work").map(tool => tool.name).sort());
   await search.fill("Basecamp");
   await expect(names(page)).toHaveText(["Basecamp"]);
   const basecamp = DEVELOPER_TOOLS.find(tool => tool.id === "basecamp")!;
-  await category.selectOption(basecamp.category);
+  await selectValue(category, basecamp.category);
   await expect(rows(page).getByRole("link", { name: "Official reference", exact: true })).toHaveAttribute("href", basecamp.docsUrl);
   await search.fill("");
-  await audience.selectOption("Learning");
-  await expect(category).toHaveValue("All categories");
+  await selectValue(audience, "Learning");
+  await expect(category).toHaveAttribute("data-value", "All categories");
   await expect(names(page)).toHaveText(DEVELOPER_TOOLS.filter(tool => tool.audience === "Learning").map(tool => tool.name).sort());
-  await audience.selectOption("Developer tools");
+  await selectValue(audience, "Developer tools");
   const developerCount = DEVELOPER_TOOLS.filter(tool => tool.audience === "Developer tools").length;
   await expect(directory(page).locator(".devtools-results-count")).toHaveText(`${developerCount} websites · Developer tools`);
   expect(developerCount).toBe(24);
   await expect(rows(page).locator(".devtool-category > small")).toHaveText(Array(12).fill("Developer tools"));
-  await page.getByRole("combobox", { name: "Page evaluation status", exact: true }).selectOption("Measured pages");
+  await selectValue(page.getByRole("combobox", { name: "Page evaluation status", exact: true }), "Measured pages");
   const measuredDeveloperCount = DEVELOPER_TOOLS.filter(tool => tool.audience === "Developer tools" && measuredIds.has(tool.id)).length;
   await expect(directory(page).locator(".devtools-results-count")).toHaveText(`${measuredDeveloperCount} websites · Developer tools`);
   await page.getByRole("button", { name: "Clear filters", exact: true }).click();
-  await expect(audience).toHaveValue("All audiences");
+  await expect(audience).toHaveAttribute("data-value", "All audiences");
   await expect(directory(page).locator(".devtools-results-count")).toHaveText(`${DEVELOPER_TOOLS.length} websites`);
   await noOverflow(page);
   readOnly(state);

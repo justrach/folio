@@ -1,5 +1,6 @@
 "use client";
 
+import { UiSelect } from "./ui/select";
 import Link from "next/link";
 import { WorkspaceEmptyArt } from "./workspace-empty-art";
 import { useSearchParams } from "next/navigation";
@@ -155,14 +156,14 @@ function OwnedOverview({scans,scansLoading,scansError,onRetryScans,onOpenScan}:O
   const comparableHistory=history.length>1&&history.every(run=>compareKeywordBenchmarkRuns(history[0],run).comparable);
   function select(website:string,nextScope=scope,nextModel=model){const params=new URLSearchParams({view:"workspace",website});if(nextScope!=="open-web")params.set("scope",nextScope);if(nextModel)params.set("model",nextModel);window.history.pushState(null,"",`/overview?${params}`);}
   return <div className="real-overview">
-    <div className="real-overview-select"><label>Selected website<select aria-label="Selected website" value={selected?.id??""} disabled={data.sites.state==="loading"} onChange={event=>select(event.target.value)}><option value="" disabled>Choose your website</option>{data.sites.items.map(site=><option key={site.id} value={site.id}>{site.name||site.url} · {site.url}</option>)}</select></label><button className="button secondary" onClick={()=>setRefresh(value=>value+1)} aria-label="Refresh saved overview"><RefreshCw size={14}/>Refresh saved data</button></div>
+    <div className="real-overview-select"><label>Selected website<UiSelect aria-label="Selected website" value={selected?.id??""} disabled={data.sites.state==="loading"} onChange={event=>select(event.target.value)}><option value="" disabled>Choose your website</option>{data.sites.items.map(site=><option key={site.id} value={site.id}>{site.name||site.url} · {site.url}</option>)}</UiSelect></label><button className="button secondary" onClick={()=>setRefresh(value=>value+1)} aria-label="Refresh saved overview"><RefreshCw size={14}/>Refresh saved data</button></div>
     {data.sites.state==="loading"&&<p role="status">Loading your saved websites…</p>}
     {data.sites.state==="error"&&<p role="alert">Your saved websites could not be loaded. Refresh to try again.</p>}
     {data.sites.state==="ready"&&!selected&&<section className="panel real-overview-empty"><WorkspaceEmptyArt/><h2>{data.sites.items.length?"Choose an owned website":"Add your first website"}</h2><p>{data.sites.items.length?"This website selection is unavailable for the current account.":"Your overview starts with a website saved in your workspace."}</p><Link className="button primary" href="/websites">Open My websites<ArrowRight size={14}/></Link></section>}
     {selected&&<>
       <section className="panel real-search-overview" aria-label="Saved search overview"><header><div><h2>Search observations</h2><p>{selected.url}</p></div><Link className="button primary" href={`/benchmarks?website=${encodeURIComponent(selected.id)}`}>Open search questions<ArrowRight size={14}/></Link></header>
         <div className="real-search-scopes" aria-label="Search scope"><button type="button" aria-pressed={scope==="open-web"} onClick={()=>select(selected.id,"open-web")}>Open-web observations</button><button type="button" aria-pressed={scope==="reviewed-domains"} onClick={()=>select(selected.id,"reviewed-domains")}>Reviewed documentation</button></div>
-        <div className="real-overview-select real-overview-scope-note"><label>Answer model<select aria-label="Answer model" value={model} onChange={event=>select(selected.id,scope,event.target.value)}><option value="">All models</option>{models.map(value=><option key={value} value={value}>{value}</option>)}</select></label></div>
+        <div className="real-overview-select real-overview-scope-note"><label>Answer model<UiSelect aria-label="Answer model" value={model} onChange={event=>select(selected.id,scope,event.target.value)}><option value="">All models</option>{models.map(value=><option key={value} value={value}>{value}</option>)}</UiSelect></label></div>
         <p className="real-overview-scope-note">{scope==="open-web"?"OpenAI web search":"Reviewed documentation"} · {model||"All models"}. {model?"Only answers and attempts from this exact model are included.":"Uses the latest completed answer per question across models. This is a mixed-model summary, not a comparison between models."}</p>
         {data.runs.state==="error"?<p role="alert">Saved keyword history could not be loaded. No search metrics are available.</p>:<>
           {loading&&<p role="status" className="real-overview-loading">Reading saved observations…</p>}

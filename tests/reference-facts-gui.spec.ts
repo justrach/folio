@@ -1,3 +1,4 @@
+import { selectValue } from "./select-helpers";
 import { expect, test, type Page } from "@playwright/test";
 import { EVAL_SUITE, evaluationSummary, type EvaluationRun } from "../src/lib/evals";
 import { createDemoEvaluationRun } from "../src/lib/eval-verifier";
@@ -50,10 +51,10 @@ test("reference answers require confirmation, stay explicit, and are omitted fro
   await page.getByText("Optional reference answers", { exact: true }).click();
   await page.getByLabel("Expected product name", { exact: true }).fill("Sable Analytics");
   await expect(launch).toBeDisabled();
-  await page.getByRole("combobox", { name: "Pricing reference", exact: true }).selectOption("stated");
+  await selectValue(page.getByRole("combobox", { name: "Pricing reference", exact: true }), "stated");
   await page.getByLabel("Expected amount", { exact: true }).fill("29");
   await page.getByLabel("Currency code", { exact: true }).fill("usd");
-  await page.getByRole("combobox", { name: "Billing interval", exact: true }).selectOption("month");
+  await selectValue(page.getByRole("combobox", { name: "Billing interval", exact: true }), "month");
   const confirmation = page.getByLabel("I reviewed these reference answers for this website.", { exact: true });
   await confirmation.check();
   await expect(launch).toBeEnabled();
@@ -62,9 +63,11 @@ test("reference answers require confirmation, stay explicit, and are omitted fro
   await expect(launch).toBeDisabled();
   await confirmation.check();
   const seo = page.getByLabel("Saved SEO evidence Optional", { exact: true });
-  await expect(seo.locator("option")).toHaveCount(2);
   await page.locator(".eval-options > summary").filter({ hasText: "Saved SEO evidence" }).click();
-  await seo.selectOption("matching-report");
+  await seo.click();
+  await expect(page.getByRole("listbox").getByRole("option")).toHaveCount(2);
+  await page.keyboard.press("Escape");
+  await selectValue(seo, "matching-report");
   expect(created).toHaveLength(0);
   await launch.click();
   await expect(page.locator(".eval-report")).toBeVisible();

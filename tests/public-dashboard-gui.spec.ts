@@ -1,3 +1,4 @@
+import { selectValue } from "./select-helpers";
 import { expect, test, type Page } from "@playwright/test";
 import { buildPublicDashboard, type PublicCollectionStatus, type PublicDashboardData, type PublicDashboardQuery } from "../src/lib/public-dashboard";
 import type { PublicSearchObservation } from "../src/lib/public-search-rankings";
@@ -58,7 +59,7 @@ async function setup(page: Page) {
 }
 async function selectTask(page: Page, index: number) {
   const mobileSelect = page.getByRole("combobox", { name: "Task", exact: true });
-  if (await mobileSelect.isVisible()) await mobileSelect.selectOption(`fixture-task-${index + 1}`);
+  if (await mobileSelect.isVisible()) await selectValue(mobileSelect, `fixture-task-${index + 1}`);
   else await page.getByRole("button", { name: `Open task: ${questions[index]}`, exact: true }).click();
   await expect(page).toHaveURL(new RegExp(`/overview\\?query=fixture-task-${index + 1}$`));
   await expect(page.getByRole("region", { name: "Selected task", exact: true }).getByRole("heading", { name: questions[index], exact: true })).toBeVisible();
@@ -73,7 +74,11 @@ test("signed-out overview presents public task coverage and the original recorde
   await expect(publicResults.getByRole("progressbar", { name: "Tasks with published answers", exact: true })).toHaveAttribute("aria-valuemax", "15");
   await expect(publicResults.getByRole("progressbar", { name: "Tasks with published answers", exact: true })).toHaveAttribute("aria-valuenow", "1");
   const mobileSelect = page.getByRole("combobox", { name: "Task", exact: true });
-  if (await mobileSelect.isVisible()) await expect(mobileSelect.locator('option[value^="fixture-task-"]')).toHaveCount(15);
+  if (await mobileSelect.isVisible()) {
+    await mobileSelect.click();
+    await expect(page.getByRole("listbox").locator('[role="option"][data-value^="fixture-task-"]')).toHaveCount(15);
+    await page.keyboard.press("Escape");
+  }
   else await expect(page.getByRole("button", { name: /^Open task: / })).toHaveCount(15);
   const detail = page.getByRole("region", { name: "Selected task", exact: true });
   await expect(detail.getByRole("heading", { name: questions[0], exact: true })).toBeVisible();
@@ -131,8 +136,8 @@ test("public filters search full questions and retain all actual collection stat
   await search.fill("structured online courses");
   await selectTask(page, 2);
   await search.fill("");
-  await page.getByRole("combobox", { name: "Audience", exact: true }).selectOption("Developer tools");
-  await page.getByRole("combobox", { name: "Task status", exact: true }).selectOption("Needs attention");
+  await selectValue(page.getByRole("combobox", { name: "Audience", exact: true }), "Developer tools");
+  await selectValue(page.getByRole("combobox", { name: "Task status", exact: true }), "Needs attention");
   await selectTask(page, 4);
   await expect(page.getByRole("region", { name: "Selected task", exact: true })).toContainText("The run has no confirmed result");
   await search.fill("A query that is not in the public fixture");
@@ -225,11 +230,15 @@ test("3500 public questions render bounded pages and preserve deep links, filter
   await page.goto("/overview?query=scale-task-3478");
   const pages = page.getByRole("navigation", { name: "Task pages", exact: true });
   const detail = page.getByRole("region", { name: "Selected task", exact: true });
-  const picker = page.locator(".public-benchmark-mobile-picker select");
+  const picker = page.locator(".public-benchmark-mobile-picker [role=combobox]");
   const list = page.locator(".public-benchmark-task-list");
   await expect(pages.getByRole("status")).toHaveText("3476–3500 of 3500 tasks · Page 140 of 140");
   await expect(list.locator("li")).toHaveCount(25);
-  await expect(picker.locator('option[value^="scale-task-"]')).toHaveCount(25);
+  if (await picker.isVisible()) {
+    await picker.click();
+    await expect(page.getByRole("listbox").locator('[role="option"][data-value^="scale-task-"]')).toHaveCount(25);
+    await page.keyboard.press("Escape");
+  }
   await expect(detail.getByRole("heading", { name: queries[3477].query, exact: true })).toBeVisible();
   await expect(pages.getByRole("button", { name: "Next task page", exact: true })).toBeDisabled();
 
@@ -247,7 +256,7 @@ test("3500 public questions render bounded pages and preserve deep links, filter
   if (await picker.isVisible()) await expect(picker).toBeFocused();
   else await expect(list.getByRole("button", { name: `Open task: ${queries[3477].query}`, exact: true })).toBeFocused();
   await previous.click();
-  if (await picker.isVisible()) await picker.selectOption("scale-task-3451");
+  if (await picker.isVisible()) await selectValue(picker, "scale-task-3451");
   else await list.getByRole("button", { name: `Open task: ${queries[3450].query}`, exact: true }).click();
   await expect(detail.getByRole("heading", { name: queries[3450].query, exact: true })).toBeVisible();
   await page.goBack();
@@ -262,13 +271,17 @@ test("3500 public questions render bounded pages and preserve deep links, filter
   await search.fill("Unique question 17:");
   await expect(pages.getByRole("status")).toHaveText("1–1 of 1 tasks · Page 1 of 1");
   await expect(list.locator("li")).toHaveCount(1);
-  await expect(picker.locator('option[value^="scale-task-"]')).toHaveCount(1);
+  if (await picker.isVisible()) {
+    await picker.click();
+    await expect(page.getByRole("listbox").locator('[role="option"][data-value^="scale-task-"]')).toHaveCount(1);
+    await page.keyboard.press("Escape");
+  }
   await expect(detail.getByRole("heading", { name: queries[16].query, exact: true })).toBeVisible();
   await search.fill("");
-  await page.getByRole("combobox", { name: "Audience", exact: true }).selectOption("Learning");
+  await selectValue(page.getByRole("combobox", { name: "Audience", exact: true }), "Learning");
   await expect(pages.getByRole("status")).toHaveText("1–25 of 700 tasks · Page 1 of 28");
   await expect(list.locator("li")).toHaveCount(25);
-  await page.getByRole("combobox", { name: "Task status", exact: true }).selectOption("Published");
+  await selectValue(page.getByRole("combobox", { name: "Task status", exact: true }), "Published");
   await expect(page.getByText("No tasks match these filters.", { exact: true })).toBeVisible();
   await expect(list.locator("li")).toHaveCount(0);
   await page.getByRole("button", { name: "Clear filters", exact: true }).click();
@@ -290,26 +303,26 @@ test("model selection scopes history, preserves query links and never inherits a
   const detail = page.getByRole("region", { name: "Selected task", exact: true });
   const model = page.getByRole("combobox", { name: "Model", exact: true });
   await expect(detail.getByRole("link", { name: "Beta Basics", exact: true })).toBeVisible();
-  await model.selectOption("gpt-5.6-luna");
+  await selectValue(model, "gpt-5.6-luna");
   await expect(page).toHaveURL(/query=fixture-task-1&model=gpt-5.6-luna$/);
   await expect(detail.getByRole("link", { name: "Luna Choice", exact: true })).toBeVisible();
   await expect(detail).not.toContainText("Beta Basics");
   await expect(detail.getByRole("link", { name: "Link to this task" })).toHaveAttribute("href", "/overview?query=fixture-task-1&model=gpt-5.6-luna");
   await expect(page.locator('dl[aria-label="Benchmark totals"]').locator("dd")).toHaveText(["1 / 15", "—", "1", "0"]);
   const picker = page.getByRole("combobox", { name: "Task", exact: true });
-  if (await picker.isVisible()) await picker.selectOption("fixture-task-3");
+  if (await picker.isVisible()) await selectValue(picker, "fixture-task-3");
   else await page.getByRole("button", { name: `Open task: ${questions[2]}`, exact: true }).click();
   await expect(page).toHaveURL(/query=fixture-task-3&model=gpt-5.6-luna$/);
   await expect(detail).toContainText("No published answer for this model");
   await expect(detail).not.toContainText("The agent is working");
-  await page.reload(); await expect(model).toHaveValue("gpt-5.6-luna");
+  await page.reload(); await expect(model).toHaveAttribute("data-value", "gpt-5.6-luna");
   await expect(detail).toContainText("No published answer for this model");
   await page.goBack(); await expect(detail.getByRole("link", { name: "Luna Choice", exact: true })).toBeVisible();
-  await page.goBack(); await expect(model).toHaveValue("");
+  await page.goBack(); await expect(model).toHaveAttribute("data-value", "");
   await expect(detail.getByRole("link", { name: "Beta Basics", exact: true })).toBeVisible();
-  await page.goForward(); await expect(model).toHaveValue("gpt-5.6-luna");
+  await page.goForward(); await expect(model).toHaveAttribute("data-value", "gpt-5.6-luna");
   await page.goto("/overview?query=fixture-task-1&model=unknown-model");
-  await expect(model).toHaveValue("unknown-model");
+  await expect(model).toHaveAttribute("data-value", "unknown-model");
   await expect(detail).toContainText("No published answer for this model");
   await expect(page.getByRole("progressbar", { name: "Tasks with published answers", exact: true })).toHaveAttribute("aria-valuenow", "0");
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(await page.evaluate(() => innerWidth + 1));

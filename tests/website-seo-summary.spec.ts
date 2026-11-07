@@ -1,3 +1,4 @@
+import { selectValue } from "./select-helpers";
 import { expect, test, type Page } from "@playwright/test";
 
 const at = "2026-09-13T08:00:00.000Z";
@@ -86,7 +87,7 @@ test("changing the selected website ignores the previous website's late saved re
   const state = await setup(page, {delayFirst});
   await page.goto("/websites");
   await expect.poll(() => state.reads.includes(codegraff.id)).toBe(true);
-  await page.getByLabel("Selected website", {exact: true}).selectOption(sites[1].id);
+  await selectValue(page.getByLabel("Selected website", {exact: true}), sites[1].id);
   const summary = page.getByRole("region", {name: "Website search and backlinks"});
   await expect(summary).toContainText("other.example.com");
   await expect(summary).toContainText("921");

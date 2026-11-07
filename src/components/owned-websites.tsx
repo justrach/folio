@@ -1,5 +1,6 @@
 "use client";
 
+import { UiSelect } from "./ui/select";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -90,10 +91,10 @@ function OwnerWebsites({ onAudit }: { onAudit?: (url: string) => void }) {
       <div className="owned-website-body">
         {loading && <p role="status">Loading saved websites…</p>}
         {error && <p role="alert">{error} <button className="text-link" onClick={() => setRefresh(n => n + 1)}>Retry websites</button></p>}
-        {!!sites.length && <label className="owned-website-selector">Selected website<select aria-label="Selected website" value={selected?.id ?? ""} onChange={event => select(event.target.value)}>
+        {!!sites.length && <label className="owned-website-selector">Selected website<UiSelect aria-label="Selected website" value={selected?.id ?? ""} onChange={event => select(event.target.value)}>
           {!selected && <option value="">Select one of your websites</option>}
           {sites.map(site => <option key={site.id} value={site.id}>{site.name} · {new URL(site.url).hostname}</option>)}
-        </select></label>}
+        </UiSelect></label>}
         {selected && <>
           <div className="owned-website-title"><h3>{new URL(selected.url).hostname}</h3><span>{selected.isPublic ? "Technical scan shared" : "Private website"}</span></div>
           <p>{selected.seoScore == null ? "Technical readiness has not been measured yet." : `Latest technical readiness: ${selected.seoScore}/100.`}</p>

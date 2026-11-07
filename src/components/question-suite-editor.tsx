@@ -40,9 +40,9 @@ export function QuestionSuiteEditor({ websiteId, initialName, initialQuestions, 
       <label>What do they need to do?<input maxLength={120} value={task} onChange={event => setTask(event.target.value)} disabled={busy} placeholder="collect feedback on prototypes" /></label>
       <button type="button" className="button secondary" disabled={busy || !websiteQuestionDrafts(audience, task).length} onClick={() => {
         const next = [...new Set([...lines, ...websiteQuestionDrafts(audience, task)])];
-        if (next.length > 10) { setError("Remove some questions before adding three new drafts; a suite holds up to ten."); return; }
+        if (next.length > 10) { setError("Remove some questions before adding new drafts; a suite holds up to ten."); return; }
         setQuestions(next.join("\n")); setError("");
-      }}>Add three scenario drafts</button>
+      }}>Add scenario drafts</button>
       <p>New wording may have no matching public observation yet. Keep company names out of unbranded discovery questions.</p>
     </details>
     <label>Suite name<input value={name} onChange={event => setName(event.target.value)} maxLength={100} required disabled={busy}/></label>

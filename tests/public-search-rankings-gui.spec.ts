@@ -1,3 +1,4 @@
+import { selectValue } from "./select-helpers";
 import { expect, test, type Page } from "@playwright/test";
 import { PUBLIC_SEARCH_QUERIES, latestPublicSearchObservation } from "../src/lib/public-search-rankings";
 
@@ -40,7 +41,7 @@ test("public rankings preserve order and sources across category boundaries and 
   const query = report.getByRole("button", { name: "Change question", exact: true });
 
   for (const item of browserQueries) {
-    await category.selectOption(item.category);
+    await selectValue(category, item.category);
     await query.click();
     const picker = page.getByRole("dialog", { name: "Choose a question" });
     await picker.getByRole("searchbox", { name: "Filter questions" }).fill(item.query);
@@ -87,9 +88,9 @@ test("ranking categories constrain query selection and HTML checks remain a sepa
   const category = report.getByRole("combobox", { name: "Category", exact: true });
   const query = report.getByRole("button", { name: "Change question", exact: true });
   for (const categoryName of categories) {
-    await category.selectOption(categoryName);
+    await selectValue(category, categoryName);
     const expected = PUBLIC_SEARCH_QUERIES.filter(candidate => candidate.category === categoryName);
-    await expect(query).toContainText(expected[0].query);
+    await expect(report.locator(".ranked-search-query")).toHaveText(expected[0].query);
     await query.click();
     const picker = page.getByRole("dialog", { name: "Choose a question" });
     await expect(picker.getByRole("status")).toContainText(`${expected.length} matching`);
@@ -116,19 +117,30 @@ test("selected questions wrap once and the searchable picker restores focus and 
   await page.goto("/leaderboard");
   const report = rankings(page);
   const trigger = report.getByRole("button", { name: "Change question", exact: true });
-  const initial = await report.locator(".ranked-search-query").innerText();
-  for (const width of [1280, 640, 320]) {
-    await page.setViewportSize({ width, height: 900 });
-    const bounds = await report.locator(".ranked-search-query").evaluate(element => ({
-      width: element.clientWidth, scroll: element.scrollWidth,
-      whiteSpace: getComputedStyle(element).whiteSpace, overflow: getComputedStyle(element).overflow,
-    }));
-    expect(bounds.scroll).toBeLessThanOrEqual(bounds.width + 1);
-    expect(bounds.whiteSpace).toBe("normal");
-    expect(bounds.overflow).toBe("visible");
-    await expect(report.locator(".ranked-search-query")).toHaveCount(1);
-    await noOverflow(page);
+  for (const path of ["/", "/leaderboard"]) {
+    await page.goto(path);
+    for (const width of [1280, 900, 640, 450, 320]) {
+      await page.setViewportSize({ width, height: 900 });
+      const bounds = await report.locator(".ranked-search-query").evaluate(element => ({
+        width: element.clientWidth, scroll: element.scrollWidth,
+        whiteSpace: getComputedStyle(element).whiteSpace, overflow: getComputedStyle(element).overflow,
+        insideButton: Boolean(element.closest("button")),
+        left: element.getBoundingClientRect().left, right: element.getBoundingClientRect().right,
+      }));
+      expect(bounds.scroll).toBeLessThanOrEqual(bounds.width + 1);
+      expect(bounds.whiteSpace).toBe("normal");
+      expect(bounds.overflow).toBe("visible");
+      expect(bounds.insideButton).toBe(false);
+      expect(bounds.left).toBeGreaterThanOrEqual(0);
+      expect(bounds.right).toBeLessThanOrEqual(width);
+      await expect(report.locator(".ranked-search-query")).toHaveCount(1);
+      await expect(trigger).toHaveText("Change question");
+      const control = await trigger.boundingBox();
+      expect(control!.width).toBeLessThan(180);
+      await noOverflow(page);
+    }
   }
+  const initial = await report.locator(".ranked-search-query").innerText();
   await trigger.focus(); await page.keyboard.press("Enter");
   const picker = page.getByRole("dialog", { name: "Choose a question" });
   await expect(picker.getByRole("searchbox")).toBeFocused();
@@ -139,9 +151,9 @@ test("selected questions wrap once and the searchable picker restores focus and 
   const other = PUBLIC_SEARCH_QUERIES.find(item => item.query !== initial && item.category === PUBLIC_SEARCH_QUERIES.find(item => item.query === initial)?.category)!;
   await picker.getByRole("searchbox").fill(other.query);
   await picker.locator(`[data-question-id="${other.id}"]`).click();
-  await expect(trigger).toContainText(other.query);
+  await expect(report.locator(".ranked-search-query")).toHaveText(other.query);
   await expect(page).toHaveURL(new RegExp(`query=${other.id}`));
-  await page.reload(); await expect(trigger).toContainText(other.query);
-  await page.goBack(); await expect(trigger).toContainText(initial);
+  await page.reload(); await expect(report.locator(".ranked-search-query")).toHaveText(other.query);
+  await page.goBack(); await expect(report.locator(".ranked-search-query")).toHaveText(initial);
   readOnly();
 });

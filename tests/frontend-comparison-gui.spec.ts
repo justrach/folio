@@ -1,3 +1,4 @@
+import { selectValue } from "./select-helpers";
 import { expect, test, type Page, type Route } from "@playwright/test";
 import { EVAL_SUITE, evaluationSummary, type EvaluationRun } from "../src/lib/evals";
 import { createDemoEvaluationRun } from "../src/lib/eval-verifier";
@@ -40,14 +41,14 @@ test("baseline deep links select the intended run and track same-page query chan
   await page.goto("/evaluations?baseline=nav-first");
   const comparison = page.getByRole("region", { name: "Compare completed runs", exact: true });
   const baseline = comparison.getByLabel("Baseline evaluation", { exact: true });
-  await expect(baseline).toHaveValue(notebook.first.id);
+  await expect(baseline).toHaveAttribute("data-value", notebook.first.id);
   await expect(comparison.locator(".eval-comparison-intent")).toContainText(notebook.first.siteName);
   expect(notebook.reads).toEqual([]);
-  await comparison.getByLabel("Comparison evaluation", { exact: true }).selectOption(notebook.second.id);
+  await selectValue(comparison.getByLabel("Comparison evaluation", { exact: true }), notebook.second.id);
   await expect(comparison.locator(".eval-comparison-result")).toBeVisible();
   await page.evaluate(() => window.history.pushState(null, "", "/evaluations?baseline=nav-second"));
-  await expect(baseline).toHaveValue(notebook.second.id);
-  await expect(comparison.getByLabel("Comparison evaluation", { exact: true })).toHaveValue("");
+  await expect(baseline).toHaveAttribute("data-value", notebook.second.id);
+  await expect(comparison.getByLabel("Comparison evaluation", { exact: true })).toHaveAttribute("data-value", "");
   await expect(comparison.locator(".eval-comparison-result")).toHaveCount(0);
   await expect(comparison.locator(".eval-comparison-intent")).toContainText(notebook.second.siteName);
   expect(notebook.writes).toEqual([]);

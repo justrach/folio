@@ -65,7 +65,7 @@ async function fixture(page: Page) {
 
 function editor(page: Page) { return page.getByRole("form", { name: "Write a question suite", exact: true }); }
 async function openEditor(page: Page, owner = "alice") {
-  await expect(page.getByRole("combobox", { name: "Saved website", exact: true })).toHaveValue(site(owner).id);
+  await expect(page.getByRole("combobox", { name: "Saved website", exact: true })).toHaveAttribute("data-value", site(owner).id);
   await page.getByRole("button", { name: "Write or edit these questions", exact: true }).click();
   await expect(editor(page)).toBeVisible();
 }
@@ -159,11 +159,11 @@ test("owner-context drafts are editable and remain unstarted", async ({ page }) 
   await form.getByText("Prepare new questions for your website", { exact: true }).click();
   await form.getByLabel("Who are your customers?").fill("design teams");
   await form.getByLabel("What do they need to do?").fill("review prototypes");
-  await form.getByRole("button", { name: "Add three scenario drafts" }).click();
-  await expect(form).toContainText("3 / 10 questions");
+  await form.getByRole("button", { name: "Add scenario drafts" }).click();
+  await expect(form).toContainText("10 / 10 questions");
   await expect(form.getByRole("textbox", { name: "Questions, one per line", exact: true })).toHaveValue(/design teams/);
   await form.getByRole("button", { name: "Save questions", exact: true }).click();
-  expect(state.saves[0].questions).toHaveLength(3);
+  expect(state.saves[0].questions).toHaveLength(10);
   await noWorkOrOverflow(page, state);
 });
 

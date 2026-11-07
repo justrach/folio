@@ -1,3 +1,4 @@
+import { selectValue } from "./select-helpers";
 import { buildPublicDashboard } from "../src/lib/public-dashboard";
 import { expect, test, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
@@ -119,7 +120,7 @@ async function navigate(page: Page, path: string) {
 test("saving questions binds an existing private site; only one explicit baseline starts work", async ({ page }) => {
   const state = await fixture(page, [], false);
   await page.goto(`/benchmarks?target=${encodeURIComponent(target)}`);
-  await expect(page.getByRole("combobox", { name: "Saved website", exact: true })).toHaveValue("owned-codegraff");
+  await expect(page.getByRole("combobox", { name: "Saved website", exact: true })).toHaveAttribute("data-value", "owned-codegraff");
   expect(state.starts).toEqual([]); expect(state.saves).toEqual([]);
   await page.getByRole("button", { name: "Save keyword suite", exact: true }).click();
   await expect(page.getByRole("heading", { name: suite.cases[0].query, exact: true })).toBeVisible();
@@ -338,10 +339,10 @@ test("website handoff selects only an exactly matching private suite", async ({ 
   const state=await fixture(page);
   state.suites.unshift({...suite,id:"different-site-suite",name:"Different site",cases:suite.cases.map(item=>({...item,id:"different-case",suiteId:"different-site-suite",targetUrl:"https://different-fixture.dev/"}))});
   await page.goto("/benchmarks?website=owned-codegraff");
-  await expect(page.getByRole("combobox",{name:"Keyword suite",exact:true})).toHaveValue(suite.id);
+  await expect(page.getByRole("combobox",{name:"Keyword suite",exact:true})).toHaveAttribute("data-value", suite.id);
   await expect(page.getByRole("region",{name:"Keyword questions",exact:true})).toContainText(target);
   await page.goto("/benchmarks?website=other-owned-site");
-  await expect(page.getByRole("combobox",{name:"Keyword suite",exact:true})).toHaveValue("");
+  await expect(page.getByRole("combobox",{name:"Keyword suite",exact:true})).toHaveAttribute("data-value", "");
   await expect(page.getByText("Choose a saved suite. No suite was selected automatically for this website.",{exact:true})).toBeVisible();
   await expect(page.getByRole("button",{name:"Run baseline",exact:true})).toHaveCount(0);
   expect(state.starts).toEqual([]);expect(state.saves).toEqual([]);expect(state.forbidden).toEqual([]);
@@ -394,7 +395,7 @@ test("private report compares matching public context without publishing or star
   await expect(comparison).toContainText("no change score");
   await expect(comparison.getByRole("link", { name: "Inspect the public question, sources and history" })).toHaveAttribute("href", `/overview?query=public-query&model=${encodeURIComponent(value.model)}`);
   await comparison.getByRole("link", {name:"Inspect the public question, sources and history"}).click();
-  await expect(page.getByRole("combobox",{name:"Model",exact:true})).toHaveValue(value.model);
+  await expect(page.getByRole("combobox",{name:"Model",exact:true})).toHaveAttribute("data-value", value.model);
   const selected=page.getByRole("region",{name:"Selected task",exact:true});
   await expect(selected).toContainText("Public fixture recommendation");
   await expect(selected).not.toContainText("Different model recommendation");
@@ -452,19 +453,19 @@ for (const [model,label] of [["gpt-6-luna","Luna 6"],["gpt-6-sol","Sol 6"]]) tes
   state.suites = [{ ...suite, cases: suite.cases.map(item => ({ ...item, searchMode: "open-web" })) }];
   await page.goto(`/benchmarks?suite=${suite.id}`);
   const select = page.getByRole("combobox", { name: "Model for the next observation", exact: true });
-  await expect(select).toHaveValue("gpt-6-luna");
-  await select.selectOption("gpt-6-astra");
+  await expect(select).toHaveAttribute("data-value", "gpt-6-luna");
+  await selectValue(select, "gpt-6-astra");
   const seo = page.getByRole("checkbox", { name: /Let this agent research keywords and search data/ });
   await seo.check();
-  await select.selectOption(model);
+  await selectValue(select, model);
   await expect(seo).not.toBeChecked();
   await expect(seo).toBeEnabled();
   await expect(page.getByText(/Allows up to 3 paid keyword lookups/)).toBeVisible();
   await expect(page.getByText(/Search and backlink tools are available only with Astra/)).toHaveCount(0);
-  await select.selectOption("gpt-6-astra");
+  await selectValue(select, "gpt-6-astra");
   await expect(seo).toBeEnabled();
   await expect(seo).not.toBeChecked();
-  await select.selectOption(model);
+  await selectValue(select, model);
   await expect(page.getByText(new RegExp(`${label} is experimental in this workflow`))).toBeVisible();
   expect(state.starts).toEqual([]);
   await noOverflow(page);
@@ -488,7 +489,7 @@ test("changing model preserves the fresh baseline link and explains mismatched c
   const state = await fixture(page, [baseline]); state.openWebModels = modelOptions;
   state.suites = [{ ...suite, cases: [{ ...suite.cases[0], ...baseline.case }] }];
   await page.goto(`/benchmarks?suite=${suite.id}`);
-  await page.getByRole("combobox", { name: "Model for the next observation", exact: true }).selectOption("gpt-6-luna");
+  await selectValue(page.getByRole("combobox", { name: "Model for the next observation", exact: true }), "gpt-6-luna");
   await expect(page.getByText(/The selected baseline uses a different model/)).toBeVisible();
   expect(state.starts).toEqual([]);
   await page.getByRole("button", { name: "Run fresh observation", exact: true }).click();
@@ -501,7 +502,7 @@ test("model selection resets when a different owner signs in", async ({ page }) 
   const state = await fixture(page); state.openWebModels = modelOptions;
   state.suites = [{ ...suite, cases: suite.cases.map(item => ({ ...item, searchMode: "open-web" })) }];
   await page.goto(`/benchmarks?suite=${suite.id}`);
-  await page.getByRole("combobox", { name: "Model for the next observation", exact: true }).selectOption("gpt-6-sol");
+  await selectValue(page.getByRole("combobox", { name: "Model for the next observation", exact: true }), "gpt-6-sol");
   await navigate(page, "/settings");
   await page.getByRole("button", { name: "Sign out", exact: true }).click();
   await expect.poll(() => state.owner).toBeNull();
@@ -511,7 +512,7 @@ test("model selection resets when a different owner signs in", async ({ page }) 
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
   await expect(page).toHaveURL(/\/websites$/);
   await navigate(page, "/benchmarks");
-  await expect(page.getByRole("combobox", { name: "Model for the next observation", exact: true })).toHaveValue("gpt-6-luna");
+  await expect(page.getByRole("combobox", { name: "Model for the next observation", exact: true })).toHaveAttribute("data-value", "gpt-6-luna");
   expect(state.starts).toEqual([]); expect(state.forbidden).toEqual([]);
 });
 
@@ -538,7 +539,7 @@ test('TypeSafe tool authorization is opt-in and sent only on explicit question l
  await page.goto(`/benchmarks?suite=${suite.id}`);
  const check=page.getByRole('checkbox',{name:/Let this agent check claims with TypeSafe/});
  await expect(check).not.toBeChecked();await check.check();expect(state.starts).toHaveLength(0);
- await page.getByRole('combobox',{name:'Model for the next observation'}).selectOption('gpt-6-sol');expect(state.starts).toHaveLength(0);
+ await selectValue(page.getByRole('combobox',{name:'Model for the next observation'}), 'gpt-6-sol');expect(state.starts).toHaveLength(0);
  await noOverflow(page);
  await page.getByRole('button',{name:'Run baseline',exact:true}).click();
  await expect.poll(()=>state.starts.length).toBe(1);

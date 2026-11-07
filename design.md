@@ -18,6 +18,8 @@ Every application CSS file consumes these tokens. Legacy aliases (`--paper`, `--
 
 [`src/components/ui/primitives.tsx`](src/components/ui/primitives.tsx) exports `UiButton`, `UiSurface`, `UiField`, and `UiBadge`. The primitives accept ordinary HTML attributes and add semantic style classes from `theme.css`. `UiButton` supports a native button or `asChild` for a link. Use a link for navigation and a button for an action. `UiSurface` provides a consistent panel while allowing `section`, `article`, `aside`, or `div` semantics. `UiField` wraps its input in a real label; `UiBadge` conveys an accompanying state in text. The landing page, pricing, and public index exercise the primitives. Existing `.button` and `.panel` classes share the same tokens while older screens migrate gradually.
 
+`UiSelect` in `src/components/ui/select.tsx` is the shared dropdown across public and private routes. It uses Radix Select with wrapping selected text/options, semantic Folio colors, grouped options, keyboard navigation and managed focus. Preserve existing controlled values and explicit change handlers. Do not add visible native selects; browser-owned popups cannot follow the product theme. Radix's hidden form field is distinct from the visible control.
+
 ## Component rules
 
 - Use the display family and tight tracking for short hero and page headings; use the body family for paragraphs, labels, controls, and tables. Reflow text rather than fixing a card to a screenshot width.
