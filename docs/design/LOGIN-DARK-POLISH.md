@@ -42,3 +42,7 @@ Created with the built-in imagegen tool, inspected locally and encoded as WebP w
 ## Runtime
 
 Upgraded the checked-in Next.js pin and Bun lockfile from 15.5.25 to 16.4.5. The installed version's type generator updates the automatic JSX runtime, route type imports and development type inclusion. `next dev` adds its version-matched documentation block to AGENTS.md. The dev origin allowlist adds only the IPv4 loopback hostname used by browser verification. The plain `bun run cf:build` succeeds on 16.4.5 with the existing OpenNext 1.20.6 adapter; no unsupported-version flag is needed.
+
+## Verification
+
+The local CI result is failing; see `LOCAL-CI-2026-11-08.md` for exact results and remaining failures. Typecheck, 320 unit tests and both builds pass. The separate 10-case desktop/mobile login/artwork/motion scope passed. The full browser run and default parallel D1 run did not pass. No merge, push or deployment was performed.
