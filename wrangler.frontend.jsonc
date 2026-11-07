@@ -1,0 +1,32 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "folio-frontend-preview",
+  "main": "workers/frontend.ts",
+  "compatibility_date": "2026-09-13",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "workers_dev": true,
+  "preview_urls": false,
+  "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+  "services": [
+    { "binding": "WORKER_SELF_REFERENCE", "service": "folio-frontend-preview" },
+    { "binding": "FOLIO_BACKEND", "service": "folio-visibility" },
+    { "binding": "FOLIO_PUBLIC_INDEX", "service": "folio-public-index" }
+  ],
+  "observability": { "enabled": true, "logs": { "invocation_logs": false } },
+  "env": {
+    "production": {
+      "name": "folio-frontend",
+      "workers_dev": false,
+      "routes": [
+        { "pattern": "usefolio.site/*", "zone_name": "usefolio.site" },
+        { "pattern": "usefolio.site/", "zone_name": "usefolio.site" },
+        { "pattern": "usefolio.site/leaderboard*", "zone_name": "usefolio.site" }
+      ],
+      "services": [
+        { "binding": "WORKER_SELF_REFERENCE", "service": "folio-frontend" },
+        { "binding": "FOLIO_BACKEND", "service": "folio-visibility" },
+        { "binding": "FOLIO_PUBLIC_INDEX", "service": "folio-public-index" }
+      ]
+    }
+  }
+}

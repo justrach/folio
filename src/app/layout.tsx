@@ -49,7 +49,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html suppressHydrationWarning lang="en" data-scroll-behavior="smooth" className={`${dmSans.variable} ${dmMono.variable}`}>
-      <head><script dangerouslySetInnerHTML={{ __html: "try{document.documentElement.dataset.folioTheme=localStorage.getItem('folio-dashboard-appearance')==='dark'?'dark':'light'}catch{}" }} /></head>
+      <head><script dangerouslySetInnerHTML={{ __html: "(()=>{let p='system';try{const v=localStorage.getItem('folio-dashboard-appearance');if(v==='light'||v==='dark')p=v}catch{}document.documentElement.dataset.folioPreference=p;document.documentElement.dataset.folioTheme=p==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):p})()" }} /></head>
       <body><FolioAppearance />{children}</body>
     </html>
   );

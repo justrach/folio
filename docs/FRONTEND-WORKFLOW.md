@@ -27,6 +27,11 @@ are collapsed behind labelled disclosures by default. Controls squash vertically
 on press and spring back; reduced-motion preferences keep them still. These presentation changes preserve the measured values,
 scope caveats, owned-record navigation and explicit run actions.
 
+The fixed bottom-right **Color theme** picker offers System, Light and Dark.
+System is the default and follows device changes; explicit choices persist across
+navigation/reloads and sync between tabs. The header shortcut uses the same
+preference. Theme artwork follows the resolved palette before hydration.
+
 Folio connects saved technical audits, private SEO reports, and managed website evaluations through prepared forms and owned records. Moving between pages does not start a paid lookup or model task. The owner reviews the inputs and chooses the action that creates work.
 
 This guide describes the current UI. The [evaluation loop](EVALUATION-LOOP.md) explains execution and recovery; the [evaluation strategy](../EVALUATION-STRATEGY.md) defines what the checks establish.

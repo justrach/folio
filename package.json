@@ -23,6 +23,7 @@
     "rankings:collect": "node --conditions=react-server --import tsx scripts/collect-public-search-rankings.ts",
     "index:evaluate": "node --conditions=react-server --import tsx scripts/evaluate-developer-tools.ts",
     "cf:build": "opennextjs-cloudflare build",
+    "frontend:build": "wrangler deploy --config wrangler.frontend.jsonc --env=\"\" --dry-run",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "cf:typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
