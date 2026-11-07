@@ -26,6 +26,8 @@
   --folio-accent-edge: #b8c8ae;
   --folio-focus: #3c6d4b;
   --folio-danger: #a43a28;
+  --folio-warning: #8a500e;
+  --folio-warning-soft: #f6e8cf;
   --folio-success: #345d46;
   --folio-radius-control: 8px;
   --folio-radius-card: 14px;
@@ -81,6 +83,8 @@ html[data-folio-theme="dark"] {
   --folio-accent-edge: #567b62;
   --folio-focus: #badfc4;
   --folio-danger: #f2ae9d;
+  --folio-warning: #e7b46a;
+  --folio-warning-soft: #3b2f1c;
   --folio-success: #b3d8be;
   --folio-art-paper: #20332a;
   --folio-art-sage: #263b31;
@@ -166,6 +170,8 @@ html:not([data-folio-theme="dark"]) .ob {
   --folio-accent-edge: #b8c8ae;
   --folio-focus: #3c6d4b;
   --folio-danger: #a43a28;
+  --folio-warning: #e7b46a;
+  --folio-warning-soft: #3b2f1c;
 }
 :root { --folio-art-paper: #e8e4d8; --folio-art-sage: #dfe5d8; --folio-art-sand: #ead8c4; --folio-art-rust: #85502e; --folio-brand-tile: #fff; --folio-brand-ink: #203b30; --folio-overlay: #14201866; --folio-dialog-shadow: #0003; }
 
