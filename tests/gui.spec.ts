@@ -529,8 +529,9 @@ test("real signup, simulated scan history, and logout protect account data", asy
   await expect(page.locator(".profile")).toContainText(email);
   await page
     .locator(".page-heading")
-    .getByRole("button", { name: "Run an audit", exact: true })
+    .getByRole("button", { name: "Add a website", exact: true })
     .click();
+  await page.getByLabel("Website URL", { exact: true }).fill("https://example.com");
   await page
     .getByRole("button", { name: "Run website audit", exact: true })
     .click();
