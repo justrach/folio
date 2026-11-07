@@ -114,3 +114,26 @@ The default chart now plots websites across all core questions, with category, q
 These are recorded research-agent recommendations within a curated question set. Some questions name websites explicitly. They are not universal website-quality scores, independent factual judgments, Google rankings or measurements of consumer AI products. Raw responses, owner/session identifiers and usage receipts remain private. Only validated, allowlisted public observations are committed.
 
 Validation: 36 focused unit/artifact tests and two desktop/mobile interaction cases passed against the final published data. TypeScript passed. Browser checks cover category and model filters, website search/details, source-answer links, history and refresh, absence of paid POSTs, and no page-level horizontal overflow. These local checks are separate from the 85 real provider attempts above.
+
+## 7 November 2026: live SEO row-level detail
+
+The operator supplied a new DataForSEO API password, which was written only to the ignored local `.dev.vars`. It validated against the provider's free `appendix/user_data` endpoint (HTTP 200); the earlier password did not match the existing login. No credential, account identifier or raw provider body is recorded here.
+
+Two bounded live runs followed, using the adapter directly rather than the application HTTP routes:
+
+- One overview and one detail collection for the owner's own domain. The overview completed with a successful backlink summary and an empty organic result, which is consistent with a small site; the detail collection returned no keyword rows and a backlink-row error.
+- That error was provider status `40501` (invalid field), not an access or subscription failure: `mode` had been sent with a backlinks-status value (`live`) instead of an aggregation mode. The adapter now sends `mode: "as_is"` with `backlinks_status_type: "live"`.
+- After the correction, one detail collection for a public reference domain completed: **50 keyword rows** with positions and absolute landing-page URLs, **33 grouped landing pages**, and **30 live backlink rows**, with both task costs reported (`costIsComplete: true`).
+
+### Authenticated route and D1
+
+The same flow was then exercised through the built Worker (the OpenNext bundle served locally with Wrangler and the ignored local environment), using a disposable local account explicitly added to the provider allowlist for the run:
+
+- `POST /api/seo-data` → `200`, `saved: true`, report id returned.
+- `POST /api/seo-reports/<id>/detail` → `200`, `saved: true`, with the same 50 keyword rows, 33 landing pages and 30 backlink rows.
+- `GET /api/seo-reports/<id>` after the collection → `detail_json` and `detail_retrieved_at` present, rows intact, aggregate `result_json` unchanged.
+- A second collection for the same report → `409` `DETAIL_ALREADY_COLLECTED`, so the path charges at most once per report.
+
+The disposable account and its report were deleted afterwards; no report content, account identifier or credential is retained in the repository.
+
+Scope: this validates provider retrieval, normalization, the authenticated detail route and D1 persistence. It does not exercise the browser panel or MCP reads against live data — both keep fixture-backed coverage — and it makes no claim about backlink coverage for domains without Backlinks API access. Eight provider tasks were spent across both domains; the provider reported task costs, which remain in ignored local records.

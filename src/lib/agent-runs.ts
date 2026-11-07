@@ -117,7 +117,17 @@ export async function startEvaluationRun(
     const report = await getOwnedSeoReport(db, ownerId, input.seoReportId);
     if (!report || report.state !== "complete" || !report.result || !report.retrievedAt) throw new ScanError("A completed private SEO report is required.", 404);
     if (report.domain !== target.hostname) throw new ScanError("Select an SEO report for this exact website domain.", 400);
-    const content = JSON.stringify(report);
+    // Bounded representative rows keep the frozen evidence inside its size limit.
+    // Truncation is labelled so a shortened sample is never read as the full set.
+    const detail = report.detail && {
+      ...report.detail,
+      keywords: report.detail.keywords.data ? { ...report.detail.keywords, data: { ...report.detail.keywords.data,
+        rows: report.detail.keywords.data.rows.slice(0, 20), landingPages: report.detail.keywords.data.landingPages.slice(0, 20) } } : report.detail.keywords,
+      backlinks: report.detail.backlinks.data ? { ...report.detail.backlinks, data: { ...report.detail.backlinks.data,
+        rows: report.detail.backlinks.data.rows.slice(0, 20) } } : report.detail.backlinks,
+      rowsTruncated: (report.detail.keywords.data?.rows.length ?? 0) > 20 || (report.detail.backlinks.data?.rows.length ?? 0) > 20,
+    };
+    const content = JSON.stringify({ ...report, detail });
     if (content.length > 30_000) throw new ScanError("The saved SEO report exceeds the evaluation evidence limit.", 413);
     seoCapture = { id: `seo-report:${report.id}`, url: `https://${report.domain}/`, capturedAt: report.retrievedAt ?? report.createdAt,
       content, sha256: await sha256Source(content), hashEncoding: "utf8-text-v1", kind: "seo-report", transport: "http" };

@@ -20,6 +20,7 @@ import { useSession } from "@/lib/auth-client";
 import type {
   BacklinksOverview,
   OrganicOverview,
+  SeoDetailResult,
   SeoObservation,
   SeoOverviewResult,
 } from "@/lib/dataforseo";
@@ -151,6 +152,50 @@ function parseHistory(value: unknown): SeoReportSummary[] {
   });
 }
 
+function webUrl(value: unknown) {
+  if (!text(value)) return null;
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:" ? url.href : null;
+  } catch {
+    return null;
+  }
+}
+function landingLabel(value: string) {
+  try {
+    const url = new URL(value);
+    return `${url.hostname}${url.pathname === "/" ? "" : url.pathname}`;
+  } catch {
+    return value;
+  }
+}
+function parseDetail(value: unknown): SeoDetailResult {
+  const detail = record(value);
+  const keywords = record(detail?.keywords);
+  const backlinks = record(detail?.backlinks);
+  const keywordData = record(keywords?.data);
+  const backlinkData = record(backlinks?.data);
+  const validSection = (section: JsonRecord | null, rows: unknown) =>
+    Boolean(section && ["success", "empty", "error"].includes(String(section.status)) &&
+      metric(section.costUsd) && text(section.fetchedAt) &&
+      (section.status !== "success" || Array.isArray(rows)));
+  if (
+    !detail || !text(detail.domain) || detail.provider !== "DataForSEO" ||
+    !text(detail.collectedAt) || !Number.isFinite(Date.parse(detail.collectedAt)) ||
+    !["complete", "partial", "error"].includes(String(detail.status)) ||
+    !metric(detail.totalCostUsd) || !metric(detail.knownCostUsd) ||
+    typeof detail.costIsComplete !== "boolean" ||
+    !validSection(keywords, keywordData?.rows) ||
+    !validSection(backlinks, backlinkData?.rows) ||
+    (keywordData && (!Array.isArray(keywordData.rows) || !Array.isArray(keywordData.landingPages))) ||
+    (backlinkData && !Array.isArray(backlinkData.rows))
+  )
+    throw new Error(
+      "The keyword and link rows could not be displayed. Their outcome and charge are unconfirmed; review saved reports before trying again.",
+    );
+  return detail as SeoDetailResult;
+}
+
 const numberFormat = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 1,
 });
@@ -192,6 +237,9 @@ export function SeoDataPanel() {
   const [openingState, setOpeningState] = useState<Owned<string> | null>(null);
   const [selectedReport, setSelectedReport] = useState<Owned<string> | null>(null);
   const [storageNotice, setStorageNotice] = useState<Owned<string> | null>(null);
+  const [detailState, setDetailState] = useState<Owned<SeoDetailResult> | null>(null);
+  const [detailBusyOwner, setDetailBusyOwner] = useState<string | null>(null);
+  const [detailError, setDetailError] = useState<Owned<string> | null>(null);
   const activeRequest = useRef<AbortController | null>(null);
   const activeReportRead = useRef<AbortController | null>(null);
   const account = useRef(ownerId);
@@ -308,6 +356,9 @@ export function SeoDataPanel() {
   const opening = openingState?.ownerId === ownerId ? openingState.value : null;
   const activeReportId = selectedReport?.ownerId === ownerId ? selectedReport.value : null;
   const saveNotice = storageNotice?.ownerId === ownerId ? storageNotice.value : null;
+  const detail = detailState?.ownerId === ownerId ? detailState.value : null;
+  const detailBusy = Boolean(ownerId && detailBusyOwner === ownerId);
+  const detailErrorText = detailError?.ownerId === ownerId ? detailError.value : null;
   const ready = Boolean(
     ownerId && connection?.configured && connection.authorized && !isPending,
   );
@@ -321,6 +372,8 @@ export function SeoDataPanel() {
     setBusyOwner(requestedBy);
     setRequestError(null);
     setStorageNotice(null);
+    setDetailState(null);
+    setDetailError(null);
     try {
       // Only an explicit form submission can start billable provider tasks.
       const response = await fetch("/api/seo-data", {
@@ -376,6 +429,8 @@ export function SeoDataPanel() {
     setResultState(null);
     setSelectedReport(null);
     setStorageNotice(null);
+    setDetailState(null);
+    setDetailError(null);
     try {
       const response = await fetch(`/api/seo-reports/${encodeURIComponent(id)}`, { cache: "no-store", signal: controller.signal });
       const payload: unknown = await response.json();
@@ -391,6 +446,16 @@ export function SeoDataPanel() {
       setDomain(result.domain);
       setResultState({ ownerId: requestedBy, value: result });
       setSelectedReport({ ownerId: requestedBy, value: id });
+      if (report.detail) {
+        try {
+          setDetailState({ ownerId: requestedBy, value: parseDetail(report.detail) });
+        } catch (detailFailure) {
+          setDetailError({
+            ownerId: requestedBy,
+            value: detailFailure instanceof Error ? detailFailure.message : "The saved keyword and link rows could not be displayed.",
+          });
+        }
+      }
       setStorageNotice(null);
       setRequestError(null);
     } catch (error: unknown) {
@@ -402,9 +467,54 @@ export function SeoDataPanel() {
     }
   }
 
+  async function collectDetail() {
+    if (!ownerId || !activeReportId || busy || detailBusy || !ready) return;
+    const requestedBy = ownerId;
+    setDetailBusyOwner(requestedBy);
+    setDetailError(null);
+    try {
+      // A separate explicit action: two more potentially billable provider tasks.
+      const response = await fetch(`/api/seo-reports/${encodeURIComponent(activeReportId)}/detail`, {
+        method: "POST",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: "{}",
+      });
+      const payload: unknown = await response.json();
+      if (account.current !== requestedBy) return;
+      const body = record(payload);
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 403) setRefreshKey((key) => key + 1);
+        throw new Error(
+          response.status === 409 && text(body?.error) ? body.error
+            : response.status === 429 ? "You’ve reached the collection limit. Try again later."
+            : response.status === 401 ? "Sign in to collect website detail."
+            : response.status === 403 ? "Website data updates are not available for this account."
+            : "The row collection could not be confirmed. Its outcome and charge are unknown; review saved reports before trying again.",
+        );
+      }
+      setDetailState({ ownerId: requestedBy, value: parseDetail(body?.detail) });
+      if (body?.saved === false)
+        setStorageNotice({ ownerId: requestedBy, value: "These rows were collected but not saved. Download the report before leaving; collecting again can charge again." });
+      setHistoryRefreshKey((key) => key + 1);
+    } catch (error: unknown) {
+      if (account.current === requestedBy)
+        setDetailError({
+          ownerId: requestedBy,
+          value:
+            error instanceof Error && error.name !== "TypeError" && error.name !== "SyntaxError"
+              ? error.message
+              : "The row collection could not be confirmed. Its outcome and charge are unknown; review saved reports before trying again.",
+        });
+    } finally {
+      if (account.current === requestedBy) setDetailBusyOwner(null);
+    }
+  }
+
   function downloadResult() {
     if (!result) return;
-    const blob = new Blob([JSON.stringify({ format: "folio-private-seo-report-v1", publication: "private", reportId: activeReportId, result }, null, 2)], { type: "application/json" });
+    // Collected rows belong to the same private report; they are never re-fetched to export.
+    const blob = new Blob([JSON.stringify({ format: "folio-private-seo-report-v1", publication: "private", reportId: activeReportId, result, ...(detail ? { detail, detailRetrievedAt: detail.collectedAt } : {}) }, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -580,6 +690,14 @@ export function SeoDataPanel() {
           )}
           <OrganicSection observation={result.organic} />
           <BacklinksSection observation={result.backlinks} />
+          <SeoDetailSection
+            detail={detail}
+            reportId={activeReportId}
+            busy={detailBusy}
+            disabled={busy || Boolean(opening) || !ready}
+            error={detailErrorText}
+            onCollect={collectDetail}
+          />
           <p className="seo-data-disclosure">
             <ShieldCheck size={15} />
             Search and backlink observations remain distinct from readiness scores.
@@ -589,6 +707,148 @@ export function SeoDataPanel() {
         </div>
       )}
     </div>
+  );
+}
+
+function SeoDetailSection({
+  detail, reportId, busy, disabled, error, onCollect,
+}: {
+  detail: SeoDetailResult | null;
+  reportId: string | null;
+  busy: boolean;
+  disabled: boolean;
+  error: string | null;
+  onCollect: () => void;
+}) {
+  if (!detail) {
+    if (!reportId) return null;
+    return (
+      <section className="seo-data-detail seo-data-detail-prompt" aria-labelledby="seo-detail-prompt-title">
+        <div>
+          <h3 id="seo-detail-prompt-title">Name the keywords and links</h3>
+          <p>
+            The position bands above are counts. Collect up to 50 ranking keyword
+            rows with their landing pages, plus 50 live backlink rows, for this
+            saved report.
+          </p>
+          <p className="seo-data-detail-cost">
+            <Info size={13} /> Runs two more provider tasks and may incur a charge.
+            Collected once per saved report; never automatic.
+          </p>
+        </div>
+        <button type="button" className="button secondary" disabled={disabled || busy} onClick={onCollect}>
+          {busy ? <Loader2 className="spin" size={13} /> : <Link2 size={13} />}
+          {busy ? "Collecting rows…" : "Collect keyword and link rows"}
+        </button>
+        {error && <p role="alert" className="seo-data-alert">{error}</p>}
+      </section>
+    );
+  }
+  const keywords = detail.keywords;
+  const backlinks = detail.backlinks;
+  return (
+    <section className="seo-data-detail" aria-labelledby="seo-detail-title">
+      <div className="seo-data-detail-heading">
+        <div>
+          <h3 id="seo-detail-title">Keyword and link rows</h3>
+          <p>Collected {date(detail.collectedAt)} · at most 50 rows per source · provider estimates</p>
+        </div>
+        <span className="seo-data-badge">Row detail</span>
+      </div>
+      {!detail.costIsComplete && (
+        <p className="seo-data-detail-cost">
+          <Info size={13} /> One source did not report its cost, so the total charge for these rows is unknown.
+        </p>
+      )}
+      {error && <p role="alert" className="seo-data-alert">{error}</p>}
+      {keywords.status === "success" && keywords.data ? (
+        <div className="seo-data-table-wrap" role="region" aria-label="Ranking keyword rows" tabIndex={0}>
+          <table className="seo-data-table">
+            <caption>Ranking keywords, highest estimated search volume first</caption>
+            <thead>
+              <tr>
+                <th scope="col">Keyword</th>
+                <th scope="col">Position</th>
+                <th scope="col">Volume</th>
+                <th scope="col">Landing page</th>
+              </tr>
+            </thead>
+            <tbody>
+              {keywords.data.rows.map((row) => {
+                const href = webUrl(row.landingPage);
+                return (
+                  <tr key={row.keyword}>
+                    <th scope="row">{row.keyword}</th>
+                    <td>{row.position === null ? "—" : row.position}</td>
+                    <td>{count(row.searchVolume)}</td>
+                    <td>{href ? <a href={href} target="_blank" rel="noreferrer noopener">{landingLabel(href)}</a> : "—"}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <p className="seo-data-detail-empty" role="status">
+          {keywords.status === "empty"
+            ? "No ranking keyword rows were returned for this domain."
+            : keywords.error?.message ?? "Keyword rows are unavailable for this collection."}
+        </p>
+      )}
+      {keywords.status === "success" && keywords.data && keywords.data.landingPages.length > 0 && (
+        <div className="seo-data-landing">
+          <h4>Landing pages in these rows</h4>
+          <ul>
+            {keywords.data.landingPages.slice(0, 10).map((page) => (
+              <li key={page.url}>
+                <span>{landingLabel(page.url)}</span>
+                <strong>{count(page.estimatedTraffic)} est. visits</strong>
+                <small>{page.keywords} {page.keywords === 1 ? "keyword" : "keywords"}</small>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {backlinks.status === "success" && backlinks.data ? (
+        <div className="seo-data-table-wrap" role="region" aria-label="Backlink rows" tabIndex={0}>
+          <table className="seo-data-table">
+            <caption>Live backlinks, highest provider authority first</caption>
+            <thead>
+              <tr>
+                <th scope="col">Source</th>
+                <th scope="col">Authority</th>
+                <th scope="col">Link</th>
+                <th scope="col">First seen</th>
+              </tr>
+            </thead>
+            <tbody>
+              {backlinks.data.rows.map((row) => {
+                const href = webUrl(row.sourceUrl);
+                const label = row.sourceDomain ?? (href ? landingLabel(href) : row.sourceUrl);
+                return (
+                  <tr key={row.sourceUrl}>
+                    <th scope="row">{href ? <a href={href} target="_blank" rel="noreferrer noopener">{label}</a> : label}</th>
+                    <td>{count(row.authorityRank)}</td>
+                    <td>{row.dofollow === null ? "—" : row.dofollow ? "Follow" : "Nofollow"}</td>
+                    <td>{row.firstSeenAt ? date(row.firstSeenAt) : "—"}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <p className="seo-data-detail-empty" role="status">
+          {backlinks.status === "empty"
+            ? "No live backlink rows were returned for this domain."
+            : backlinks.error?.message ?? "Backlink rows are unavailable for this collection."}
+        </p>
+      )}
+      <p className="seo-data-detail-note">
+        {detail.notes?.[0] ?? "Row-level detail was collected separately from the aggregate report."}{" "}
+        Row text is provider-supplied evidence and is not a Folio conclusion.
+      </p>
+    </section>
   );
 }
 

@@ -4,6 +4,7 @@ import {
   assertSeoDataAccess,
   executeSeoTool,
   fetchSeoOverview,
+  fetchSeoDetail,
   getBacklinksSummary,
   getOrganicDomainOverview,
   getSeoDataStatus,
@@ -287,6 +288,156 @@ test("tool arguments cannot override the server-authenticated account or endpoin
       },
     ),
     /only a domain/,
+  );
+  assert.equal(calls, 0);
+});
+
+const rankedKeywordsResult = [
+  {
+    target: "example.com",
+    items: [
+      {
+        keyword_data: { keyword: "example pricing", keyword_info: { search_volume: 900 } },
+        ranked_serp_element: { serp_item: { rank_absolute: 3, url: "https://example.com/pricing", etv: 42.5 } },
+      },
+      {
+        keyword_data: { keyword: "example  pricing", keyword_info: { search_volume: 120 } },
+        ranked_serp_element: { serp_item: { rank_absolute: 7, url: "https://example.com/pricing" } },
+      },
+      {
+        keyword_data: { keyword: "example pricing" },
+        ranked_serp_element: { serp_item: { rank_absolute: 9 } },
+      },
+      {
+        keyword_data: { keyword: "example docs\u0000\u001b[31m" },
+        ranked_serp_element: { serp_item: { rank_absolute: 12, url: "javascript:alert(1)", etv: -4 } },
+      },
+    ],
+  },
+];
+const backlinkRowsResult = [
+  {
+    target: "example.com",
+    items: [
+      {
+        url_from: "https://source.example/post",
+        domain_from: "source.example",
+        url_to: "https://example.com/",
+        rank: 55,
+        backlink_spam_score: 3,
+        dofollow: true,
+        first_seen: "2021-05-01 00:00:00 +00:00",
+      },
+      { url_from: "https://source.example/post", domain_from: "source.example", rank: 40 },
+      { url_from: "javascript:alert(1)", domain_from: "bad.example" },
+      { url_from: "https://ok.example/a", rank: null, dofollow: "yes" },
+    ],
+  },
+];
+
+test("row-level detail uses bounded exact payloads, deduplicates, and sanitizes provider text", async () => {
+  const requests: { url: string; body: Record<string, unknown>[] }[] = [];
+  const detail = await fetchSeoDetail("www.example.com", context, {
+    env,
+    fetcher: async (input, init) => {
+      const url = String(input);
+      requests.push({ url, body: JSON.parse(String(init?.body)) });
+      return json(
+        envelope(
+          url.includes("ranked_keywords") ? rankedKeywordsResult : backlinkRowsResult,
+          url.includes("ranked_keywords") ? 0.011 : 0.022,
+        ),
+      );
+    },
+  });
+  assert.equal(requests.length, 2);
+  assert.deepEqual(requests[0].body, [{
+    target: "example.com",
+    location_code: 2840,
+    language_code: "en",
+    limit: 50,
+    order_by: ["keyword_data.keyword_info.search_volume,desc"],
+    include_serp_info: false,
+  }]);
+  assert.deepEqual(requests[1].body, [{
+    target: "example.com",
+    limit: 50,
+    mode: "as_is",
+    backlinks_status_type: "live",
+    include_subdomains: true,
+    exclude_internal_backlinks: true,
+    rank_scale: "one_hundred",
+    order_by: ["rank,desc"],
+  }]);
+  const rows = detail.keywords.data!.rows;
+  assert.equal(rows.length, 2);
+  assert.deepEqual(rows[0], {
+    keyword: "example pricing",
+    position: 3,
+    landingPage: "https://example.com/pricing",
+    searchVolume: 900,
+    estimatedTraffic: 42.5,
+  });
+  // Control characters are stripped, non-http links become null, and a negative
+  // traffic estimate is treated as unknown rather than rendered as data.
+  assert.equal(rows[1].keyword, "example docs [31m");
+  assert.equal(rows[1].landingPage, null);
+  assert.equal(rows[1].estimatedTraffic, null);
+  assert.equal(rows[0].landingPage, "https://example.com/pricing");
+  assert.deepEqual(detail.keywords.data!.landingPages, [
+    { url: "https://example.com/pricing", keywords: 1, estimatedTraffic: 42.5 },
+  ]);
+  const links = detail.backlinks.data!.rows;
+  assert.equal(links.length, 2);
+  assert.deepEqual(links[0], {
+    sourceUrl: "https://source.example/post",
+    sourceDomain: "source.example",
+    targetUrl: "https://example.com/",
+    dofollow: true,
+    authorityRank: 55,
+    spamScore: 3,
+    firstSeenAt: "2021-05-01T00:00:00.000Z",
+  });
+  assert.equal(links[1].dofollow, null);
+  assert.equal(links[1].targetUrl, null);
+  assert.equal(detail.status, "complete");
+  assert.ok(Math.abs(detail.totalCostUsd! - 0.033) < 1e-8);
+  assert.ok(!JSON.stringify(detail).includes("javascript:"));
+  assert.ok(!JSON.stringify(detail).includes("fixture-secret"));
+});
+
+test("a failed row collection keeps the other section and never reports free cost", async () => {
+  let calls = 0;
+  const detail = await fetchSeoDetail("example.com", context, {
+    env,
+    fetcher: async (input) => {
+      calls++;
+      return String(input).includes("ranked_keywords")
+        ? json(envelope(rankedKeywordsResult, 0.01))
+        : new Response("fixture-secret", { status: 402 });
+    },
+  });
+  assert.equal(calls, 2);
+  assert.equal(detail.status, "partial");
+  assert.equal(detail.keywords.status, "success");
+  assert.equal(detail.backlinks.status, "error");
+  assert.equal(detail.totalCostUsd, null);
+  assert.equal(detail.knownCostUsd, 0.01);
+  assert.equal(detail.costIsComplete, false);
+  assert.ok(!JSON.stringify(detail).includes("fixture-secret"));
+});
+
+test("detail rows cannot be requested for an unapproved account", async () => {
+  let calls = 0;
+  await assert.rejects(
+    fetchSeoDetail("example.com", { userId: "unapproved-user" }, {
+      env,
+      fetcher: async () => {
+        calls++;
+        return json({});
+      },
+    }),
+    (error: unknown) => error instanceof SeoDataError && error.status === 403,
   );
   assert.equal(calls, 0);
 });

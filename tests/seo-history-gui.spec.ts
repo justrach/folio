@@ -110,3 +110,92 @@ test("private SEO history reopens and exports partial observations without payin
   expect(paidRequests).toBe(0);
   expect(pageErrors).toEqual([]);
 });
+
+const detailResult = {
+  domain: partialResult.domain,
+  provider: "DataForSEO",
+  collectedAt: retrievedAt,
+  keywords: {
+    status: "success",
+    data: {
+      domain: partialResult.domain, searchEngine: "Google", locationCode: 2840, languageCode: "en", rowLimit: 50,
+      rows: [{ keyword: "fixture keyword", position: 3, landingPage: `https://${partialResult.domain}/pricing`, searchVolume: 900, estimatedTraffic: 4.5 }],
+      landingPages: [{ url: `https://${partialResult.domain}/pricing`, keywords: 1, estimatedTraffic: 4.5 }],
+      note: "Fixture rows for browser checks.",
+    },
+    error: null, costUsd: 0.011, taskId: "fixture-keyword-task", providerVersion: "fixture",
+    endpoint: "/v3/dataforseo_labs/google/ranked_keywords/live", fetchedAt: retrievedAt,
+  },
+  backlinks: {
+    status: "success",
+    data: {
+      domain: partialResult.domain, rowLimit: 50, includeSubdomains: true,
+      rows: [{ sourceUrl: "https://source.example/post", sourceDomain: "source.example", targetUrl: `https://${partialResult.domain}/`, dofollow: true, authorityRank: 55, spamScore: 3, firstSeenAt: retrievedAt }],
+      note: "Fixture rows for browser checks.",
+    },
+    error: null, costUsd: 0.022, taskId: "fixture-backlink-task", providerVersion: "fixture",
+    endpoint: "/v3/backlinks/backlinks/live", fetchedAt: retrievedAt,
+  },
+  status: "complete", totalCostUsd: 0.033, knownCostUsd: 0.033, costIsComplete: true,
+  notes: ["Row-level detail is a separate, explicit paid collection on top of the saved aggregate report."],
+};
+
+test("row detail is collected once on explicit action and reopens without another request", async ({ page }) => {
+  let detailPosts = 0;
+  let hasDetail = false;
+  const paidRequests: string[] = [];
+  const pageErrors: string[] = [];
+  page.on("pageerror", error => pageErrors.push(error.message));
+  await page.route("**/api/auth/get-session**", route => route.fulfill({ json: {
+    user: { id: "seo-detail-owner", email: "seo-detail@example.test", name: "SEO detail reviewer", emailVerified: true, createdAt: retrievedAt, updatedAt: retrievedAt },
+    session: { id: "seo-detail-session", userId: "seo-detail-owner", token: "browser-fixture", expiresAt: "2099-01-01T00:00:00Z", createdAt: retrievedAt, updatedAt: retrievedAt },
+  } }));
+  await page.route("**/api/scans", route => route.fulfill({ json: { scans: [] } }));
+  await page.route("**/api/evaluations", route => route.fulfill({ json: { runs: [] } }));
+  await page.route("**/api/agents/status", route => route.fulfill({ json: {
+    provider: "OpenAI Agents API", configured: false, status: "disconnected", model: "gpt-6-astra", canRun: false, authorized: false, message: "GUI fixture: no API key.", allowedTargets: ["example.com"],
+  } }));
+  await page.route("**/api/seo-data", route => {
+    if (route.request().method() === "POST") paidRequests.push("overview");
+    return route.fulfill({ json: { configured: true, authorized: true, reason: "Fixture: detail collection is allowed." } });
+  });
+  await page.route("**/api/seo-reports/*/detail", route => {
+    detailPosts++;
+    hasDetail = true;
+    return route.fulfill({ json: { detail: detailResult, saved: true } });
+  });
+  await page.route("**/api/seo-reports", route => route.fulfill({ json: { reports: [
+    { ...savedReport, result: undefined, status: "partial", totalCostUsd: null, knownCostUsd: 0.01, costIsComplete: false, detailState: hasDetail ? "collected" : "not_collected" },
+  ] } }));
+  await page.route("**/api/seo-reports/*", route => route.fulfill({ json: { report: { ...savedReport, detail: hasDetail ? detailResult : null, detailRetrievedAt: hasDetail ? retrievedAt : null } } }));
+
+  await page.goto("/search-data");
+  await page.getByRole("button", { name: /Open saved website report for private-seo/ }).click();
+  await expect(page.getByRole("heading", { name: "Name the keywords and links", exact: true })).toBeVisible();
+  await expect(page.locator(".seo-data-detail-prompt")).toContainText("Runs two more provider tasks");
+  expect(detailPosts).toBe(0);
+
+  await page.getByRole("button", { name: "Collect keyword and link rows", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Keyword and link rows", exact: true })).toBeVisible();
+  await expect(page.locator(".seo-data-table").first()).toContainText("fixture keyword");
+  await expect(page.locator(".seo-data-table").first()).toContainText("900");
+  await expect(page.locator(".seo-data-table").nth(1)).toContainText("source.example");
+  await expect(page.locator(".seo-data-table").nth(1)).toContainText("55");
+  await expect(page.locator(".seo-data-panel")).not.toContainText("DataForSEO");
+  expect(detailPosts).toBe(1);
+  expect(paidRequests).toEqual([]);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(await page.evaluate(() => innerWidth + 1));
+
+  await page.getByRole("button", { name: "Refresh history", exact: true }).click();
+  await page.getByRole("button", { name: /Open saved website report for private-seo/ }).click();
+  await expect(page.getByRole("heading", { name: "Keyword and link rows", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Collect keyword and link rows", exact: true })).toHaveCount(0);
+  expect(detailPosts).toBe(1);
+
+  const downloadEvent = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Download private report", exact: true }).click();
+  const bundle = JSON.parse(await readFile((await (await downloadEvent).path())!, "utf8"));
+  expect(bundle.detail.keywords.data.rows[0].keyword).toBe("fixture keyword");
+  expect(bundle.detailRetrievedAt).toBe(retrievedAt);
+  expect(pageErrors).toEqual([]);
+});

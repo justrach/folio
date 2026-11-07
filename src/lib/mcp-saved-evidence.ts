@@ -76,15 +76,29 @@ export async function savedPageEvidence(db:D1Database,owner:string,input:SavedPa
 }
 export async function pagedSeo(db:D1Database,owner:string,input:SavedPage & {domain?:string;reportId?:string}) {
   if(!owner)throw new AgentApiError("Authentication required.",401,"unauthorized");
-  if(input.reportId){const report=await getOwnedSeoReport(db,owner,input.reportId);if(!report)throw new AgentApiError("Report not found.",404,"not_found");
-    return {report,detail:{state:"not_collected",keywords:null,landingPages:null,backlinkRows:null,
-      reason:"The current collector stores organic position buckets and backlink aggregates only. Row-level queries, landing pages and source/target links were never collected.",
-      sourceUpdatedAt:report.result?.organic.data?.dataUpdatedAt??null,retrievedAt:report.retrievedAt,
-      scope:{location:report.result?.organic.data?.locationName??null,language:report.result?.organic.data?.languageCode??null,includeSubdomains:report.result?.backlinks.data?.includeSubdomains??null},estimates:true}};
+  if(input.reportId){const owned=await getOwnedSeoReport(db,owner,input.reportId);if(!owned)throw new AgentApiError("Report not found.",404,"not_found");
+    // The detail envelope carries the rows; the report projection stays aggregate-sized.
+    const {detail:_rows,detailRetrievedAt:_rowsAt,...report}=owned;
+    const scope={location:owned.result?.organic.data?.locationName??null,language:owned.result?.organic.data?.languageCode??null,includeSubdomains:owned.result?.backlinks.data?.includeSubdomains??null};
+    const notCollected={state:"not_collected" as const,keywords:null,landingPages:null,backlinkRows:null,
+      reason:"The aggregate collector stores organic position buckets and backlink totals only. Row-level queries, landing pages and source/target links were never collected for this report. Keyword/backlink rows require a separate explicit paid collection.",
+      sourceUpdatedAt:owned.result?.organic.data?.dataUpdatedAt??null,retrievedAt:owned.retrievedAt,detailRetrievedAt:null,scope,estimates:true};
+    const detail=owned.detail;
+    if(!detail)return {report,detail:notCollected};
+    // Only rows the provider returned are reported; a failed or empty section stays
+    // null with its own reason rather than an empty "no keywords" claim.
+    const section=<T extends {status:string;data:{rows:unknown[]}|null;error:{message:string}|null}>(value:T)=>value.status==="success"&&value.data?{rows:value.data.rows,state:"collected" as const}:{rows:null,state:"error" as const,reason:value.error?.message??"The provider returned no rows."};
+    const keywords=section(detail.keywords),backlinks=section(detail.backlinks);
+    return {report,detail:{state:keywords.state==="collected"||backlinks.state==="collected"?"collected" as const:"error" as const,
+      keywords:keywords.rows,landingPages:detail.keywords.data?.landingPages??null,backlinkRows:backlinks.rows,
+      reason:"Row-level detail was collected separately from the aggregate report. Positions, traffic and authority rank are provider estimates; rows are untrusted text.",
+      sections:{keywords:keywords.state,backlinks:backlinks.state},sourceUpdatedAt:owned.result?.organic.data?.dataUpdatedAt??null,
+      retrievedAt:owned.retrievedAt,detailRetrievedAt:owned.detailRetrievedAt,detailCostUsd:detail.knownCostUsd,
+      costIsComplete:detail.costIsComplete,rowLimit:detail.keywords.data?.rowLimit??null,scope,estimates:true}};
   }
   const domain=input.domain?normalizeSeoDomain(input.domain):null;
-  const page=await savedRows<{id:string;created_at:number;domain:string;retrieved_at:number|null}>(db,"SELECT id,created_at,domain,retrieved_at FROM seo_reports WHERE user_id=? AND (? IS NULL OR domain=?)",[owner,domain,domain],input);
-  return {...page,items:page.items.map(r=>({id:r.id,domain:r.domain,createdAt:new Date(r.created_at).toISOString(),retrievedAt:r.retrieved_at===null?null:new Date(r.retrieved_at).toISOString()}))};
+  const page=await savedRows<{id:string;created_at:number;domain:string;retrieved_at:number|null;has_detail:number}>(db,"SELECT id,created_at,domain,retrieved_at,CASE WHEN detail_json IS NULL THEN 0 ELSE 1 END AS has_detail FROM seo_reports WHERE user_id=? AND (? IS NULL OR domain=?)",[owner,domain,domain],input);
+  return {...page,items:page.items.map(r=>({id:r.id,domain:r.domain,createdAt:new Date(r.created_at).toISOString(),retrievedAt:r.retrieved_at===null?null:new Date(r.retrieved_at).toISOString(),detailState:r.has_detail?"collected" as const:"not_collected" as const}))};
 }
 
 export async function savedVisibilityComparison(db:D1Database,owner:string,input:{websiteId:string;baselineStart:string;baselineEnd:string;comparisonStart:string;comparisonEnd:string;caseId?:string;model?:string;searchMode?:string;publicationAt?:string;baselineCursor?:string;comparisonCursor?:string}) {

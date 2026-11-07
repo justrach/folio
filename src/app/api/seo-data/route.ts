@@ -4,6 +4,7 @@ import { getDb } from "@/lib/db";
 import { readJsonBody } from "@/lib/api-request";
 import { ScanError } from "@/lib/scanner";
 import { reserveSeoReport, completeSeoReport } from "@/lib/seo-store";
+import { consumeSeoLookupSlot } from "@/lib/seo-rate-limit";
 import {
   assertSeoDataAccess,
   fetchSeoOverview,
@@ -99,29 +100,9 @@ export async function POST(request: Request) {
       );
     const domain = normalizeSeoDomain(body.domain);
     const db = await getDb();
-    const now = Date.now();
     // Atomic account budget guard; a failed/ambiguous provider request still
     // consumes a slot because it may have been billed. Never key this by email.
-    const slot = await db
-      .prepare(
-        `INSERT INTO rate_limit (id, key, count, last_request)
-      VALUES (?, ?, 1, ?)
-      ON CONFLICT(key) DO UPDATE SET
-        count = CASE WHEN last_request < ? THEN 1 ELSE count + 1 END,
-        last_request = CASE WHEN last_request < ? THEN ? ELSE last_request END
-      WHERE last_request < ? OR count < 20
-      RETURNING count`,
-      )
-      .bind(
-        crypto.randomUUID(),
-        `folio:seo-data:${session.user.id}`,
-        now,
-        now - 3_600_000,
-        now - 3_600_000,
-        now,
-        now - 3_600_000,
-      )
-      .first<{ count: number }>();
+    const slot = await consumeSeoLookupSlot(db, `folio:seo-data:${session.user.id}`, 20);
     if (!slot)
       return Response.json(
         {

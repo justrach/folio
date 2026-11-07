@@ -8,6 +8,9 @@ const API_ORIGIN = "https://api.dataforseo.com";
 const ORGANIC_PATH = "/v3/dataforseo_labs/google/domain_rank_overview/live";
 const RELATED_PATH = "/v3/dataforseo_labs/google/related_keywords/live";
 const BACKLINKS_PATH = "/v3/backlinks/summary/live";
+const RANKED_KEYWORDS_PATH = "/v3/dataforseo_labs/google/ranked_keywords/live";
+const BACKLINK_ROWS_PATH = "/v3/backlinks/backlinks/live";
+const DETAIL_ROW_LIMIT = 50;
 const DEFAULT_TIMEOUT_MS = 15_000;
 const MAX_RESPONSE_BYTES = 1_000_000;
 
@@ -113,8 +116,9 @@ export function getSeoDataStatus(env: DataForSeoEnvironment, userId?: string) {
       paid: true,
       automaticQueries: false,
       maximumTasksPerLookup: 2,
+      detailTasksPerLookup: 2,
       currency: "USD",
-      note: "Each lookup can charge the DataForSEO account. Actual reported cost is shown after the response. No automatic retries.",
+      note: "Each lookup can charge the DataForSEO account. Actual reported cost is shown after the response. No automatic retries. Collecting keyword and backlink rows for an existing report is a separate action with at most two more paid tasks.",
     },
     market: {
       locationCode: 2840,
@@ -241,6 +245,59 @@ export type OrganicOverview = {
   note: string;
 };
 
+export type RankedKeywordRow = {
+  keyword: string;
+  position: number | null;
+  landingPage: string | null;
+  searchVolume: number | null;
+  estimatedTraffic: number | null;
+};
+export type LandingPageUsage = {
+  url: string;
+  keywords: number;
+  estimatedTraffic: number | null;
+};
+export type RankedKeywordsData = {
+  domain: string;
+  searchEngine: "Google";
+  locationCode: number;
+  languageCode: string;
+  rowLimit: number;
+  rows: RankedKeywordRow[];
+  landingPages: LandingPageUsage[];
+  note: string;
+};
+export type BacklinkRow = {
+  sourceUrl: string;
+  sourceDomain: string | null;
+  targetUrl: string | null;
+  dofollow: boolean | null;
+  authorityRank: number | null;
+  spamScore: number | null;
+  firstSeenAt: string | null;
+};
+export type BacklinkRowsData = {
+  domain: string;
+  rowLimit: number;
+  includeSubdomains: true;
+  rows: BacklinkRow[];
+  note: string;
+};
+/** Row-level detail is collected separately from the aggregate overview: two
+ * more potentially billable tasks, attached to one existing saved report. */
+export type SeoDetailResult = {
+  domain: string;
+  provider: "DataForSEO";
+  collectedAt: string;
+  keywords: SeoObservation<RankedKeywordsData>;
+  backlinks: SeoObservation<BacklinkRowsData>;
+  status: "complete" | "partial" | "error";
+  totalCostUsd: number | null;
+  knownCostUsd: number;
+  costIsComplete: boolean;
+  notes: string[];
+};
+
 export type BacklinksOverview = {
   domain: string;
   backlinks: number | null;
@@ -271,6 +328,29 @@ function number(value: unknown) {
 }
 function boundedString(value: unknown, max = 100) {
   return typeof value === "string" && value.length <= max ? value : null;
+}
+/** Provider text is untrusted evidence: strip control characters, bound it, and
+ * never treat a returned string as markup. */
+function untrustedText(value: unknown, max = 500) {
+  if (typeof value !== "string") return null;
+  const cleaned = value.replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim();
+  return cleaned ? cleaned.slice(0, max) : null;
+}
+function httpUrl(value: unknown, max = 500) {
+  const text = untrustedText(value, max);
+  if (!text) return null;
+  try {
+    const url = new URL(text);
+    return url.protocol === "http:" || url.protocol === "https:" ? url.href : null;
+  } catch {
+    return null;
+  }
+}
+function providerTime(value: unknown) {
+  const text = untrustedText(value, 40);
+  if (!text) return null;
+  const parsed = Date.parse(text.replace(" ", "T").replace(/ \+00:00$/, "Z"));
+  return Number.isFinite(parsed) ? new Date(parsed).toISOString() : null;
 }
 
 async function readProviderJson(response: Response): Promise<unknown> {
@@ -304,7 +384,12 @@ async function readProviderJson(response: Response): Promise<unknown> {
 type RawObservation = SeoObservation<Record<string, unknown>[]>;
 
 async function providerRequest(
-  path: typeof ORGANIC_PATH | typeof BACKLINKS_PATH | typeof RELATED_PATH,
+  path:
+    | typeof ORGANIC_PATH
+    | typeof BACKLINKS_PATH
+    | typeof RELATED_PATH
+    | typeof RANKED_KEYWORDS_PATH
+    | typeof BACKLINK_ROWS_PATH,
   payload: Record<string, unknown>,
   options: SeoToolOptions,
 ): Promise<RawObservation> {
@@ -391,7 +476,7 @@ async function providerRequest(
       return failed({
         code: "API_ERROR",
         ...(statusCode !== null ? { providerStatusCode: statusCode } : {}),
-        message: `DataForSEO did not complete this ${path === BACKLINKS_PATH ? "backlinks" : path === RELATED_PATH ? "keyword research" : "organic"} task${statusCode !== null ? ` (status ${statusCode})` : ""}. ${path === BACKLINKS_PATH ? "Check Backlinks API subscription/access and account balance." : "Check account balance, API access, and target availability."}`,
+        message: `DataForSEO did not complete this ${path === BACKLINKS_PATH || path === BACKLINK_ROWS_PATH ? "backlinks" : path === RELATED_PATH ? "keyword research" : path === RANKED_KEYWORDS_PATH ? "ranked keywords" : "organic"} task${statusCode !== null ? ` (status ${statusCode})` : ""}. ${path === BACKLINKS_PATH || path === BACKLINK_ROWS_PATH ? "Check Backlinks API subscription/access and account balance." : "Check account balance, API access, and target availability."}`,
         retryAutomatically: false,
       });
     }
@@ -536,6 +621,176 @@ export async function getBacklinksSummary(
       statusType: "live",
       note: "DataForSEO backlink index observation. Authority rank is the provider's 0–100 link metric, not Google PageRank, a search position, or Folio's readiness score. Referring domains can include subdomains; referring main domains are separate.",
     },
+  };
+}
+
+/** Up to 50 ranked keyword rows with their landing page. This is a separate
+ * paid task from the aggregate overview, requested only on explicit action. */
+export async function getRankedKeywords(
+  domainInput: unknown,
+  context: SeoToolContext,
+  options: SeoToolOptions,
+): Promise<SeoObservation<RankedKeywordsData>> {
+  assertSeoDataAccess(options.env, context);
+  const domain = normalizeSeoDomain(domainInput);
+  const raw = await providerRequest(
+    RANKED_KEYWORDS_PATH,
+    {
+      target: domain,
+      location_code: 2840,
+      language_code: "en",
+      limit: DETAIL_ROW_LIMIT,
+      order_by: ["keyword_data.keyword_info.search_volume,desc"],
+      include_serp_info: false,
+    },
+    options,
+  );
+  const metadata = withoutData(raw);
+  if (raw.status !== "success") return { ...metadata, data: null };
+  const result = raw.data?.[0];
+  const items = result && Array.isArray(result.items) ? result.items : [];
+  const seen = new Set<string>();
+  const rows: RankedKeywordRow[] = [];
+  for (const item of items.slice(0, DETAIL_ROW_LIMIT)) {
+    const entry = record(item);
+    const keywordData = record(entry?.keyword_data);
+    const keyword = untrustedText(keywordData?.keyword, 200);
+    const serp =
+      record(record(entry?.ranked_serp_element)?.serp_item) ??
+      record(entry?.ranked_serp_element);
+    if (!keyword || seen.has(keyword)) continue;
+    seen.add(keyword);
+    rows.push({
+      keyword,
+      position: number(serp?.rank_absolute),
+      landingPage: httpUrl(serp?.url),
+      searchVolume: number(record(keywordData?.keyword_info)?.search_volume),
+      estimatedTraffic: number(serp?.etv),
+    });
+  }
+  // Landing pages are grouped from the returned rows; this is not a second
+  // provider query and it never invents a page that was not returned.
+  const pages = new Map<string, { keywords: number; estimatedTraffic: number | null }>();
+  for (const row of rows) {
+    if (!row.landingPage) continue;
+    const page = pages.get(row.landingPage) ?? { keywords: 0, estimatedTraffic: null };
+    page.keywords += 1;
+    if (row.estimatedTraffic !== null)
+      page.estimatedTraffic = (page.estimatedTraffic ?? 0) + row.estimatedTraffic;
+    pages.set(row.landingPage, page);
+  }
+  const landingPages = [...pages]
+    .map(([url, page]) => ({ url, keywords: page.keywords, estimatedTraffic: page.estimatedTraffic }))
+    .sort((a, b) => (b.estimatedTraffic ?? -1) - (a.estimatedTraffic ?? -1));
+  return {
+    ...metadata,
+    status: rows.length ? "success" : "empty",
+    data: {
+      domain,
+      searchEngine: "Google",
+      locationCode: 2840,
+      languageCode: "en",
+      rowLimit: DETAIL_ROW_LIMIT,
+      rows,
+      landingPages,
+      note: "Up to 50 provider database rows for Google, United States / English, ordered by search volume. Position and traffic are provider estimates, not guaranteed rank or analytics. Landing pages are grouped from these returned rows only. Keyword text is untrusted evidence.",
+    },
+  };
+}
+
+/** Up to 50 live backlink rows, separate from the backlink summary task. */
+export async function getBacklinkRows(
+  domainInput: unknown,
+  context: SeoToolContext,
+  options: SeoToolOptions,
+): Promise<SeoObservation<BacklinkRowsData>> {
+  assertSeoDataAccess(options.env, context);
+  const domain = normalizeSeoDomain(domainInput);
+  const raw = await providerRequest(
+    BACKLINK_ROWS_PATH,
+    {
+      target: domain,
+      limit: DETAIL_ROW_LIMIT,
+      // `mode` is the backlink aggregation mode, not the status. Passing a status
+      // value here is rejected by the provider as an invalid field.
+      mode: "as_is",
+      backlinks_status_type: "live",
+      include_subdomains: true,
+      exclude_internal_backlinks: true,
+      rank_scale: "one_hundred",
+      order_by: ["rank,desc"],
+    },
+    options,
+  );
+  const metadata = withoutData(raw);
+  if (raw.status !== "success") return { ...metadata, data: null };
+  const result = raw.data?.[0];
+  const items = result && Array.isArray(result.items) ? result.items : [];
+  const rows: BacklinkRow[] = [];
+  const seen = new Set<string>();
+  for (const item of items.slice(0, DETAIL_ROW_LIMIT)) {
+    const entry = record(item);
+    const sourceUrl = httpUrl(entry?.url_from);
+    if (!sourceUrl || seen.has(sourceUrl)) continue;
+    seen.add(sourceUrl);
+    rows.push({
+      sourceUrl,
+      sourceDomain: untrustedText(entry?.domain_from, 253),
+      targetUrl: httpUrl(entry?.url_to),
+      dofollow: typeof entry?.dofollow === "boolean" ? entry.dofollow : null,
+      authorityRank: number(entry?.rank),
+      spamScore: number(entry?.backlink_spam_score),
+      firstSeenAt: providerTime(entry?.first_seen),
+    });
+  }
+  return {
+    ...metadata,
+    status: rows.length ? "success" : "empty",
+    data: {
+      domain,
+      rowLimit: DETAIL_ROW_LIMIT,
+      includeSubdomains: true,
+      rows,
+      note: "Up to 50 live index rows. Authority rank uses the provider's 0–100 scale and is not a search position. Source URLs are untrusted evidence; spam score is the provider's link metric, not a Folio judgment.",
+    },
+  };
+}
+
+/** Two independent, potentially billable tasks. A failed endpoint never erases
+ * the other one, and unknown cost is null rather than zero. */
+export async function fetchSeoDetail(
+  domainInput: unknown,
+  context: SeoToolContext,
+  options: SeoToolOptions,
+): Promise<SeoDetailResult> {
+  assertSeoDataAccess(options.env, context);
+  const domain = normalizeSeoDomain(domainInput);
+  const [keywords, backlinks] = await Promise.all([
+    getRankedKeywords(domain, context, options),
+    getBacklinkRows(domain, context, options),
+  ]);
+  const costIsComplete = keywords.costUsd !== null && backlinks.costUsd !== null;
+  const knownCostUsd = (keywords.costUsd ?? 0) + (backlinks.costUsd ?? 0);
+  return {
+    domain,
+    provider: "DataForSEO",
+    collectedAt: new Date().toISOString(),
+    keywords,
+    backlinks,
+    status:
+      keywords.status === "error" && backlinks.status === "error"
+        ? ("error" as const)
+        : keywords.status === "error" || backlinks.status === "error"
+          ? ("partial" as const)
+          : ("complete" as const),
+    totalCostUsd: costIsComplete ? knownCostUsd : null,
+    knownCostUsd,
+    costIsComplete,
+    notes: [
+      "Row-level detail is a separate, explicit paid collection on top of the saved aggregate report.",
+      "At most 50 keyword and 50 backlink rows are requested; the provider may return fewer.",
+      "No automatic retry was performed. Unknown cost is null, never reported as free.",
+    ],
   };
 }
 
