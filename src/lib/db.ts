@@ -25,9 +25,9 @@ export function databaseEngine(env: EngineEnv): DatabaseEngine {
 
 let pool: Pool | null = null;
 
-function postgresDatabase(connectionString: string): D1Database {
-  // Workers cannot pool across requests themselves; `pg`'s Cloudflare socket
-  // plus Hyperdrive does. The pool is reused within an isolate.
+/** The raw pg pool, for consumers that need a real driver (drizzle, Better Auth)
+ * rather than the D1-shaped adapter. */
+export function getPgPool(connectionString: string): Pool {
   if (!pool) {
     pool = new Pool({
       connectionString: connectionString.split("?")[0],
@@ -37,6 +37,13 @@ function postgresDatabase(connectionString: string): D1Database {
       connectionTimeoutMillis: 10_000,
     });
   }
+  return pool;
+}
+
+function postgresDatabase(connectionString: string): D1Database {
+  // Workers cannot pool across requests themselves; `pg`'s Cloudflare socket
+  // plus Hyperdrive does. The pool is reused within an isolate.
+  getPgPool(connectionString);
   const executor: PgExecutor = {
     query: async (sql, values) => {
       const result = await pool!.query(sql, values as never[]);
@@ -45,6 +52,12 @@ function postgresDatabase(connectionString: string): D1Database {
   };
   // Stores keep calling the D1 surface they already use: prepare/bind/first/all/run.
   return createPostgresDatabase(executor) as unknown as D1Database;
+}
+
+/** The connection string for the Postgres engine, or null when not selected. */
+export function postgresConnection(env: EngineEnv): string | null {
+  if (databaseEngine(env) !== "postgres") return null;
+  return env.HYPERDRIVE?.connectionString ?? env.PLANETSCALE_APP_URL ?? process.env.PLANETSCALE_APP_URL ?? null;
 }
 
 /** Store access. Honors DB_ENGINE; both engines expose the same API. */

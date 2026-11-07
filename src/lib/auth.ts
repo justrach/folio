@@ -4,8 +4,9 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { drizzle } from "drizzle-orm/d1";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
-import { getAuthDb } from "@/lib/db";
+import { getAuthDb, getPgPool, postgresConnection } from "@/lib/db";
 import * as schema from "@/lib/auth-schema";
+import { authSchema as pgSchema } from "@/lib/auth-schema-pg";
 import { identityAuthOptions } from "@/lib/github-auth";
 
 export async function getAuth() {
@@ -18,7 +19,13 @@ export async function getAuth() {
     );
   }
 
-  const database = drizzle(await getAuthDb(), { schema });
+  // Two engines, two schemas: Postgres uses pg-core tables and the pg provider;
+  // D1 keeps the SQLite tables. The adapter choice must match the schema.
+  const engineEnv = env as unknown as { DB_ENGINE?: string; HYPERDRIVE?: { connectionString: string }; PLANETSCALE_APP_URL?: string };
+  const postgres = postgresConnection(engineEnv);
+  const database = postgres
+    ? drizzle(getPgPool(postgres), { schema: pgSchema })
+    : drizzle(await getAuthDb(), { schema });
   return betterAuth({
     appName: "Folio",
     baseURL,
@@ -29,7 +36,9 @@ export async function getAuth() {
       GITHUB_CLIENT_ID: env.GITHUB_CLIENT_ID || process.env.GITHUB_CLIENT_ID,
       GITHUB_CLIENT_SECRET: env.GITHUB_CLIENT_SECRET || process.env.GITHUB_CLIENT_SECRET,
     }),
-    database: drizzleAdapter(database, { provider: "sqlite", schema }),
+    database: drizzleAdapter(database, postgres
+      ? { provider: "pg", schema: pgSchema }
+      : { provider: "sqlite", schema }),
     emailAndPassword: {
       enabled: true,
       minPasswordLength: 10,

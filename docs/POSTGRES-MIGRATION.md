@@ -119,6 +119,22 @@ Repeatable as `bun run test:pg` (skips without `PLANETSCALE_APP_URL`). Three fin
 2. **Timestamps must be `bigint`.** Milliseconds since epoch (~1.7e12) overflow `integer`. `pg` returns `int8` as text by default, so the driver needs `types.setTypeParser(20, Number)` or every `new Date(created_at)` breaks.
 3. **`strftime(..., 'unixepoch')` input is seconds.** The call sites already divide by 1000 before formatting; the translation must not divide again.
 
+## Authentication on Postgres (implemented)
+
+`src/lib/auth-schema-pg.ts` mirrors the five Better Auth tables with pg-core types, and `getAuth()` selects schema and provider by engine. One detail mattered: Better Auth hands drizzle `Date` objects while the mirror stores epoch milliseconds as `bigint`, so the schema maps them with a custom drizzle type instead of rewriting columns.
+
+Verified against the real database: sign-up creates a user and a session row, sign-in succeeds, and the test account can be deleted cleanly. A copy script moves existing rows across — `wrangler d1 execute --json` per table, then upsert — and it copies sessions too, which is what keeps people signed in across the cutover rather than forcing a re-login.
+
+Cutover checklist:
+
+1. Export `user`, `session`, `account`, `verification` from D1 (local or remote) as JSON.
+2. Run the copy script; confirm counts match.
+3. Set `DB_ENGINE=postgres` and a `HYPERDRIVE` binding in `wrangler.jsonc`.
+4. Deploy, sign in with an existing account (no password reset), sign out, sign up a fresh account.
+5. Keep D1 readable for a week, then remove the binding.
+
+Rollback is flipping `DB_ENGINE` back; D1 is untouched by the cutover because the copy is one-way.
+
 ## Engine switch (implemented)
 
 `src/lib/db.ts` now chooses the store: `DB_ENGINE=postgres` returns the D1-shaped adapter over `pg`, anything else returns the D1 binding. Stores are unchanged — they still call `prepare().bind().first()/.all()/.run()`.
