@@ -1,6 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { CompanyFavicon } from "./company-favicon";
+import { WorkspaceEmptyArt } from "./workspace-empty-art";
+import { DEVELOPER_TOOLS } from "@/lib/developer-tools-source";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { authClient } from "@/lib/auth-client";
@@ -72,11 +75,12 @@ function TopBar({ step, onExit, nav }: { step: number; onExit?: () => void; nav?
 
 function Screen({ step, onExit, nav, eyebrow, title, children, side }: { step: number; onExit?: () => void; nav?: Nav; eyebrow: ReactNode; title: string; children: ReactNode; side: ReactNode }) {
   const heading = useRef<HTMLHeadingElement>(null);
+  const previous = nav ? Array.from({length: Math.max(0, step - 1)}, (_, index) => step - index - 1).find(value => nav.can(value)) : undefined;
   useEffect(() => { heading.current?.focus({ preventScroll: true }); }, [step]);
   return <div className="ob">
     <TopBar step={step} onExit={onExit} nav={nav} />
-    <main className="ob-main" id="main-content" key={step} data-dir={nav?.dir ?? "forward"}>
-      <div className="ob-copy"><p className="ob-eyebrow">{eyebrow}</p><h1 ref={heading} tabIndex={-1}>{title}</h1>{children}</div>
+    <main className="ob-main" id="main-content" data-step={step} key={step} data-dir={nav?.dir ?? "forward"}>
+      <div className="ob-copy">{previous !== undefined && <button className="ob-back-button" type="button" onClick={() => nav?.go(previous)}>← Back</button>}<p className="ob-eyebrow">{eyebrow}</p><h1 ref={heading} tabIndex={-1}>{title}</h1>{children}</div>
       <aside className="ob-side">{side}</aside>
     </main>
   </div>;
@@ -234,7 +238,7 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
   if (!step) return <div className="ob"><TopBar step={1} /><p className="ob-loading" role="status">Loading your setup…</p></div>;
 
   if (step === 1) return <Screen nav={nav} step={1} eyebrow="Free page check" title="Which website should AI recommend?" side={url.trim() ? <LivePreview input={url} checking={busy} /> : <ProofCard proof={proof} />}>
-    <p className="ob-lede">Enter your address. Folio checks your page in seconds and shows who AI already recommends for your kind of product.</p>
+    <p className="ob-lede">Start with your website. Review its page checks, then choose the customer questions you want to explore.</p>
     <form onSubmit={event => { event.preventDefault(); void run(async () => {
       const result = await api<{ check: Check; siteId: string | null }>("/api/onboarding/check", { method: "POST", body: { url: url.includes("://") ? url : `https://${url}` } });
       setCheck(result.check); setSiteId(result.siteId);
@@ -567,10 +571,10 @@ function LivePreview({ input, checking }: { input: string; checking: boolean }) 
 
 function ProofCard({ proof }: { proof: OnboardingProof | null }) {
   if (!proof) return null;
-  return <div className="ob-backdrop"><div className="ob-card">
+  return <div className="ob-backdrop"><WorkspaceEmptyArt/><div className="ob-card">
     <div className="ob-card-head"><span>Inside a Folio report</span><b>Real results</b></div>
     <h2>{proof.category}</h2><p className="ob-hint" style={{ marginTop: 6 }}>{plural(proof.totalAnswers, "saved answer")}, {dateRange(proof.firstObservedAt, proof.lastObservedAt)}</p>
-    <ol className="ob-rows">{proof.rows.map(row => <li key={row.name}><div className="ob-grow"><strong>{row.name}</strong><small>Listed in {row.answers} of {row.totalAnswers} answers</small></div><span className="ob-pill">{row.averagePosition.toFixed(1)}</span></li>)}</ol>
+    <ol className="ob-rows">{proof.rows.map(row => <li key={row.name}><CompanyFavicon name={row.name} url={DEVELOPER_TOOLS.find(tool=>tool.name===row.name)?.websiteUrl ?? null}/><div className="ob-grow"><strong>{row.name}</strong><small>Listed in {row.answers} of {row.totalAnswers} answers</small></div><span className="ob-pill">{row.averagePosition.toFixed(1)}</span></li>)}</ol>
     <p className="ob-note">Average position in the returned list. Lower is earlier.</p>
   </div></div>;
 }

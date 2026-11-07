@@ -51,10 +51,10 @@ test("Index has one compact view selector and does not mount the private activit
   await expect(page.locator(".ranked-search-query")).toBeVisible();
   const headingSize = await page.locator("h1").evaluate(element => parseFloat(getComputedStyle(element).fontSize));
   expect(headingSize).toBeLessThanOrEqual(30);
-  const queryControl = page.getByRole("combobox", { name: "Search query", exact: true });
+  const queryControl = page.getByRole("combobox", { name: "Website comparison question", exact: true });
   await expect(queryControl).toBeVisible();
   const position = await queryControl.boundingBox();
-  expect(position!.y).toBeLessThan(testInfo.project.name === "mobile" ? 460 : 370);
+  expect(position!.y).toBeLessThan(testInfo.project.name === "mobile" ? 650 : 440);
   const htmlButton = page.getByRole("button", { name: "HTML page checks", exact: true });
   await htmlButton.focus();
   await page.keyboard.press("Enter");

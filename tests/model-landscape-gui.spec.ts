@@ -6,6 +6,7 @@ test('website averages show all sites, model details and URL filters without spe
  await page.goto('/leaderboard');
  const chart=page.getByRole('region',{name:'Which websites get recommended?'});
  await expect(chart).toBeVisible();
+ await chart.getByRole('button',{name:'Show chart',exact:true}).click();
  const summary=chart.getByRole('img',{name:/^Top websites by appearance rate/});
  await expect(summary).toBeVisible();
  const summaryTop=await summary.evaluate(element=>element.getBoundingClientRect().top);
@@ -21,6 +22,7 @@ test('website averages show all sites, model details and URL filters without spe
  await expect(chart).not.toContainText('token cost');
  await chart.getByLabel('Website comparison audience').selectOption('Shops & brands');
  await expect(page).toHaveURL(/landscapeAudience=Shops/);
+ await chart.getByText('Full comparison table',{exact:true}).click();
  await chart.getByLabel('Find a website').fill('ikea');
  await expect(chart.locator('tbody tr')).toHaveCount(1);
  await chart.getByLabel('Find a website').fill('');

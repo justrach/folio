@@ -4,29 +4,29 @@
   --folio-font-body: var(--font-dm-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
   --folio-font-display: var(--font-dm-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
   --folio-font-mono: var(--font-dm-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
-  --folio-ink: #171717;
-  --folio-charcoal: #292929;
-  --folio-text-secondary: #4b4b4b;
-  --folio-text-muted: #686868;
-  --folio-text-faint: #858585;
-  --folio-edge-strong: #b5b5b5;
-  --folio-edge: #d1d1d1;
-  --folio-surface-muted: #e6e6e8;
-  --folio-canvas: #f3f4f5;
-  --folio-surface: #ffffff;
-  --folio-white: #ffffff;
-  --folio-on-accent: #ffffff;
-  --folio-inverse-surface: #202020;
-  --folio-inverse-text: #ffffff;
+  --folio-ink: #233d32;
+  --folio-charcoal: #233d32;
+  --folio-text-secondary: #58665a;
+  --folio-text-muted: #647063;
+  --folio-text-faint: #647063;
+  --folio-edge-strong: #aab4a3;
+  --folio-edge: #dce0d4;
+  --folio-surface-muted: #eaece3;
+  --folio-canvas: #f7f5ee;
+  --folio-surface: #fffef9;
+  --folio-white: #fffef9;
+  --folio-on-accent: #fffef9;
+  --folio-inverse-surface: #233d32;
+  --folio-inverse-text: #fffef9;
   --folio-shadow: #161616;
-  --folio-accent: #d83f00;
-  --folio-accent-bright: #fa4e00;
-  --folio-accent-hover: #b93400;
-  --folio-accent-soft: #ffe2d4;
-  --folio-accent-edge: #f0b79c;
-  --folio-focus: #b93400;
-  --folio-danger: #ab2f00;
-  --folio-success: #292929;
+  --folio-accent: #345d46;
+  --folio-accent-bright: #4f7959;
+  --folio-accent-hover: #274b36;
+  --folio-accent-soft: #e6ecdf;
+  --folio-accent-edge: #b8c8ae;
+  --folio-focus: #3c6d4b;
+  --folio-danger: #a43a28;
+  --folio-success: #345d46;
   --folio-radius-control: 8px;
   --folio-radius-card: 14px;
   --folio-control-height: 44px;
@@ -57,34 +57,32 @@
   --serif: var(--folio-font-display);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
+html[data-folio-theme="dark"] {
     color-scheme: dark;
-    --folio-ink: #f5f5f5;
-    --folio-charcoal: #ebebeb;
-    --folio-text-secondary: #d1d1d1;
-    --folio-text-muted: #b3b3b3;
-    --folio-text-faint: #939393;
-    --folio-edge-strong: #646464;
-    --folio-edge: #454545;
-    --folio-surface-muted: #343434;
-    --folio-canvas: #171717;
-    --folio-surface: #242424;
-    --folio-white: #ffffff;
-    --folio-on-accent: #171717;
-    --folio-inverse-surface: #111111;
-    --folio-inverse-text: #ffffff;
+    --folio-ink: #e5eade;
+    --folio-charcoal: #e5eade;
+    --folio-text-secondary: #bac5b3;
+    --folio-text-muted: #a6b49f;
+    --folio-text-faint: #a6b49f;
+    --folio-edge-strong: #647260;
+    --folio-edge: #354339;
+    --folio-surface-muted: #29362c;
+    --folio-canvas: #171d19;
+    --folio-surface: #1e2721;
+    --folio-white: #1e2721;
+    --folio-on-accent: #18231b;
+    --folio-inverse-surface: #d9e4cf;
+    --folio-inverse-text: #18231b;
     --folio-shadow: #050505;
-    --folio-accent: #ff6a27;
-    --folio-accent-bright: #ff6a27;
-    --folio-accent-hover: #ff8248;
-    --folio-accent-soft: #512714;
-    --folio-accent-edge: #a94416;
-    --folio-focus: #ff9b70;
-    --folio-danger: #ff8757;
-    --folio-success: #f5f5f5;
+    --folio-accent: #b7d49f;
+    --folio-accent-bright: #c7e0b2;
+    --folio-accent-hover: #c7e0b2;
+    --folio-accent-soft: #2d3d2d;
+    --folio-accent-edge: #536d48;
+    --folio-focus: #b7d49f;
+    --folio-danger: #f1ac93;
+    --folio-success: #b7d49f;
   }
-}
 
 html { font-family: var(--folio-font-body); }
 body { background: var(--folio-canvas); color: var(--folio-ink); font-family: var(--folio-font-body); }
@@ -124,3 +122,43 @@ body { background: var(--folio-canvas); color: var(--folio-ink); font-family: va
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+/* Surface-specific artwork and setup tokens; the shared palette remains authoritative. */
+.landing {
+  --folio-canvas: #f7f4eb;
+  --folio-surface: #faf8f2;
+  --folio-ink: #203b30;
+  --folio-text-secondary: #5b645a;
+  --folio-text-muted: #5b645a;
+  --folio-surface-muted: #e9ece4;
+  --folio-charcoal: #203b30;
+  --folio-edge: #203b3029;
+  --folio-edge-strong: #203b3059;
+  --folio-inverse-surface: #203b30;
+  --folio-inverse-text: #faf8f2;
+  --folio-accent: #203b30;
+  --folio-accent-text: #203b30;
+  --folio-on-accent: #faf8f2;
+  --folio-accent-soft: #203b3010;
+  --folio-accent-edge: #203b3040;
+}
+.ob {
+  --folio-canvas: #f7f4eb;
+  --folio-surface: #fffef9;
+  --folio-surface-muted: #e9ece3;
+  --folio-ink: #233d32;
+  --folio-charcoal: #233d32;
+  --folio-text-secondary: #58665a;
+  --folio-text-muted: #647063;
+  --folio-text-faint: #73806f;
+  --folio-edge: #dce0d4;
+  --folio-edge-strong: #aab4a3;
+  --folio-accent: #345d46;
+  --folio-accent-hover: #274b36;
+  --folio-on-accent: #fffef9;
+  --folio-accent-soft: #e6ecdf;
+  --folio-accent-edge: #b8c8ae;
+  --folio-focus: #3c6d4b;
+  --folio-danger: #a43a28;
+}
+:root { --folio-art-paper: #e8e4d8; --folio-art-sage: #dfe5d8; --folio-art-sand: #ead8c4; --folio-art-rust: #85502e; --folio-brand-tile: #fff; --folio-brand-ink: #203b30; --folio-overlay: #14201866; --folio-dialog-shadow: #0003; }

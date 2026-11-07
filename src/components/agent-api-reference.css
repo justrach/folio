@@ -3,3 +3,44 @@
 @media(max-width:760px){.api-docs-header{padding:17px 20px;gap:14px}.api-wordmark{font-size:34px}.api-docs-header>span{padding-left:14px;font-size:12px}.api-docs-header>a:last-child{font-size:11px}.api-docs-layout{display:block}.api-docs-nav{position:static;display:flex;flex-direction:row;overflow-x:auto;gap:7px;padding:15px 20px;max-height:none;border-bottom:1px solid var(--line)}.api-docs-nav a{white-space:nowrap;flex-shrink:0;padding:8px}.api-docs-nav>strong{display:none}.api-docs-main{padding:28px 20px;border:0}.api-docs-main section{margin-bottom:30px;padding-bottom:27px}.api-docs h1{font-size:35px}.api-docs h2{font-size:27px}.api-docs .api-lead{font-size:15px}.api-docs p{font-size:13px}.api-doc-links{gap:15px;font-size:12px}.api-flow{padding:20px 15px}.api-flow-branches{gap:10px}.api-docs dl>div{grid-template-columns:1fr;gap:6px}.api-parameters td:first-child{width:125px}.api-parameters td{padding:12px 5px}.api-key-fields{grid-template-columns:1fr}.api-new-token>div{flex-direction:column}.api-key-list article{align-items:flex-start}.api-key-list strong,.api-key-list code{display:block}.api-endpoint-heading code{font-size:11px}}
 
 .api-docs .api-parameters th,.api-docs .api-parameters td{font-size:13px;line-height:1.65;letter-spacing:normal;text-transform:none;color:var(--ink,var(--folio-ink))}
+
+/* Shared Folio identity, with a reading-first documentation layout. */
+.api-docs { background: var(--folio-canvas); color: var(--folio-ink); font-family: var(--folio-font-body); font-size: 15px; }
+.api-docs-header { min-height: 76px; padding: 16px 32px; background: var(--folio-canvas); gap: 20px; }
+.api-docs-header .api-wordmark { color: var(--folio-ink); font: 700 30px/1 var(--folio-font-display); letter-spacing: -.04em; }
+.api-docs-header > span { color: var(--folio-text-secondary); font-size: 13px; }
+.api-docs-header .api-workspace-link { display: inline-flex; gap: 7px; align-items: center; margin-left: auto; font-size: 13px; color: var(--folio-ink); text-decoration: none; }
+.api-docs .dashboard-appearance { display: inline-flex; gap: 7px; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; padding: 8px; border: 0; border-radius: 8px; background: transparent; color: var(--folio-text-secondary); font: 12px var(--folio-font-body); cursor: pointer; }
+.api-docs .dashboard-appearance:hover { background: var(--folio-surface-muted); }
+.api-docs-layout { grid-template-columns: 232px minmax(0, 1fr); max-width: 1440px; }
+.api-docs-nav { padding: 28px 16px; gap: 4px; }
+.api-docs-nav a { color: var(--folio-text-secondary); padding: 9px 10px; border-radius: 7px; font-size: 12px; min-height: 36px; }
+.api-docs-nav a:hover { background: var(--folio-accent-soft); color: var(--folio-ink); }
+.api-docs-nav a[aria-current=true] { background: var(--folio-accent-soft); }
+.api-docs-main { padding: 36px 40px 64px; }
+.api-docs h1 { font: 500 30px/1.25 var(--folio-font-display); letter-spacing: -.03em; margin-bottom: 14px; }
+.api-docs h2 { font: 500 23px/1.35 var(--folio-font-display); letter-spacing: -.02em; }
+.api-docs .api-lead { font-size: 16px; line-height: 1.75; max-width: 65ch; }
+.api-docs p { max-width: 75ch; line-height: 1.75; }
+.api-docs-main section { margin-bottom: 34px; padding-bottom: 28px; }
+.api-doc-links { gap: 12px; margin-block: 20px; }
+.api-doc-links a { background: var(--folio-surface); border: 1px solid var(--folio-edge); padding: 8px 12px; border-radius: 7px; color: var(--folio-ink); text-decoration: none; font-size: 12px; }
+.api-example-grid > div, .api-flow { border-radius: 10px; overflow: hidden; background: var(--folio-surface); }
+.api-docs pre { background: var(--folio-surface); font-family: var(--folio-font-mono); }
+.api-docs code { font-family: var(--folio-font-mono); }
+.api-code-heading { background: var(--folio-surface-muted); padding: 10px 14px; }
+.api-code-heading :is(select, button) { color: var(--folio-ink); }
+.api-docs .api-method { display: inline-flex; align-items: center; justify-content: center; min-width: 34px; border-radius: 4px; background: var(--folio-accent-soft); color: var(--folio-accent-text, var(--folio-accent)); padding: 3px 5px; }
+.api-docs .api-method.post { background: var(--folio-surface-muted); color: var(--folio-ink); }
+@media (max-width: 760px) {
+  .api-docs-layout { grid-template-columns: 1fr; }
+  .api-docs-header { padding: 14px 18px; gap: 12px; flex-wrap: wrap; }
+  .api-docs-header > span { padding-left: 12px; }
+  .api-docs-header .api-workspace-link { font-size: 11px; }
+  .api-docs .dashboard-appearance span { display: none; }
+  .api-docs-nav { position: static; display: flex; flex-direction: row; flex-wrap: wrap; max-height: 160px; overflow: auto; padding: 12px; border-bottom: 1px solid var(--folio-edge); }
+  .api-docs-nav > strong { width: 100%; padding-top: 12px; }
+  .api-docs-main { border-left: 0; padding: 26px 20px 50px; }
+  .api-docs h1 { font-size: 27px; }
+  .api-example-grid { grid-template-columns: 1fr; }
+}

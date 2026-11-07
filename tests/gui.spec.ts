@@ -105,7 +105,7 @@ function trackRuntimeErrors(page: Page) {
   return errors;
 }
 
-test("landing opens the start flow from a real result preview", async ({ page }, testInfo) => {
+test("landing opens the start flow from the sparse hero", async ({ page }, testInfo) => {
   const runtimeErrors = trackRuntimeErrors(page);
   const writes: string[] = [];
   await page.route("**/api/**", route => {
@@ -114,9 +114,7 @@ test("landing opens the start flow from a real result preview", async ({ page },
   });
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("See which competitors AI recommends.");
-  const preview = page.getByRole("complementary", { name: "Real recommendation preview" });
-  await expect(preview).toBeVisible();
-  await expect(preview.getByRole("listitem")).toHaveCount(4);
+  await expect(page.getByRole("img", { name: /sculptural dune/ })).toBeVisible();
   await noPageOverflow(page);
   await screenshot(page, testInfo, "landing");
   await page.locator('.landing-hero a[href="/start"]').click();

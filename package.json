@@ -41,6 +41,7 @@
     "@tailwindcss/postcss": "^4.3.3",
     "better-auth": "latest",
     "clsx": "^2.1.1",
+    "cuelume": "0.2.8",
     "drizzle-orm": "latest",
     "jszip": "^3.10.1",
     "lucide-react": "latest",

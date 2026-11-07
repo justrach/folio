@@ -8,6 +8,7 @@ import {
   PUBLIC_SEARCH_OBSERVATIONS,
   latestPublicSearchObservation,
 } from "@/lib/public-search-rankings";
+import { RecordedQuestionPicker } from "./recorded-question-picker";
 import { RecordedRanking } from "./recorded-ranking";
 import "./ranked-search-table.css";
 
@@ -32,7 +33,7 @@ function RankedSearchTableContent({ compact }: { compact: boolean }) {
   return <section className={`ranked-search${compact ? " ranked-search--compact" : ""}`} aria-label="Public search rankings">
     {PUBLIC_SEARCH_QUERIES.length > 0 ? <>
       <div className="ranked-search-controls">
-        <label><span>Model</span><select aria-label="Index model" value={model??""} onChange={event=>{const next=new URLSearchParams(params.toString());if(event.target.value)next.set("model",event.target.value);else next.delete("model");window.history.pushState(null,"",`${window.location.pathname}?${next}`)}}><option value="">All models · latest answer</option>{model&&!models.includes(model)&&<option value={model}>{model} · unmeasured</option>}{models.map(m=><option key={m} value={m}>{m}</option>)}</select></label>
+        <label><span>Model</span><select aria-label="Index model" value={model??""} onChange={event=>{const next=new URLSearchParams(params.toString());if(event.target.value)next.set("model",event.target.value);else next.delete("model");window.history.pushState(null,"",`${window.location.pathname}?${next}`)}}><option value="">All models</option>{model&&!models.includes(model)&&<option value={model}>{model} · unmeasured</option>}{models.map(m=><option key={m} value={m}>{m}</option>)}</select></label>
         <label htmlFor={`${controlId}-category`}><span>Category</span>
           <select id={`${controlId}-category`} value={category} onChange={event => {
             const nextCategory = event.target.value;
@@ -41,14 +42,9 @@ function RankedSearchTableContent({ compact }: { compact: boolean }) {
             {categories.map(item => <option key={item}>{item}</option>)}
           </select>
         </label>
-        <label htmlFor={`${controlId}-query`}><span>Search query</span>
-          <select id={`${controlId}-query`} title={query?.query} aria-describedby={`${controlId}-question`} value={query?.id ?? ""} onChange={event => selectQuery(event.target.value)}>
-            {queries.map(item => <option key={item.id} value={item.id}>{item.query}</option>)}
-          </select>
-        </label>
       </div>
+      {query && <RecordedQuestionPicker questions={queries} selected={query} onSelect={selectQuery}/>}
       {query && <div key={`${query.id}-${observation?.id ?? "pending"}`}>
-        <p className="ranked-search-query" id={`${controlId}-question`}>{query.query}</p>
         <p className="ranked-search-context">{query.locale} · Language: {query.language}</p>
         {observation ? <RecordedRanking query={query} observation={observation} /> : <div className="ranked-search-empty" role="status">
           <h3>No recorded ranking yet.</h3>

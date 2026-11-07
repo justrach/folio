@@ -89,7 +89,7 @@
 .ob-question-scroll:focus-visible{outline:3px solid var(--folio-focus);outline-offset:3px;border-radius:4px}
 .ob-question-scroll .ob-check{position:relative;overflow-wrap:anywhere}
 .ob-question-window[data-more-below="true"]::after{content:"";position:absolute;inset:auto 0 0;height:32px;pointer-events:none;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);background:linear-gradient(transparent,color-mix(in srgb,var(--folio-surface) 75%,transparent));mask-image:linear-gradient(transparent,var(--folio-ink) 55%);-webkit-mask-image:linear-gradient(transparent,var(--folio-ink) 55%)}
-.ob p.ob-quote{margin-top:12px!important;padding:14px 18px;border-left:3px solid var(--folio-accent);background:var(--folio-accent-soft);border-radius:0 10px 10px 0;font-size:15.5px;line-height:1.55;overflow-wrap:anywhere}
+.ob p.ob-quote{margin-top:12px!important;padding:14px 18px;border:1px solid var(--folio-edge);background:var(--folio-accent-soft);border-radius:10px;font-size:15.5px;line-height:1.55;overflow-wrap:anywhere}
 .ob p.ob-quote.empty{border:1.5px dashed var(--folio-edge-strong);border-radius:10px;background:transparent;color:var(--folio-text-muted);font-size:14px}
 /* Named steps; the compact "Step n of 7" bar takes over below 1180px. */
 .ob-steps{margin-left:auto}
@@ -212,12 +212,12 @@
 .ob-btn.primary:hover:not(:disabled) svg{transform:translateX(3px)}
 .ob-box{transition:background-color 150ms ease-out,border-color 150ms ease-out,transform 120ms ease-out}
 .ob-check:active .ob-box{transform:scale(.9)}
-.ob-check input:checked + .ob-box svg{animation:ob-pop 260ms var(--ob-spring) both}
+.ob-check input:checked + .ob-box svg{animation:ob-pop 260ms var(--ob-ease-out) both}
 .ob-chips button,.ob-packs button{transition:border-color 150ms ease-out,transform 120ms ease-out}
 .ob-chips button:active,.ob-packs button:active{transform:scale(.98)}
 /* Stepper: dots fill and connectors draw as steps complete. */
 .ob-step-dot{transition:background-color 220ms ease-out,border-color 220ms ease-out,color 220ms ease-out}
-.ob-steps li.done .ob-step-dot svg{animation:ob-pop 300ms var(--ob-spring) both}
+.ob-steps li.done .ob-step-dot svg{animation:ob-pop 300ms var(--ob-ease-out) both}
 .ob-steps li + li::before{transition:background-color 300ms ease-out}
 .ob-bars span{transition:background-color 300ms ease-out}
 .ob p.ob-quote{transition:background-color 200ms ease-out,border-color 200ms ease-out,color 200ms ease-out}
@@ -253,3 +253,70 @@
 .ob-slot{display:inline-block;padding:0 7px;margin:0 1px;border:1.5px dashed var(--folio-edge-strong);border-radius:6px;color:var(--folio-text-muted);font-size:.86em;line-height:1.5;white-space:nowrap}
 /* The field wrapper draws the focus ring; the global input ring would be clipped into two stray bars. */
 .ob .ob-input input:focus-visible{outline:none}
+
+/* The setup shares the calm landing palette; the form remains the primary task. */
+.ob {
+  color-scheme: light; --folio-radius-card: 12px; --folio-radius-control: 9px;
+}
+.ob ::selection { background: var(--folio-accent); color: var(--folio-on-accent); }
+.ob .ob-top { height: 80px; max-width: 1280px; margin-inline: auto; padding-inline: 48px; border: 0; }
+.ob .ob-wordmark { font-weight: 700; letter-spacing: -.04em; font-size: 30px; }
+.ob .ob-wordmark .dot { color: var(--folio-ink); }
+.ob .ob-steps { display: none; }
+.ob .ob-steps + .ob-progress { display: flex; gap: 18px; font-size: 12px; font-weight: 400; }
+.ob .ob-bars { width: 168px; gap: 5px; }
+.ob .ob-bars span { height: 3px; }
+.ob .ob-main { max-width: 1180px; min-height: calc(100dvh - 80px); align-items: start; gap: 100px; padding: 78px 48px 60px; }
+.ob .ob-main[data-step="1"] { align-items: center; padding-top: 35px; }
+.ob .ob-main > .ob-copy, .ob .ob-main > .ob-side { animation: none; }
+.ob h1 { font-size: 38px; font-weight: 500; letter-spacing: -.035em; line-height: 1.12; max-width: 490px; }
+.ob .ob-eyebrow { font-size: 12px; font-weight: 500; color: var(--folio-text-secondary); margin-bottom: 18px !important; }
+.ob .ob-lede { font-size: 16px; line-height: 1.7; margin-top: 22px !important; }
+.ob .ob-field { font-size: 13px; font-weight: 500; margin-top: 28px; }
+.ob .ob-input { min-height: 54px; border-color: var(--folio-edge-strong); background: var(--folio-surface); }
+.ob .ob-input input { font-size: 16px; height: 52px; }
+.ob .ob-input span { font-size: 16px; }
+.ob .ob-input:focus-within { outline-width: 2px; }
+.ob .ob-btn { min-height: 48px; font-size: 14px; font-weight: 500; padding-inline: 20px; }
+.ob .ob-actions { gap: 14px 20px; margin-top: 22px; }
+.ob .ob-quiet { font-size: 13px; }
+.ob .ob-trust { font-size: 12px; line-height: 1.7; margin-top: 18px; align-items: flex-start; }
+.ob .ob-backdrop { min-height: 0; padding: 0; display: flex; flex-direction: column; gap: 18px; overflow: visible; }
+.ob .ob-backdrop::before { display: none; }
+.ob .workspace-empty-art { display: block; width: 100%; max-width: none; height: auto; aspect-ratio: 3/1; object-fit: cover; border-radius: 10px; margin: 0; }
+.ob .ob-backdrop .ob-card { padding: 24px; border-radius: 12px; }
+.ob .ob-card h2 { font-size: 19px; font-weight: 500; }
+.ob .ob-card-head { font-size: 11px; margin-bottom: 16px; }
+.ob .ob-rows li { padding-block: 13px; gap: 12px; }
+.ob .ob-rows strong { font-size: 14px; font-weight: 500; }
+.ob .ob-rows small { font-size: 11px; margin-top: 3px; }
+.ob .ob-pill { background: var(--folio-surface-muted); border: 0; color: var(--folio-ink); font-size: 13px; font-weight: 500; border-radius: 7px; }
+.ob .ob-note { font-size: 11px; line-height: 1.65; }
+.ob .ob-backdrop .ob-hint { font-size: 11px; }
+.ob .ob-mark { width: 23px; height: 23px; }
+@media (max-width: 900px) {
+  .ob .ob-main { gap: 40px; padding: 55px 32px; }
+  .ob .ob-top { padding-inline: 32px; }
+  .ob h1 { font-size: 34px; }
+}
+@media (max-width: 650px) {
+  .ob .ob-top { height: 72px; padding-inline: 22px; }
+  .ob .ob-progress { flex-wrap: wrap; justify-content: flex-end; gap: 6px; max-width: 150px; }
+  .ob .ob-bars { width: 112px; }
+  .ob .ob-main, .ob .ob-main[data-step="1"] { grid-template-columns: 1fr; padding: 38px 22px; gap: 24px; }
+  .ob h1 { font-size: 32px; }
+  .ob .ob-lede { font-size: 15px; }
+  .ob .ob-side { margin-top: 18px; }
+  .ob .ob-backdrop .workspace-empty-art { display: none; }
+  .ob .ob-progress-label { display: none; }
+  .ob .ob-card { padding: 22px; }
+}
+.ob .ob-back-button { display: inline-flex; min-height: 40px; align-items: center; margin: 0 0 12px; padding: 0; background: none; border: 0; font: 13px var(--folio-font-body); color: var(--folio-text-secondary); cursor: pointer; }
+.ob .ob-back-button:focus-visible { outline: 2px solid var(--folio-focus); outline-offset: 4px; }
+@media (min-width: 1181px) {
+  .ob .ob-steps { display: block; }
+  .ob .ob-steps + .ob-progress { display: none; }
+  .ob .ob-steps li { font-size: 11px; font-weight: 500; }
+  .ob .ob-steps .ob-step, .ob .ob-steps button { padding-inline: 4px; }
+  .ob .ob-steps li + li::before { width: 10px; }
+}

@@ -1,3 +1,4 @@
+import { FolioAppearance } from "@/components/folio-appearance";
 import type { Metadata } from "next";
 import { DM_Mono, DM_Sans } from "next/font/google";
 import "./globals.css";
@@ -44,7 +45,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" data-scroll-behavior="smooth" className={`${dmSans.variable} ${dmMono.variable}`}>
-      <body>{children}</body>
+      <body><FolioAppearance />{children}</body>
     </html>
   );
 }

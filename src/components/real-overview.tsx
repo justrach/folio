@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { WorkspaceEmptyArt } from "./workspace-empty-art";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ArrowRight, ChevronDown, LockKeyhole, RefreshCw } from "lucide-react";
@@ -50,7 +51,7 @@ export function workspaceOverviewHref(query: Pick<URLSearchParams, "getAll">): s
 export function RealOverview({ownerId,scans,scansLoading,scansError,onRetryScans,onOpenScan}:{ownerId:string|null;scans:Scan[];scansLoading:boolean;scansError:string;onRetryScans:()=>void;onOpenScan:(scan:Scan)=>void}) {
   const query = useSearchParams();
   const signInHref = `/login?next=${encodeURIComponent(workspaceOverviewHref(query))}`;
-  if(!ownerId)return <section className="panel real-overview-signin"><LockKeyhole size={23}/><h2>Sign in to see your website’s results</h2><p>Your saved search observations, website checks and reports stay private to your account.</p><Link className="button primary" href={signInHref}>Sign in to your workspace <ArrowRight size={14}/></Link></section>;
+  if(!ownerId)return <section className="panel real-overview-signin"><WorkspaceEmptyArt/><LockKeyhole size={23}/><h2>Sign in to see your website’s results</h2><p>Your saved search observations, website checks and reports stay private to your account.</p><Link className="button primary" href={signInHref}>Sign in to your workspace <ArrowRight size={14}/></Link></section>;
   return <OwnedOverview key={ownerId} scans={scans} scansLoading={scansLoading} scansError={scansError} onRetryScans={onRetryScans} onOpenScan={onOpenScan}/>;
 }
 
@@ -157,7 +158,7 @@ function OwnedOverview({scans,scansLoading,scansError,onRetryScans,onOpenScan}:O
     <div className="real-overview-select"><label>Selected website<select aria-label="Selected website" value={selected?.id??""} disabled={data.sites.state==="loading"} onChange={event=>select(event.target.value)}><option value="" disabled>Choose your website</option>{data.sites.items.map(site=><option key={site.id} value={site.id}>{site.name||site.url} · {site.url}</option>)}</select></label><button className="button secondary" onClick={()=>setRefresh(value=>value+1)} aria-label="Refresh saved overview"><RefreshCw size={14}/>Refresh saved data</button></div>
     {data.sites.state==="loading"&&<p role="status">Loading your saved websites…</p>}
     {data.sites.state==="error"&&<p role="alert">Your saved websites could not be loaded. Refresh to try again.</p>}
-    {data.sites.state==="ready"&&!selected&&<section className="panel real-overview-empty"><h2>{data.sites.items.length?"Choose an owned website":"Add your first website"}</h2><p>{data.sites.items.length?"This website selection is unavailable for the current account.":"Your overview starts with a website saved in your workspace."}</p><Link className="button primary" href="/websites">Open My websites<ArrowRight size={14}/></Link></section>}
+    {data.sites.state==="ready"&&!selected&&<section className="panel real-overview-empty"><WorkspaceEmptyArt/><h2>{data.sites.items.length?"Choose an owned website":"Add your first website"}</h2><p>{data.sites.items.length?"This website selection is unavailable for the current account.":"Your overview starts with a website saved in your workspace."}</p><Link className="button primary" href="/websites">Open My websites<ArrowRight size={14}/></Link></section>}
     {selected&&<>
       <section className="panel real-search-overview" aria-label="Saved search overview"><header><div><h2>Search observations</h2><p>{selected.url}</p></div><Link className="button primary" href={`/benchmarks?website=${encodeURIComponent(selected.id)}`}>Open search questions<ArrowRight size={14}/></Link></header>
         <div className="real-search-scopes" aria-label="Search scope"><button type="button" aria-pressed={scope==="open-web"} onClick={()=>select(selected.id,"open-web")}>Open-web observations</button><button type="button" aria-pressed={scope==="reviewed-domains"} onClick={()=>select(selected.id,"reviewed-domains")}>Reviewed documentation</button></div>

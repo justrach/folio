@@ -37,11 +37,14 @@ test("public rankings preserve order and sources across category boundaries and 
   await expect(report).toBeVisible();
   await expect(page.getByRole("region", { name: "Folio website report", exact: true })).toBeHidden();
   const category = report.getByRole("combobox", { name: "Category", exact: true });
-  const query = report.getByRole("combobox", { name: "Search query", exact: true });
+  const query = report.getByRole("button", { name: "Change question", exact: true });
 
   for (const item of browserQueries) {
     await category.selectOption(item.category);
-    await query.selectOption(item.id);
+    await query.click();
+    const picker = page.getByRole("dialog", { name: "Choose a question" });
+    await picker.getByRole("searchbox", { name: "Filter questions" }).fill(item.query);
+    await picker.locator(`[data-question-id="${item.id}"]`).click();
     await expect(report).toContainText(item.query);
     const observed = latestPublicSearchObservation(item.id);
     if (!observed) {
@@ -82,12 +85,18 @@ test("ranking categories constrain query selection and HTML checks remain a sepa
   await page.goto("/");
   const report = rankings(page);
   const category = report.getByRole("combobox", { name: "Category", exact: true });
-  const query = report.getByRole("combobox", { name: "Search query", exact: true });
+  const query = report.getByRole("button", { name: "Change question", exact: true });
   for (const categoryName of categories) {
     await category.selectOption(categoryName);
     const expected = PUBLIC_SEARCH_QUERIES.filter(candidate => candidate.category === categoryName);
-    await expect(query.getByRole("option")).toHaveCount(expected.length);
-    await expect(query).toHaveValue(expected[0].id);
+    await expect(query).toContainText(expected[0].query);
+    await query.click();
+    const picker = page.getByRole("dialog", { name: "Choose a question" });
+    await expect(picker.getByRole("status")).toContainText(`${expected.length} matching`);
+    await expect(picker.locator("li button")).toHaveCount(Math.min(expected.length, 100));
+    await page.keyboard.press("Escape");
+    await expect(picker).not.toBeVisible();
+    await expect(query).toBeFocused();
     await expect(report).toContainText(expected[0].query);
   }
   const technicalToggle = page.locator(".landing-technical-report > summary");
@@ -99,5 +108,40 @@ test("ranking categories constrain query selection and HTML checks remain a sepa
   await expect(technical).toContainText("/ 100");
   await expect(report).not.toContainText("/ 100");
   await noOverflow(page);
+  readOnly();
+});
+
+test("selected questions wrap once and the searchable picker restores focus and URL history", async ({ page }) => {
+  const readOnly = await browseOnly(page);
+  await page.goto("/leaderboard");
+  const report = rankings(page);
+  const trigger = report.getByRole("button", { name: "Change question", exact: true });
+  const initial = await report.locator(".ranked-search-query").innerText();
+  for (const width of [1280, 640, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    const bounds = await report.locator(".ranked-search-query").evaluate(element => ({
+      width: element.clientWidth, scroll: element.scrollWidth,
+      whiteSpace: getComputedStyle(element).whiteSpace, overflow: getComputedStyle(element).overflow,
+    }));
+    expect(bounds.scroll).toBeLessThanOrEqual(bounds.width + 1);
+    expect(bounds.whiteSpace).toBe("normal");
+    expect(bounds.overflow).toBe("visible");
+    await expect(report.locator(".ranked-search-query")).toHaveCount(1);
+    await noOverflow(page);
+  }
+  await trigger.focus(); await page.keyboard.press("Enter");
+  const picker = page.getByRole("dialog", { name: "Choose a question" });
+  await expect(picker.getByRole("searchbox")).toBeFocused();
+  await picker.getByRole("searchbox").fill("no matching question xyz");
+  await expect(picker).toContainText("No matching questions.");
+  await page.keyboard.press("Escape"); await expect(trigger).toBeFocused();
+  await trigger.click();
+  const other = PUBLIC_SEARCH_QUERIES.find(item => item.query !== initial && item.category === PUBLIC_SEARCH_QUERIES.find(item => item.query === initial)?.category)!;
+  await picker.getByRole("searchbox").fill(other.query);
+  await picker.locator(`[data-question-id="${other.id}"]`).click();
+  await expect(trigger).toContainText(other.query);
+  await expect(page).toHaveURL(new RegExp(`query=${other.id}`));
+  await page.reload(); await expect(trigger).toContainText(other.query);
+  await page.goBack(); await expect(trigger).toContainText(initial);
   readOnly();
 });

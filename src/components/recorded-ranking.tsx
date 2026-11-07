@@ -1,4 +1,5 @@
 import React from "react";
+import { CompanyFavicon } from "./company-favicon";
 import type { PublicSearchObservation, PublicSearchQuery, PublicSearchRecommendation } from "@/lib/public-search-rankings";
 
 const dateFormat = new Intl.DateTimeFormat("en-GB", {
@@ -52,9 +53,12 @@ function RecommendationRow({ recommendation, citations }: { recommendation: Publ
     <span className="ranked-search-position" aria-label={`Position ${recommendation.position}`}>{recommendation.position}</span>
     <div className="ranked-search-row-content">
       <div className="ranked-search-website">
-        {recommendation.url ? <a className="ranked-search-name" href={recommendation.url} target="_blank" rel="noreferrer">{recommendation.name}</a>
-          : <span className="ranked-search-name">{recommendation.name}</span>}
-        <p className="ranked-search-domain">{recommendation.url ? sourceLabel(recommendation.url) : "Website URL not returned"}</p>
+        <CompanyFavicon url={recommendation.url} name={recommendation.name} />
+        <div className="ranked-search-identity">
+          {recommendation.url ? <a className="ranked-search-name" href={recommendation.url} target="_blank" rel="noreferrer">{recommendation.name}</a>
+            : <span className="ranked-search-name">{recommendation.name}</span>}
+          <p className="ranked-search-domain">{recommendation.url ? sourceLabel(recommendation.url) : "Website URL not returned"}</p>
+        </div>
       </div>
       <div className="ranked-search-row-evidence">
       {sourceUrls.length > 0 ? <div className="ranked-search-citations"><span>Sources:</span><ul>

@@ -1,6 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { DashboardAppearance, DashboardNavigation } from "./dashboard-appearance";
+import { LabelInput } from "./bencho/label-input/LabelInput";
+import "./bencho/label-input/LabelInput.css";
+import "./dashboard-refresh.css";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -78,6 +82,7 @@ import { WorkspaceLoader } from "./workspace-loader";
 
 type Modal = "scan" | "methodology" | "notifications" | "search" | null;
 const navigation = [
+  { label: "My workspace", href: "/overview?view=workspace", section: "overview", icon: LayoutDashboard },
   {
     label: "My websites",
     href: "/websites",
@@ -128,19 +133,19 @@ const titles: Record<
   },
   visibility: {
     eyebrow: "BE PART OF THE ANSWER",
-    title: "Be the name that comes up.",
+    title: "AI visibility",
     description:
       "Explore the questions, answers, and sources that shape discovery.",
   },
   seo: {
     eyebrow: "BUILT TO BE FOUND",
-    title: "A stronger foundation for discovery.",
+    title: "SEO health",
     description:
       "Understand what search engines and readers can find on your page.",
   },
   patches: {
     eyebrow: "SMALL CHANGES. BETTER ANSWERS.",
-    title: "From insight to improvement.",
+    title: "Patch studio",
     description: "Review a suggestion. Make it yours. Publish on your terms.",
   },
   leaderboard: {
@@ -158,7 +163,7 @@ const titles: Record<
   benchmarks: { eyebrow: "YOUR RESEARCH QUESTIONS", title: "Search rankings", description: "See where your website appears in recorded AI answers and which sites appear alongside it." },
   agents: {
     eyebrow: "MEET YOUR RESEARCH TEAM",
-    title: "A little intelligence. A lot of clarity.",
+    title: "Your agents",
     description:
       "Follow your evaluations, their progress, and the evidence they return.",
   },
@@ -263,19 +268,20 @@ function PublicOverviewShell({ section = "overview" }: { section?: "overview" | 
     window.addEventListener("keydown", close);
     return () => window.removeEventListener("keydown", close);
   }, []);
-  return <div className="app-shell public-overview-shell">
+  return <div className="app-shell folio-workspace public-overview-shell" data-nav-compact="true">
     {mobileOpen && <button className="sidebar-scrim" onClick={() => setMobileOpen(false)} aria-label="Close navigation" />}
     <aside className={`sidebar ${mobileOpen ? "open" : ""}`}>
       <Link href="/" className="wordmark" aria-label="Folio home"><FolioMark /><span>folio<span className="wordmark-period">.</span></span></Link>
       <span className="nav-caption">PUBLIC</span>
       <nav aria-label="Public navigation">
-        <Link href="/overview" className={`nav-link ${!index ? "active" : ""}`} aria-current={!index ? "page" : undefined} onClick={() => setMobileOpen(false)}><LayoutDashboard size={17}/><span>Public dashboard</span></Link>
-        <Link href="/leaderboard" className={`nav-link ${index ? "active" : ""}`} aria-current={index ? "page" : undefined} onClick={() => setMobileOpen(false)}><Trophy size={17}/><span>The Folio Index</span></Link>
-        <Link href="/docs/api" className="nav-link" onClick={() => setMobileOpen(false)}><Code2 size={17}/><span>API reference</span></Link>
+        <Link href="/overview" title="Public dashboard" className={`nav-link ${!index ? "active" : ""}`} aria-current={!index ? "page" : undefined} onClick={() => setMobileOpen(false)}><LayoutDashboard size={17}/><span>Public dashboard</span></Link>
+        <Link href="/leaderboard" title="The Folio Index" className={`nav-link ${index ? "active" : ""}`} aria-current={index ? "page" : undefined} onClick={() => setMobileOpen(false)}><Trophy size={17}/><span>The Folio Index</span></Link>
+        <Link href="/docs/api" title="API reference" className="nav-link" onClick={() => setMobileOpen(false)}><Code2 size={17}/><span>API reference</span></Link>
       </nav>
+      <div className="public-sidebar-guide"><Compass size={20} /><strong>Your website, in perspective.</strong><p>Prepare questions and keep your own evidence in a private workspace.</p><Link href="/start">Explore your website <ArrowRight size={14} /></Link></div>
     </aside>
     <div className="main-shell">
-      <header className="topbar"><div className="breadcrumb"><button className="mobile-menu icon-button" onClick={() => setMobileOpen(true)} aria-label="Open navigation"><Menu size={21}/></button><Globe2 size={15}/><span>Public benchmarks</span></div></header>
+      <header className="topbar"><div className="breadcrumb"><DashboardNavigation/><button className="mobile-menu icon-button" onClick={() => setMobileOpen(true)} aria-label="Open navigation"><Menu size={21}/></button><Globe2 size={15}/><span>Public benchmarks</span></div><div className="topbar-actions"><Link className="public-workspace-link" href="/overview?view=workspace">My workspace <ArrowUpRight size={14}/></Link><DashboardAppearance /></div></header>
       <main className={`page-content${index ? " index-page" : ""}`}>
         <div className="page-heading"><div><h1>{index ? "The Folio Index" : "Benchmark dashboard"}</h1><p>{index ? "Public search answers and website page checks." : "Recorded answers, citations and run status."}</p></div></div>
         {index ? <Leaderboard onMethod={() => setMethodOpen(true)} onNotify={setNotice} /> : <PublicBenchmarkDashboard />}
@@ -400,7 +406,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
   if (isPending) return <WorkspaceLoader />;
   const title = section === "overview" && demoRequested ? { ...titles.overview, title: "Demo report", description: "Illustrative sample data." } : titles[section] ?? titles.overview;
   return (
-    <div className="app-shell">
+    <div className="app-shell folio-workspace" data-nav-compact="true">
       {mobileOpen && (
         <button
           className="sidebar-scrim"
@@ -436,6 +442,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
           {navigation.map((item) => (
             <Link
               key={item.section}
+              title={item.label}
               href={item.href}
               onClick={() => setMobileOpen(false)}
               className={`nav-link ${section === item.section ? "active" : ""}`}
@@ -466,7 +473,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
             <Bot size={17} />
             <span>Your agents</span>
           </Link>
-          <Link href="/docs/api" className="nav-link" onClick={() => setMobileOpen(false)}>
+          <Link href="/docs/api" title="API reference" className="nav-link" onClick={() => setMobileOpen(false)}>
             <Code2 size={17} />
             <span>API reference</span>
           </Link>
@@ -507,6 +514,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
       <div className="main-shell">
         <header className="topbar">
           <div className="breadcrumb">
+            <DashboardNavigation/>
             <button
               className="mobile-menu icon-button"
               onClick={() => setMobileOpen(true)}
@@ -527,6 +535,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
             </span>
           </div>
           <div className="topbar-actions">
+            <DashboardAppearance />
             <button
               className="search-trigger"
               onClick={() => setModal("search")}
@@ -1093,15 +1102,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
           )}
           {modal === "search" && (
             <>
-              <div className="search-field">
-                <Search size={18} />
-                <input
-                  autoFocus
-                  placeholder="Search pages, tools, or reports…"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-              </div>
+              <LabelInput field="Search pages" value={search} onValueChange={setSearch} autoFocus placeholder="Search pages, tools, or reports…" corner={10} />
               <div className="search-results">
                 {[
                   ...navigation,
@@ -1300,10 +1301,17 @@ function PromptTable({ sample = true }: { sample?: boolean }) {
 }
 
 function Leaderboard(_props: {onMethod:()=>void;onNotify:(s:string)=>void}) {
-  const [indexView,setIndexView]=useState<"rankings"|"html"|"published">("rankings");
+  const params = useSearchParams();
+  const requestedView = params.get("indexView");
+  const indexView = requestedView === "html" || requestedView === "published" ? requestedView : "rankings";
+  function selectView(value: string) {
+    const next = new URLSearchParams(params.toString());
+    if (value === "rankings") next.delete("indexView"); else next.set("indexView", value);
+    window.history.pushState(null, "", `/leaderboard${next.size ? `?${next}` : ""}`);
+  }
   return <>
     <div className="index-view-tabs" role="group" aria-label="Evaluation view">
-      {([["rankings","Search rankings"],["html","HTML page checks"],["published","Published page audits"]] as const).map(([value,label])=><button key={value} type="button" id={`index-view-${value}`} aria-pressed={indexView===value} aria-controls="index-view-panel" onClick={()=>setIndexView(value)}>{label}</button>)}
+      {([["rankings","Search rankings"],["html","HTML page checks"],["published","Published page audits"]] as const).map(([value,label])=><button key={value} type="button" id={`index-view-${value}`} aria-pressed={indexView===value} aria-controls="index-view-panel" onClick={()=>selectView(value)}>{label}</button>)}
     </div>
     <section id="index-view-panel" className="index-view-panel" role="region" aria-labelledby={`index-view-${indexView}`}>
       {indexView==="rankings"?<><ModelLandscape/><RankedSearchTable/></>:indexView==="html"?<DeveloperToolsIndex/>:<PublishedIndex/>}

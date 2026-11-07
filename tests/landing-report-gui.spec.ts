@@ -110,3 +110,34 @@ test("landing check sorting, pagination, keyboard disclosure, and source data st
   await page.screenshot({ path: testInfo.outputPath("landing-report.png"), fullPage: true, scale: "css" });
   verifyReadOnly();
 });
+
+test("manual workflow cycles with keyboard and swipe while sound remains opt-in", async ({ page }) => {
+  const verifyReadOnly = await readOnlyFixture(page);
+  await page.goto("/");
+  const sound = page.getByRole("button", { name: "Interaction sounds", exact: true });
+  await expect(sound).toHaveAttribute("aria-pressed", "false");
+  const front = page.locator('.csw-card[data-front]');
+  await expect(front).toContainText("Ask a question.");
+  await front.focus();
+  await page.keyboard.press("Enter");
+  await expect(front).toContainText("Follow the evidence.");
+  await expect(front).toBeFocused();
+  await page.getByRole("button", { name: "Next workflow step" }).click();
+  await expect(front).toContainText("Find your next move.");
+  await page.getByRole("button", { name: "Next workflow step" }).click();
+  await expect(front).toContainText("Ask a question.");
+  const box = (await front.boundingBox())!;
+  await page.mouse.move(box.x + box.width * .8, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width * .2, box.y + box.height / 2, { steps: 5 });
+  await page.mouse.up();
+  await expect(front).toContainText("Follow the evidence.");
+  await sound.click();
+  await expect(sound).toHaveAttribute("aria-pressed", "true");
+  await sound.click();
+  await expect(sound).toHaveAttribute("aria-pressed", "false");
+  await page.reload();
+  await expect(sound).toHaveAttribute("aria-pressed", "false");
+  await noOverflow(page);
+  verifyReadOnly();
+});

@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { ModelLandscape } from "./model-landscape";
+import { OverviewInsights } from "./overview-insights";
+import { LabelInput } from "./bencho/label-input/LabelInput";
+import "./bencho/label-input/LabelInput.css";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Check, ChevronRight, RefreshCw, Search } from "lucide-react";
@@ -142,7 +144,6 @@ export function PublicBenchmarkDashboard() {
   }
 
   return <div className="public-benchmark-dashboard" role="region" aria-label="Public benchmark results">
-    <ModelLandscape/>
     <div className="public-benchmark-toolbar"><p>Explore the questions and their sources{refreshedAt && <> · Last refreshed <time dateTime={refreshedAt}>{refreshedDate(refreshedAt)}</time></>}</p><div><button type="button" onClick={() => setRevision(value => value + 1)} aria-label="Refresh public results" disabled={refreshing}><RefreshCw size={14} />{refreshing ? "Refreshing" : "Refresh"}</button></div></div>
     {error && <p className="public-benchmark-refresh-error" role="alert">The latest update could not be loaded. The last saved results are still shown.</p>}
     <dl className="public-benchmark-summary" aria-label="Benchmark totals">
@@ -153,8 +154,9 @@ export function PublicBenchmarkDashboard() {
     </dl>
     <div className="public-benchmark-progress"><div role="progressbar" aria-label="Tasks with published answers" aria-valuemin={0} aria-valuemax={summary.queryCount || 1} aria-valuenow={summary.publishedQueryCount}><span style={{ width: `${summary.queryCount ? summary.publishedQueryCount / summary.queryCount * 100 : 0}%` }} /></div><span>{summary.queryCount - summary.publishedQueryCount} {summary.queryCount - summary.publishedQueryCount === 1 ? "task without a published answer" : "tasks without published answers"}</span></div>
 
+    <OverviewInsights observations={view.observations.filter(observation=>filteredIds.has(observation.queryId))} />
     <div className="public-benchmark-filters">
-      <label className="public-benchmark-search"><Search size={15} /><span className="sr-only">Search tasks</span><input type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder="Find a question or website" /></label>
+      <div className="public-benchmark-search public-benchmark-search--bencho"><LabelInput field="Search tasks" value={search} onValueChange={setSearch} corner={10}/></div>
       <label><span className="sr-only">Model</span><select aria-label="Model" value={model ?? ""} onChange={event => selectModel(event.target.value)}><option value="">All models</option>{model !== null && !models.includes(model) && <option value={model}>{model || "Unknown model"} · no published answers</option>}{models.map(value => <option key={value} value={value}>{value}</option>)}</select></label>
       <label><span className="sr-only">Audience</span><select value={audience} onChange={event => { setAudience(event.target.value); setCategory("All categories"); }}><option>All audiences</option>{audiences.map(value => <option key={value}>{value}</option>)}</select></label>
       <label><span className="sr-only">Category</span><select aria-label="Category" value={category} onChange={event => setCategory(event.target.value)}><option>All categories</option>{categories.map(value => <option key={value}>{value}</option>)}</select></label>
@@ -179,7 +181,7 @@ export function PublicBenchmarkDashboard() {
 
       {selected ? <section className="public-benchmark-result" aria-label="Selected task" key={selected.id}>
         <header><div className="public-task-detail-label"><span>{selected.audience} / {selected.category}</span><span className="public-task-detail-meta">{selected.latestObservation && <time dateTime={selected.latestObservation.observedAt}>Refreshed {refreshedDate(selected.latestObservation.observedAt)}</time>}<TaskStatus task={selected} /></span></div><h2 ref={resultHeading} tabIndex={-1}>{selected.query}</h2><p className="public-task-locale">{selected.language === "en" ? "English" : selected.language} · {selected.locale}<a href={`/overview?query=${encodeURIComponent(selected.id)}${model === null ? "" : `&model=${encodeURIComponent(model)}`}`} aria-label="Link to this task">Link to task <ArrowUpRight size={12} /></a></p></header>
-        {selected.latestObservation ? <div className="ranked-search public-benchmark-published-result"><div className="public-benchmark-answer-heading"><h3>Ranked recommendations</h3><span>Order returned for this question</span></div><RecordedRanking query={selected} observation={selected.latestObservation} /></div> : <TaskInProgress task={selected} />}
+        {selected.latestObservation ? <div className="ranked-search public-benchmark-published-result"><RecordedRanking query={selected} observation={selected.latestObservation} /></div> : <TaskInProgress task={selected} />}
       </section> : <section className="public-benchmark-result"><h2>{data.queries.length ? "No matching tasks" : "No benchmark tasks yet"}</h2><p>{data.queries.length ? "Change your search or filters to see a task and its result." : "Published tasks will appear here with their questions and results."}</p></section>}
     </div>
     <footer className="public-benchmark-footer"><p>Public benchmark results. Open a task to see its exact question, returned order and sources.</p><Link href="/leaderboard">Browse website page checks <ArrowUpRight size={13} /></Link></footer>
