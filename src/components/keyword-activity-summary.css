@@ -8,9 +8,9 @@
 .keyword-activity-query span { overflow-wrap: anywhere; min-width: 0; }
 .keyword-activity-query svg { flex-shrink: 0; }
 .keyword-activity-query:hover span { text-decoration: underline; text-underline-offset: 3px; }
-.keyword-activity-meta { display: flex; flex-wrap: wrap; gap: 7px 17px; margin-top: 8px; color: var(--folio-text-secondary); font-size: 11px; line-height: 1.7; }
+.keyword-activity-meta { display: flex; flex-wrap: wrap; gap: 7px 17px; margin-top: 8px; color: var(--folio-text-secondary); font-size: 12px; line-height: 1.7; }
 .keyword-activity-meta > span:first-child { font-weight: 600; color: var(--folio-ink); }
 .keyword-activity-message { margin: 20px 0; color: var(--folio-text-secondary); font-size: 12px; line-height: 1.8; }
-.keyword-activity-summary footer { border-top: 1px solid var(--line); padding-top: 16px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px 20px; color: var(--folio-text-secondary); font-size: 11px; line-height: 1.7; }
+.keyword-activity-summary footer { border-top: 1px solid var(--line); padding-top: 16px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px 20px; color: var(--folio-text-secondary); font-size: 12px; line-height: 1.7; }
 .keyword-activity-summary footer a { display: inline-flex; align-items: center; gap: 6px; color: var(--ink); }
 @media(max-width:600px) { .keyword-activity-summary { padding: 19px; } .keyword-activity-summary h2 { font-size: 23px; } .keyword-activity-summary footer { align-items: flex-start; flex-direction: column; } }

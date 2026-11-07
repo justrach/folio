@@ -71,6 +71,38 @@ async function applyMigrations(db: D1Database) {
 }
 
 async function withIsolatedDatabase(work: (db: D1Database) => Promise<void>) {
+  // Setting PG_INTEGRATION_URL runs the same assertions against the Postgres
+  // adapter inside a transaction that is always rolled back, so the mirror keeps
+  // only real data and no migration step is needed (the schema already exists).
+  const pgUrl = process.env.PG_INTEGRATION_URL;
+  if (pgUrl) {
+    const { default: pg } = await import("pg");
+    const { createPostgresDatabase } = await import("../src/lib/pg/database");
+    const pool = new pg.Pool({ connectionString: pgUrl.split("?")[0], ssl: { rejectUnauthorized: false }, max: 1 });
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+      // One savepoint per statement keeps a failed query from poisoning the rest
+      // of the transaction, so the assertion that fails is the one reported.
+      const executor = {
+        query: async (sql: string, values: unknown[]) => {
+          await client.query("SAVEPOINT statement");
+          try {
+            const result = await client.query(sql, values);
+            await client.query("RELEASE SAVEPOINT statement");
+            return { rows: result.rows as never[], rowCount: result.rowCount };
+          } catch (error) {
+            await client.query("ROLLBACK TO SAVEPOINT statement");
+            throw error;
+          }
+        },
+      };
+      await work(createPostgresDatabase(executor) as unknown as D1Database);
+    } finally {
+      try { await client.query("ROLLBACK"); } finally { client.release(); await pool.end(); }
+    }
+    return;
+  }
   const directory = await mkdtemp(join(tmpdir(), "folio-d1-integration-"));
   let runtime: Miniflare | undefined;
   try {
@@ -149,7 +181,10 @@ test("real D1 nullable website daily cap retains reservations and the atomic act
   });
 });
 
-test("real D1 applies every migration and supports Better Auth, private repositories, foreign keys and batch rollback", { timeout: 90_000 }, async () => {
+test("real D1 applies every migration and supports Better Auth, private repositories, foreign keys and batch rollback",
+  // The Postgres mirror is created from these migrations by scripts/pg-schema;
+  // applying SQLite DDL and asserting PRAGMA behaviour only makes sense on D1.
+  { timeout: 90_000, skip: process.env.PG_INTEGRATION_URL ? "D1-only migration and PRAGMA assertions" : false }, async () => {
   await withIsolatedDatabase(async db => {
     assert.equal((await db.prepare("PRAGMA foreign_keys").first<{ foreign_keys: number }>())?.foreign_keys, 1);
     const trigger = await db.prepare("SELECT name FROM sqlite_master WHERE type = 'trigger' AND name = ?")

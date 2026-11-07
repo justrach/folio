@@ -27,11 +27,13 @@ let pool: Pool | null = null;
 
 /** The raw pg pool, for consumers that need a real driver (drizzle, Better Auth)
  * rather than the D1-shaped adapter. */
-export function getPgPool(connectionString: string): Pool {
+export function getPgPool(connectionString: string, viaHyperdrive = false): Pool {
   if (!pool) {
     pool = new Pool({
       connectionString: connectionString.split("?")[0],
-      ssl: connectionString.includes("pg.psdb.cloud") ? { rejectUnauthorized: false } : undefined,
+      // Hyperdrive terminates TLS itself; forcing node-postgres to negotiate it
+      // again fails the handshake inside a Worker.
+      ssl: viaHyperdrive ? undefined : { rejectUnauthorized: false },
       max: 5,
       idleTimeoutMillis: 10_000,
       connectionTimeoutMillis: 10_000,
@@ -40,10 +42,10 @@ export function getPgPool(connectionString: string): Pool {
   return pool;
 }
 
-function postgresDatabase(connectionString: string): D1Database {
+function postgresDatabase(connectionString: string, viaHyperdrive: boolean): D1Database {
   // Workers cannot pool across requests themselves; `pg`'s Cloudflare socket
   // plus Hyperdrive does. The pool is reused within an isolate.
-  getPgPool(connectionString);
+  getPgPool(connectionString, viaHyperdrive);
   const executor: PgExecutor = {
     query: async (sql, values) => {
       const result = await pool!.query(sql, values as never[]);
@@ -70,7 +72,7 @@ export async function getDb(): Promise<D1Database> {
       ?? process.env.PLANETSCALE_APP_URL;
     if (!connectionString)
       throw new Error("DB_ENGINE=postgres requires a HYPERDRIVE binding or PLANETSCALE_APP_URL.");
-    return postgresDatabase(connectionString);
+    return postgresDatabase(connectionString, Boolean(engineEnv.HYPERDRIVE));
   }
   if (!engineEnv.DB) {
     throw new Error(

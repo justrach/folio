@@ -39,6 +39,7 @@ import {
   ShieldCheck,
   Sparkles,
   Trophy,
+  Building2,
   WandSparkles,
   X,
 } from "lucide-react";
@@ -72,6 +73,10 @@ import "./index-page.css";
 import { EvaluationsPanel } from "./evaluations-panel";
 import { AgentRunsPanel, AgentRunDock } from "./agent-runs-panel";
 import { evaluationHref, readEvaluationIntent } from "@/lib/evaluation-navigation";
+import { SoundToggle } from "@/components/sound-toggle";
+import { WorkspaceRecords } from "@/components/workspace-records";
+import { StartHere } from "@/components/start-here";
+import { OrgPreview } from "@/components/org-preview";
 import { WebsiteSwitcher } from "./website-switcher";
 import { GithubConnection } from "./github-connection";
 import { WorkspaceLoader } from "./workspace-loader";
@@ -112,36 +117,57 @@ const navigation = [
     icon: WandSparkles,
   },
 ];
+/** Sidebar order is a map of jobs: what you do, then the evidence behind it. */
+const NAV_GROUPS = [
+  {
+    label: "Work",
+    items: [
+      { label: "Overview", href: "/overview", section: "overview", icon: LayoutDashboard },
+      { label: "Websites", href: "/websites", section: "websites", icon: Globe2 },
+      { label: "Evaluations", href: "/evaluations", section: "evaluations", icon: FlaskConical },
+      { label: "Agents", href: "/agents", section: "agents", icon: Bot },
+      { label: "Benchmarks", href: "/benchmarks", section: "benchmarks", icon: FlaskConical },
+    ],
+  },
+  {
+    label: "Evidence",
+    items: [
+      { label: "Checks", href: "/seo", section: "seo", icon: BarChart3 },
+      { label: "Search data", href: "/search-data", section: "search-data", icon: Search },
+      { label: "Search Console", href: "/search-console", section: "search-console", icon: Search },
+      { label: "Patches", href: "/patches", section: "patches", icon: WandSparkles },
+    ],
+  },
+] as const;
+
 const titles: Record<
   string,
   { eyebrow: string; title: string; description: string }
 > = {
   overview: {
-    eyebrow: "THE BIG PICTURE",
-    title: "My website results",
-    description: "Saved results for your website.",
+    eyebrow: "",
+    title: "Overview",
+    description: "Saved results for your workspace.",
   },
   websites: {
-    eyebrow: "YOUR DIGITAL FOOTPRINT",
-    title: "Your websites",
-    description: "Choose a website to review its saved reports, run an audit, or prepare an evaluation.",
+    eyebrow: "",
+    title: "Websites",
+    description: "Saved sites, audits, and publication.",
   },
   visibility: {
-    eyebrow: "BE PART OF THE ANSWER",
-    title: "Be the name that comes up.",
-    description:
-      "Explore the questions, answers, and sources that shape discovery.",
+    eyebrow: "",
+    title: "AI visibility",
+    description: "Illustrative experience until real collectors exist.",
   },
   seo: {
-    eyebrow: "BUILT TO BE FOUND",
-    title: "A stronger foundation for discovery.",
-    description:
-      "Understand what search engines and readers can find on your page.",
+    eyebrow: "",
+    title: "Checks",
+    description: "Technical checks for the selected page.",
   },
   patches: {
-    eyebrow: "SMALL CHANGES. BETTER ANSWERS.",
-    title: "From insight to improvement.",
-    description: "Review a suggestion. Make it yours. Publish on your terms.",
+    eyebrow: "",
+    title: "Patches",
+    description: "Reviewable repairs from saved checks.",
   },
   leaderboard: {
     eyebrow: "",
@@ -155,15 +181,19 @@ const titles: Record<
     description:
       "Review what the agent found and the evidence behind it.",
   },
-  benchmarks: { eyebrow: "YOUR RESEARCH QUESTIONS", title: "Search rankings", description: "See where your website appears in recorded AI answers and which sites appear alongside it." },
+  benchmarks: { eyebrow: "", title: "Benchmarks", description: "See where your website appears in recorded AI answers and which sites appear alongside it." },
   agents: {
-    eyebrow: "MEET YOUR RESEARCH TEAM",
-    title: "A little intelligence. A lot of clarity.",
-    description:
-      "Follow your evaluations, their progress, and the evidence they return.",
+    eyebrow: "",
+    title: "Agents",
+    description: "Saved sessions, their progress, and the evidence they returned.",
+  },
+  orgs: {
+    eyebrow: "",
+    title: "Organizations",
+    description: "Sample team workspace: seats, roles, shared records, and audit activity.",
   },
   "search-data": {
-    eyebrow: "THE SEARCH LANDSCAPE",
+    eyebrow: "",
     title: "The bigger picture behind your search.",
     description:
       "Explore organic coverage and the links that lead to your website.",
@@ -179,6 +209,14 @@ const titles: Record<
     description: "Manage your account and the sources behind your reports.",
   },
 };
+
+
+/** A saved record can arrive without a parseable URL (an in-flight scan, a legacy
+ * row). One bad row must not take down the shell, so hostnames degrade. */
+function safeHostname(value: string | null | undefined, fallback = ""): string {
+  if (!value) return fallback;
+  try { return new URL(value).hostname; } catch { return fallback; }
+}
 
 function FolioMark({ small = false }: { small?: boolean }) {
   return (
@@ -248,8 +286,14 @@ export function Dashboard({ section }: { section: string }) {
   const views = query.getAll("view");
   const view = views.length === 1 ? views[0] : null;
   const workspace = view === "workspace" || query.has("website") || query.has("scope");
+  // A signed-in visitor belongs in their workspace. Only signed-out visitors get
+  // the public benchmark shell, and the pending state must not flash it first.
+  const { data: session, isPending } = authClient.useSession();
   if (section === "leaderboard") return <PublicOverviewShell section="leaderboard" />;
-  if (section === "overview" && view !== "demo" && !workspace) return <PublicOverviewShell />;
+  if (section === "overview" && view !== "demo" && !workspace) {
+    if (isPending) return <WorkspaceLoader />;
+    if (!session) return <PublicOverviewShell />;
+  }
   return <WorkspaceDashboard section={section} />;
 }
 
@@ -333,9 +377,12 @@ function WorkspaceDashboard({ section }: { section: string }) {
       .then((d) => {
         if (cancelled) return;
         const list: Scan[] = Array.isArray(d) ? d : (d.scans ?? []);
-        setScans(list);
+        // The same audit can arrive twice (an optimistic entry plus the saved
+        // row). React keys must stay unique, so keep the first occurrence.
+        const unique = [...new Map(list.map(scan => [scan.id, scan])).values()];
+        setScans(unique);
         const saved = sessionStorage.getItem(`folio-active-${ownerId}`);
-        setActiveScan(list.find((s) => s.id === saved) ?? list[0] ?? null);
+        setActiveScan(unique.find((s) => s.id === saved) ?? unique[0] ?? null);
       })
       .catch(() => { if (!cancelled) setScanError("Your saved audits could not be loaded."); })
       .finally(() => { if (!cancelled) setLoadingScans(false); });
@@ -396,7 +443,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
       sessionStorage.setItem(`folio-active-${session.user.id}`, scan.id);
     router.push("/seo");
   }
-  if (section === "login") return <Login onNotify={notify} />;
+  if (section === "login") return <Login onNotify={notify} signedIn={Boolean(session)} />;
   if (isPending) return <WorkspaceLoader />;
   const title = section === "overview" && demoRequested ? { ...titles.overview, title: "Demo report", description: "Illustrative sample data." } : titles[section] ?? titles.overview;
   return (
@@ -431,46 +478,52 @@ function WorkspaceDashboard({ section }: { section: string }) {
           }}
           onAdd={() => { setMobileOpen(false); prepareAudit(""); }}
         />
-        <span className="nav-caption">WORKSPACE</span>
-        <nav aria-label="Main navigation">
-          {navigation.map((item) => (
+        {NAV_GROUPS.map(group => (
+          <div className="nav-group" key={group.label}>
+            <span className="nav-caption">{group.label}</span>
+            <nav aria-label={group.label}>
+              {group.items.map(item => (
+                <Link
+                  key={item.section}
+                  href={item.href}
+                  onClick={() => setMobileOpen(false)}
+                  className={`nav-link ${section === item.section ? "active" : ""}`}
+                  aria-current={section === item.section ? "page" : undefined}
+                >
+                  <item.icon size={17} />
+                  <span>{item.label}</span>
+                </Link>
+              ))}
+            </nav>
+          </div>
+        ))}
+        <div className="nav-group">
+          <span className="nav-caption">Explore</span>
+          <nav aria-label="Explore">
             <Link
-              key={item.section}
-              href={item.href}
+              href="/leaderboard"
+              className={`nav-link ${section === "leaderboard" ? "active" : ""}`}
+              aria-current={section === "leaderboard" ? "page" : undefined}
               onClick={() => setMobileOpen(false)}
-              className={`nav-link ${section === item.section ? "active" : ""}`}
-              aria-current={section === item.section ? "page" : undefined}
             >
-              <item.icon size={17} />
-              <span>{item.label}</span>
+              <Trophy size={17} />
+              <span>The Folio Index</span>
             </Link>
-          ))}
-        </nav>
-        <span className="nav-caption explore-caption">EXPLORE</span>
-        <nav aria-label="Explore">
-          <Link
-            href="/leaderboard"
-            className={`nav-link ${section === "leaderboard" ? "active" : ""}`}
-            aria-current={section === "leaderboard" ? "page" : undefined}
-            onClick={() => setMobileOpen(false)}
-          >
-            <Trophy size={17} />
-            <span>The Folio Index</span>
-          </Link>
-          <Link
-            href="/agents"
-            className={`nav-link ${section === "agents" ? "active" : ""}`}
-            aria-current={section === "agents" ? "page" : undefined}
-            onClick={() => setMobileOpen(false)}
-          >
-            <Bot size={17} />
-            <span>Your agents</span>
-          </Link>
-          <Link href="/docs/api" className="nav-link" onClick={() => setMobileOpen(false)}>
-            <Code2 size={17} />
-            <span>API reference</span>
-          </Link>
-        </nav>
+            <Link
+              href="/orgs"
+              className={`nav-link ${section === "orgs" ? "active" : ""}`}
+              aria-current={section === "orgs" ? "page" : undefined}
+              onClick={() => setMobileOpen(false)}
+            >
+              <Building2 size={17} />
+              <span>Organizations</span>
+            </Link>
+            <Link href="/docs/api" className="nav-link" onClick={() => setMobileOpen(false)}>
+              <Code2 size={17} />
+              <span>API reference</span>
+            </Link>
+          </nav>
+        </div>
         <div className="sidebar-bottom">
           <Link href="/pricing" className="nav-link">
             <BookOpen size={17} />
@@ -516,7 +569,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
             </button>
             <Globe2 size={15} />
             <button onClick={() => router.push("/websites")}>
-              {privateOverview ? "Your workspace" : actual ? new URL(actual.url).hostname : session ? "Your workspace" : "acme.com"}
+              {privateOverview ? "Your workspace" : actual ? safeHostname(actual.url, "Your workspace") : session ? "Your workspace" : "acme.com"}
             </button>
             <ChevronRight size={13} />
             <span>
@@ -527,6 +580,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
             </span>
           </div>
           <div className="topbar-actions">
+            <SoundToggle />
             <button
               className="search-trigger"
               onClick={() => setModal("search")}
@@ -537,7 +591,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
             </button>
             <span className="topbar-divider" />
             <NotificationBell
-              count={actual?.patches.length ?? (mode === "sample" && !privateOverview ? 3 : 0)}
+              count={actual?.patches?.length ?? (mode === "sample" && !privateOverview ? 3 : 0)}
               size={30}
               color="green"
               onClick={() => setModal("notifications")}
@@ -591,7 +645,10 @@ function WorkspaceDashboard({ section }: { section: string }) {
               )}
             </div>
           </div>
+          {section === "orgs" && <OrgPreview />}
           {section === "overview" && <nav className="real-overview-tabs" aria-label="Overview view"><Link href={workspaceOverviewHref(query)} aria-current={!demoRequested ? "page" : undefined}>My website results</Link><Link href="/overview?view=demo" aria-current={demoRequested ? "page" : undefined} onClick={() => setMode("sample")}>Demo report</Link></nav>}
+          {section === "overview" && !demoRequested && <StartHere ownerId={ownerId} />}
+          {section === "overview" && !demoRequested && <WorkspaceRecords ownerId={ownerId} />}
           {section === "overview" && !demoRequested ? <RealOverview ownerId={ownerId} scans={scans} scansLoading={loadingScans} scansError={scanOwnerId === ownerId ? scanError : ""} onRetryScans={() => setScanRefresh(value => value + 1)} onOpenScan={openScan} /> : <>
 
           {scanOwnerId === ownerId && scanError && ["overview", "websites", "seo", "patches"].includes(section) && (
@@ -814,7 +871,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
                         </h2>
                         <p>
                           {actual
-                            ? `${actual.patches.length} suggested improvements from your latest audit.`
+                            ? `${actual.patches?.length ?? 0} suggested improvements from your latest audit.`
                             : "3 considered improvements are ready for your review."}
                         </p>
                         <Link className="button cream" href="/patches">
@@ -982,7 +1039,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
                       </h2>
                       <p>
                         {actual
-                          ? `${actual.title || new URL(actual.url).hostname} · ${actual.wordCount} readable words · ${new Date(actual.createdAt).toLocaleString()}`
+                          ? `${actual.title || safeHostname(actual.url, "This page")} · ${actual.wordCount} readable words · ${new Date(actual.createdAt).toLocaleString()}`
                           : "6 core checks passed. Explore the opportunities below."}
                       </p>
                     </div>
@@ -1053,7 +1110,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
               signedIn={!!session}
               onComplete={(scan) => {
                 setScanOwnerId(ownerId);
-                setScans((s) => [scan, ...s]);
+                setScans((s) => [scan, ...s.filter(existing => existing.id !== scan.id)]);
                 setActiveScan(scan);
                 setMode("measured");
                 if (session)
@@ -1237,7 +1294,7 @@ function Metric({
 function AuditEvaluationBridge({ scan }: { scan: Scan }) {
   return (
     <section className="audit-evaluation-bridge" aria-label="Continue this website evaluation">
-      <div><span className="eyebrow tiny">FROM AUDIT TO EVIDENCE</span><h2>{new URL(scan.url).hostname}</h2><p>Check what an agent can verify from this page. After applying reviewed changes, capture it again and compare the evidence.</p></div>
+      <div><span className="eyebrow tiny">FROM AUDIT TO EVIDENCE</span><h2>{safeHostname(scan.url, "This website")}</h2><p>Check what an agent can verify from this page. After applying reviewed changes, capture it again and compare the evidence.</p></div>
       <div className="audit-bridge-actions">
         <Link className="button primary" href={evaluationHref({ targetUrl: scan.url })}>Evaluate this website <ArrowUpRight size={14} /></Link>
         <Link className="button secondary" href={evaluationHref({ targetUrl: scan.url }).replace("/evaluations", "/search-data")}>Search & backlinks <ArrowRight size={14} /></Link>
@@ -1382,7 +1439,7 @@ function Websites({
               <button onClick={() => onOpen(s)}>
                 <Globe2 size={19} />
                 <span>
-                  <strong>{new URL(s.url).hostname}</strong>
+                  <strong>{safeHostname(s.url, "This website")}</strong>
                   <small>{new Date(s.createdAt).toLocaleString()}</small>
                 </span>
                 <span className="history-score">
@@ -1391,7 +1448,7 @@ function Websites({
                 </span>
                 <ArrowRight size={16} />
               </button>
-              <Link className="text-link" href={evaluationHref({ targetUrl: s.url })} aria-label={`Evaluate ${new URL(s.url).hostname}`}>Evaluate <ArrowUpRight size={14} /></Link>
+              <Link className="text-link" href={evaluationHref({ targetUrl: s.url })} aria-label={`Evaluate ${safeHostname(s.url, "This website")}`}>Evaluate <ArrowUpRight size={14} /></Link>
               </div>
             ))}
           </div>
@@ -1801,11 +1858,11 @@ function ScanForm({
   );
 }
 
-function Login({ onNotify }: { onNotify: (s: string) => void }) {
+function Login({ onNotify, signedIn = false }: { onNotify: (s: string) => void; signedIn?: boolean }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const nextValues = searchParams.getAll("next");
-  let returnTo = "/websites";
+  let returnTo = "/overview";
   if (nextValues.length === 1 && nextValues[0].length <= 4096) {
     try {
       const next = new URL(nextValues[0], "https://folio.invalid");
@@ -1865,6 +1922,12 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
       .catch(() => {});
     return () => controller.abort();
   }, []);
+  // A signed-in visitor has no reason to see the form: local pseudo auth lands
+  // here whenever a stale link points at /login.
+  useEffect(() => {
+    if (signedIn) router.replace(returnTo);
+  }, [signedIn, returnTo, router]);
+
   return (
     <div className="login-page">
       <section className="login-story">

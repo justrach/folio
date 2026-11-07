@@ -5,7 +5,13 @@
  * import instead of 132 queries. SQL goes through ./compat, which throws on
  * anything it cannot translate faithfully.
  */
+import { types } from "pg";
 import { toPostgres } from "./compat";
+
+// D1 hands stores JavaScript numbers; Postgres sends bigint columns (COUNT,
+// SUM) as strings to protect precision. Callers cast and compare numerically,
+// so restore the D1 behaviour once for the whole process.
+types.setTypeParser(20, value => Number(value));
 
 export type PgQueryResult<T> = { rows: T[]; rowCount: number | null };
 export type PgExecutor = {
@@ -23,6 +29,8 @@ export type D1LikeResult<T> = {
 export type D1LikeStatement = {
   bind(...values: unknown[]): D1LikeStatement;
   first<T = Record<string, unknown>>(): Promise<T | null>;
+  /** Drizzle's D1 driver reads rows positionally through this method. */
+  raw<T = unknown[]>(): Promise<T[]>;
   all<T = Record<string, unknown>>(): Promise<D1LikeResult<T>>;
   run(): Promise<{ success: true; meta: { changes: number } }>;
 };
@@ -52,6 +60,13 @@ export class PgStatement implements D1LikeStatement {
   async first<T = Record<string, unknown>>(): Promise<T | null> {
     const result = await this.executor.query<T>(toPostgres(this.sql), this.values);
     return result.rows[0] ?? null;
+  }
+
+  async raw<T = unknown[]>(): Promise<T[]> {
+    const result = await this.executor.query<Record<string, unknown>>(toPostgres(this.sql), this.values);
+    // pg builds row objects in the SELECT's column order, and drizzle wants that
+    // order back as arrays.
+    return result.rows.map(row => Object.values(row)) as T[];
   }
 
   async all<T = Record<string, unknown>>(): Promise<D1LikeResult<T>> {

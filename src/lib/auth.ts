@@ -2,12 +2,14 @@ import "server-only";
 
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
-import { drizzle } from "drizzle-orm/d1";
+import { drizzle as drizzleD1 } from "drizzle-orm/d1";
+import { drizzle as drizzlePg } from "drizzle-orm/node-postgres";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getAuthDb, getPgPool, postgresConnection } from "@/lib/db";
 import * as schema from "@/lib/auth-schema";
 import { authSchema as pgSchema } from "@/lib/auth-schema-pg";
 import { identityAuthOptions } from "@/lib/github-auth";
+import { devSession } from "@/lib/dev-auth";
 
 export async function getAuth() {
   const { env } = await getCloudflareContext({ async: true });
@@ -23,9 +25,11 @@ export async function getAuth() {
   // D1 keeps the SQLite tables. The adapter choice must match the schema.
   const engineEnv = env as unknown as { DB_ENGINE?: string; HYPERDRIVE?: { connectionString: string }; PLANETSCALE_APP_URL?: string };
   const postgres = postgresConnection(engineEnv);
+  // The driver must match the engine: drizzle-orm/d1 talks the D1 API and would
+  // call prepare() on a pg Pool.
   const database = postgres
-    ? drizzle(getPgPool(postgres), { schema: pgSchema })
-    : drizzle(await getAuthDb(), { schema });
+    ? drizzlePg(getPgPool(postgres, Boolean((engineEnv as { HYPERDRIVE?: unknown }).HYPERDRIVE)), { schema: pgSchema })
+    : drizzleD1(await getAuthDb(), { schema });
   return betterAuth({
     appName: "Folio",
     baseURL,
@@ -36,7 +40,7 @@ export async function getAuth() {
       GITHUB_CLIENT_ID: env.GITHUB_CLIENT_ID || process.env.GITHUB_CLIENT_ID,
       GITHUB_CLIENT_SECRET: env.GITHUB_CLIENT_SECRET || process.env.GITHUB_CLIENT_SECRET,
     }),
-    database: drizzleAdapter(database, postgres
+    database: drizzleAdapter(database as never, postgres
       ? { provider: "pg", schema: pgSchema }
       : { provider: "sqlite", schema }),
     emailAndPassword: {
@@ -62,10 +66,14 @@ export async function getAuth() {
   });
 }
 
-/** Always validate the session server-side before reading or writing tenant data. */
+/** Always validate the session server-side before reading or writing tenant data.
+ * The only bypass is the explicit local DEV_AUTH switch in dev-auth.ts. */
 export async function getSession(headers: Headers) {
+  const local = devSession();
+  if (local) return local as unknown as AuthSession;
   const auth = await getAuth();
   return auth.api.getSession({ headers });
 }
 
-export type AuthSession = Awaited<ReturnType<typeof getSession>>;
+type BetterAuthSession = Awaited<ReturnType<Awaited<ReturnType<typeof getAuth>>["api"]["getSession"]>>;
+export type AuthSession = BetterAuthSession;

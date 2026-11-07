@@ -21,6 +21,7 @@ const routes = [
   "benchmarks",
   "pricing",
   "settings",
+  "orgs",
   "login",
   "privacy",
 ];

@@ -151,4 +151,4 @@ Remaining acceptance work:
 
 ## OpenNext build tooling
 
-- [ ] The pinned Next.js `15.5.25` is now rejected by `opennextjs-cloudflare` 1.20.6 without `--dangerouslyUseUnsupportedNextVersion`, so `bun run cf:build` exits before building. This predates the row-detail change (`package.json` and `bun.lock` are unchanged). `bunx opennextjs-cloudflare build --dangerouslyUseUnsupportedNextVersion` produced `.open-next/worker.js` for this change; decide whether to upgrade Next or pass the documented flag in the project script.
+- [x] Upgraded off the unsupported pin: `next` **16.4.5**, `@opennextjs/cloudflare` **1.20.16**, `wrangler` **4.158.0**. `bun run cf:build` now succeeds with no `--dangerouslyUseUnsupportedNextVersion` flag, the peers (`next >=15.5.29 <16 || >=16.4.5`, `wrangler ^4.148.0`) are satisfied, and the deployment was verified live. Next 16 also updated `tsconfig.json` (`jsx: react-jsx`, `.next/dev/types` in `include`) and `dev` now runs Turbopack.

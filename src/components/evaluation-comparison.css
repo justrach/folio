@@ -9,7 +9,7 @@
 .eval-comparison-result { margin-top: 24px; }
 .eval-comparison-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-block: 1px solid var(--folio-edge); padding: 20px 0; gap: 18px; }
 .eval-comparison-summary > div { display: flex; flex-direction: column; gap: 8px; }
-.eval-comparison-summary span, .eval-comparison-summary small { color: var(--folio-text-secondary); font-size: 11px; }
+.eval-comparison-summary span, .eval-comparison-summary small { color: var(--folio-text-secondary); font-size: 12px; }
 .eval-comparison-summary strong { display: flex; align-items: center; gap: 14px; font-size: 26px; font-weight: 500; }
 .eval-comparison-warning { display: flex; align-items: flex-start; gap: 10px; padding: 14px 16px; margin: 18px 0; border: 1px solid var(--folio-accent-edge); background: var(--folio-surface); border-radius: 8px; color: var(--folio-accent); font-size: 12px; line-height: 1.6; }
 .eval-comparison-warning > svg { flex-shrink: 0; margin-top: 2px; }
@@ -18,11 +18,11 @@
 .eval-comparison-table-scroll { overflow-x: auto; }
 .eval-comparison table { width: 100%; min-width: 620px; border-collapse: collapse; text-align: left; }
 .eval-comparison th, .eval-comparison td { padding: 15px 10px; border-bottom: 1px solid var(--folio-edge); vertical-align: top; font-size: 12px; }
-.eval-comparison thead th { font-size: 10px; text-transform: uppercase; letter-spacing: .7px; color: var(--folio-text-secondary); font-weight: 500; }
+.eval-comparison thead th { font-size: 12px; text-transform: uppercase; letter-spacing: .7px; color: var(--folio-text-secondary); font-weight: 500; }
 .eval-comparison tbody th { width: 27%; font-weight: 500; }
 .eval-comparison td details { margin-top: 8px; max-width: 360px; }
-.eval-comparison td summary { color: var(--folio-text-secondary); cursor: pointer; font-size: 10px; }
-.eval-comparison td dl { margin: 10px 0 0; font-size: 11px; line-height: 1.6; }
+.eval-comparison td summary { color: var(--folio-text-secondary); cursor: pointer; font-size: 12px; }
+.eval-comparison td dl { margin: 10px 0 0; font-size: 12px; line-height: 1.6; }
 .eval-comparison td dt { font-weight: 600; }
 .eval-comparison td dd { margin: 2px 0 9px; color: var(--folio-text-secondary); overflow-wrap: anywhere; }
 .eval-comparison-change { text-transform: capitalize; color: var(--folio-text-secondary); }
@@ -34,10 +34,10 @@
 .eval-comparison-provenance article { min-width: 0; }
 .eval-comparison-provenance h3, .eval-comparison-provenance h4 { font-size: 12px; margin: 0 0 8px; }
 .eval-comparison-provenance h4 { margin-top: 20px; }
-.eval-comparison-provenance p, .eval-comparison-provenance small { font-size: 11px; line-height: 1.7; color: var(--folio-text-secondary); overflow-wrap: anywhere; }
-.eval-comparison-source { display: flex; flex-direction: column; gap: 7px; margin-top: 14px; font-size: 10px; color: var(--folio-text-secondary); }
-.eval-comparison-source code { overflow-wrap: anywhere; color: var(--folio-ink); font-size: 10px; }
-.eval-comparison-provenance pre { font-size: 10px; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; background: var(--folio-surface); padding: 12px; border-radius: 5px; }
+.eval-comparison-provenance p, .eval-comparison-provenance small { font-size: 12px; line-height: 1.7; color: var(--folio-text-secondary); overflow-wrap: anywhere; }
+.eval-comparison-source { display: flex; flex-direction: column; gap: 7px; margin-top: 14px; font-size: 12px; color: var(--folio-text-secondary); }
+.eval-comparison-source code { overflow-wrap: anywhere; color: var(--folio-ink); font-size: 12px; }
+.eval-comparison-provenance pre { font-size: 12px; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; background: var(--folio-surface); padding: 12px; border-radius: 5px; }
 @media (max-width: 760px) {
   .eval-comparison { padding: 21px 18px; }
   .eval-comparison-selects { grid-template-columns: 1fr; gap: 13px; }

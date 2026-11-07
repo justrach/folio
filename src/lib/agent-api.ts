@@ -1,6 +1,7 @@
 import "server-only";
+import { isTrustedWriteOrigin } from "./request-origin";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
-import { getAuth } from "./auth";
+import { getAuth, getSession } from "./auth";
 import { getDb } from "./db";
 import { AgentApiError, authenticateAgentApiKey, type AgentApiScope } from "./agent-api-key-store";
 import type { AgentRunEnvironment } from "./agent-runs";
@@ -39,9 +40,9 @@ export async function agentApiContext(request: Request, scope: AgentApiScope = "
 /** Creating and revoking keys requires the browser owner and configured origin. */
 export async function agentKeyContext(request: Request, mutation = false) {
   const auth = await getAuth();
-  const session = await auth.api.getSession({ headers: request.headers });
+  const session = await getSession(request.headers);
   if (!session) throw new AgentApiError("Sign in to manage your Folio API keys.", 401, "unauthorized");
-  if (mutation && (typeof auth.options.baseURL !== "string" || request.headers.get("origin") !== new URL(auth.options.baseURL).origin))
+  if (mutation && !isTrustedWriteOrigin(request, auth.options.baseURL))
     throw new AgentApiError("Manage keys from this Folio workspace.", 403, "invalid_origin");
   return { ownerId: session.user.id, db: await getDb() };
 }

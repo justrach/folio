@@ -24,9 +24,16 @@
       "migrations_dir": "migrations"
     }
   ],
+  // Postgres is the system of record (DB_ENGINE below). The D1 binding stays
+  // attached so a rollback is one variable change, and because Better Auth's
+  // D1 adapter is still the fallback path.
+  "hyperdrive": [
+    { "binding": "HYPERDRIVE", "id": "8bc46b614caf4b9f9e1f19e22ce1bbc1" }
+  ],
   "vars": {
     "BETTER_AUTH_URL": "https://usefolio.site",
-    "EVALUATION_RECONCILE_ENABLED": "false"
+    "EVALUATION_RECONCILE_ENABLED": "false",
+    "DB_ENGINE": "postgres"
   },
   // Supply BETTER_AUTH_SECRET and Google production OAuth credentials as Worker secrets.
   // Paid provider credentials/allowlists are separate from public Google sign-in.

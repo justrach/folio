@@ -127,8 +127,32 @@ export function translateJson(sql: string): string {
     const expression = args[0];
     return path === "{}" ? `(${expression}::jsonb)::text` : `(${expression}::jsonb #>> '${path}')`;
   });
-  return rewriteCalls(extracted, "json_each", args => {
-    if (args.length !== 2) throw new Error(`json_each expects 2 arguments, saw ${args.length}`);
+  // SQLite's json_object/json_group_array return TEXT; the Postgres builders
+  // return jsonb, which node-postgres hands back already parsed. Cast to text so
+  // callers keep their JSON.parse contract.
+  const built = rewriteCalls(extracted, "json_object", args => {
+    if (args.length % 2 !== 0) throw new Error(`json_object expects key/value pairs, saw ${args.length}`);
+    // json_extract reads as text so it can be compared with string literals, but
+    // json_object must embed the JSON value itself: numbers stay numbers and
+    // nested objects stay objects, matching SQLite's typed json_extract.
+    const values = args.map((argument, index) =>
+      index % 2 === 1 && /^\(.*::jsonb #>> '.*'\)$/.test(argument.trim())
+        ? argument.trim().replace(/#>>/, "#>")
+        : argument,
+    );
+    return `(jsonb_build_object(${values.join(", ")})::text)`;
+  });
+  const aggregated = rewriteCalls(built, "json_group_array", args => {
+    if (args.length !== 1) throw new Error(`json_group_array expects 1 argument, saw ${args.length}`);
+    return `(jsonb_agg(${args[0]})::text)`;
+  });
+  return rewriteCalls(aggregated, "json_each", args => {
+    if (args.length === 1) {
+      // SQLite iterates a JSON array of scalars with one argument. The text
+      // variant keeps `value` comparable to a plain string.
+      return `jsonb_array_elements_text((${args[0]})::jsonb)`;
+    }
+    if (args.length !== 2) throw new Error(`json_each expects 1 or 2 arguments, saw ${args.length}`);
     const path = jsonPath(args[1]);
     if (path === null || path === "{}") throw new Error(`Unsupported json_each path: ${args[1]}`);
     const pointer = path.replace(/^\{(.*)\}$/, "$1").split(",");
@@ -202,13 +226,105 @@ export function quoteReserved(sql: string): string {
 }
 
 /** Full translation. Throws if a SQLite-only construct survives. */
+/**
+ * Postgres resolves bare column names in `ON CONFLICT ... DO UPDATE` against
+ * both the target relation and the insert's source, so an upsert that SQLite
+ * accepts ("count = count + 1") fails there as ambiguous. The target columns
+ * are named in the INSERT, so qualify exactly those.
+ */
+export function qualifyUpsert(sql: string): string {
+  const head = /^\s*INSERT\s+(?:OR\s+\w+\s+)?INTO\s+("?\w+"?)\s*\(([^)]*)\)/i.exec(sql);
+  if (!head) return sql;
+  const table = head[1];
+  const columns = head[2]
+    .split(",")
+    .map(column => column.trim().replace(/"/g, ""))
+    .filter(Boolean);
+  if (columns.length === 0) return sql;
+  const marker = /\bDO\s+UPDATE\s+SET\b/i.exec(sql);
+  if (!marker) return sql;
+  const start = marker.index + marker[0].length;
+  const returning = /\bRETURNING\b/i.exec(sql.slice(start));
+  const end = returning ? start + returning.index : sql.length;
+  const qualify = (text: string) =>
+    text
+      .split(/('(?:[^']|'')*')/)
+      .map((segment, index) =>
+        index % 2 === 1
+          ? segment
+          : columns.reduce(
+              (inner, column) =>
+                inner.replace(
+                  new RegExp(`(?<![\\w.$"])${column}(?![\\w$"])`, "g"),
+                  `${table}.${column}`,
+                ),
+              segment,
+            ),
+      )
+      .join("");
+  // Postgres rejects a qualified assignment target, so only the value side of
+  // each `column = expression` pair is rewritten.
+  const clause = sql
+    .slice(start, end)
+    .split(/((?:^|,)\s*[\w"]+\s*=(?!=))/);
+  const qualified = clause
+    .map((piece, index) => (index % 2 === 1 ? piece : qualify(piece)))
+    .join("");
+  return sql.slice(0, start) + qualified + sql.slice(end);
+}
+
+/**
+ * Postgres cannot infer a type for a placeholder used only as `? IS NULL`, and
+ * SQLite happily accepts it. Give those parameters an explicit text type.
+ */
+export function castNullChecks(sql: string): string {
+  return sql
+    .split(/('(?:[^']|'')*')/)
+    .map((segment, index) =>
+      index % 2 === 1 ? segment : segment.replace(/\?(?=\s+IS\s+(?:NOT\s+)?NULL\b)/gi, "CAST(? AS TEXT)"),
+    )
+    .join("");
+}
+
+/** SQLite's ternary `iif(condition, a, b)` is a CASE expression in Postgres. */
+export function translateTernary(sql: string): string {
+  return rewriteCalls(sql, "iif", args => {
+    if (args.length === 2) return `(CASE WHEN ${args[0]} THEN ${args[1]} ELSE NULL END)`;
+    if (args.length !== 3) throw new Error(`iif expects 2 or 3 arguments, saw ${args.length}`);
+    return `(CASE WHEN ${args[0]} THEN ${args[1]} ELSE ${args[2]} END)`;
+  });
+}
+
+/**
+ * Postgres folds unquoted identifiers to lower case, so `AS updatedAt` comes back
+ * as `updatedat` while SQLite returns it unchanged. Quoting mixed-case aliases
+ * keeps the column name the store expects on both engines.
+ */
+export function quoteAliases(sql: string): string {
+  return sql
+    .split(/('(?:[^']|'')*')/)
+    .map((segment, index) =>
+      index % 2 === 1
+        ? segment
+        : segment.replace(/\bAS\s+([A-Za-z_][A-Za-z0-9_]*)\b/g, (match, alias: string) =>
+            // Types and keywords are upper case; a mixed-case name is an alias.
+            /[a-z]/.test(alias) && /[A-Z]/.test(alias) ? `AS "${alias}"` : match,
+          ),
+    )
+    .join("");
+}
+
 export function toPostgres(sql: string): string {
   let out = sql;
   out = translateInserts(out);
   out = translateJson(out);
   out = translateDates(out);
   out = translateComparisons(out);
+  out = translateTernary(out);
   out = quoteReserved(out);
+  out = qualifyUpsert(out);
+  out = quoteAliases(out);
+  out = castNullChecks(out);
   out = toPositional(out);
   const leftover = SQLITE_LEFTOVERS.exec(out);
   if (leftover) throw new Error(`Unsupported SQLite construct in Postgres query: ${leftover[0]}`);

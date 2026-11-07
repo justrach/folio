@@ -1,8 +1,9 @@
 import { AgentApiError } from "./agent-api-key-store";
 import { SeoDataError } from "./dataforseo";
 import "server-only";
+import { isTrustedWriteOrigin } from "./request-origin";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
-import { getAuth } from "./auth";
+import { getAuth, getSession } from "./auth";
 import { getDb } from "./db";
 import type { AgentsEnvironment } from "./agents";
 import { KeywordAgentError } from "./keyword-benchmark-agent";
@@ -13,7 +14,7 @@ import { ScanError } from "./scanner";
 export const PRIVATE_BENCHMARK_HEADERS = { "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff" };
 export async function keywordBenchmarkRequestContext(request: Request) {
   const auth = await getAuth();
-  const session = await auth.api.getSession({ headers: request.headers });
+  const session = await getSession(request.headers);
   if (!session) throw new KeywordBenchmarkStoreError("Sign in to use your private benchmarks.", 401);
   const { env } = await getCloudflareContext({ async: true });
   const values = env as unknown as AgentsEnvironment;
@@ -32,7 +33,7 @@ export async function keywordBenchmarkRequestContext(request: Request) {
   } satisfies AgentsEnvironment };
 }
 export function requireKeywordBenchmarkOrigin(request: Request, baseURL: unknown) {
-  if (typeof baseURL !== "string" || request.headers.get("origin") !== new URL(baseURL).origin)
+  if (!isTrustedWriteOrigin(request, baseURL))
     throw new KeywordBenchmarkStoreError("Cross-origin benchmark actions are not permitted.", 403);
 }
 export function keywordBenchmarkErrorResponse(error: unknown) {

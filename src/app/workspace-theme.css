@@ -36,8 +36,8 @@
 }
 .app-shell .workspace-avatar { background: var(--folio-text-secondary); color: var(--folio-inverse-text); border-radius: 7px; }
 .app-shell .workspace-switch > span:nth-child(2) { font-size: 13px; }
-.app-shell .workspace-switch small, .app-shell .profile small { font-size: 11px; }
-.app-shell .nav-caption { color: var(--folio-text-secondary); font-size: 10px; letter-spacing: .5px; }
+.app-shell .workspace-switch small, .app-shell .profile small { font-size: 12px; }
+.app-shell .nav-caption { color: var(--folio-text-secondary); font-size: 12px; letter-spacing: .5px; }
 .app-shell .nav-link { color: var(--folio-text-secondary); height: 40px; font-size: 13px; border-radius: 5px; gap: 12px; }
 .app-shell .nav-link:hover { background: var(--folio-surface-muted); color: var(--folio-ink); }
 .app-shell .nav-link.active { background: var(--folio-surface-muted); color: var(--folio-ink); box-shadow: none; }
@@ -56,7 +56,7 @@
 .app-shell .search-trigger kbd { color: var(--folio-text-secondary); border-color: var(--folio-edge); }
 .app-shell .page-content { padding: 42px 44px 0; max-width: 1510px; }
 .app-shell .page-heading { margin-bottom: 34px; align-items: flex-end; }
-.app-shell .page-heading .eyebrow { font-size: 10px; letter-spacing: 1.5px; color: var(--folio-text-secondary); }
+.app-shell .page-heading .eyebrow { font-size: 12px; letter-spacing: 1.5px; color: var(--folio-text-secondary); }
 .app-shell .page-heading h1 {
   font-family: var(--sans);
   font-size: clamp(30px, 2.8vw, 43px);
@@ -79,7 +79,7 @@
 .app-shell .report-tabs button { font-size: 13px; color: var(--folio-text-secondary); }
 .app-shell .report-tabs button.selected { color: var(--folio-ink); font-weight: 600; }
 .app-shell .report-tabs button.selected:after { background: var(--folio-text-secondary); }
-.app-shell .sample-label { background: var(--folio-canvas); color: var(--folio-text-secondary); border-color: var(--folio-edge); font-size: 11px; border-radius: 5px; }
+.app-shell .sample-label { background: var(--folio-canvas); color: var(--folio-text-secondary); border-color: var(--folio-edge); font-size: 12px; border-radius: 5px; }
 .app-shell .metric-grid {
   gap: 0;
   border-top: 1px solid var(--folio-edge);
@@ -103,9 +103,9 @@
 .app-shell .metric-value { font-size: clamp(34px, 3.5vw, 49px); font-weight: 400; letter-spacing: -2px; font-variant-numeric: tabular-nums; }
 .app-shell .metric-suffix, .app-shell .primary .metric-suffix { color: var(--folio-text-secondary); font-size: 15px; letter-spacing: -.4px; }
 .app-shell .metric-suffix.percent { font-size: 24px; }
-.app-shell .metric-bottom, .app-shell .primary .metric-bottom { font-size: 10px; color: var(--folio-text-secondary); white-space: normal; flex-wrap: wrap; }
-.app-shell .metric-card > p, .app-shell .primary > p { color: var(--folio-text-secondary); font-size: 11px; line-height: 1.5; margin-top: 8px; }
-.app-shell .primary .change, .app-shell .metric-bottom .change { background: transparent; padding: 0; color: var(--folio-text-secondary); font-size: 11px; }
+.app-shell .metric-bottom, .app-shell .primary .metric-bottom { font-size: 12px; color: var(--folio-text-secondary); white-space: normal; flex-wrap: wrap; }
+.app-shell .metric-card > p, .app-shell .primary > p { color: var(--folio-text-secondary); font-size: 12px; line-height: 1.5; margin-top: 8px; }
+.app-shell .primary .change, .app-shell .metric-bottom .change { background: transparent; padding: 0; color: var(--folio-text-secondary); font-size: 12px; }
 .app-shell .sparkline { width: 55px; min-width: 25px; opacity: .8; }
 .app-shell .sparkline polyline { stroke: var(--folio-text-secondary); }
 .app-shell .panel { border: 1px solid var(--folio-edge); border-radius: 8px; background: var(--panel); box-shadow: none; }
@@ -115,14 +115,14 @@
 .app-shell .overview-grid { gap: 24px; grid-template-columns: minmax(0, 1.8fr) minmax(280px, 1fr); margin-bottom: 24px; }
 .app-shell .trend-panel { min-height: 405px; }
 .app-shell .segmented { background: var(--folio-canvas); border-color: var(--folio-edge); border-radius: 7px; }
-.app-shell .segmented button { color: var(--folio-text-secondary); font-size: 11px; padding: 7px 10px; }
+.app-shell .segmented button { color: var(--folio-text-secondary); font-size: 12px; padding: 7px 10px; }
 .app-shell .segmented button.active { background: var(--folio-surface); color: var(--folio-ink); border-radius: 4px; }
-.app-shell .chart-legend { font-size: 11px; color: var(--folio-text-secondary); }
+.app-shell .chart-legend { font-size: 12px; color: var(--folio-text-secondary); }
 .app-shell .legend-line.seo { background: var(--folio-text-secondary); }
-.app-shell .chart-footer { font-size: 11px; color: var(--folio-text-secondary); border-color: var(--folio-edge); }
+.app-shell .chart-footer { font-size: 12px; color: var(--folio-text-secondary); border-color: var(--folio-edge); }
 .app-shell .index-panel { background: var(--folio-canvas); border-color: var(--folio-edge); }
 .app-shell .index-panel .panel-heading h2 { font-family: var(--sans); font-size: 21px; font-weight: 500; line-height: 1.2; letter-spacing: -.6px; }
-.app-shell .index-description { font-size: 11px; color: var(--folio-text-secondary); }
+.app-shell .index-description { font-size: 12px; color: var(--folio-text-secondary); }
 .app-shell .mini-rank-row { height: 43px; font-size: 12px; }
 .app-shell .mini-score { font-variant-numeric: tabular-nums; font-size: 14px; color: var(--folio-ink); }
 .app-shell .your-rank { background: var(--folio-surface-muted); border-color: var(--folio-edge); }
@@ -131,19 +131,19 @@
 .app-shell .next-step { background: var(--folio-canvas); color: var(--ink); border-radius: 8px; padding: 30px; }
 .app-shell .next-step h2 { font-family: var(--sans); font-size: 29px; font-weight: 400; line-height: 1.15; letter-spacing: -.9px; }
 .app-shell .next-step p { color: var(--folio-text-secondary); font-size: 12px; }
-.app-shell .next-step .eyebrow { color: var(--folio-text-secondary); font-size: 10px; }
+.app-shell .next-step .eyebrow { color: var(--folio-text-secondary); font-size: 12px; }
 .app-shell .next-step .button { font-size: 12px; min-height: 39px; }
 .app-shell .report-motif { opacity: .4; }
 .app-shell .engine-row { font-size: 12px; margin: 18px 26px; }
 .app-shell .engine-track { background: var(--folio-canvas); }
 .app-shell .engine-track i { background: var(--folio-text-secondary); }
-.app-shell .engine-panel > .muted { color: var(--folio-text-secondary); font-size: 11px; }
+.app-shell .engine-panel > .muted { color: var(--folio-text-secondary); font-size: 12px; }
 .app-shell .prompt-table td { font-size: 12px; padding-top: 20px; padding-bottom: 20px; }
-.app-shell th { color: var(--folio-text-secondary); font-size: 10px; letter-spacing: .8px; background: var(--folio-canvas); }
+.app-shell th { color: var(--folio-text-secondary); font-size: 12px; letter-spacing: .8px; background: var(--folio-canvas); }
 .app-shell td { border-color: var(--folio-edge); }
 .app-shell .intent-tag { color: var(--folio-text-secondary); background: var(--folio-canvas); }
 .app-shell .page-footer { color: var(--folio-text-secondary); padding: 28px 0; }
-.app-shell .page-footer button { font-size: 11px; }
+.app-shell .page-footer button { font-size: 12px; }
 .app-shell :is(input, select, textarea):focus-visible { outline-color: var(--folio-edge-strong); }
 .app-shell .sidebar :is(button, a):focus-visible { outline-color: var(--folio-edge-strong); }
 /* Quiet shared hierarchy across every workspace route. */
@@ -202,11 +202,11 @@
   .app-shell .metric-value { font-size: 39px; }
   .app-shell .metric-label { font-size: 12px; }
   .app-shell .metric-middle { height: 65px; }
-  .app-shell .metric-card > p { font-size: 11px; }
+  .app-shell .metric-card > p { font-size: 12px; }
   .app-shell .panel-heading { padding: 21px 20px 0; }
   .app-shell .panel-heading h2 { font-size: 15px; }
-  .app-shell .panel-heading p { font-size: 11px; }
-  .app-shell .chart-footer { font-size: 10px; }
+  .app-shell .panel-heading p { font-size: 12px; }
+  .app-shell .chart-footer { font-size: 12px; }
   .app-shell .next-step { padding: 26px; }
   .app-shell .next-step h2 { font-size: 27px; }
 }
@@ -220,7 +220,7 @@
 .app-shell .nav-link { min-height: 44px; height: auto; font-size: 14px; font-weight: 500; padding-inline: 12px; }
 .app-shell .nav-link[aria-current="page"] { background: var(--folio-surface); color: var(--folio-ink); font-weight: 650; box-shadow: inset 3px 0 0 var(--folio-accent); }
 .app-shell .nav-link > svg { display: block; flex: none; }
-.app-shell .nav-caption { font-size: 11px; letter-spacing: .08em; }
+.app-shell .nav-caption { font-size: 12px; letter-spacing: .08em; }
 .app-shell .breadcrumb, .app-shell .search-trigger { font-size: 13px; }
 .app-shell .page-heading { align-items: flex-start; }
 .app-shell .page-heading h1 { font-size: clamp(32px, 2.8vw, 42px); line-height: 1.12; }
@@ -235,3 +235,114 @@
   .app-shell .heading-actions { width: 100%; }
   .app-shell .heading-actions > :is(a, button) { flex: 1 1 auto; justify-content: center; }
 }
+
+/* ---------------------------------------------------------------------------
+   2026-11 shell pass: one nav model, one density, one type scale.
+   Work / Evidence groups, 32px nav rows with icons, 48px topbar, 20px page
+   titles, 40px list rows. The rules below intentionally override the older
+   workspace metrics above; delete the older block when the rest of the app has
+   migrated.
+   --------------------------------------------------------------------------- */
+
+.app-shell .sidebar { padding: 12px; width: 224px; }
+.app-shell .sidebar > .wordmark { margin: 0 8px 20px; }
+.app-shell .nav-group + .nav-group { margin-top: 12px; }
+.app-shell .nav-caption {
+  color: var(--folio-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  margin: 0 8px 4px;
+  text-transform: none;
+}
+.app-shell .sidebar .nav-link {
+  border-radius: 6px;
+  font-size: 13px;
+  gap: 8px;
+  height: 32px;
+  min-height: 32px;
+  padding: 0 8px;
+}
+.app-shell .nav-link > svg { display: block; height: 16px; width: 16px; }
+.app-shell .nav-link.active { box-shadow: inset 2px 0 0 var(--folio-accent); }
+.app-shell .topbar { height: 48px; padding: 0 24px; }
+.app-shell .page-heading { align-items: flex-start; gap: 12px; margin-bottom: 20px; }
+.app-shell .page-heading .eyebrow { display: none; }
+.app-shell .page-heading h1 { font-size: 20px; letter-spacing: -0.2px; line-height: 28px; margin: 0; }
+.app-shell .page-heading p { font-size: 13px; line-height: 20px; margin: 4px 0 0; }
+
+.agent-task-row { gap: 8px; min-height: 40px; padding: 6px 8px; }
+.agent-task-row-icon { height: 20px; width: 20px; }
+.agent-task-group-label { margin: 0 0 2px; padding: 0 8px; }
+
+.sound-toggle { color: var(--folio-text-muted); }
+.sound-toggle:hover { color: var(--folio-ink); }
+.sound-toggle[aria-pressed="true"] { color: var(--folio-ink); }
+
+@media (max-width: 1023px) {
+  .app-shell .sidebar { width: 224px; }
+}
+
+
+/* 2026-11 redesign pass two: quiet the panels, drop the slogan chrome. */
+.app-shell .eyebrow { display: none; }
+.app-shell .panel { border-radius: 8px; box-shadow: none; padding: 16px; }
+.app-shell .panel > h2, .app-shell .eval-section-top h2 { font-size: 16px; letter-spacing: -0.1px; }
+.app-shell .agent-runtime-diagram { display: none; }
+.app-shell .agent-runtime { gap: 16px; padding: 20px; }
+.app-shell .agent-runtime h2 { font-size: 20px; line-height: 28px; }
+.app-shell .agent-runtime h2 em { font-style: normal; }
+.app-shell .agent-counters { gap: 8px; }
+.app-shell .agent-counters > div { border-radius: 8px; padding: 12px 14px; }
+
+
+/* Impeccable pass: no kickers above headings, balanced headings, readable copy. */
+.app-shell .eval-eyebrow { display: none; }
+.app-shell h1, .app-shell h2, .app-shell h3 { text-wrap: balance; }
+.app-shell p { text-wrap: pretty; }
+.benchmark-question-list { padding-left: 4px; }
+.benchmark-question-list > button { margin-left: 8px; }
+
+
+/* Websites and Evaluations: one rhythm, one panel style, compact rows. */
+.app-shell .page-content > * + * { margin-top: 24px; }
+.app-shell .owned-websites { display: flex; flex-direction: column; gap: 16px; }
+.app-shell .owned-websites h2 { font-size: 16px; margin: 0; }
+.app-shell .owned-websites .panel { box-shadow: none; }
+.app-shell .panel.published-controls { background: var(--folio-canvas); }
+.app-shell .panel.published-controls h2 { font-size: 16px; }
+.app-shell .audit-history li, .app-shell .scan-history li, .app-shell .evaluation-history li { min-height: 40px; }
+.app-shell .page-footer { border-top: 1px solid var(--folio-edge); margin-top: 32px; padding-top: 16px; }
+
+
+/* Reference pass: filled current row, board columns, metric cards, 52px bar. */
+.app-shell .sidebar .nav-link.active { background: var(--folio-surface-muted); box-shadow: none; color: var(--folio-ink); }
+.app-shell .topbar { height: 52px; }
+
+.agent-task-list {
+  align-items: start;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+.agent-task-group {
+  background: var(--folio-surface);
+  border: 1px solid var(--folio-edge);
+  border-radius: 10px;
+  min-height: 80px;
+  padding: 8px;
+}
+.agent-task-group + .agent-task-group { margin-top: 0; }
+.agent-task-group-label {
+  border-bottom: 1px solid var(--folio-edge);
+  margin: 0 0 6px;
+  padding: 0 4px 8px;
+}
+.agent-task-group-label b {
+  background: var(--folio-surface-muted);
+  border-radius: 999px;
+  min-width: 20px;
+  padding: 1px 6px;
+  text-align: center;
+}
+.agent-task-row { border-radius: 8px; }

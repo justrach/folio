@@ -135,11 +135,41 @@ Cutover checklist:
 
 Rollback is flipping `DB_ENGINE` back; D1 is untouched by the cutover because the copy is one-way.
 
+## Cutover (done — 2026-11-07)
+
+`usefolio.site` runs on Postgres. `wrangler.production.jsonc` carries
+`DB_ENGINE=postgres` and a dedicated Hyperdrive config (`folio-app-db`, caching
+disabled) so read-after-write stays correct for sessions and leases. The D1
+binding remains attached; rollback is removing that one variable.
+
+What the cutover needed beyond the adapter:
+
+- **Driver per engine.** `getAuth()` was calling `drizzle()` from `drizzle-orm/d1`
+  even on the Postgres branch, so the D1 driver called `prepare()` on a pg Pool
+  (`this.client.prepare is not a function`). It now imports both drivers and
+  picks one with the engine.
+- **TLS through Hyperdrive.** Hyperdrive terminates TLS; asking `pg` to negotiate
+  it again fails inside a Worker, so `ssl` is only set on direct connections.
+- **64-bit integers.** D1's `INTEGER` is 64-bit but the mirror had 23 32-bit
+  `integer` columns, and epoch-millisecond values overflowed
+  (`value ... is out of range for type integer`). 21 were widened to `bigint`;
+  two `research` columns are view-dependent and hold no app data.
+- **Data.** The deployed D1 was small (16 users, 4 sites, 6 scans, 3 evaluations,
+  2 SEO reports, 165 keyword runs) and the mirror already held it; the only
+  missing rows were 8 `rate_limit` entries. `scripts/copy-d1-remote-to-pg.mjs`
+  copies by primary key with `ON CONFLICT DO NOTHING`, disables user triggers per
+  table for the duration (lifecycle guards reject historical rows) and is
+  idempotent.
+
+Verified live: sign-in with an unknown account answers `401` (a real user lookup)
+rather than `503`, `get-session` answers `null`, and sign-in attempts write to
+Postgres while D1's `rate_limit` count stays unchanged.
+
 ## Engine switch (implemented)
 
 `src/lib/db.ts` now chooses the store: `DB_ENGINE=postgres` returns the D1-shaped adapter over `pg`, anything else returns the D1 binding. Stores are unchanged — they still call `prepare().bind().first()/.all()/.run()`.
 
-Authentication is the one exception and is pinned to D1 through `getAuthDb()`: Better Auth's drizzle adapter is bound to the D1 client, and a half-migrated session table is the failure that locks people out.
+Authentication followed `DB_ENGINE` once the driver split was fixed; `getAuthDb()` remains only as the D1 fallback path.
 
 Verified against the application tables, not just the research ones: `sites` reads, the leaderboard's join, placeholder binding and `meta.changes` all behave through the Postgres adapter.
 

@@ -23,7 +23,7 @@ export async function queryKeywordResearch(db:D1Database,ownerId:string,input:{d
  const id=crypto.randomUUID(),now=Date.now();
  const admitted=await db.prepare(`INSERT INTO keyword_research_requests(id,user_id,grant_id,domain,request_hash,request_key_hash,created_at,updated_at)
  SELECT ?,?,?,?,?,?,?,? WHERE (SELECT COUNT(*) FROM keyword_research_requests WHERE user_id=? AND created_at>?)<15
- AND (? IS NULL OR EXISTS(SELECT 1 FROM sandbox_seo_grants g JOIN keyword_benchmark_runs r ON r.id=g.run_id AND r.user_id=g.user_id
+ AND (CAST(? AS TEXT) IS NULL OR EXISTS(SELECT 1 FROM sandbox_seo_grants g JOIN keyword_benchmark_runs r ON r.id=g.run_id AND r.user_id=g.user_id
  WHERE g.id=? AND g.user_id=? AND g.domain=? AND g.tool_version>=2 AND g.expires_at>?
  AND r.status IN ('queued','running','requires_action') AND r.cancel_attempt_at IS NULL AND r.hold_release_at IS NULL
  AND (SELECT COUNT(*) FROM keyword_research_requests WHERE grant_id=g.id)<3))

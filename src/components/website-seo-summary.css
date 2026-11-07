@@ -9,14 +9,14 @@
 .website-seo-metrics > div { padding: 19px 16px; min-width: 0; border-right: 1px solid var(--line); }
 .website-seo-metrics > div:first-child { padding-left: 0; }
 .website-seo-metrics > div:last-child { border: 0; }
-.website-seo-metrics dt { font-size: 11px; color: var(--folio-text-secondary); line-height: 1.6; }
+.website-seo-metrics dt { font-size: 12px; color: var(--folio-text-secondary); line-height: 1.6; }
 .website-seo-metrics dd { margin: 10px 0 0; font-size: 27px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
-.website-seo-captured { font-size: 11px !important; }
-.website-seo-note { font-size: 11px !important; margin-top: 6px !important; }
+.website-seo-captured { font-size: 12px !important; }
+.website-seo-note { font-size: 12px !important; margin-top: 6px !important; }
 .website-seo-notice { background: var(--folio-canvas); border: 1px solid var(--folio-edge); padding: 12px 15px; }
 .website-seo-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 20px; padding-top: 21px; }
 .website-seo-actions .button { min-height: 42px; }
-.website-seo-actions p { max-width: 430px; font-size: 11px; }
+.website-seo-actions p { max-width: 430px; font-size: 12px; }
 @media(max-width:700px) {
   .website-seo-summary { padding: 19px; }
   .website-seo-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); }

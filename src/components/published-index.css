@@ -17,7 +17,7 @@
 .published-kicker {
   display: block;
   margin-bottom: 8px;
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 1.5px;
   color: var(--folio-text-secondary);
 }
@@ -29,7 +29,7 @@
   margin: 0;
   padding: 0 24px 20px;
   max-width: 960px;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.8;
   color: var(--folio-text-secondary);
 }
@@ -66,7 +66,7 @@
   justify-content: space-between;
   gap: 16px;
   border-top: 1px solid var(--line);
-  font-size: 10px;
+  font-size: 12px;
   color: var(--folio-text-secondary);
 }
 .published-table-toolbar label {
@@ -82,7 +82,7 @@
   background: var(--folio-surface);
   color: var(--folio-text-secondary);
   font: inherit;
-  font-size: 11px;
+  font-size: 12px;
 }
 .published-table {
   min-width: 780px;
@@ -113,12 +113,12 @@
   min-width: 70px;
 }
 .published-table .score-cell small {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 400;
   color: var(--folio-text-muted);
 }
 .published-table time {
-  font-size: 10px;
+  font-size: 12px;
   white-space: nowrap;
 }
 .published-page-link {
@@ -140,7 +140,7 @@
   display: block;
   margin-top: 5px;
   color: var(--folio-text-muted);
-  font-size: 10px;
+  font-size: 12px;
   max-width: 340px;
   overflow-wrap: anywhere;
 }
@@ -163,7 +163,7 @@
   flex-wrap: wrap;
   padding: 17px 24px;
   border-top: 1px solid var(--line);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.6;
   color: var(--folio-text-muted);
 }
@@ -177,20 +177,20 @@
 .published-methodology > summary {
   padding: 18px 24px;
   cursor: pointer;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--folio-text-secondary);
   line-height: 1.7;
 }
 .published-methodology > summary > span {
   margin-left: 12px;
   color: var(--folio-text-muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 .published-methodology-body {
   padding: 0 24px 24px;
   max-width: 1040px;
   color: var(--folio-text-secondary);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.8;
 }
 .published-methodology-body h3 {
@@ -230,7 +230,7 @@
   border-bottom: 1px solid var(--folio-edge);
 }
 .published-weights strong {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 500;
   white-space: nowrap;
 }
@@ -261,18 +261,18 @@
 }
 .published-site-identity p {
   margin: 5px 0 7px;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--folio-text-muted);
   overflow-wrap: anywhere;
 }
 .published-site-identity small {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--folio-text-muted);
   line-height: 1.6;
 }
 .published-site-row > .button {
   min-width: 142px;
-  font-size: 10px;
+  font-size: 12px;
   flex-shrink: 0;
 }
 .published-action-error {
@@ -284,7 +284,7 @@
 .published-feedback {
   margin: 0;
   padding: 0 24px;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.7;
   color: var(--folio-text-secondary);
 }
@@ -298,7 +298,7 @@
   gap: 20px;
   padding: 20px 24px;
   color: var(--folio-text-muted);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.7;
 }
 .published-controls-footer > span {

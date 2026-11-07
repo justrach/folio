@@ -38,10 +38,12 @@ Use Bun 1.4.1 with `bun.lock` for dependency installation and task scripts. Keep
 ```sh
 bun install
 bun run setup
-bun run dev --port 3001
+bun run dev --port 3001   # loads .dev.vars; see docs/LOCAL-DEV.md
 ```
 
 The setup script preserves existing credentials and prepares local D1. Do not overwrite an existing environment to make a test pass. The local app is normally at `http://localhost:3001`; check an existing server before starting another.
+
+`bun run dev:seed` creates the local pseudo-auth account (`DEV_AUTH=1` in `.dev.vars`) so the app runs against the Postgres mirror without a provider login. See [local dev](docs/LOCAL-DEV.md).
 
 Local bindings persist in `.wrangler/state/v3`; migration/status commands use `--persist-to .wrangler/state` because Wrangler adds `/v3`. Export lacks that option, so the backup wrapper runs from the repository root against its default local store. Keep these paths aligned and remote development bindings disabled. `bun run db:status:local` lists pending migrations; `db:migrate:local` applies them; `db:backup:local` creates a private ignored SQL export. Preserve existing state and never print backup contents. See [local D1](docs/LOCAL-D1.md).
 

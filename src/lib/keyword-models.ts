@@ -3,6 +3,8 @@ export const KEYWORD_OPEN_WEB_MODELS = [
   { id: "gpt-6-astra", label: "Astra", validation: "validated" },
   { id: "gpt-6-luna", label: "Luna 6", validation: "experimental" },
   { id: "gpt-6-sol", label: "Sol 6", validation: "experimental" },
+  { id: "gpt-6.1-sol", label: "Sol 6.1", validation: "experimental" },
+  { id: "gpt-6.1-terra", label: "Terra 6.1", validation: "experimental" },
 ] as const;
 export const KEYWORD_OPEN_WEB_MODEL = "gpt-6-luna";
 export function isKeywordOpenWebModel(value: unknown): value is typeof KEYWORD_OPEN_WEB_MODELS[number]["id"] {
@@ -10,5 +12,5 @@ export function isKeywordOpenWebModel(value: unknown): value is typeof KEYWORD_O
 }
 /** Historical completed runs remain exportable under their frozen model identity. */
 export function isRecordedKeywordOpenWebModel(value: unknown): value is string {
-  return isKeywordOpenWebModel(value) || value === "gpt-5.6-luna" || value === "gpt-5.6-sol" || value === "gpt-5.6-terra";
+  return isKeywordOpenWebModel(value) || value === "gpt-6.1-sol" || value === "gpt-6.1-terra" || value === "gpt-5.6-luna" || value === "gpt-5.6-sol" || value === "gpt-5.6-terra";
 }
