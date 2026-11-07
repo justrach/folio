@@ -173,8 +173,12 @@ test("an external login return target falls back to the private websites workspa
 });
 
 async function openWebsitePicker(page: Page) {
+  await expect(page.locator(".topbar")).toBeVisible();
   const menu = page.getByRole("button", { name: "Open navigation", exact: true });
-  if (await menu.isVisible()) await menu.click();
+  if (await menu.isVisible()) {
+    await menu.click();
+    await expect(page.locator(".sidebar")).toHaveClass(/\bopen\b/);
+  }
   await page.getByRole("button", { name: "Switch website", exact: true }).click();
 }
 

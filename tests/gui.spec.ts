@@ -80,9 +80,12 @@ async function noPageOverflow(page: Page) {
 }
 
 async function navigate(page: Page, route: (typeof routes)[number]) {
+  await expect(page.locator(".topbar")).toBeVisible();
   const link = page.locator(`.nav-link[href="${route.path}"]`);
   if (!(await link.count())) {
     await page.getByRole("link", { name: "My workspace", exact: true }).click();
+    await expect(page).toHaveURL("/overview?view=workspace");
+    await expect(page.getByRole("navigation", { name: "Main navigation", exact: true })).toBeAttached();
   }
   const menu = page.getByRole("button", {
     name: "Open navigation",

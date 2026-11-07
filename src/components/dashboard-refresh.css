@@ -105,7 +105,11 @@
   .app-shell.folio-workspace .page-heading { align-items: flex-start; }
   .app-shell.folio-workspace .page-heading h1 { font-size: 24px; }
   .app-shell.folio-workspace .page-heading p { font-size: 13px; }
-  .dashboard-appearance span, .folio-workspace .public-workspace-link { display: none !important; }
+  .dashboard-appearance span, .folio-workspace .public-workspace-link span { display: none !important; }
+  .folio-workspace .public-workspace-link { display: inline-flex; width: 34px; height: 34px; padding: 0; justify-content: center; border: 1px solid var(--folio-edge); border-radius: 12px; }
+  .public-overview-shell .breadcrumb { min-width: 0; overflow: hidden; }
+  .public-overview-shell .breadcrumb > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .public-overview-shell .breadcrumb > :not(span), .public-overview-shell .topbar-actions { flex-shrink: 0; }
   .app-shell.folio-workspace .topbar-actions { margin-left: auto; }
   .folio-workspace .website-summary-chart { padding: 16px 10px 8px; }
   .folio-workspace .website-table-heading { align-items: stretch; flex-direction: column; gap: 0; }
