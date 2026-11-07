@@ -1,22 +1,25 @@
 import { FolioAppearance } from "@/components/folio-appearance";
 import type { Metadata } from "next";
-import { DM_Mono, DM_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import "./workspace-theme.css";
 import "./theme.css";
 import "@/components/ui/press-motion.css";
 
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "700", "800"],
-  style: ["normal", "italic"],
+const dmSans = localFont({
+  src: [
+    { path: "./fonts/dm-sans-latin.woff2", weight: "100 1000", style: "normal" },
+    { path: "./fonts/dm-sans-italic-latin.woff2", weight: "100 1000", style: "italic" },
+  ],
   variable: "--font-dm-sans",
   display: "swap",
 });
 
-const dmMono = DM_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
+const dmMono = localFont({
+  src: [
+    { path: "./fonts/dm-mono-400-latin.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/dm-mono-500-latin.woff2", weight: "500", style: "normal" },
+  ],
   variable: "--font-dm-mono",
   display: "swap",
 });
