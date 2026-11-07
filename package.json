@@ -62,10 +62,10 @@
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "miniflare": "5.20260911.0-alpha",
+    "miniflare": "5.20261104.0-beta",
     "tsx": "^4.20.0",
     "typescript": "^5.9.0",
-    "wrangler": "^4.125.0"
+    "wrangler": "4.158.0"
   },
   "overrides": {
     "postcss": "^8.5.28"
