@@ -2,7 +2,11 @@
 
 The frontend and any external agent read the index through this HTTP contract. The implementation lives in the private `folio-index` service; this document, and `src/lib/index-client.ts`, are the public half.
 
-Base path: `/api/index/v1`. Authentication: `Authorization: Bearer <key>` when the deployment requires it. Responses are JSON; unknown fields must be ignored by clients.
+Base URL: **`https://backend.usefolio.site`** (Cloudflare Worker, private index). Base path: `/api/index/v1`.
+
+Authentication: every request needs `Authorization: Bearer <index key>`. Missing or invalid keys return `401` before the database is touched. The index is private: there is no anonymous mode, and keys are issued per consumer and revoked by rotating the Worker secret.
+
+Responses are JSON; unknown fields must be ignored by clients.
 
 ## Records
 
@@ -53,7 +57,10 @@ Base path: `/api/index/v1`. Authentication: `Authorization: Bearer <key>` when t
 ```ts
 import { createIndexClient } from "@/lib/index-client";
 
-const index = createIndexClient({ baseUrl: process.env.NEXT_PUBLIC_FOLIO_API ?? "", apiKey: key });
+const index = createIndexClient({
+  baseUrl: process.env.NEXT_PUBLIC_FOLIO_INDEX_URL ?? "https://backend.usefolio.site",
+  apiKey: process.env.FOLIO_INDEX_KEY,
+});
 
 const entity = await index.entity({ domain: "manus.im" });
 const sections = await index.sections(entity.id, { limit: 5 });
