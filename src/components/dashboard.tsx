@@ -2032,8 +2032,8 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
         <p className="login-privacy"><ShieldCheck size={14} aria-hidden="true" /> Your reports are private by default.</p>
       </section>
       <aside className="login-art" aria-label="Folio artwork">
-        <Image className="theme-art-light" src="/images/folio-login-arch.webp" alt="" width={1024} height={1280} sizes="(max-width: 800px) 0px, 40vw" />
-        <Image className="theme-art-dark" src="/images/folio-login-arch-dark.webp" alt="" width={1024} height={1280} sizes="(max-width: 800px) 0px, 40vw" />
+        <Image className="theme-art-light" src="/images/folio-login-arch.webp" alt="" width={1024} height={1280} sizes="(max-width: 800px) 100vw, 40vw" loading="eager" />
+        <Image className="theme-art-dark" src="/images/folio-login-arch-dark.webp" alt="" width={1024} height={1280} sizes="(max-width: 800px) 100vw, 40vw" loading="eager" />
         <div><span>A little perspective.</span><span>Folio / 02</span></div>
       </aside>
       </main>

@@ -61,3 +61,39 @@ test("login errors stay readable and successful email sign-in returns to the wor
   await expect(page.getByRole("heading", { name: "My website results", exact: true })).toBeVisible();
   expect(state.signIns).toBe(2); expect(state.otherWrites).toEqual([]);
 });
+
+
+test("dark artwork and layered documentation follow the stored appearance", async ({ page }) => {
+  await setup(page);
+  await page.addInitScript(() => localStorage.setItem("folio-dashboard-appearance", "dark"));
+  for (const path of ["/login", "/", "/start"]) {
+    await page.goto(path);
+    await expect(page.locator("html")).toHaveAttribute("data-folio-theme", "dark");
+    const pair = page.locator("img.theme-art-dark").first();
+    await expect(pair).toHaveAttribute("src", /dark/);
+    await expect(page.locator("img.theme-art-light").first()).not.toBeVisible();
+    if (path === "/login") {
+      await expect(pair).toBeVisible();
+      await expect.poll(() => pair.evaluate(node => (node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+    }
+  }
+  await page.goto("/docs/api");
+  const surfaces = await page.evaluate(() => [".api-docs-main", ".api-docs-nav", ".api-docs pre"].map(selector => getComputedStyle(document.querySelector(selector)!).backgroundColor));
+  expect(new Set(surfaces).size).toBe(3);
+});
+
+test("login controls compress on press and respect reduced motion", async ({ page }) => {
+  const state = await setup(page);
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/login");
+  const choice = page.getByRole("button", { name: "Continue with email", exact: true });
+  await choice.hover();
+  await page.mouse.down();
+  await expect.poll(() => choice.evaluate(node => getComputedStyle(node).transform)).not.toBe("none");
+  await page.mouse.move(0, 0); await page.mouse.up();
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await choice.hover(); await page.mouse.down();
+  await expect(choice).toHaveCSS("transform", "none");
+  await page.mouse.move(0, 0); await page.mouse.up();
+  expect(state.signIns).toBe(0); expect(state.otherWrites).toEqual([]);
+});

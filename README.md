@@ -166,3 +166,5 @@ Folio now includes `/api/mcp` for coding clients and `/api/v1/seo` for explicit,
 ### Public website audits
 
 Signed-in users can audit public HTTPS pages without domain approval. Technical audits ignore `SCAN_ALLOWED_HOSTS`; that variable still scopes AI evidence capture. Redirects are checked at every hop, and response size, time, content type, authentication, private storage and hourly limits remain enforced. Local Node scans validate DNS addresses in the HTTPS socket's lookup callback (including mixed public/private answers), preserving TLS hostname verification. Production uses global Worker fetch with `global_fetch_strictly_public`; do not substitute a private-network binding or remove that deployment flag.
+
+The current application runtime is pinned to Next.js 16.4.5 in `package.json` and `bun.lock`. Use the plain `bun run cf:build`; the earlier Next 15 unsupported-version override is no longer needed.
