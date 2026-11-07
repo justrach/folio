@@ -18,7 +18,8 @@ adapter built successfully but crashed in Workers loading `preview-props.json`.
 CI now runs `frontend:smoke` against the actual built Worker, without database or
 provider bindings, to catch initialization failures before deployment.
 
-The existing public-index Worker retains `/api/question-index*`. Current
+The existing public-index Worker retains `/api/question-index*`; the preview
+also forwards that API through its public-index binding. Current
 `/leaderboard` requests render the new UI. Explicit legacy `view=questions`,
 `cohort`, and `q` links forward to `folio-public-index` using a separate service
 binding, avoiding recursive public URL fetches.

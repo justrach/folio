@@ -25,4 +25,7 @@ test("frontend renders current pages and preserves explicit legacy index links",
   for (const query of ["view=questions", "cohort=fixture", "q=fixture"])
     assert.equal(await (await serveFrontend(new Request(`https://usefolio.site/leaderboard?${query}`), services, async () => { throw new Error("Wrong renderer"); })).text(), "legacy");
   assert.deepEqual(calls, ["legacy", "legacy", "legacy"]);
+  for (const path of ["/api/question-index", "/api/question-index/fixture"])
+    assert.equal(await (await serveFrontend(new Request(`https://usefolio.site${path}`), services, async () => { throw new Error("Wrong renderer"); })).text(), "legacy");
+  assert.deepEqual(calls, ["legacy", "legacy", "legacy", "legacy", "legacy"]);
 });
