@@ -64,6 +64,7 @@ Keep a final export, remove the binding from `wrangler.jsonc`, delete the D1 dat
 | `meta.changes` semantics | adapter maps `rowCount`; the deletion trigger case (`changes` > 1) is explicitly tested |
 | SQLite triggers are simpler than plpgsql | translate each of the 20 and test the abort path |
 | Reservations double-charge under concurrency | port only after the two-writer race tests pass on Postgres |
+| Better Auth rate limiting on Postgres | the drizzle adapter needed >= 1.7.7 (GHSA-44jh-23m7-hpcf); the repository is on 1.7.18 |
 | Latency from Sydney | measure p50/p95 through Hyperdrive before cutover; keep the public index static |
 | Rollback | every phase keeps D1 authoritative until the next flips; the flag reverts one store at a time |
 
