@@ -97,6 +97,12 @@ async function navigate(page: Page, route: (typeof routes)[number]) {
   await expect(link).toHaveClass(/active/);
 }
 
+async function openTitleCheck(page: Page) {
+  const checks = page.getByRole("region", { name: "SEO checks", exact: true });
+  await checks.getByRole("group", { name: "Filter checks", exact: true }).getByRole("button", { name: /^Pass/ }).click();
+  await checks.locator("summary").filter({ hasText: "Page title" }).click();
+}
+
 async function screenshot(page: Page, testInfo: TestInfo, name: string) {
   const path = testInfo.outputPath(`${name}.png`);
   await page.screenshot({ path, fullPage: true, animations: "disabled" });
@@ -536,6 +542,7 @@ test("real signup, simulated scan history, and logout protect account data", asy
     .getByRole("button", { name: "Run website audit", exact: true })
     .click();
   await expect(page).toHaveURL(/\/seo$/);
+  await openTitleCheck(page);
   await expect(
     page.getByText("GUI fixture evidence: page title captured.", {
       exact: true,
@@ -573,6 +580,7 @@ test("real signup, simulated scan history, and logout protect account data", asy
   ).toBeVisible();
   await page.locator(".audit-history button").click();
   await expect(page).toHaveURL(/\/seo$/);
+  await openTitleCheck(page);
   await expect(
     page.getByText("GUI fixture evidence: page title captured.", {
       exact: true,

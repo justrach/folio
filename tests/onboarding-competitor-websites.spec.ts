@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 
-type Competitor = { name: string; aliases: string[]; source?: string };
+type Competitor = { name: string; domain?: string; aliases: string[]; source?: string };
 const longDomain = `${"long".repeat(14)}.example.com`;
 const rows = [
   { name: "Fixture Company", domain: longDomain, aliases: ["Fixture Alternate Name"], answers: 4, totalAnswers: 6, averagePosition: 1.5, isTarget: false, namedInQuestion: 0 },
@@ -62,7 +62,7 @@ test("Step 6 shows indexed websites, keeps counts and saves keyboard selections 
   expect(writes).toEqual([]);
   await page.getByRole("button", { name: "Track 1 competitor", exact: true }).click();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ask AI your 1 question now.");
-  expect(writes).toEqual([{ path: "/api/competitors", body: { siteId: "fixture-site", competitors: [{ name: "Fixture Company", aliases: ["Fixture Alternate Name"], source: "public-index" }] } }]);
+  expect(writes).toEqual([{ path: "/api/competitors", body: { siteId: "fixture-site", competitors: [{ name: "Fixture Company", domain: longDomain, aliases: ["Fixture Alternate Name"], source: "public-index" }] } }]);
   await page.goto("/start?step=6");
   await expect(page.getByRole("checkbox", { name: "Track Fixture Company", exact: true })).toBeChecked();
   await expect(page.getByRole("checkbox", { name: "Track Second Company", exact: true })).toHaveCount(0);
