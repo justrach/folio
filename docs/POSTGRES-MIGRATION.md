@@ -75,6 +75,31 @@ Keep a final export, remove the binding from `wrangler.jsonc`, delete the D1 dat
 - Auth flows verified on Postgres in staging before cutover.
 - D1 frozen, exported, and removed from configuration after the retention period.
 
+## Phase 1 result: schema parity
+
+`scripts/pg-schema.ts` translates the 24 SQLite migrations and applies them to a fresh schema; `scripts/pg-parity.ts` compares the result with D1.
+
+| Result | Count |
+| --- | ---: |
+| Statements executed | 84 |
+| Failures | 0 |
+| Tables in `folio_pg` | 31 |
+| Columns differing from D1 | 0 |
+| Triggers translated | 13 |
+| Statements needing a hand port | 9 views, 4 cost-accounting triggers, 2 cost backfills |
+
+What translated mechanically: tables, indexes, `ALTER TABLE … ADD COLUMN`, identity columns, seed inserts, `json_extract`-free triggers (immutability guards, cascade deletes), `IS`/`IS NOT` value comparisons (→ `DISTINCT FROM`), `length(CAST(x AS BLOB))` (→ `octet_length`), and reserved `"user"`.
+
+What did not, and why it is deliberate:
+
+- **`provider_cost_latest` view** (recreated in five migrations) uses SQLite's implicit `rowid`.
+- **Four cost-accounting triggers** build `provider_cost_observations` rows inside SQLite with `iif`, `json_type`, `json_extract` and `unixepoch('now')`.
+- **Two backfill inserts** in the same style.
+
+Those are the only hand-written pieces left in the schema, and they share one design question: keep cost snapshots in database triggers, or move them into an application helper that both engines can call? The second option removes 300 lines of dialect-specific SQL and makes the accounting testable, but changes where a write happens — worth deciding before porting stores that emit usage.
+
+`json_valid` has no Postgres equivalent; `scripts/pg-schema.ts` installs a small `plpgsql` shim so `CHECK (json_valid(...))` keeps its guarantee instead of being dropped.
+
 ## Spike result
 
 `seo-store` — three tables, seven functions — now runs on Postgres **without changing its code**, through `src/lib/pg/database.ts` and `src/lib/pg/compat.ts`:
