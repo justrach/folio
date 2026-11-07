@@ -480,5 +480,198 @@
       "https://www.edx.org/about-us"
     ],
     "observedAt": "2026-09-13"
+  },
+  {
+    "id": "chatgpt",
+    "name": "ChatGPT",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "description": "Converse with a general AI assistant for research, writing, analysis, and file or image tasks.",
+    "websiteUrl": "https://chatgpt.com/",
+    "docsUrl": "https://help.openai.com/en/",
+    "sourceUrls": [
+      "https://chatgpt.com/",
+      "https://help.openai.com/en/"
+    ],
+    "observedAt": "2026-09-13"
+  },
+  {
+    "id": "claude",
+    "name": "Claude",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "description": "Use Anthropic's AI assistant for writing, analysis, coding, and document review.",
+    "websiteUrl": "https://claude.ai/",
+    "docsUrl": "https://support.anthropic.com/",
+    "sourceUrls": [
+      "https://claude.ai/",
+      "https://support.anthropic.com/"
+    ],
+    "observedAt": "2026-09-13"
+  },
+  {
+    "id": "gemini",
+    "name": "Gemini",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "description": "Use Google's AI assistant for questions, writing, image generation, and connected Google services.",
+    "websiteUrl": "https://gemini.google.com/",
+    "docsUrl": "https://gemini.google.com/",
+    "sourceUrls": [
+      "https://gemini.google.com/"
+    ],
+    "observedAt": "2026-09-13"
+  },
+  {
+    "id": "perplexity",
+    "name": "Perplexity",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "description": "Ask questions and receive cited answers from web sources, with focused search modes.",
+    "websiteUrl": "https://www.perplexity.ai/",
+    "docsUrl": "https://docs.perplexity.ai/",
+    "sourceUrls": [
+      "https://www.perplexity.ai/",
+      "https://docs.perplexity.ai/"
+    ],
+    "observedAt": "2026-09-13"
+  },
+  {
+    "id": "microsoft-copilot",
+    "name": "Microsoft Copilot",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "description": "Use Microsoft's AI assistant for chat, writing, and connected Microsoft 365 work.",
+    "websiteUrl": "https://copilot.com/",
+    "docsUrl": "https://copilot.com/",
+    "sourceUrls": [
+      "https://copilot.com/"
+    ],
+    "observedAt": "2026-09-13"
+  },
+  {
+    "id": "manus",
+    "name": "Manus",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "description": "Delegate multi-step research and computer tasks to an autonomous general AI agent.",
+    "websiteUrl": "https://manus.im/",
+    "docsUrl": "https://manus.im/help",
+    "sourceUrls": [
+      "https://manus.im/",
+      "https://manus.im/help"
+    ],
+    "observedAt": "2026-09-13"
+  },
+  {
+    "id": "grok",
+    "name": "Grok",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "description": "Use xAI's assistant for chat, web search, and image generation.",
+    "websiteUrl": "https://grok.com/",
+    "docsUrl": "https://grok.com/",
+    "sourceUrls": [
+      "https://grok.com/"
+    ],
+    "observedAt": "2026-09-13"
+  },
+  {
+    "id": "lovable",
+    "name": "Lovable",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "description": "Build and edit full-stack web apps from prompts in a hosted workspace.",
+    "websiteUrl": "https://lovable.dev/",
+    "docsUrl": "https://docs.lovable.dev/",
+    "sourceUrls": [
+      "https://lovable.dev/",
+      "https://docs.lovable.dev/"
+    ],
+    "observedAt": "2026-09-13"
+  },
+  {
+    "id": "v0",
+    "name": "v0",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "description": "Generate and iterate on web interfaces and applications from prompts in a hosted workspace.",
+    "websiteUrl": "https://v0.app/",
+    "docsUrl": "https://v0.dev/docs",
+    "sourceUrls": [
+      "https://v0.app/",
+      "https://v0.dev/docs"
+    ],
+    "observedAt": "2026-09-13"
+  },
+  {
+    "id": "bolt",
+    "name": "Bolt",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "description": "Prompt, run, and deploy full-stack web apps in the browser with Bolt.",
+    "websiteUrl": "https://bolt.new/",
+    "docsUrl": "https://support.bolt.new/",
+    "sourceUrls": [
+      "https://bolt.new/",
+      "https://support.bolt.new/"
+    ],
+    "observedAt": "2026-09-13"
+  },
+  {
+    "id": "replit",
+    "name": "Replit",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "description": "Build, run, and deploy software in a browser-based development environment with an AI agent.",
+    "websiteUrl": "https://replit.com/",
+    "docsUrl": "https://docs.replit.com/",
+    "sourceUrls": [
+      "https://replit.com/",
+      "https://docs.replit.com/"
+    ],
+    "observedAt": "2026-09-13"
+  },
+  {
+    "id": "cursor",
+    "name": "Cursor",
+    "audience": "AI tools",
+    "category": "AI coding agents",
+    "description": "Edit and refactor code with an AI-first desktop editor.",
+    "websiteUrl": "https://cursor.com/",
+    "docsUrl": "https://docs.cursor.com/",
+    "sourceUrls": [
+      "https://cursor.com/",
+      "https://docs.cursor.com/"
+    ],
+    "observedAt": "2026-09-13"
+  },
+  {
+    "id": "deepseek",
+    "name": "DeepSeek",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "description": "Use DeepSeek's AI assistant for chat, reasoning, and coding help.",
+    "websiteUrl": "https://www.deepseek.com/",
+    "docsUrl": "https://api-docs.deepseek.com/",
+    "sourceUrls": [
+      "https://www.deepseek.com/",
+      "https://api-docs.deepseek.com/"
+    ],
+    "observedAt": "2026-09-13"
+  },
+  {
+    "id": "devin",
+    "name": "Devin",
+    "audience": "AI tools",
+    "category": "AI coding agents",
+    "description": "Assign software engineering tasks to an autonomous coding agent in a managed workspace.",
+    "websiteUrl": "https://devin.ai/",
+    "docsUrl": "https://docs.devin.ai/",
+    "sourceUrls": [
+      "https://devin.ai/",
+      "https://docs.devin.ai/"
+    ],
+    "observedAt": "2026-09-13"
   }
 ]

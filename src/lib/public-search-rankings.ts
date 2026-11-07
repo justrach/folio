@@ -2,6 +2,7 @@ import artifact from "@/data/public-search-rankings.json";
 import progressArtifact from "@/data/public-search-progress.json";
 import type { PublicCollectionProgress } from "./public-dashboard";
 import additionalQuestions from "@/data/public-additional-questions.json";
+import aiToolQuestions from "@/data/public-ai-tool-questions.json";
 import type { WebsiteAudience } from "./developer-tools-source";
 import { assertPublicSearchRankings } from "./public-search-rankings-validation";
 
@@ -45,7 +46,7 @@ export type PublicSearchRankings = {
   observations: PublicSearchObservation[];
 };
 
-const expandedArtifact = { ...artifact, queries: [...artifact.queries, ...additionalQuestions] };
+const expandedArtifact = { ...artifact, queries: [...artifact.queries, ...additionalQuestions, ...aiToolQuestions] };
 assertPublicSearchRankings(expandedArtifact);
 export const PUBLIC_SEARCH_RANKINGS: PublicSearchRankings = expandedArtifact;
 export const PUBLIC_SEARCH_QUERIES = PUBLIC_SEARCH_RANKINGS.queries;
@@ -60,4 +61,5 @@ export function latestPublicSearchObservation(queryId: string): PublicSearchObse
     .sort((a, b) => Date.parse(b.observedAt) - Date.parse(a.observedAt))[0];
 }
 
-export const PUBLIC_SEARCH_PROGRESS: PublicCollectionProgress = { ...progressArtifact, format: "folio-public-search-progress-v1", queries: [...progressArtifact.queries as PublicCollectionProgress["queries"], ...additionalQuestions.map(query => ({ queryId: query.id, status: "not-started" as const }))] };
+const authoredQueries = [...additionalQuestions, ...aiToolQuestions];
+export const PUBLIC_SEARCH_PROGRESS: PublicCollectionProgress = { ...progressArtifact, format: "folio-public-search-progress-v1", queries: [...progressArtifact.queries as PublicCollectionProgress["queries"], ...authoredQueries.map(query => ({ queryId: query.id, status: "not-started" as const }))] };

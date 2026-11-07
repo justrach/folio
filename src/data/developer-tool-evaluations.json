@@ -1,11 +1,11 @@
 {
   "schemaVersion": "developer-tool-readiness-v1",
   "suiteVersion": "readiness-v1",
-  "generatedAt": "2026-09-13T04:44:56.180Z",
-  "batchId": "2026-09-13T04-44-48-052Z-429a6072",
+  "generatedAt": "2026-11-07T12:32:14.243Z",
+  "batchId": "2026-11-07T12-31-58-411Z-66553fc8",
   "scope": "Homepage HTML only; no JavaScript or API tasks",
   "runtime": "workerd",
-  "evaluatorSourceHash": "658b3254f3c6a56128e6a259224a398321ac5c06c7ce7abf9b137dab3012aade",
+  "evaluatorSourceHash": "21a105f08d588576977a6f691632203003762bfba491e646a25fc5468ed7006b",
   "captureLimitBytes": 5000000,
   "timeoutMs": 8000,
   "results": [
@@ -18,9 +18,9 @@
       "finalUrl": "https://www.cloudflare.com/products/workers/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:49.225Z",
-      "contentHash": "defb5a3d61145130299d29a7831fe76f71982e91d84d02e8d6646d8bcbd9c6c1",
-      "bytesFetched": 738130,
+      "capturedAt": "2026-11-07T12:31:58.809Z",
+      "contentHash": "fc5df13ccccc330bde43d2eb5d5d3a21b994a8e7040fd6cba4645d3bb0493ee7",
+      "bytesFetched": 757718,
       "score": 90,
       "checks": [
         {
@@ -76,7 +76,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "1116 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "1125 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -92,7 +92,7 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "89 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "90 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
@@ -115,9 +115,9 @@
       "finalUrl": "https://vercel.com/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:48.539Z",
-      "contentHash": "ce0cd8a472f9425aef4cbc6b45e2e476939624ece974e7106f9feba6f3bb3449",
-      "bytesFetched": 528221,
+      "capturedAt": "2026-11-07T12:31:58.506Z",
+      "contentHash": "9e5bd12ba2614f736ad3c18635e9791bcf94eea9915d7173401031d7db333fed",
+      "bytesFetched": 591763,
       "score": 95,
       "checks": [
         {
@@ -173,7 +173,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "296 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "295 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -181,7 +181,7 @@
           "label": "Image alternatives",
           "points": 10,
           "maxPoints": 10,
-          "detail": "19 of 19 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "detail": "23 of 23 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
           "status": "pass"
         },
         {
@@ -212,9 +212,9 @@
       "finalUrl": "https://render.com/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:48.803Z",
-      "contentHash": "2e4669066dd483ff7c8cdfa99a06d54ec3c7fbb85feeaf8c3a26d3b9e1842e76",
-      "bytesFetched": 401429,
+      "capturedAt": "2026-11-07T12:31:59.272Z",
+      "contentHash": "da2f71fada70efe583f896f96137acb720a74eecf5a74bc8f2efd6b4ecc6270d",
+      "bytesFetched": 799391,
       "score": 100,
       "checks": [
         {
@@ -270,7 +270,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "527 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "1120 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -278,7 +278,7 @@
           "label": "Image alternatives",
           "points": 10,
           "maxPoints": 10,
-          "detail": "54 of 54 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "detail": "78 of 78 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
           "status": "pass"
         },
         {
@@ -286,7 +286,7 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "74 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "92 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
@@ -309,9 +309,9 @@
       "finalUrl": "https://railway.com/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:49.899Z",
-      "contentHash": "0743b75f94ac98c6a6f62c740de3268216fd0408853fb27b023cf53223a747cf",
-      "bytesFetched": 360184,
+      "capturedAt": "2026-11-07T12:31:58.939Z",
+      "contentHash": "256dcef95ad323005a3ae7095ecf8b897f5359e39c1db9e40487eec29c71b82a",
+      "bytesFetched": 196014,
       "score": 100,
       "checks": [
         {
@@ -367,7 +367,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "1009 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "1012 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -375,7 +375,7 @@
           "label": "Image alternatives",
           "points": 10,
           "maxPoints": 10,
-          "detail": "60 of 60 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "detail": "48 of 48 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
           "status": "pass"
         },
         {
@@ -383,7 +383,7 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "34 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "36 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
@@ -406,9 +406,9 @@
       "finalUrl": "https://e2b.dev/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:49.447Z",
-      "contentHash": "b7bc5d3a7660e4a9b7489a17b800f1b6627ba1e48b3714991e39b65b0f5eb87e",
-      "bytesFetched": 709350,
+      "capturedAt": "2026-11-07T12:31:58.947Z",
+      "contentHash": "9dbabc14ae65e1be535f77967263cb54f23eae815ea9b18f04474161e55cb3cb",
+      "bytesFetched": 936026,
       "score": 88,
       "checks": [
         {
@@ -416,7 +416,7 @@
           "label": "Page title",
           "points": 8,
           "maxPoints": 15,
-          "detail": "10 title element(s); 35 characters. Recommended heuristic: one title, 15–65 characters.",
+          "detail": "9 title element(s); 35 characters. Recommended heuristic: one title, 15–65 characters.",
           "status": "warning"
         },
         {
@@ -424,7 +424,7 @@
           "label": "Meta description",
           "points": 5,
           "maxPoints": 10,
-          "detail": "1 description(s); 178 characters. Recommended heuristic: 50–170 characters.",
+          "detail": "1 description(s); 186 characters. Recommended heuristic: 50–170 characters.",
           "status": "warning"
         },
         {
@@ -464,7 +464,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "2307 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "3136 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -472,7 +472,7 @@
           "label": "Image alternatives",
           "points": 10,
           "maxPoints": 10,
-          "detail": "56 of 56 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "detail": "138 of 138 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
           "status": "pass"
         },
         {
@@ -480,7 +480,7 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "51 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "70 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
@@ -503,9 +503,9 @@
       "finalUrl": "https://www.daytona.io/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:49.588Z",
-      "contentHash": "e58512752789dd417614f2746785fda5d137fb678632fb2aefd37c2b0b815982",
-      "bytesFetched": 1807067,
+      "capturedAt": "2026-11-07T12:31:59.053Z",
+      "contentHash": "4291b256eb571176ff06a639f18427d93389d196fe24726915f6af62e4213c06",
+      "bytesFetched": 1846339,
       "score": 85,
       "checks": [
         {
@@ -561,7 +561,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "6169 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "6361 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -569,7 +569,7 @@
           "label": "Image alternatives",
           "points": 10,
           "maxPoints": 10,
-          "detail": "241 of 241 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "detail": "252 of 252 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
           "status": "pass"
         },
         {
@@ -600,17 +600,17 @@
       "finalUrl": "https://modal.com/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:51.246Z",
-      "contentHash": "1fc6f8ae1e2509fc9a0993ca3ff1d17937934cda3d39bc45d5fb71c2e873eb16",
-      "bytesFetched": 413548,
-      "score": 90,
+      "capturedAt": "2026-11-07T12:32:00.565Z",
+      "contentHash": "6d00ce60b035864e8d7c2068774e203aa3f73d69301ae3f50421e6ae35da99fb",
+      "bytesFetched": 439924,
+      "score": 100,
       "checks": [
         {
           "id": "title",
           "label": "Page title",
           "points": 15,
           "maxPoints": 15,
-          "detail": "1 title element(s); 41 characters. Recommended heuristic: one title, 15–65 characters.",
+          "detail": "1 title element(s); 37 characters. Recommended heuristic: one title, 15–65 characters.",
           "status": "pass"
         },
         {
@@ -618,7 +618,7 @@
           "label": "Meta description",
           "points": 10,
           "maxPoints": 10,
-          "detail": "1 description(s); 122 characters. Recommended heuristic: 50–170 characters.",
+          "detail": "1 description(s); 87 characters. Recommended heuristic: 50–170 characters.",
           "status": "pass"
         },
         {
@@ -632,10 +632,10 @@
         {
           "id": "canonical",
           "label": "Canonical URL",
-          "points": 0,
+          "points": 10,
           "maxPoints": 10,
-          "detail": "No valid HTTP(S) canonical link was found.",
-          "status": "fail"
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
         },
         {
           "id": "indexability",
@@ -658,7 +658,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "785 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "1198 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -666,7 +666,7 @@
           "label": "Image alternatives",
           "points": 10,
           "maxPoints": 10,
-          "detail": "6 of 6 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "detail": "9 of 9 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
           "status": "pass"
         },
         {
@@ -674,7 +674,7 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "54 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "88 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
@@ -697,10 +697,10 @@
       "finalUrl": "https://www.browserbase.com/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:50.562Z",
-      "contentHash": "d187d1506fd67a198aa7ac61e5e902f16763bf238b37eeb4216a5f3ffaf3a1d4",
-      "bytesFetched": 398740,
-      "score": 78,
+      "capturedAt": "2026-11-07T12:31:59.445Z",
+      "contentHash": "b928f9b5be4183272f231428190931d1e6b59af8b37f6cad09fb44abfb8a6b99",
+      "bytesFetched": 382727,
+      "score": 83,
       "checks": [
         {
           "id": "title",
@@ -721,10 +721,10 @@
         {
           "id": "headings",
           "label": "Primary heading",
-          "points": 5,
+          "points": 10,
           "maxPoints": 10,
-          "detail": "2 nonempty H1 heading(s) found.",
-          "status": "warning"
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
         },
         {
           "id": "canonical",
@@ -755,7 +755,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "1631 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "645 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -763,7 +763,7 @@
           "label": "Image alternatives",
           "points": 10,
           "maxPoints": 10,
-          "detail": "49 of 49 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "detail": "42 of 42 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
           "status": "pass"
         },
         {
@@ -771,7 +771,7 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "144 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "75 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
@@ -779,7 +779,7 @@
           "label": "Structured data",
           "points": 10,
           "maxPoints": 10,
-          "detail": "2 JSON-LD block(s), 2 parseable, 2 with a schema.org context and typed entity. This is not full schema validation.",
+          "detail": "1 JSON-LD block(s), 1 parseable, 1 with a schema.org context and typed entity. This is not full schema validation.",
           "status": "pass"
         }
       ],
@@ -794,9 +794,9 @@
       "finalUrl": "https://better-auth.com/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:50.071Z",
-      "contentHash": "6089a13193801796a762e8c6ad745adf46de48b2efb8e3056c369fb9318dad44",
-      "bytesFetched": 904831,
+      "capturedAt": "2026-11-07T12:31:59.328Z",
+      "contentHash": "c8769b3b55f55dbb2994fd0a97e21249b02331d1b1f009dc615ce09ef1f194d0",
+      "bytesFetched": 723127,
       "score": 63,
       "checks": [
         {
@@ -860,7 +860,7 @@
           "label": "Image alternatives",
           "points": 10,
           "maxPoints": 10,
-          "detail": "950 of 950 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "detail": "4 of 4 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
           "status": "pass"
         },
         {
@@ -891,10 +891,10 @@
       "finalUrl": "https://clerk.com/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:50.363Z",
-      "contentHash": "425d6d587bb8fc8d88f2a5858d3f395256ef3d511ecc92f39eac58d90db37447",
-      "bytesFetched": 1192607,
-      "score": 95,
+      "capturedAt": "2026-11-07T12:31:59.481Z",
+      "contentHash": "410f3494c25c7d6cbda263838b3e4930fd87acc76bb3a651c338ef8d061da166",
+      "bytesFetched": 1137229,
+      "score": 100,
       "checks": [
         {
           "id": "title",
@@ -915,10 +915,10 @@
         {
           "id": "headings",
           "label": "Primary heading",
-          "points": 5,
+          "points": 10,
           "maxPoints": 10,
-          "detail": "6 nonempty H1 heading(s) found.",
-          "status": "warning"
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
         },
         {
           "id": "canonical",
@@ -949,7 +949,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "1795 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "1392 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -957,7 +957,7 @@
           "label": "Image alternatives",
           "points": 10,
           "maxPoints": 10,
-          "detail": "102 of 102 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "detail": "159 of 159 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
           "status": "pass"
         },
         {
@@ -965,7 +965,7 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "43 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "46 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
@@ -988,9 +988,9 @@
       "finalUrl": "https://workos.com/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:50.575Z",
-      "contentHash": "7ee01f660185bb55d69f756056f465f7b692509bec9ba356a7e5b70ed54d3404",
-      "bytesFetched": 263949,
+      "capturedAt": "2026-11-07T12:31:59.690Z",
+      "contentHash": "fee0cee494ee2f3c492384f2d0802d94019871a4ec06df0069e160110ce6b928",
+      "bytesFetched": 267722,
       "score": 100,
       "checks": [
         {
@@ -1046,7 +1046,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "1531 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "1548 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -1054,7 +1054,7 @@
           "label": "Image alternatives",
           "points": 10,
           "maxPoints": 10,
-          "detail": "123 of 123 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "detail": "129 of 129 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
           "status": "pass"
         },
         {
@@ -1062,7 +1062,7 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "112 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "117 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
@@ -1085,9 +1085,9 @@
       "finalUrl": "https://auth0.com/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:50.803Z",
-      "contentHash": "e5c97b2c0e02939388f069c2e9f41cd87e8b0e1b0ce50fdc7214a957cf41c772",
-      "bytesFetched": 449054,
+      "capturedAt": "2026-11-07T12:31:59.593Z",
+      "contentHash": "c7e8b850173de1819ccf63b348817cc3bba8c7e327e6a3ed0fc0f667c51ba5fc",
+      "bytesFetched": 450222,
       "score": 100,
       "checks": [
         {
@@ -1095,7 +1095,7 @@
           "label": "Page title",
           "points": 15,
           "maxPoints": 15,
-          "detail": "1 title element(s); 45 characters. Recommended heuristic: one title, 15–65 characters.",
+          "detail": "1 title element(s); 43 characters. Recommended heuristic: one title, 15–65 characters.",
           "status": "pass"
         },
         {
@@ -1103,7 +1103,7 @@
           "label": "Meta description",
           "points": 10,
           "maxPoints": 10,
-          "detail": "1 description(s); 134 characters. Recommended heuristic: 50–170 characters.",
+          "detail": "1 description(s); 156 characters. Recommended heuristic: 50–170 characters.",
           "status": "pass"
         },
         {
@@ -1143,7 +1143,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "1842 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "1834 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -1159,7 +1159,7 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "199 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "193 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
@@ -1182,9 +1182,9 @@
       "finalUrl": "https://www.trychroma.com/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:50.744Z",
-      "contentHash": "e9a3cbdeb212604dae7f79eb6211b97caebe120de49f2f369e3634ae402a5bca",
-      "bytesFetched": 314648,
+      "capturedAt": "2026-11-07T12:31:59.746Z",
+      "contentHash": "9690e948964d4c068562029fa01d1fe50e9a76dd0da5bc95217a18ea3c693bc8",
+      "bytesFetched": 315545,
       "score": 75,
       "checks": [
         {
@@ -1240,7 +1240,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "1163 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "1166 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -1256,7 +1256,7 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "50 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "52 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
@@ -1279,9 +1279,9 @@
       "finalUrl": "https://qdrant.tech/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:50.989Z",
-      "contentHash": "a7fb6fc94a41252a45fe07f8408a734968829efe8684175da89b969ed482824b",
-      "bytesFetched": 782479,
+      "capturedAt": "2026-11-07T12:31:59.816Z",
+      "contentHash": "82a9ab24454e08904b96fcfb7f51842f4d50c5c6c604e69d769ceb0b54d61825",
+      "bytesFetched": 770168,
       "score": 95,
       "checks": [
         {
@@ -1337,7 +1337,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "1112 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "1125 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -1345,7 +1345,7 @@
           "label": "Image alternatives",
           "points": 5,
           "maxPoints": 10,
-          "detail": "45 of 81 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "detail": "45 of 75 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
           "status": "warning"
         },
         {
@@ -1353,7 +1353,7 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "137 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "120 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
@@ -1376,26 +1376,26 @@
       "finalUrl": "https://www.pinecone.io/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:51.496Z",
-      "contentHash": "f768acaecbb83f1c867f64a5add86835677db8a8ca3d5739db6324732e2aa77f",
-      "bytesFetched": 269505,
-      "score": 90,
+      "capturedAt": "2026-11-07T12:32:00.084Z",
+      "contentHash": "ef1cd42c4a61614a9636f00298f5d69518892eba7cf4009e7351e1fb33114332",
+      "bytesFetched": 362426,
+      "score": 88,
       "checks": [
         {
           "id": "title",
           "label": "Page title",
-          "points": 15,
+          "points": 8,
           "maxPoints": 15,
-          "detail": "1 title element(s); 56 characters. Recommended heuristic: one title, 15–65 characters.",
-          "status": "pass"
+          "detail": "4 title element(s); 43 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "warning"
         },
         {
           "id": "description",
           "label": "Meta description",
-          "points": 10,
+          "points": 5,
           "maxPoints": 10,
-          "detail": "1 description(s); 138 characters. Recommended heuristic: 50–170 characters.",
-          "status": "pass"
+          "detail": "1 description(s); 196 characters. Recommended heuristic: 50–170 characters.",
+          "status": "warning"
         },
         {
           "id": "headings",
@@ -1408,10 +1408,10 @@
         {
           "id": "canonical",
           "label": "Canonical URL",
-          "points": 0,
+          "points": 10,
           "maxPoints": 10,
-          "detail": "No valid HTTP(S) canonical link was found.",
-          "status": "fail"
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
         },
         {
           "id": "indexability",
@@ -1434,7 +1434,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "687 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "732 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -1450,7 +1450,7 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "32 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "35 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
@@ -1473,9 +1473,9 @@
       "finalUrl": "https://resend.com/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:51.551Z",
-      "contentHash": "724efeaa57b4d198035a3394f3e70ac8b23156f1857b2310a1f8788600ac6448",
-      "bytesFetched": 410249,
+      "capturedAt": "2026-11-07T12:32:01.599Z",
+      "contentHash": "51d1711cf1b39724063a7108b47babc5e7199fe405f072e7494af195fe58ccae",
+      "bytesFetched": 583389,
       "score": 100,
       "checks": [
         {
@@ -1531,7 +1531,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "2091 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "2113 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -1547,7 +1547,7 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "48 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "49 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
@@ -1570,17 +1570,17 @@
       "finalUrl": "https://www.firecrawl.dev/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:52.858Z",
-      "contentHash": "367cbb1047d2d2623e41756281fbd853b968bdc893f2997cd6c5c7950f384f3e",
-      "bytesFetched": 1206023,
-      "score": 73,
+      "capturedAt": "2026-11-07T12:32:00.897Z",
+      "contentHash": "c38c38eebb96297a519428c8d75e770327815df8f49680b919e830febe116807",
+      "bytesFetched": 1246479,
+      "score": 83,
       "checks": [
         {
           "id": "title",
           "label": "Page title",
           "points": 8,
           "maxPoints": 15,
-          "detail": "6 title element(s); 85 characters. Recommended heuristic: one title, 15–65 characters.",
+          "detail": "9 title element(s); 38 characters. Recommended heuristic: one title, 15–65 characters.",
           "status": "warning"
         },
         {
@@ -1588,7 +1588,7 @@
           "label": "Meta description",
           "points": 10,
           "maxPoints": 10,
-          "detail": "1 description(s); 165 characters. Recommended heuristic: 50–170 characters.",
+          "detail": "1 description(s); 108 characters. Recommended heuristic: 50–170 characters.",
           "status": "pass"
         },
         {
@@ -1602,10 +1602,10 @@
         {
           "id": "canonical",
           "label": "Canonical URL",
-          "points": 0,
+          "points": 10,
           "maxPoints": 10,
-          "detail": "No valid HTTP(S) canonical link was found.",
-          "status": "fail"
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
         },
         {
           "id": "indexability",
@@ -1628,7 +1628,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "3192 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "3770 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -1636,7 +1636,7 @@
           "label": "Image alternatives",
           "points": 10,
           "maxPoints": 10,
-          "detail": "79 of 79 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "detail": "97 of 97 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
           "status": "pass"
         },
         {
@@ -1644,7 +1644,7 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "62 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "77 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
@@ -1667,9 +1667,9 @@
       "finalUrl": "https://exa.ai/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:51.682Z",
-      "contentHash": "66ccc8379eec3c013456a53d065c4d1614a131c4b6bcc8869d9575eacc0d1e69",
-      "bytesFetched": 205991,
+      "capturedAt": "2026-11-07T12:32:00.780Z",
+      "contentHash": "56e935531dea51eadc5bd005f3b145c46855ed9299dddb67c5d003cec384d0a1",
+      "bytesFetched": 247404,
       "score": 100,
       "checks": [
         {
@@ -1725,7 +1725,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "754 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "801 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -1741,7 +1741,7 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "61 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "78 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
@@ -1749,7 +1749,7 @@
           "label": "Structured data",
           "points": 10,
           "maxPoints": 10,
-          "detail": "2 JSON-LD block(s), 2 parseable, 2 with a schema.org context and typed entity. This is not full schema validation.",
+          "detail": "3 JSON-LD block(s), 3 parseable, 3 with a schema.org context and typed entity. This is not full schema validation.",
           "status": "pass"
         }
       ],
@@ -1764,9 +1764,9 @@
       "finalUrl": "https://www.tavily.com/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:51.701Z",
-      "contentHash": "fd283804ff83ac7bf56e05f43beee2f2e11c3a8d829f0d7678d4e40bccf0be16",
-      "bytesFetched": 156755,
+      "capturedAt": "2026-11-07T12:32:01.153Z",
+      "contentHash": "768f4ad8b383cc00468cfeeed69724b8ff9a5baaef629d0b8d5f13507d5efc6b",
+      "bytesFetched": 168354,
       "score": 88,
       "checks": [
         {
@@ -1782,7 +1782,7 @@
           "label": "Meta description",
           "points": 10,
           "maxPoints": 10,
-          "detail": "1 description(s); 131 characters. Recommended heuristic: 50–170 characters.",
+          "detail": "1 description(s); 113 characters. Recommended heuristic: 50–170 characters.",
           "status": "pass"
         },
         {
@@ -1822,7 +1822,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "423 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "560 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -1830,7 +1830,7 @@
           "label": "Image alternatives",
           "points": 10,
           "maxPoints": 10,
-          "detail": "41 of 41 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "detail": "60 of 60 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
           "status": "pass"
         },
         {
@@ -1838,7 +1838,7 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "40 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "63 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
@@ -1861,9 +1861,9 @@
       "finalUrl": "https://stripe.com/en-sg",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:52.272Z",
-      "contentHash": "36c1825d6dc708a3b5553925ec08e17902ee7b48dfed930254a1ac90c42b5d9f",
-      "bytesFetched": 754312,
+      "capturedAt": "2026-11-07T12:32:01.252Z",
+      "contentHash": "897423f695d9f108a003b81fdfc250ac0b870e22cf12617a2c9034e96599cb81",
+      "bytesFetched": 757316,
       "score": 95,
       "checks": [
         {
@@ -1919,7 +1919,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "1722 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "1724 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -1935,7 +1935,7 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "157 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "158 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
@@ -1958,9 +1958,9 @@
       "finalUrl": "https://temporal.io/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:52.949Z",
-      "contentHash": "cafdc15edf09328d7b5550ebdb7681d7bc39c9753ff488ce8970b38b853219aa",
-      "bytesFetched": 213982,
+      "capturedAt": "2026-11-07T12:32:02.352Z",
+      "contentHash": "7607091eafc5570568eab4ba621a870b7f47f1f428bf040674db769c74e6a89b",
+      "bytesFetched": 215477,
       "score": 100,
       "checks": [
         {
@@ -2016,7 +2016,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "796 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "787 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -2032,7 +2032,7 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "47 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "48 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
@@ -2040,7 +2040,7 @@
           "label": "Structured data",
           "points": 10,
           "maxPoints": 10,
-          "detail": "2 JSON-LD block(s), 2 parseable, 2 with a schema.org context and typed entity. This is not full schema validation.",
+          "detail": "3 JSON-LD block(s), 3 parseable, 3 with a schema.org context and typed entity. This is not full schema validation.",
           "status": "pass"
         }
       ],
@@ -2052,96 +2052,15 @@
       "category": "Content",
       "audience": "Developer tools",
       "submittedUrl": "https://www.box.com/",
-      "finalUrl": "https://www.box.com/",
+      "finalUrl": null,
       "captureKind": "public-homepage",
-      "status": "complete",
-      "capturedAt": "2026-09-13T04:44:52.507Z",
-      "contentHash": "8ee9553d27873589e42268aa06d8db6780111249889009acacdd77cc7e694096",
-      "bytesFetched": 502861,
-      "score": 88,
-      "checks": [
-        {
-          "id": "title",
-          "label": "Page title",
-          "points": 8,
-          "maxPoints": 15,
-          "detail": "16 title element(s); 61 characters. Recommended heuristic: one title, 15–65 characters.",
-          "status": "warning"
-        },
-        {
-          "id": "description",
-          "label": "Meta description",
-          "points": 10,
-          "maxPoints": 10,
-          "detail": "1 description(s); 160 characters. Recommended heuristic: 50–170 characters.",
-          "status": "pass"
-        },
-        {
-          "id": "headings",
-          "label": "Primary heading",
-          "points": 10,
-          "maxPoints": 10,
-          "detail": "1 nonempty H1 heading(s) found.",
-          "status": "pass"
-        },
-        {
-          "id": "canonical",
-          "label": "Canonical URL",
-          "points": 5,
-          "maxPoints": 10,
-          "detail": "1 canonical link(s); points to a different URL; this may be intentional.",
-          "status": "warning"
-        },
-        {
-          "id": "indexability",
-          "label": "Indexing directive",
-          "points": 10,
-          "maxPoints": 10,
-          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
-          "status": "pass"
-        },
-        {
-          "id": "https",
-          "label": "HTTPS delivery",
-          "points": 10,
-          "maxPoints": 10,
-          "detail": "The fetched page uses HTTPS.",
-          "status": "pass"
-        },
-        {
-          "id": "readable-content",
-          "label": "Readable content",
-          "points": 10,
-          "maxPoints": 10,
-          "detail": "778 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
-          "status": "pass"
-        },
-        {
-          "id": "image-alt",
-          "label": "Image alternatives",
-          "points": 10,
-          "maxPoints": 10,
-          "detail": "97 of 97 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
-          "status": "pass"
-        },
-        {
-          "id": "internal-links",
-          "label": "Internal links",
-          "points": 5,
-          "maxPoints": 5,
-          "detail": "136 links to another path on the same origin found. Destinations have not been crawled.",
-          "status": "pass"
-        },
-        {
-          "id": "structured-data",
-          "label": "Structured data",
-          "points": 10,
-          "maxPoints": 10,
-          "detail": "1 JSON-LD block(s), 1 parseable, 1 with a schema.org context and typed entity. This is not full schema validation.",
-          "status": "pass"
-        }
-      ],
-      "error": null
+      "status": "unavailable",
+      "capturedAt": "2026-11-07T12:32:01.267Z",
+      "contentHash": null,
+      "bytesFetched": null,
+      "score": null,
+      "checks": [],
+      "error": "The website returned HTTP 403."
     },
     {
       "toolId": "sentry",
@@ -2152,9 +2071,9 @@
       "finalUrl": "https://sentry.io/welcome/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:53.523Z",
-      "contentHash": "d31cac7b03e5005cd2fd857bb30092f8984ae5c7c596d12d16d87ac12f036c24",
-      "bytesFetched": 630595,
+      "capturedAt": "2026-11-07T12:32:02.233Z",
+      "contentHash": "dd72db56c1565f920248787db5b74acca9cebec7388bc65920716dd194b1daa9",
+      "bytesFetched": 628875,
       "score": 93,
       "checks": [
         {
@@ -2210,7 +2129,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "2281 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "2282 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -2226,7 +2145,7 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "162 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "163 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
@@ -2249,9 +2168,9 @@
       "finalUrl": "https://posthog.com/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:53.154Z",
-      "contentHash": "c01b337ba37acecd319dcb135407533a6530fb4e8b0cb6bef6b853a2a270cf74",
-      "bytesFetched": 1585410,
+      "capturedAt": "2026-11-07T12:32:01.664Z",
+      "contentHash": "e77e95aa52d2822e663542223e3e83516dfa3da097ba5144ad92a23711c45264",
+      "bytesFetched": 1689272,
       "score": 88,
       "checks": [
         {
@@ -2259,7 +2178,7 @@
           "label": "Page title",
           "points": 8,
           "maxPoints": 15,
-          "detail": "3 title element(s); 43 characters. Recommended heuristic: one title, 15–65 characters.",
+          "detail": "3 title element(s); 38 characters. Recommended heuristic: one title, 15–65 characters.",
           "status": "warning"
         },
         {
@@ -2307,7 +2226,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "1118 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "1145 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -2315,7 +2234,7 @@
           "label": "Image alternatives",
           "points": 5,
           "maxPoints": 10,
-          "detail": "17 of 23 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "detail": "25 of 26 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
           "status": "warning"
         },
         {
@@ -2323,7 +2242,7 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "127 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "117 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
@@ -2346,10 +2265,10 @@
       "finalUrl": "https://www.notion.com/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:53.829Z",
-      "contentHash": "ab735e6d96de2bfaf9491682f06cff90a50dc50452485c7cd3c3392877b87306",
-      "bytesFetched": 240969,
-      "score": 85,
+      "capturedAt": "2026-11-07T12:32:01.959Z",
+      "contentHash": "1d722c6bf4ceafd91b9da0a4908937485596789827241dbdc500af340c2f304d",
+      "bytesFetched": 170935,
+      "score": 100,
       "checks": [
         {
           "id": "title",
@@ -2402,17 +2321,17 @@
         {
           "id": "readable-content",
           "label": "Readable content",
-          "points": 5,
+          "points": 10,
           "maxPoints": 10,
-          "detail": "173 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
-          "status": "warning"
+          "detail": "259 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
         },
         {
           "id": "image-alt",
           "label": "Image alternatives",
           "points": 10,
           "maxPoints": 10,
-          "detail": "58 of 58 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "detail": "56 of 56 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
           "status": "pass"
         },
         {
@@ -2420,16 +2339,16 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "99 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "87 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
           "id": "structured-data",
           "label": "Structured data",
-          "points": 0,
+          "points": 10,
           "maxPoints": 10,
-          "detail": "0 JSON-LD block(s), 0 parseable, 0 with a schema.org context and typed entity. This is not full schema validation.",
-          "status": "fail"
+          "detail": "1 JSON-LD block(s), 1 parseable, 1 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
         }
       ],
       "error": null
@@ -2443,9 +2362,9 @@
       "finalUrl": "https://slack.com/intl/en-sg/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:53.790Z",
-      "contentHash": "9cca51897abe715ed8cdc1dccaebf82cd41226f4131686f6e3a46ac125806f1e",
-      "bytesFetched": 260134,
+      "capturedAt": "2026-11-07T12:32:02.255Z",
+      "contentHash": "ba181e0996382ed46e29948704bd43a07ceb8e344b86976929f3009198c78fd0",
+      "bytesFetched": 242593,
       "score": 78,
       "checks": [
         {
@@ -2501,7 +2420,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "1242 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "1214 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -2509,7 +2428,7 @@
           "label": "Image alternatives",
           "points": 10,
           "maxPoints": 10,
-          "detail": "91 of 91 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "detail": "79 of 79 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
           "status": "pass"
         },
         {
@@ -2517,7 +2436,7 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "255 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "229 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
@@ -2540,9 +2459,9 @@
       "finalUrl": "https://basecamp.com/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:53.872Z",
-      "contentHash": "bf1981f3825e3bad033d7451fe17b8fd92c7a6d14d3c1f57550557c5accb2dcc",
-      "bytesFetched": 53421,
+      "capturedAt": "2026-11-07T12:32:02.667Z",
+      "contentHash": "c13ccffe1bfbce02da5c9639b02a8100d4524bfa2c8537997e6f7b2555422d20",
+      "bytesFetched": 118882,
       "score": 88,
       "checks": [
         {
@@ -2598,7 +2517,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "747 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "2170 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -2606,7 +2525,7 @@
           "label": "Image alternatives",
           "points": 10,
           "maxPoints": 10,
-          "detail": "20 of 20 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "detail": "148 of 148 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
           "status": "pass"
         },
         {
@@ -2614,7 +2533,7 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "59 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "70 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
@@ -2634,96 +2553,15 @@
       "category": "Furniture and home",
       "audience": "Shops & brands",
       "submittedUrl": "https://www.ikea.com/us/en/",
-      "finalUrl": "https://www.ikea.com/us/en/",
+      "finalUrl": null,
       "captureKind": "public-homepage",
-      "status": "complete",
-      "capturedAt": "2026-09-13T04:44:55.759Z",
-      "contentHash": "e0c3ed1885a2f73c31ace84712130c99d41734d1c6a1d2523ae6201bc0683832",
-      "bytesFetched": 1774207,
-      "score": 95,
-      "checks": [
-        {
-          "id": "title",
-          "label": "Page title",
-          "points": 15,
-          "maxPoints": 15,
-          "detail": "1 title element(s); 52 characters. Recommended heuristic: one title, 15–65 characters.",
-          "status": "pass"
-        },
-        {
-          "id": "description",
-          "label": "Meta description",
-          "points": 10,
-          "maxPoints": 10,
-          "detail": "1 description(s); 144 characters. Recommended heuristic: 50–170 characters.",
-          "status": "pass"
-        },
-        {
-          "id": "headings",
-          "label": "Primary heading",
-          "points": 10,
-          "maxPoints": 10,
-          "detail": "1 nonempty H1 heading(s) found.",
-          "status": "pass"
-        },
-        {
-          "id": "canonical",
-          "label": "Canonical URL",
-          "points": 10,
-          "maxPoints": 10,
-          "detail": "1 canonical link(s); matches the fetched page.",
-          "status": "pass"
-        },
-        {
-          "id": "indexability",
-          "label": "Indexing directive",
-          "points": 10,
-          "maxPoints": 10,
-          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
-          "status": "pass"
-        },
-        {
-          "id": "https",
-          "label": "HTTPS delivery",
-          "points": 10,
-          "maxPoints": 10,
-          "detail": "The fetched page uses HTTPS.",
-          "status": "pass"
-        },
-        {
-          "id": "readable-content",
-          "label": "Readable content",
-          "points": 10,
-          "maxPoints": 10,
-          "detail": "1440 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
-          "status": "pass"
-        },
-        {
-          "id": "image-alt",
-          "label": "Image alternatives",
-          "points": 5,
-          "maxPoints": 10,
-          "detail": "109 of 110 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
-          "status": "warning"
-        },
-        {
-          "id": "internal-links",
-          "label": "Internal links",
-          "points": 5,
-          "maxPoints": 5,
-          "detail": "167 links to another path on the same origin found. Destinations have not been crawled.",
-          "status": "pass"
-        },
-        {
-          "id": "structured-data",
-          "label": "Structured data",
-          "points": 10,
-          "maxPoints": 10,
-          "detail": "1 JSON-LD block(s), 1 parseable, 1 with a schema.org context and typed entity. This is not full schema validation.",
-          "status": "pass"
-        }
-      ],
-      "error": null
+      "status": "unavailable",
+      "capturedAt": "2026-11-07T12:32:02.262Z",
+      "contentHash": null,
+      "bytesFetched": null,
+      "score": null,
+      "checks": [],
+      "error": "The website returned HTTP 403."
     },
     {
       "toolId": "allbirds",
@@ -2734,9 +2572,9 @@
       "finalUrl": "https://www.allbirds.com/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:54.033Z",
-      "contentHash": "f5129921fb34b5b075895e4e23657e97a8291cbd16ece6d776f93ec26e0161a9",
-      "bytesFetched": 667898,
+      "capturedAt": "2026-11-07T12:32:02.409Z",
+      "contentHash": "22df564ab4c1c4ad3bca0deae05d9dd2e41632bd147e7c54ecc1a0b164170203",
+      "bytesFetched": 703046,
       "score": 85,
       "checks": [
         {
@@ -2792,7 +2630,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "1048 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "1084 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -2831,9 +2669,9 @@
       "finalUrl": "https://www.everlane.com/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:54.386Z",
-      "contentHash": "2f2d2ee620fe7e3fc1358c5465d903aa5ea49df187ce1385fb28a69e58d77623",
-      "bytesFetched": 867442,
+      "capturedAt": "2026-11-07T12:32:02.670Z",
+      "contentHash": "dc79a23536268874ac8ba366597838ad646f94cde5ffe5a1ec1ab20699d32848",
+      "bytesFetched": 869531,
       "score": 88,
       "checks": [
         {
@@ -2897,7 +2735,7 @@
           "label": "Image alternatives",
           "points": 5,
           "maxPoints": 10,
-          "detail": "22 of 44 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "detail": "23 of 43 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
           "status": "warning"
         },
         {
@@ -2905,7 +2743,7 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "292 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "337 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
@@ -2928,9 +2766,9 @@
       "finalUrl": "https://www.taskrabbit.com/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:55.339Z",
-      "contentHash": "b30c5a97ea126e530bc53abd452dba2704c368a61cc74eab89c8283a9c078a4d",
-      "bytesFetched": 364966,
+      "capturedAt": "2026-11-07T12:32:03.483Z",
+      "contentHash": "b24c2395ce14f62af214624647c9cd0880cf4ebf949a7f1bd0de6bccc035b2b1",
+      "bytesFetched": 362521,
       "score": 88,
       "checks": [
         {
@@ -2986,7 +2824,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "602 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "605 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -2994,7 +2832,7 @@
           "label": "Image alternatives",
           "points": 10,
           "maxPoints": 10,
-          "detail": "29 of 29 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "detail": "28 of 28 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
           "status": "pass"
         },
         {
@@ -3002,7 +2840,7 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "72 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "74 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
@@ -3025,10 +2863,10 @@
       "finalUrl": "https://www.intrepidtravel.com/en",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:54.548Z",
-      "contentHash": "2d5b1f93199f762265adbdb8a9a861c50217952012f446239e9ce3f57e9208d5",
-      "bytesFetched": 518549,
-      "score": 90,
+      "capturedAt": "2026-11-07T12:32:02.700Z",
+      "contentHash": "55d919dc5cced685cca8d84db9c04244ed0430af14be48fd5b46c924d51cd08a",
+      "bytesFetched": 753108,
+      "score": 100,
       "checks": [
         {
           "id": "title",
@@ -3083,7 +2921,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "852 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "1127 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -3091,7 +2929,7 @@
           "label": "Image alternatives",
           "points": 10,
           "maxPoints": 10,
-          "detail": "47 of 47 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "detail": "54 of 54 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
           "status": "pass"
         },
         {
@@ -3099,16 +2937,16 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "276 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "283 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
           "id": "structured-data",
           "label": "Structured data",
-          "points": 0,
+          "points": 10,
           "maxPoints": 10,
-          "detail": "0 JSON-LD block(s), 0 parseable, 0 with a schema.org context and typed entity. This is not full schema validation.",
-          "status": "fail"
+          "detail": "1 JSON-LD block(s), 1 parseable, 1 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
         }
       ],
       "error": null
@@ -3122,9 +2960,9 @@
       "finalUrl": "https://www.gadventures.com/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:55.031Z",
-      "contentHash": "d1cf0e730c15a5fb45ef13975bb1e7cd46e6de6113c26a4db4282038f3fe7eb2",
-      "bytesFetched": 735104,
+      "capturedAt": "2026-11-07T12:32:02.950Z",
+      "contentHash": "73cb27d45dc7157c36c4a3e0ceedba67772091572a36eacc185936518c21f1e7",
+      "bytesFetched": 796561,
       "score": 90,
       "checks": [
         {
@@ -3180,7 +3018,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "317 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "514 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -3188,7 +3026,7 @@
           "label": "Image alternatives",
           "points": 10,
           "maxPoints": 10,
-          "detail": "18 of 18 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "detail": "30 of 30 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
           "status": "pass"
         },
         {
@@ -3196,7 +3034,7 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "354 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "365 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
@@ -3219,9 +3057,9 @@
       "finalUrl": "https://www.coursera.org/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:55.650Z",
-      "contentHash": "f3ed89e35ff451e55c0fcbbefe4eb47d0251210fe2d4bb4cf1ce9fa38c11f0c9",
-      "bytesFetched": 795498,
+      "capturedAt": "2026-11-07T12:32:03.180Z",
+      "contentHash": "c64b52fe0899db3321beda3882c86185ea154c94a42d20c885ae47bcc5710775",
+      "bytesFetched": 797643,
       "score": 95,
       "checks": [
         {
@@ -3277,7 +3115,7 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "1160 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "1124 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -3293,7 +3131,7 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "141 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "134 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {
@@ -3316,9 +3154,9 @@
       "finalUrl": "https://www.duolingo.com/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:56.178Z",
-      "contentHash": "c40d102a1b6362a30571a8243d63508adab84902ab32e41b427928d14a8cc4c5",
-      "bytesFetched": 11291,
+      "capturedAt": "2026-11-07T12:32:03.636Z",
+      "contentHash": "1f9c0ef930b4d3b0b2e7ba169b21c6bf50a8b08b5dd68c4ebdadec46b73d0754",
+      "bytesFetched": 11230,
       "score": 58,
       "checks": [
         {
@@ -3413,9 +3251,9 @@
       "finalUrl": "https://www.edx.org/",
       "captureKind": "public-homepage",
       "status": "complete",
-      "capturedAt": "2026-09-13T04:44:55.918Z",
-      "contentHash": "2edb7d9cbeabcff7653b59ceaebf0462e7a854310f7231fa3061e2c34e06a8e5",
-      "bytesFetched": 2527043,
+      "capturedAt": "2026-11-07T12:32:03.345Z",
+      "contentHash": "f18e4ce3dcf247b2a1fb81049641269c88c77e42b430b1ec5b019feabc5fe250",
+      "bytesFetched": 2472541,
       "score": 83,
       "checks": [
         {
@@ -3471,7 +3309,604 @@
           "label": "Readable content",
           "points": 10,
           "maxPoints": 10,
-          "detail": "624 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "detail": "651 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "54 of 54 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "82 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 JSON-LD block(s), 1 parseable, 1 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "chatgpt",
+      "name": "ChatGPT",
+      "category": "AI assistants",
+      "audience": "AI tools",
+      "submittedUrl": "https://chatgpt.com/",
+      "finalUrl": "https://chatgpt.com/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-11-07T12:32:03.540Z",
+      "contentHash": "753285edf9f7bf30ce364cae61163673598ebb3fc2b835322c6edfbe2d6635c0",
+      "bytesFetched": 450307,
+      "score": 95,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 42 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 138 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "177 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "warning"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "2 of 2 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "13 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 JSON-LD block(s), 1 parseable, 1 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "claude",
+      "name": "Claude",
+      "category": "AI assistants",
+      "audience": "AI tools",
+      "submittedUrl": "https://claude.ai/",
+      "finalUrl": null,
+      "captureKind": "public-homepage",
+      "status": "unavailable",
+      "capturedAt": "2026-11-07T12:32:03.492Z",
+      "contentHash": null,
+      "bytesFetched": null,
+      "score": null,
+      "checks": [],
+      "error": "The website returned HTTP 403."
+    },
+    {
+      "toolId": "gemini",
+      "name": "Gemini",
+      "category": "AI assistants",
+      "audience": "AI tools",
+      "submittedUrl": "https://gemini.google.com/",
+      "finalUrl": null,
+      "captureKind": "public-homepage",
+      "status": "unavailable",
+      "capturedAt": "2026-11-07T12:32:03.517Z",
+      "contentHash": null,
+      "bytesFetched": null,
+      "score": null,
+      "checks": [],
+      "error": "The website could not be fetched. Check that it is publicly reachable."
+    },
+    {
+      "toolId": "perplexity",
+      "name": "Perplexity",
+      "category": "AI assistants",
+      "audience": "AI tools",
+      "submittedUrl": "https://www.perplexity.ai/",
+      "finalUrl": "https://www.perplexity.ai/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-11-07T12:32:03.579Z",
+      "contentHash": "1378f8de8cf41f4419183d8d7b2f265b00031a51f79bfda6099866c3bfb5f908",
+      "bytesFetched": 20244,
+      "score": 58,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 8,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 10 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "warning"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 117 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 0,
+          "maxPoints": 10,
+          "detail": "0 nonempty H1 heading(s) found.",
+          "status": "fail"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 0,
+          "maxPoints": 10,
+          "detail": "0 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "fail"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 of 1 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 0,
+          "maxPoints": 5,
+          "detail": "0 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "fail"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 0,
+          "maxPoints": 10,
+          "detail": "0 JSON-LD block(s), 0 parseable, 0 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "fail"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "microsoft-copilot",
+      "name": "Microsoft Copilot",
+      "category": "AI assistants",
+      "audience": "AI tools",
+      "submittedUrl": "https://copilot.com/",
+      "finalUrl": "https://copilot.com/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-11-07T12:32:03.640Z",
+      "contentHash": "84fccfc208e0e694110ce10c204bbb9a946369147af99ddf3952702bd780304b",
+      "bytesFetched": 306702,
+      "score": 100,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 27 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 145 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1218 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "24 of 24 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "99 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 JSON-LD block(s), 1 parseable, 1 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "manus",
+      "name": "Manus",
+      "category": "AI assistants",
+      "audience": "AI tools",
+      "submittedUrl": "https://manus.im/",
+      "finalUrl": "https://manus.im/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-11-07T12:32:03.844Z",
+      "contentHash": "e5e69dbc812d935bbc0015c70260c6d475ea6b3dad5a1388aa3d940310c6440a",
+      "bytesFetched": 174758,
+      "score": 85,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 18 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 118 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "126 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "warning"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 of 1 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "32 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 0,
+          "maxPoints": 10,
+          "detail": "0 JSON-LD block(s), 0 parseable, 0 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "fail"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "grok",
+      "name": "Grok",
+      "category": "AI assistants",
+      "audience": "AI tools",
+      "submittedUrl": "https://grok.com/",
+      "finalUrl": null,
+      "captureKind": "public-homepage",
+      "status": "unavailable",
+      "capturedAt": "2026-11-07T12:32:03.650Z",
+      "contentHash": null,
+      "bytesFetched": null,
+      "score": null,
+      "checks": [],
+      "error": "The website returned HTTP 403."
+    },
+    {
+      "toolId": "lovable",
+      "name": "Lovable",
+      "category": "AI app builders",
+      "audience": "AI tools",
+      "submittedUrl": "https://lovable.dev/",
+      "finalUrl": null,
+      "captureKind": "public-homepage",
+      "status": "unavailable",
+      "capturedAt": "2026-11-07T12:32:03.650Z",
+      "contentHash": null,
+      "bytesFetched": null,
+      "score": null,
+      "checks": [],
+      "error": "The website returned HTTP 403."
+    },
+    {
+      "toolId": "v0",
+      "name": "v0",
+      "category": "AI app builders",
+      "audience": "AI tools",
+      "submittedUrl": "https://v0.app/",
+      "finalUrl": "https://v0.app/",
+      "captureKind": "public-homepage",
+      "status": "unavailable",
+      "capturedAt": "2026-11-07T12:32:05.159Z",
+      "contentHash": "44bdefcb2f2c493713f4bd7d9aa50ebab421c77bcea07573889456785018dbbb",
+      "bytesFetched": 1055060,
+      "score": null,
+      "checks": [],
+      "error": "This page could not be evaluated in the local readiness sandbox."
+    },
+    {
+      "toolId": "bolt",
+      "name": "Bolt",
+      "category": "AI app builders",
+      "audience": "AI tools",
+      "submittedUrl": "https://bolt.new/",
+      "finalUrl": "https://bolt.new/",
+      "captureKind": "public-homepage",
+      "status": "unavailable",
+      "capturedAt": "2026-11-07T12:32:04.386Z",
+      "contentHash": "4011614343db53bbf621e6221045ded7037a53d28f5f1affe74c3eba343aabaa",
+      "bytesFetched": 151107,
+      "score": null,
+      "checks": [],
+      "error": "This page could not be evaluated in the local readiness sandbox."
+    },
+    {
+      "toolId": "replit",
+      "name": "Replit",
+      "category": "AI app builders",
+      "audience": "AI tools",
+      "submittedUrl": "https://replit.com/",
+      "finalUrl": "https://replit.com/",
+      "captureKind": "public-homepage",
+      "status": "unavailable",
+      "capturedAt": "2026-11-07T12:32:04.834Z",
+      "contentHash": "98c2e62236e9793d691739c61aace99300be7de5bbae439df391722d2c31e8ad",
+      "bytesFetched": 672623,
+      "score": null,
+      "checks": [],
+      "error": "This page could not be evaluated in the local readiness sandbox."
+    },
+    {
+      "toolId": "cursor",
+      "name": "Cursor",
+      "category": "AI coding agents",
+      "audience": "AI tools",
+      "submittedUrl": "https://cursor.com/",
+      "finalUrl": "https://cursor.com/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-11-07T12:32:13.321Z",
+      "contentHash": "268b37466eb638c3f8098fc69e50ba675e0a4b548afeecf46388df1311635b58",
+      "bytesFetched": 589900,
+      "score": 95,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 56 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 129 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 5,
+          "maxPoints": 10,
+          "detail": "2 nonempty H1 heading(s) found.",
+          "status": "warning"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "2538 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
           "status": "pass"
         },
         {
@@ -3487,7 +3922,201 @@
           "label": "Internal links",
           "points": 5,
           "maxPoints": 5,
-          "detail": "80 links to another path on the same origin found. Destinations have not been crawled.",
+          "detail": "156 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "2 JSON-LD block(s), 2 parseable, 2 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "pass"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "deepseek",
+      "name": "DeepSeek",
+      "category": "AI assistants",
+      "audience": "AI tools",
+      "submittedUrl": "https://www.deepseek.com/",
+      "finalUrl": "https://www.deepseek.com/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-11-07T12:32:13.779Z",
+      "contentHash": "d650c9e9a64dedfd0198472bff505a02032bd04083b53e2bf5c66e3af329b534",
+      "bytesFetched": 115730,
+      "score": 80,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 15 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 106 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 0,
+          "maxPoints": 10,
+          "detail": "34 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "fail"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "3 of 3 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "13 links to another path on the same origin found. Destinations have not been crawled.",
+          "status": "pass"
+        },
+        {
+          "id": "structured-data",
+          "label": "Structured data",
+          "points": 0,
+          "maxPoints": 10,
+          "detail": "0 JSON-LD block(s), 0 parseable, 0 with a schema.org context and typed entity. This is not full schema validation.",
+          "status": "fail"
+        }
+      ],
+      "error": null
+    },
+    {
+      "toolId": "devin",
+      "name": "Devin",
+      "category": "AI coding agents",
+      "audience": "AI tools",
+      "submittedUrl": "https://devin.ai/",
+      "finalUrl": "https://devin.ai/",
+      "captureKind": "public-homepage",
+      "status": "complete",
+      "capturedAt": "2026-11-07T12:32:14.216Z",
+      "contentHash": "b324180b9ddd217d848718786241fdd28718578ad6579ee6b2cfe0c6e8728520",
+      "bytesFetched": 1525288,
+      "score": 100,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "points": 15,
+          "maxPoints": 15,
+          "detail": "1 title element(s); 39 characters. Recommended heuristic: one title, 15–65 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 description(s); 154 characters. Recommended heuristic: 50–170 characters.",
+          "status": "pass"
+        },
+        {
+          "id": "headings",
+          "label": "Primary heading",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 nonempty H1 heading(s) found.",
+          "status": "pass"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1 canonical link(s); matches the fetched page.",
+          "status": "pass"
+        },
+        {
+          "id": "indexability",
+          "label": "Indexing directive",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "No noindex/none directive observed in supported meta tags or the response header. Search inclusion and robots.txt access are not established.",
+          "status": "pass"
+        },
+        {
+          "id": "https",
+          "label": "HTTPS delivery",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "The fetched page uses HTTPS.",
+          "status": "pass"
+        },
+        {
+          "id": "readable-content",
+          "label": "Readable content",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "1983 words found after removing scripts, styles, navigation and footer markup. A text-availability heuristic; client-rendered content is not included.",
+          "status": "pass"
+        },
+        {
+          "id": "image-alt",
+          "label": "Image alternatives",
+          "points": 10,
+          "maxPoints": 10,
+          "detail": "279 of 279 images have an alt attribute. Empty decorative alternatives are allowed; accuracy requires review.",
+          "status": "pass"
+        },
+        {
+          "id": "internal-links",
+          "label": "Internal links",
+          "points": 5,
+          "maxPoints": 5,
+          "detail": "25 links to another path on the same origin found. Destinations have not been crawled.",
           "status": "pass"
         },
         {

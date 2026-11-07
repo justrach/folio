@@ -43,6 +43,7 @@ export function PublicBenchmarkDashboard() {
   const [initialTaskId, setInitialTaskId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [audience, setAudience] = useState("All audiences");
+  const [category, setCategory] = useState("All categories");
   const [status, setStatus] = useState("All tasks");
   const [taskPage, setTaskPage] = useState<{ context: string; index: number } | null>(null);
   const taskList = useRef<HTMLOListElement>(null);
@@ -91,19 +92,23 @@ export function PublicBenchmarkDashboard() {
   const active = view.queries.filter(task => ["queued", "running"].includes(task.collection.status));
   const latest = [...view.queries].filter(task => task.latestObservation).sort((a, b) => Date.parse(b.latestObservation!.observedAt) - Date.parse(a.latestObservation!.observedAt));
   const audiences = [...new Set(view.queries.map(task => task.audience))];
+  const categories = [...new Set(view.queries.filter(task => audience === "All audiences" || task.audience === audience).map(task => task.category))].sort();
+  const refreshedAt = data.observations.reduce<string | null>((latest, observation) =>
+    !latest || Date.parse(observation.observedAt) > Date.parse(latest) ? observation.observedAt : latest, null);
+  const refreshedDate = (value: string) => new Date(value).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
   const filtered = view.queries.filter(task => {
     const text = `${task.query} ${task.category} ${task.audience} ${task.latestObservation?.recommendations.map(item => `${item.name} ${item.url ?? ""}`).join(" ") ?? ""}`.toLowerCase();
     const state = taskState(task);
     const inProgress = ["running", "queued"].includes(task.collection.status) || !task.latestObservation && task.collection.status === "completed";
     const needsAttention = ["failed", "cancelled", "unresolved"].includes(task.collection.status);
-    return (audience === "All audiences" || audience === task.audience) && text.includes(search.toLowerCase().trim())
+    return (audience === "All audiences" || audience === task.audience) && (category === "All categories" || category === task.category) && text.includes(search.toLowerCase().trim())
       && (status === "All tasks" || status === "Published" && state.key === "published" || status === "In progress" && inProgress || status === "Not started" && state.key === "pending" || status === "Unmeasured" && state.key === "unmeasured" || status === "Needs attention" && needsAttention);
   });
   const filteredIds = new Set(filtered.map(task => task.id));
   const selected = filtered.find(task => task.id === (queryId ?? initialTaskId)) ?? latest.find(task => filteredIds.has(task.id)) ?? active.find(task => filteredIds.has(task.id)) ?? filtered[0];
   // A new selection (including back/forward) reveals its page. Snapshot refreshes
   // preserve browsing position, and filters cannot leave a now-empty page selected.
-  const pageContext = JSON.stringify([queryId, model, initialTaskId, search, audience, status]);
+  const pageContext = JSON.stringify([queryId, model, initialTaskId, search, audience, category, status]);
   const selectedPage = Math.floor(Math.max(0, filtered.findIndex(task => task.id === selected?.id)) / TASKS_PER_PAGE);
   const pageCount = Math.max(1, Math.ceil(filtered.length / TASKS_PER_PAGE));
   const pageIndex = Math.min(taskPage?.context === pageContext ? taskPage.index : selectedPage, pageCount - 1);
@@ -138,7 +143,7 @@ export function PublicBenchmarkDashboard() {
 
   return <div className="public-benchmark-dashboard" role="region" aria-label="Public benchmark results">
     <ModelLandscape/>
-    <div className="public-benchmark-toolbar"><p>Explore the questions and their sources</p><div><button type="button" onClick={() => setRevision(value => value + 1)} aria-label="Refresh public results" disabled={refreshing}><RefreshCw size={14} />{refreshing ? "Refreshing" : "Refresh"}</button></div></div>
+    <div className="public-benchmark-toolbar"><p>Explore the questions and their sources{refreshedAt && <> · Last refreshed <time dateTime={refreshedAt}>{refreshedDate(refreshedAt)}</time></>}</p><div><button type="button" onClick={() => setRevision(value => value + 1)} aria-label="Refresh public results" disabled={refreshing}><RefreshCw size={14} />{refreshing ? "Refreshing" : "Refresh"}</button></div></div>
     {error && <p className="public-benchmark-refresh-error" role="alert">The latest update could not be loaded. The last saved results are still shown.</p>}
     <dl className="public-benchmark-summary" aria-label="Benchmark totals">
       <div><dt>Published answers</dt><dd>{summary.publishedQueryCount}<small> / {summary.queryCount}</small></dd><p>{model === null ? "Latest answer per task, across models" : `Latest ${model} answer per task`}</p></div>
@@ -151,7 +156,8 @@ export function PublicBenchmarkDashboard() {
     <div className="public-benchmark-filters">
       <label className="public-benchmark-search"><Search size={15} /><span className="sr-only">Search tasks</span><input type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder="Find a question or website" /></label>
       <label><span className="sr-only">Model</span><select aria-label="Model" value={model ?? ""} onChange={event => selectModel(event.target.value)}><option value="">All models</option>{model !== null && !models.includes(model) && <option value={model}>{model || "Unknown model"} · no published answers</option>}{models.map(value => <option key={value} value={value}>{value}</option>)}</select></label>
-      <label><span className="sr-only">Audience</span><select value={audience} onChange={event => setAudience(event.target.value)}><option>All audiences</option>{audiences.map(value => <option key={value}>{value}</option>)}</select></label>
+      <label><span className="sr-only">Audience</span><select value={audience} onChange={event => { setAudience(event.target.value); setCategory("All categories"); }}><option>All audiences</option>{audiences.map(value => <option key={value}>{value}</option>)}</select></label>
+      <label><span className="sr-only">Category</span><select aria-label="Category" value={category} onChange={event => setCategory(event.target.value)}><option>All categories</option>{categories.map(value => <option key={value}>{value}</option>)}</select></label>
       <label><span className="sr-only">Task status</span><select value={status} onChange={event => setStatus(event.target.value)}>{(model === null ? ["All tasks", "Published", "In progress", "Not started", "Needs attention"] : ["All tasks", "Published", "Unmeasured"]).map(value => <option key={value}>{value}</option>)}</select></label>
     </div>
 
@@ -168,11 +174,11 @@ export function PublicBenchmarkDashboard() {
           <span className="public-task-topline"><span>{task.audience}</span><TaskStatus task={task} /></span><strong>{task.category}</strong><span className="public-task-question">{task.query}</span>
           <span className="public-task-bottomline">{task.latestObservation ? `${task.latestObservation.recommendations.length} recommendations · ${task.latestObservation.citations.length} sources` : task.collection.startedAt ? `Started ${date(task.collection.startedAt)}` : "No result yet"}<ChevronRight size={14} /></span>
         </button></li>)}</ol>
-        {!filtered.length && <div className="public-benchmark-no-matches"><p>No tasks match these filters.</p><button type="button" onClick={() => { setSearch(""); setAudience("All audiences"); setStatus("All tasks"); }}>Clear filters</button></div>}
+        {!filtered.length && <div className="public-benchmark-no-matches"><p>No tasks match these filters.</p><button type="button" onClick={() => { setSearch(""); setAudience("All audiences"); setCategory("All categories"); setStatus("All tasks"); }}>Clear filters</button></div>}
       </section>
 
       {selected ? <section className="public-benchmark-result" aria-label="Selected task" key={selected.id}>
-        <header><div className="public-task-detail-label"><span>{selected.audience} / {selected.category}</span><TaskStatus task={selected} /></div><h2 ref={resultHeading} tabIndex={-1}>{selected.query}</h2><p className="public-task-locale">{selected.language === "en" ? "English" : selected.language} · {selected.locale}<a href={`/overview?query=${encodeURIComponent(selected.id)}${model === null ? "" : `&model=${encodeURIComponent(model)}`}`} aria-label="Link to this task">Link to task <ArrowUpRight size={12} /></a></p></header>
+        <header><div className="public-task-detail-label"><span>{selected.audience} / {selected.category}</span><span className="public-task-detail-meta">{selected.latestObservation && <time dateTime={selected.latestObservation.observedAt}>Refreshed {refreshedDate(selected.latestObservation.observedAt)}</time>}<TaskStatus task={selected} /></span></div><h2 ref={resultHeading} tabIndex={-1}>{selected.query}</h2><p className="public-task-locale">{selected.language === "en" ? "English" : selected.language} · {selected.locale}<a href={`/overview?query=${encodeURIComponent(selected.id)}${model === null ? "" : `&model=${encodeURIComponent(model)}`}`} aria-label="Link to this task">Link to task <ArrowUpRight size={12} /></a></p></header>
         {selected.latestObservation ? <div className="ranked-search public-benchmark-published-result"><div className="public-benchmark-answer-heading"><h3>Ranked recommendations</h3><span>Order returned for this question</span></div><RecordedRanking query={selected} observation={selected.latestObservation} /></div> : <TaskInProgress task={selected} />}
       </section> : <section className="public-benchmark-result"><h2>{data.queries.length ? "No matching tasks" : "No benchmark tasks yet"}</h2><p>{data.queries.length ? "Change your search or filters to see a task and its result." : "Published tasks will appear here with their questions and results."}</p></section>}
     </div>

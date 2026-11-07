@@ -81,6 +81,15 @@ Search Console implementation now includes optional Google identity, explicit re
 
 These are not claims about the current pilot: repeated independent cross-company trials and a public agent benchmark; consumer AI visibility collectors; verified domain ownership; team roles; automatic repair publishing; and paid recurring monitoring with enforced provider-cost credits. Each requires its own acceptance criteria before implementation or launch claims.
 
+## AI-tool index expansion (7 November 2026)
+
+- [x] Add 200 authored AI-tool evaluation questions (100 AI assistants, 100 AI app builders) under the AI tools audience; keep the 35-question core cohort and the frozen 3,500-question artifact unchanged.
+- [x] Extend the website catalog to 50 reviewed homepages and run a fresh bounded `readiness-v1` batch: 41 measured, nine unavailable; all 50 saved outcomes reproduced offline.
+- [x] Add category filtering and a last-refreshed date to the public dashboard, and measured/average/last-refreshed context to the website directory.
+- [ ] Collect and publish paid managed answers for the 200 AI-tool questions. This requires explicit spend approval and provider credentials; authored questions are not observations.
+
+Validation for this expansion: TypeScript, **303 unit tests**, **50/50 offline readiness reproductions**, and the affected desktop GUI specs passed — public dashboard **8/8** (fixture public data), website directory **5/5**, landing rankings **2/2**. The homepage batch made real unauthenticated GET requests and no model or DataForSEO calls. The live `/api/public/benchmarks` route still requires local D1 setup; GUI coverage used fixture API responses.
+
 ## Validation of this checklist
 
 Public-dashboard checkpoint: eight focused public-data unit tests, 42 affected desktop/mobile GUI cases, and 12 new public-dashboard/index GUI cases passed. The checks cover public-only reads, strict data validation, query/history selection, filters, mobile overflow, and separation from the private workspace. GUI provider responses were mocked. Bun 1.4.1 type checking, all 215 unit tests, and the OpenNext Cloudflare build passed for the public-dashboard snapshot at `3f1ec76` with the public-shell and label updates later committed in `fa35a5b`. Later merged changes need their own validation. A further 24 targeted Index/ranking/browser checks passed, including the updated navigation handoff. These tests do not establish all 15 live results or production deployment. See [public dashboard](docs/PUBLIC-DASHBOARD.md).

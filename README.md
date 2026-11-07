@@ -89,7 +89,7 @@ See [DataForSEO integration](docs/DATAFORSEO.md), [Cloudflare and authentication
 
 ## Evidence and scope
 
-The public dashboard derives its counts from reviewed public artifacts. Its initial primary collection contains 15 questions; collection progress and published answer coverage are separate. An unfinished or unconfirmed task contributes no invented answer or position. The dated live collection status and unknown-attempt accounting are recorded in [live validation](docs/LIVE-VALIDATION.md), not inferred from dashboard availability. The 36-page HTML coverage is a separate measurement.
+The public dashboard derives its counts from reviewed public artifacts. Its initial primary collection contains 15 questions; collection progress and published answer coverage are separate. An unfinished or unconfirmed task contributes no invented answer or position. The dated live collection status and unknown-attempt accounting are recorded in [live validation](docs/LIVE-VALIDATION.md), not inferred from dashboard availability. The 50-page HTML coverage is a separate measurement.
 
 Keyword observations have private D1 storage, browser/CLI/API controls, durable reservations, recovery, deadline cancellation and baseline/fresh comparison. New `open-web` cases use Astra with OpenAI live web search; older `reviewed-domains` cases keep their restricted corpus. A position is the original recommendation order in one saved answer, not Google rank or general product quality. Target-host matches and target citations are separate; unknown website identities remain unknown. See [keyword operations](docs/KEYWORD-BENCHMARKS.md).
 

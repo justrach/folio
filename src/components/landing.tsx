@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { LandingPageReport } from "./landing-page-report";
 import { RankedSearchTable } from "./ranked-search-table";
-import { PUBLIC_SEARCH_QUERIES, latestPublicSearchObservation } from "@/lib/public-search-rankings";
+import { PUBLIC_SEARCH_OBSERVATIONS, PUBLIC_SEARCH_QUERIES, latestPublicSearchObservation } from "@/lib/public-search-rankings";
 import evaluationBatch from "@/data/developer-tool-evaluations.json";
 import "./landing.css";
 import { UiButton, UiSurface } from "./ui/primitives";
@@ -10,6 +10,10 @@ import { UiButton, UiSurface } from "./ui/primitives";
 function Mark() {
   return <span className="folio-mark" aria-hidden="true"><i /><i /><i /><i /></span>;
 }
+
+const dateFormat = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+const latestObservedAt = PUBLIC_SEARCH_OBSERVATIONS.reduce<string | null>((latest, observation) =>
+  !latest || Date.parse(observation.observedAt) > Date.parse(latest) ? observation.observedAt : latest, null);
 
 const questions = [
   ["Software & work", "Which plan includes what I need?"],
@@ -55,6 +59,11 @@ export function Landing() {
       </nav>
       <Link className="landing-signin" href="/login">Sign in <ArrowUpRight size={15} aria-hidden="true" /></Link>
     </header>
+    <div className="landing-indexbar" role="note" aria-label="Edition details">
+      <span className="landing-indexbar-title">The Folio Index</span>
+      <span>AI recommendations, with the evidence attached</span>
+      <span>{PUBLIC_SEARCH_QUERIES.length.toLocaleString("en-US")} questions · {reportCount} measured page checks{latestObservedAt ? ` · observations through ${dateFormat.format(new Date(latestObservedAt))}` : ""}</span>
+    </div>
 
     <main id="main-content">
       <section className="landing-hero">
@@ -77,19 +86,21 @@ export function Landing() {
       </div>
 
       <section className="landing-workflow" id="how-it-works" aria-labelledby="workflow-heading">
+        <p className="landing-figure">Fig. 01 · Method</p>
         <div className="landing-section-heading">
           <div><h2 id="workflow-heading">A clear next step for your website.</h2><p>Start with a customer question. Finish with evidence your team can act on.</p></div>
         </div>
         <ol>
-          <li><h3>Ask a useful question</h3><p>Save the questions people ask when choosing a product like yours. Start an evaluation when you’re ready.</p></li>
-          <li><h3>Inspect the evidence</h3><p>See the returned companies and sources. Inspect your own page to check whether the relevant information is already there.</p></li>
-          <li><h3>Make a change. Check again.</h3><p>Use page checks and repair suggestions to decide what to edit. After your team publishes, run a fresh evaluation and review the evidence.</p></li>
+          <li data-step="01"><h3>Ask a useful question</h3><p>Save the questions people ask when choosing a product like yours. Start an evaluation when you’re ready.</p></li>
+          <li data-step="02"><h3>Inspect the evidence</h3><p>See the returned companies and sources. Inspect your own page to check whether the relevant information is already there.</p></li>
+          <li data-step="03"><h3>Make a change. Check again.</h3><p>Use page checks and repair suggestions to decide what to edit. After your team publishes, run a fresh evaluation and review the evidence.</p></li>
         </ol>
         <p className="landing-workflow-note">Each result records one run. A different answer after an edit does not establish that the edit caused it.</p>
       </section>
 
       <section className="landing-audiences" id="evaluation-suites" aria-labelledby="audience-heading">
         <div>
+          <p className="landing-figure">Fig. 02 · Question index</p>
           <h2 id="audience-heading">Questions worth checking.</h2>
           <p>Software is one starting point. Shops, service businesses, and learning platforms have their own questions to answer.</p>
           <p className="landing-scope">Each search ranking belongs to its exact question. The separate page reports use the same HTML rubric across all five audiences.</p>
@@ -98,6 +109,7 @@ export function Landing() {
       </section>
 
       <section className="landing-report-section" id="sample-report" aria-labelledby="report-heading">
+        <p className="landing-figure">Fig. 03 · Returned order</p>
         <div className="landing-section-heading">
           <div>
             <h2 id="report-heading">See who gets recommended.</h2>
@@ -105,9 +117,10 @@ export function Landing() {
           </div>
           <Link href="/leaderboard">Browse rankings <ArrowUpRight size={15} aria-hidden="true" /></Link>
         </div>
+        <h3 className="sr-only">Returned recommendations</h3>
         <RankedSearchTable compact />
         <details className="landing-technical-report">
-          <summary>HTML page checks for {reportCount} websites</summary>
+          <summary>HTML page checks for {reportCount} measured websites</summary>
           <p>Open a saved page report to inspect technical findings alongside the search observations.</p>
           <LandingPageReport />
         </details>

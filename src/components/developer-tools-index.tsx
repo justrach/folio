@@ -55,7 +55,10 @@ export function DeveloperToolsIndex() {
     && `${tool.name} ${tool.description} ${tool.category} ${tool.audience} ${tool.websiteUrl}`.toLowerCase().includes(query.trim().toLowerCase())
     && (resultFilter === "All results" || (resultFilter === "Measured pages" ? isMeasured(tool.observation) : !isMeasured(tool.observation)))),
   [audienceRows, query, category, resultFilter]);
-  const completed = catalogRows.filter(tool => isMeasured(tool.observation)).length;
+  const scores = catalogRows.filter(tool => isMeasured(tool.observation)).map(tool => tool.observation!.score as number);
+  const completed = scores.length;
+  const averageScore = completed ? Math.round(scores.reduce((total, score) => total + score, 0) / completed) : null;
+  const refreshedLabel = new Date(evaluationBatch.generatedAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
   const hasFilters = query || audience !== "All audiences" || category !== "All categories" || resultFilter !== "All results";
   const columns: DataTableColumn<ToolRow>[] = [
     { id: "name", header: "Website", sortable: true, value: row => row.name, cell: row => <div className="devtool-name">
@@ -77,7 +80,7 @@ export function DeveloperToolsIndex() {
   return <div className="developer-tools-index">
     <section className="devtools-intro">
       <h2>HTML page checks</h2>
-      <p>{completed} of {DEVELOPER_TOOLS.length} public homepages measured. Open a row for its checks and capture evidence.</p>
+      <p>{completed} of {DEVELOPER_TOOLS.length} public homepages measured{averageScore === null ? "" : ` · average ${averageScore}/100`} · last refreshed <time dateTime={evaluationBatch.generatedAt}>{refreshedLabel}</time>. Open a row for its checks and capture evidence.</p>
       <p>Folio’s readiness-v1 scores cover captured HTML only. Search rankings, API execution, and agent task success are outside this rubric.</p>
     </section>
     <section className="panel devtools-directory" aria-label="Website evaluation directory">

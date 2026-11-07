@@ -2,6 +2,8 @@
 
 Plain `/overview` opens public questions, collection status, and published recommendations without signing in. It uses an independent public shell, so opening it does not read account identity, saved customer records, or the private agent activity list. `/leaderboard` also uses the public shell, even when its URL includes workspace-looking query hints.
 
+The reviewed question catalog now includes 200 authored AI-tool evaluation questions under the **AI tools** audience: 100 for AI assistants naming ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus, and 100 for AI app builders naming Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot. They are declared not started. Authoring a question creates no answer, position, or source; measured AI-tool answers require a separate paid collection run and publication review. The category filter and the dashboard's **Last refreshed** date derive from published observations only, and the date is not evidence that a new collection ran.
+
 The private website overview is `/overview?view=workspace`; illustrative charts are at `/overview?view=demo`. Existing overview links with website/scope context still enter the authenticated workspace. A URL hint carries selection only and never grants ownership or permission to start work.
 
 ## Reading a result
@@ -34,7 +36,7 @@ A published answer remains readable if a newer task is running, failed or unreso
 
 Website and source totals use only the latest published observation for each exact query. Website identities count distinct hosts, normalizing case, a trailing dot and `www`; subdomains remain distinct and unknown URLs do not count. Sources count distinct exact URLs. Older answers do not inflate these totals. No cross-query average position or general company score is calculated.
 
-The separate HTML coverage summary counts each catalog website's latest public-homepage capture, retaining measured, unavailable and unmeasured outcomes. Local previews and non-catalog rows are excluded. The existing 36-page `readiness-v1` batch measures bounded homepage HTML, not the search questions or other vendors' API task success.
+The separate HTML coverage summary counts each catalog website's latest public-homepage capture, retaining measured, unavailable and unmeasured outcomes. Local previews and non-catalog rows are excluded. The current 50-page `readiness-v1` batch measures bounded homepage HTML (41 measured), not the search questions or other vendors' API task success.
 
 ## Public snapshot API
 

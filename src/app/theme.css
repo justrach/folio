@@ -1,9 +1,9 @@
 /* Folio design system. Change this file to retheme color and type across routes. */
 :root {
   color-scheme: light;
-  --folio-font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-  --folio-font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-  --folio-font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --folio-font-body: var(--font-dm-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --folio-font-display: var(--font-dm-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --folio-font-mono: var(--font-dm-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   --folio-ink: #171717;
   --folio-charcoal: #292929;
   --folio-text-secondary: #4b4b4b;

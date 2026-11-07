@@ -2,6 +2,7 @@ import catalog from "@/data/developer-tools.json";
 
 export const WEBSITE_AUDIENCES = [
   "Developer tools",
+  "AI tools",
   "Software & work",
   "Shops & brands",
   "Services & travel",
