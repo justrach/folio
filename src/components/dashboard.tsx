@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
+import "./login.css";
 import { DashboardAppearance, DashboardNavigation } from "./dashboard-appearance";
 import { LabelInput } from "./bencho/label-input/LabelInput";
 import "./bencho/label-input/LabelInput.css";
@@ -25,6 +27,8 @@ import {
   Code2,
   Compass,
   ExternalLink,
+  Eye,
+  EyeOff,
   FileCode2,
   FileText,
   FlaskConical,
@@ -1856,6 +1860,7 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
   const [signup, setSignup] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -1874,43 +1879,17 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
     return () => controller.abort();
   }, []);
   return (
-    <div className="login-page">
-      <section className="login-story">
-        <Link href="/" className="wordmark">
-          <FolioMark />
-          <span>folio.</span>
-        </Link>
-        <div>
-          <span className="eyebrow">A NEW CHAPTER IN DISCOVERY</span>
-          <h1>
-            The next search
-            <br />
-            is an answer.
-            <br />
-            <em>Be part of it.</em>
-          </h1>
-          <p>
-            Bring your search visibility and AI discovery
-            <br />
-            into one clear, considered view.
-          </p>
-          <div className="login-bars" aria-hidden="true">
-            {[25, 32, 43, 52, 68, 78, 92, 100].map((n, i) => (
-              <span key={i} style={{ height: `${n}%` }} />
-            ))}
-          </div>
-        </div>
-        <span className="login-edition">
-          FOLIO · THE VISIBILITY REPORT · EST. 2026
-        </span>
-      </section>
-      <section className="login-form-side">
-        <Link href="/overview?view=demo" className="back-demo">
-          Explore the demo <ArrowUpRight size={15} />
-        </Link>
-        <form
+    <div className="login-screen">
+      <header className="login-header">
+        <Link href="/" className="wordmark" aria-label="Folio home"><FolioMark /><span>folio.</span></Link>
+        <div><Link href="/overview?view=demo">Explore the demo <ArrowUpRight size={15} aria-hidden="true" /></Link><DashboardAppearance /></div>
+      </header>
+      <main className="login-layout">
+      <section className="login-form-panel" aria-labelledby="login-title">
+        <form className="login-form" aria-busy={busy} aria-label={signup ? "Create your Folio account" : "Sign in to Folio"}
           onSubmit={async (e) => {
             e.preventDefault();
+            if (busy) return;
             setBusy(true);
             setError("");
             try {
@@ -1934,14 +1913,14 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
             }
           }}
         >
-          <FolioMark />
-          <span className="eyebrow">MAKE YOURSELF AT HOME</span>
-          <h2>{signup ? "Start your next chapter." : "Welcome back."}</h2>
+          <span className="login-kicker">Your Folio workspace</span>
+          <h1 id="login-title">{signup ? "Create your account." : "Welcome back."}</h1>
           <p>
             {signup
-              ? "A little clarity for your corner of the internet."
-              : "A clearer picture is waiting for you."}
+              ? "Keep your websites, questions, and reports together."
+              : "Sign in to pick up where you left off."}
           </p>
+          <div className="login-providers">
           {googleConfigured && <button className="button secondary" type="button" disabled={busy} onClick={async () => {
             setBusy(true); setError("");
             try {
@@ -1960,12 +1939,15 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
             finally { setBusy(false); }
           }}>Sign in with GitHub</button>}
           {searchParams.get("error") === "github" && <p className="form-error" role="alert">GitHub sign-in could not be completed. If you already have a Folio account, sign in with your existing method and connect GitHub in Settings.</p>}
+          </div>
+          {(googleConfigured || githubConfigured) && <div className="login-divider"><span>or use email</span></div>}
           {signup && (
             <label>
               Your name
               <input
                 autoComplete="name"
                 required
+                disabled={busy}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Alex Morgan"
@@ -1978,6 +1960,7 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
               type="email"
               autoComplete="email"
               required
+              disabled={busy}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@company.com"
@@ -1985,15 +1968,16 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
           </label>
           <label>
             Password
-            <input
-              type="password"
+            <span className="login-password"><input
+              type={showPassword ? "text" : "password"}
               minLength={10}
               autoComplete={signup ? "new-password" : "current-password"}
               required
+              disabled={busy}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="At least 10 characters"
-            />
+              placeholder={signup ? "At least 10 characters" : "Your password"}
+            /><button type="button" className="login-password-toggle" disabled={busy} aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword} onClick={() => setShowPassword(!showPassword)}>{showPassword ? <EyeOff size={18} aria-hidden="true" /> : <Eye size={18} aria-hidden="true" />}</button></span>
           </label>
           {error && (
             <p className="form-error" role="alert">
@@ -2002,7 +1986,7 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
           )}
           <Button type="submit" disabled={busy}>
             {busy ? (
-              <Loader2 className="spin" size={16} />
+              <><Loader2 className="spin" size={16} aria-hidden="true" />{signup ? "Creating account…" : "Signing in…"}</>
             ) : (
               <>
                 {signup ? "Create your account" : "Sign in"}
@@ -2010,24 +1994,29 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
               </>
             )}
           </Button>
-          <p className="auth-switch">
-            {signup ? "Already have an account?" : "New around here?"}{" "}
+          <p className="login-account-switch">
+            {signup ? "Already have an account?" : "New to Folio?"}{" "}
             <button
               type="button"
+              disabled={busy}
               onClick={() => {
                 setSignup(!signup);
+                setShowPassword(false);
                 setError("");
               }}
             >
               {signup ? "Sign in" : "Create an account"}
             </button>
           </p>
-          <div className="auth-security">
-            <ShieldCheck size={14} /> Secure authentication by Better Auth
-          </div>
+          <p className="login-privacy"><ShieldCheck size={14} aria-hidden="true" /> Your reports are private by default.</p>
         </form>
-        <span className="login-bottom">A little clarity goes a long way.</span>
       </section>
+      <aside className="login-art" aria-label="Folio artwork">
+        <Image src="/images/folio-dune-hero.webp" alt="" width={1024} height={1280} sizes="(max-width: 800px) 0px, 40vw" />
+        <div><span>A little perspective.</span><span>Folio / 01</span></div>
+      </aside>
+      </main>
+      <footer className="login-footer"><Link href="/privacy">Privacy</Link><span>A little clarity goes a long way.</span></footer>
     </div>
   );
 }

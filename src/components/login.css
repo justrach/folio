@@ -1,0 +1,50 @@
+.login-screen { display: flex; flex-direction: column; min-height: 100dvh; color: var(--folio-ink); background: var(--folio-canvas); font: 14px/1.6 var(--folio-font-body); }
+.login-header { width: min(1240px, 100%); margin-inline: auto; padding: 22px 40px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.login-header .wordmark { display: inline-flex; align-items: center; gap: 8px; font: 700 30px/1 var(--folio-font-display); letter-spacing: -.04em; }
+.login-header .wordmark .folio-mark { width: 23px; height: 23px; }
+.login-header > div { display: flex; align-items: center; gap: 22px; }
+.login-header > div > a { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: 13px; color: var(--folio-text-secondary); }
+.login-header .dashboard-appearance { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; min-width: 44px; padding: 8px; border-radius: 8px; color: var(--folio-text-secondary); font-size: 12px; }
+.login-header .dashboard-appearance:hover { background: var(--folio-surface-muted); }
+.login-layout { width: min(1080px, 100%); margin: auto; padding: 48px 40px 60px; display: grid; grid-template-columns: minmax(0, 400px) minmax(0, 400px); align-items: center; justify-content: space-between; gap: 100px; }
+.login-form-panel { min-width: 0; }
+.login-form { width: 100%; }
+.login-kicker { display: block; color: var(--folio-text-secondary); font-size: 12px; margin-bottom: 12px; }
+.login-form h1 { font: 500 34px/1.2 var(--folio-font-display); letter-spacing: -.035em; margin: 0 0 12px; }
+.login-form > p:first-of-type { font-size: 15px; color: var(--folio-text-secondary); margin-bottom: 30px; }
+.login-form > label { display: block; margin-top: 20px; font-size: 13px; font-weight: 500; }
+.login-form input { display: block; width: 100%; min-width: 0; height: 50px; padding: 12px 14px; margin-top: 7px; border: 1px solid var(--folio-edge-strong); border-radius: 8px; background: var(--folio-surface); color: var(--folio-ink); font: 400 16px/1.5 var(--folio-font-body); }
+.login-form input:focus-visible { outline: 2px solid var(--folio-focus); outline-offset: 2px; }
+.login-password { display: flex; position: relative; min-width: 0; }
+.login-password input { padding-right: 50px; }
+.login-password-toggle { display: grid; place-items: center; position: absolute; right: 3px; bottom: 3px; min-width: 44px; height: 44px; color: var(--folio-text-secondary); border-radius: 6px; }
+.login-password-toggle:hover { color: var(--folio-ink); background: var(--folio-surface-muted); }
+.login-form > .button { display: flex; width: 100%; min-height: 48px; margin-top: 24px; border-radius: 8px; font-size: 14px; font-weight: 500; }
+.login-providers { display: grid; gap: 10px; }
+.login-providers:empty { display: none; }
+.login-providers > .button { width: 100%; min-height: 46px; border-radius: 8px; font-size: 14px; font-weight: 500; }
+.login-divider { display: flex; align-items: center; gap: 12px; margin: 24px 0 20px; color: var(--folio-text-secondary); font-size: 12px; }
+.login-divider::before, .login-divider::after { content: ""; flex: 1; height: 1px; background: var(--folio-edge); }
+.login-form .login-account-switch { display: flex; justify-content: center; flex-wrap: wrap; align-items: center; column-gap: 6px; margin-top: 12px; font-size: 13px; color: var(--folio-text-secondary); }
+.login-account-switch button { min-height: 44px; font: inherit; font-weight: 500; color: var(--folio-ink); text-decoration: underline; text-underline-offset: 3px; }
+.login-form .login-privacy { display: flex; align-items: flex-start; justify-content: center; gap: 7px; margin-top: 18px; color: var(--folio-text-secondary); font-size: 12px; }
+.login-privacy svg { margin-top: 2px; }
+.login-form .form-error { margin-top: 14px; font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+.login-art { min-width: 0; }
+.login-art img { display: block; width: 100%; height: auto; aspect-ratio: 4/5; object-fit: cover; border-radius: 12px; }
+.login-art > div { display: flex; justify-content: space-between; gap: 16px; margin-top: 12px; color: var(--folio-text-secondary); font-size: 11px; }
+.login-footer { display: flex; justify-content: space-between; gap: 16px; width: min(1240px, 100%); margin-inline: auto; padding: 16px 40px 22px; color: var(--folio-text-secondary); font-size: 12px; }
+.login-footer a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: underline; text-underline-offset: 3px; }
+.login-footer > span { align-self: center; }
+@media (max-width: 1000px) { .login-layout { gap: 50px; } }
+@media (max-width: 800px) {
+  .login-header { padding: 16px 24px; }
+  .login-header > div { gap: 10px; }
+  .login-header .dashboard-appearance span { display: none; }
+  .login-layout { display: block; max-width: 448px; padding: 44px 24px 36px; margin-block: 0 auto; }
+  .login-art { display: none; }
+  .login-form h1 { font-size: 30px; }
+  .login-footer { padding: 12px 24px 20px; }
+  .login-footer > span { display: none; }
+}
+@media (max-width: 360px) { .login-header { gap: 8px; padding-inline: 20px; } .login-header > div { gap: 4px; } .login-header > div > a { font-size: 12px; } .login-layout { padding-inline: 20px; } }
