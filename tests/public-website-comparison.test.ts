@@ -17,10 +17,16 @@ test("chooses latest matching observation without pooling models or creating a d
   assert.equal(result.observation?.id, "new"); assert.match(result.reason, /no change score/);
   assert.equal(publicWebsiteComparison(run, [query], [{ ...observation, observedAt: "invalid" }]).observation, null);
 });
-test("owner-context question drafts fit the real editor limits and reject invalid context", () => {
+test("owner-context question drafts preserve long descriptions and reject invalid context", () => {
   const questions = websiteQuestionDrafts("a".repeat(60), "b".repeat(120));
   assert.equal(questions.length, 10); assert.ok(questions.every(q => q.length <= 300));
+  const audience = "Small design teams and independent product designers who need to collect clear, actionable feedback from clients and collaborate across time zones";
+  const longQuestions = websiteQuestionDrafts(audience, "collect feedback on prototypes");
+  assert.equal(longQuestions.length, 10);
+  assert.ok(longQuestions.every(question => question.includes(audience)));
+  assert.ok(websiteQuestionDrafts("a".repeat(1000), "task").every(question => question.includes("a".repeat(1000))));
+  assert.deepEqual(websiteQuestionDrafts("team\n\tname", "task"), websiteQuestionDrafts("team name", "task"));
   assert.deepEqual(websiteQuestionDrafts("", "task"), []);
-  assert.deepEqual(websiteQuestionDrafts("a".repeat(61), "task"), []);
-  assert.deepEqual(websiteQuestionDrafts("team\nname", "task"), []);
+  assert.deepEqual(websiteQuestionDrafts("team\u0000name", "task"), []);
+  assert.deepEqual(websiteQuestionDrafts("team", "b".repeat(121)), []);
 });
