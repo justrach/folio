@@ -12,7 +12,7 @@
     { "binding": "FOLIO_BACKEND", "service": "folio-visibility" },
     { "binding": "FOLIO_PUBLIC_INDEX", "service": "folio-public-index" }
   ],
-  "observability": { "enabled": true, "logs": { "invocation_logs": false } },
+  "observability": { "enabled": true, "redact_query_string": true, "logs": { "invocation_logs": false }, "traces": { "enabled": false } },
   "env": {
     "production": {
       "name": "folio-frontend",
