@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { LandingPageReport } from "./landing-page-report";
 import { RankedSearchTable } from "./ranked-search-table";
-import { PUBLIC_SEARCH_OBSERVATIONS, PUBLIC_SEARCH_QUERIES, latestPublicSearchObservation } from "@/lib/public-search-rankings";
+import { PUBLIC_SEARCH_QUERIES, latestPublicSearchObservation } from "@/lib/public-search-rankings";
 import evaluationBatch from "@/data/developer-tool-evaluations.json";
 import "./landing.css";
 import { UiButton, UiSurface } from "./ui/primitives";
@@ -10,10 +10,6 @@ import { UiButton, UiSurface } from "./ui/primitives";
 function Mark() {
   return <span className="folio-mark" aria-hidden="true"><i /><i /><i /><i /></span>;
 }
-
-const dateFormat = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
-const latestObservedAt = PUBLIC_SEARCH_OBSERVATIONS.reduce<string | null>((latest, observation) =>
-  !latest || Date.parse(observation.observedAt) > Date.parse(latest) ? observation.observedAt : latest, null);
 
 const questions = [
   ["Software & work", "Which plan includes what I need?"],
@@ -59,11 +55,6 @@ export function Landing() {
       </nav>
       <Link className="landing-signin" href="/login">Sign in <ArrowUpRight size={15} aria-hidden="true" /></Link>
     </header>
-    <div className="landing-indexbar" role="note" aria-label="Edition details">
-      <span className="landing-indexbar-title">The Folio Index</span>
-      <span>AI recommendations, with the evidence attached</span>
-      <span>{PUBLIC_SEARCH_QUERIES.length.toLocaleString("en-US")} questions · {reportCount} measured page checks{latestObservedAt ? ` · observations through ${dateFormat.format(new Date(latestObservedAt))}` : ""}</span>
-    </div>
 
     <main id="main-content">
       <section className="landing-hero">
@@ -117,6 +108,7 @@ export function Landing() {
           </div>
           <Link href="/leaderboard">Browse rankings <ArrowUpRight size={15} aria-hidden="true" /></Link>
         </div>
+        <p className="landing-method-note">One answer per exact question. Position is the order the agent returned, not a score.</p>
         <h3 className="sr-only">Returned recommendations</h3>
         <RankedSearchTable compact />
         <details className="landing-technical-report">
