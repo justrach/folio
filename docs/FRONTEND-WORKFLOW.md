@@ -16,6 +16,15 @@ monospace formatting. The workspace uses a quiet text navigation rail, omits
 promotional sidebar artwork and redundant heading eyebrows, and keeps essential
 evidence, account, and spending states visible.
 
+Workspace controls use rounded 12px shapes and the existing shared press feedback.
+The Index view chooser uses a segmented surface with a filled selected tab; it
+reflows to two columns on phones. Public summary cards and the question browser
+share 16px corners. The private overview places the answer-model selector beside
+its scope explanation on desktop and stacks them on mobile. Its summary values
+stay compact above the chart cards, and recommended steps and saved report types
+use separate cards. These presentation changes preserve the measured values,
+scope caveats, owned-record navigation and explicit run actions.
+
 Folio connects saved technical audits, private SEO reports, and managed website evaluations through prepared forms and owned records. Moving between pages does not start a paid lookup or model task. The owner reviews the inputs and chooses the action that creates work.
 
 This guide describes the current UI. The [evaluation loop](EVALUATION-LOOP.md) explains execution and recovery; the [evaluation strategy](../EVALUATION-STRATEGY.md) defines what the checks establish.

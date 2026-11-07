@@ -1,7 +1,7 @@
 .folio-select-trigger {
   display: inline-flex; align-items: center; justify-content: space-between; gap: 12px;
   width: 100%; min-width: 0; min-height: 44px; height: auto; padding: 10px 12px;
-  border: 1px solid var(--folio-edge-strong); border-radius: 8px;
+  border: 1px solid var(--folio-edge); border-radius: 12px;
   background: var(--folio-surface); color: var(--folio-ink);
   font: 400 13px/1.5 var(--folio-font-body); text-align: left; cursor: pointer;
 }
@@ -14,7 +14,7 @@
 .folio-select-menu {
   z-index: 120; width: var(--radix-select-trigger-width); min-width: min(240px, calc(100vw - 24px)); max-width: calc(100vw - 24px);
   max-height: min(360px, var(--radix-select-content-available-height)); overflow: hidden;
-  border: 1px solid var(--folio-edge); border-radius: 10px;
+  border: 1px solid var(--folio-edge); border-radius: 14px;
   background: var(--folio-surface); color: var(--folio-ink);
   box-shadow: 0 10px 30px var(--folio-dialog-shadow); font: 400 13px/1.5 var(--folio-font-body);
 }

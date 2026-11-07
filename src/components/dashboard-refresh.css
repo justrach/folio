@@ -18,7 +18,7 @@
 .app-shell.folio-workspace .main-shell { margin-left: 224px; }
 .app-shell.folio-workspace .sidebar > .wordmark { font: 700 30px/1 var(--folio-font-display); letter-spacing: -.04em; margin: 0 12px 32px; }
 .app-shell.folio-workspace .nav-caption { font-size: 10px; font-weight: 500; letter-spacing: .08em; color: var(--folio-text-muted); }
-.app-shell.folio-workspace .nav-link { font-size: 13px; font-weight: 400; min-height: 42px; height: auto; padding: 9px 12px; border-radius: 8px; color: var(--folio-text-secondary); gap: 10px; }
+.app-shell.folio-workspace .nav-link { font-size: 13px; font-weight: 400; min-height: 42px; height: auto; padding: 9px 12px; border-radius: 12px; color: var(--folio-text-secondary); gap: 10px; }
 .app-shell.folio-workspace .nav-link:is(.active, [aria-current="page"]) { color: var(--folio-ink); background: var(--folio-accent-soft); box-shadow: none; font-weight: 500; }
 .app-shell.folio-workspace .nav-link:hover { color: var(--folio-ink); background: var(--folio-surface-muted); }
 .app-shell.folio-workspace .nav-link > svg { display: block; width: 16px; height: 16px; stroke-width: 1.6; }
@@ -28,8 +28,8 @@
 .app-shell.folio-workspace .page-heading { margin: 0 0 24px; align-items: center; gap: 18px; }
 .app-shell.folio-workspace .page-heading h1 { font: 500 26px/1.25 var(--folio-font-display); letter-spacing: -.03em; margin: 0; }
 .app-shell.folio-workspace .page-heading p { font-size: 14px; line-height: 1.6; margin-top: 6px; max-width: 65ch; }
-.app-shell.folio-workspace .button { border-radius: 8px; font-weight: 500; min-height: 44px; font-size: 13px; }
-.app-shell.folio-workspace .panel { border-radius: 12px; background: var(--folio-surface); }
+.app-shell.folio-workspace .button { border-radius: 12px; font-weight: 500; min-height: 44px; font-size: 13px; }
+.app-shell.folio-workspace .panel { border-radius: 16px; background: var(--folio-surface); }
 .app-shell.folio-workspace .page-heading { animation: none; }
 .dashboard-appearance { display: inline-flex; align-items: center; gap: 7px; min-width: 44px; min-height: 44px; justify-content: center; padding: 8px; border: 0; border-radius: 8px; background: transparent; color: var(--folio-text-secondary); font: 12px var(--folio-font-body); cursor: pointer; }
 .dashboard-appearance:hover { background: var(--folio-surface-muted); color: var(--folio-ink); }
@@ -129,16 +129,16 @@
 .app-shell.folio-workspace .page-content { padding-top: 24px; }
 .folio-workspace .public-benchmark-toolbar { margin-bottom: 12px; font-size: 12px; }
 .folio-workspace .public-benchmark-summary { gap: 14px; border: 0; padding: 0; background: transparent; margin: 12px 0 16px; }
-.folio-workspace .public-benchmark-summary > div { border: 1px solid var(--folio-edge); border-radius: 8px; background: var(--folio-surface); padding: 15px 16px; }
+.folio-workspace .public-benchmark-summary > div { border: 1px solid var(--folio-edge); border-radius: 16px; background: var(--folio-surface); padding: 18px 20px; }
 .folio-workspace .public-benchmark-summary dt { font-size: 12px; margin-bottom: 7px; }
-.folio-workspace .public-benchmark-summary dd { font-size: 25px; line-height: 1.15; }
+.folio-workspace .public-benchmark-summary dd { font-size: 28px; line-height: 1.15; }
 .folio-workspace .public-benchmark-summary dd small { font-size: 15px; }
 .folio-workspace .public-benchmark-summary p { font-size: 11px; line-height: 1.45; margin-top: 7px; }
 .folio-workspace .public-benchmark-progress { margin: 0 0 18px; font-size: 11px; }
 .folio-workspace .public-benchmark-progress > [role=progressbar] { background: var(--folio-edge); height: 3px; }
 .overview-insights { display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(240px, 1fr); gap: 16px; margin-bottom: 20px; }
-.overview-activity-panel, .overview-model-panel { min-width: 0; border: 1px solid var(--folio-edge); border-radius: 8px; background: var(--folio-surface); }
-.overview-insights .stb { border-radius: 8px; gap: 10px; --stb-c1: var(--folio-ink); --stb-c2: var(--folio-text-muted); --stb-c3: var(--folio-edge-strong); --stb-c4: var(--folio-accent-edge); }
+.overview-activity-panel, .overview-model-panel { min-width: 0; border: 1px solid var(--folio-edge); border-radius: 16px; background: var(--folio-surface); }
+.overview-insights .stb { border-radius: 16px; gap: 10px; --stb-c1: var(--folio-ink); --stb-c2: var(--folio-text-muted); --stb-c3: var(--folio-edge-strong); --stb-c4: var(--folio-accent-edge); }
 .overview-insights .stb-esc { display: none; }
 .overview-insights .stb-unit { font-size: 11px; }
 .overview-insights .stb-num { font-size: 26px; }
@@ -168,7 +168,7 @@
 .folio-workspace .lbi-label { display: block; font-size: 13px; }
 .folio-workspace .lbi[data-up="true"] .lbi-label { transform: translateY(-50%) translateY(var(--lbi-lift, -22px)) scale(.78); }
 .folio-workspace .lbi-label span { display: inline-block; }
-.folio-workspace .public-benchmark-workbench { grid-template-columns: minmax(250px, .7fr) minmax(0, 1.5fr); gap: 0; margin-top: 0; border: 1px solid var(--folio-edge); border-radius: 8px; background: var(--folio-surface); }
+.folio-workspace .public-benchmark-workbench { grid-template-columns: minmax(250px, .7fr) minmax(0, 1.5fr); gap: 0; margin-top: 0; border: 1px solid var(--folio-edge); border-radius: 16px; background: var(--folio-surface); }
 .folio-workspace .public-benchmark-task-browser { background: transparent; border-right: 1px solid var(--folio-edge); }
 .folio-workspace .public-benchmark-list-heading { padding: 16px 16px 8px; margin: 0; }
 .folio-workspace .public-benchmark-pagination { padding: 0 16px 12px; }
