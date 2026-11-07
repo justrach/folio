@@ -1,3 +1,4 @@
+import { openEmailLogin } from "./login-helpers";
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
 import { randomBytes, randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
@@ -119,7 +120,7 @@ test("landing opens the start flow from the sparse hero", async ({ page }, testI
   await screenshot(page, testInfo, "landing");
   await page.locator('.landing-hero a[href="/start"]').click();
   await expect(page).toHaveURL(/\/start$/);
-  await expect(page.getByRole("heading", { name: "Which website should AI recommend?", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Start with your website.", exact: true })).toBeVisible();
   expect(writes).toEqual([]);
   expect(runtimeErrors).toEqual([]);
 });
@@ -524,6 +525,7 @@ test("real signup, simulated scan history, and logout protect account data", asy
   await page
     .getByLabel("Your name", { exact: true })
     .fill("GUI Navigation Test");
+  await openEmailLogin(page);
   await page.getByLabel("Email address", { exact: true }).fill(email);
   await expect(page.getByLabel("Password", { exact: true })).toHaveAttribute(
     "minlength",
@@ -596,6 +598,7 @@ test("real signup, simulated scan history, and logout protect account data", asy
     page.getByRole("link", { name: "Sign in to begin" }),
   ).toBeVisible();
   await page.getByRole("link", { name: "Sign in to begin" }).click();
+  await openEmailLogin(page);
   await page.getByLabel("Email address", { exact: true }).fill(email);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Sign in", exact: true }).click();

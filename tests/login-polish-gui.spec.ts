@@ -1,3 +1,4 @@
+import { openEmailLogin } from "./login-helpers";
 import { expect, test } from "@playwright/test";
 
 async function setup(page: import("@playwright/test").Page) {
@@ -24,12 +25,18 @@ test("login stays readable on a narrow phone and password/account controls do no
   await page.goto("/login?next=%2Foverview%3Fview%3Dworkspace");
   await expect(page.getByRole("link", { name: "Folio home", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { level: 1, name: "Welcome back.", exact: true })).toBeVisible();
+  await expect(page.getByLabel("Email address", { exact: true })).not.toBeVisible();
+  await openEmailLogin(page);
+  await expect(page.getByLabel("Email address", { exact: true })).toBeFocused();
   const password = page.getByLabel("Password", { exact: true });
   await password.fill("fixture-only-password");
   await page.getByRole("button", { name: "Show password", exact: true }).click();
   await expect(password).toHaveAttribute("type", "text");
   await page.getByRole("button", { name: "Hide password", exact: true }).click();
   await expect(password).toHaveAttribute("type", "password");
+  await page.getByRole("button", { name: "Other sign-in methods", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Continue with email", exact: true })).toBeFocused();
+  await expect(password).not.toBeVisible();
   await page.getByRole("button", { name: "Create an account", exact: true }).click();
   await expect(page.getByRole("heading", { level: 1, name: "Create your account.", exact: true })).toBeVisible();
   await expect(page.getByLabel("Your name", { exact: true })).toBeVisible();
@@ -42,6 +49,7 @@ test("login stays readable on a narrow phone and password/account controls do no
 test("login errors stay readable and successful email sign-in returns to the workspace", async ({ page }) => {
   const state = await setup(page);
   await page.goto("/login?next=%2Foverview%3Fview%3Dworkspace");
+  await openEmailLogin(page);
   await page.getByLabel("Email address", { exact: true }).fill("login@example.test");
   await page.getByLabel("Password", { exact: true }).fill("fixture-only-password");
   await page.getByRole("button", { name: "Sign in", exact: true }).click();

@@ -50,3 +50,13 @@
   .api-example-grid { grid-template-columns: 1fr; }
   .api-code-heading select, .api-keys input:not([type=checkbox]), .api-keys select { font-size: 16px; }
 }
+/* Dark documentation has distinct navigation, reading and code surfaces. */
+html[data-folio-theme="dark"] .api-docs-header,
+html[data-folio-theme="dark"] .api-docs-nav { background: var(--folio-surface); }
+html[data-folio-theme="dark"] .api-docs-main { background: var(--folio-canvas); }
+html[data-folio-theme="dark"] .api-docs pre { background: var(--folio-surface-raised); border: 1px solid var(--folio-edge); border-radius: 9px; }
+html[data-folio-theme="dark"] .api-example-grid pre { border: 0; border-radius: 0; }
+html[data-folio-theme="dark"] .api-doc-links a { background: var(--folio-surface-muted); border-color: var(--folio-edge-strong); }
+html[data-folio-theme="dark"] .api-docs .api-method { background: var(--folio-accent-soft); color: var(--folio-accent); }
+html[data-folio-theme="dark"] .api-docs .api-method.post { background: var(--folio-warm-soft); color: var(--folio-warm); }
+html[data-folio-theme="dark"] .api-docs p > code { color: var(--folio-accent-bright); }

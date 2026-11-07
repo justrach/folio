@@ -4,6 +4,7 @@ import { DM_Mono, DM_Sans } from "next/font/google";
 import "./globals.css";
 import "./workspace-theme.css";
 import "./theme.css";
+import "@/components/ui/press-motion.css";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -44,7 +45,8 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" data-scroll-behavior="smooth" className={`${dmSans.variable} ${dmMono.variable}`}>
+    <html suppressHydrationWarning lang="en" data-scroll-behavior="smooth" className={`${dmSans.variable} ${dmMono.variable}`}>
+      <head><script dangerouslySetInnerHTML={{ __html: "try{document.documentElement.dataset.folioTheme=localStorage.getItem('folio-dashboard-appearance')==='dark'?'dark':'light'}catch{}" }} /></head>
       <body><FolioAppearance />{children}</body>
     </html>
   );

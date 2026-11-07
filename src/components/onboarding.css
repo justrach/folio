@@ -321,3 +321,7 @@
   .ob .ob-steps .ob-step, .ob .ob-steps button { padding-inline: 4px; }
   .ob .ob-steps li + li::before { width: 10px; }
 }
+.ob-proof-columns { display: flex; justify-content: space-between; gap: 16px; margin-top: 24px; padding-bottom: 7px; color: var(--folio-text-secondary); font-size: 11px; border-bottom: 1px solid var(--folio-edge); }
+.ob .ob-proof-date { margin-top: 12px; color: var(--folio-text-secondary); font-size: 11px; }
+.ob-proof-link { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 6px; color: var(--folio-accent); font-size: 12px; }
+.ob-proof-link:hover { text-decoration: underline; text-underline-offset: 3px; }

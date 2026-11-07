@@ -39,7 +39,8 @@ export function Landing() {
           <p className="landing-access">You choose when to start a run.</p>
         </div>
         <figure className="landing-art">
-          <Image src="/images/folio-dune-hero.webp" alt="A dark sculptural dune beneath a small orange sun on warm paper" width={1024} height={1280} priority sizes="(max-width: 700px) 100vw, 42vw" />
+          <Image className="theme-art-light" src="/images/folio-dune-hero.webp" alt="A dark sculptural dune beneath a small orange sun on warm paper" width={1024} height={1280} priority sizes="(max-width: 700px) 100vw, 42vw" />
+          <Image className="theme-art-dark" src="/images/folio-dune-hero-dark.webp" alt="A sculptural evergreen dune beneath a small amber sun in a forest-black sky" width={1024} height={1280} sizes="(max-width: 700px) 100vw, 42vw" />
           <figcaption><span>A little perspective.</span><span>Folio / 01</span></figcaption>
         </figure>
       </section>

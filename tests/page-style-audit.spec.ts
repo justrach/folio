@@ -8,8 +8,9 @@ const paths = ["/", "/overview", "/overview?view=workspace", "/overview?view=dem
 const connection = { configured: false, authorized: false, canRun: false, allowedTargets: [], maxRunsPerDay: 5, maxActiveRuns: 1, message: "Layout fixture: provider work disabled." };
 const publicData = buildPublicDashboard({ format: "folio-public-search-rankings-v1", queries: PUBLIC_SEARCH_QUERIES, observations: PUBLIC_SEARCH_OBSERVATIONS }, PUBLIC_SEARCH_PROGRESS);
 
-for (const signedIn of [false, true]) test(`route styles: ${signedIn ? "empty private workspace fixture" : "signed out"}`, async ({ page }, info) => {
+for (const theme of ["light", "dark"]) for (const signedIn of [false, true]) test(`route styles: ${theme} · ${signedIn ? "empty private workspace fixture" : "signed out"}`, async ({ page }, info) => {
   test.setTimeout(180_000);
+  await page.addInitScript(theme => localStorage.setItem("folio-dashboard-appearance", theme), theme);
   const errors: string[] = [], writes: string[] = [], findings: string[] = [];
   let pending = 0;
   page.on("pageerror", error => errors.push(`${new URL(page.url()).pathname}: ${error.message}`));

@@ -1,3 +1,4 @@
+import { openEmailLogin } from "./login-helpers";
 import { buildPublicDashboard } from "../src/lib/public-dashboard";
 import { expect, test, type Page } from "@playwright/test";
 import { EVAL_SUITE } from "../src/lib/evals";
@@ -135,6 +136,7 @@ test("logout discards the unsaved draft and a different owner starts with only t
   await expect(page.getByRole("link", { name: "Sign in to your workspace", exact: true })).toBeVisible();
   await expect(editor(page)).toHaveCount(0);
   await page.goto("/login");
+  await openEmailLogin(page);
   await page.getByLabel("Email address", { exact: true }).fill("bob@example.test");
   await page.getByLabel("Password", { exact: true }).fill("browser-fixture-password");
   await page.getByRole("button", { name: "Sign in", exact: true }).click();

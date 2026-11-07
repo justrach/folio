@@ -58,31 +58,37 @@
 }
 
 html[data-folio-theme="dark"] {
-    color-scheme: dark;
-    --folio-ink: #e5eade;
-    --folio-charcoal: #e5eade;
-    --folio-text-secondary: #bac5b3;
-    --folio-text-muted: #a6b49f;
-    --folio-text-faint: #a6b49f;
-    --folio-edge-strong: #647260;
-    --folio-edge: #354339;
-    --folio-surface-muted: #29362c;
-    --folio-canvas: #171d19;
-    --folio-surface: #1e2721;
-    --folio-white: #1e2721;
-    --folio-on-accent: #18231b;
-    --folio-inverse-surface: #d9e4cf;
-    --folio-inverse-text: #18231b;
-    --folio-shadow: #050505;
-    --folio-accent: #b7d49f;
-    --folio-accent-bright: #c7e0b2;
-    --folio-accent-hover: #c7e0b2;
-    --folio-accent-soft: #2d3d2d;
-    --folio-accent-edge: #536d48;
-    --folio-focus: #b7d49f;
-    --folio-danger: #f1ac93;
-    --folio-success: #b7d49f;
-  }
+  color-scheme: dark;
+  --folio-ink: #e8eee9;
+  --folio-charcoal: #e8eee9;
+  --folio-text-secondary: #b7c5bc;
+  --folio-text-muted: #91a69b;
+  --folio-text-faint: #91a69b;
+  --folio-edge-strong: #567263;
+  --folio-edge: #2d4037;
+  --folio-surface-muted: #203028;
+  --folio-canvas: #0d1713;
+  --folio-surface: #16211c;
+  --folio-white: #16211c;
+  --folio-on-accent: #10251a;
+  --folio-inverse-surface: #b3d8be;
+  --folio-inverse-text: #10251a;
+  --folio-shadow: #020806;
+  --folio-accent: #b3d8be;
+  --folio-accent-bright: #c6e5cf;
+  --folio-accent-hover: #c6e5cf;
+  --folio-accent-soft: #243d30;
+  --folio-accent-edge: #567b62;
+  --folio-focus: #badfc4;
+  --folio-danger: #f2ae9d;
+  --folio-success: #b3d8be;
+  --folio-art-paper: #20332a;
+  --folio-art-sage: #263b31;
+  --folio-art-sand: #3d3b2d;
+  --folio-art-rust: #d49b6b;
+  --folio-overlay: #020807b3;
+  --folio-dialog-shadow: #0008;
+}
 
 html { font-family: var(--folio-font-body); }
 body { background: var(--folio-canvas); color: var(--folio-ink); font-family: var(--folio-font-body); }
@@ -124,7 +130,7 @@ body { background: var(--folio-canvas); color: var(--folio-ink); font-family: va
 }
 
 /* Surface-specific artwork and setup tokens; the shared palette remains authoritative. */
-.landing {
+html:not([data-folio-theme="dark"]) .landing {
   --folio-canvas: #f7f4eb;
   --folio-surface: #faf8f2;
   --folio-ink: #203b30;
@@ -142,7 +148,7 @@ body { background: var(--folio-canvas); color: var(--folio-ink); font-family: va
   --folio-accent-soft: #203b3010;
   --folio-accent-edge: #203b3040;
 }
-.ob {
+html:not([data-folio-theme="dark"]) .ob {
   --folio-canvas: #f7f4eb;
   --folio-surface: #fffef9;
   --folio-surface-muted: #e9ece3;
@@ -162,3 +168,13 @@ body { background: var(--folio-canvas); color: var(--folio-ink); font-family: va
   --folio-danger: #a43a28;
 }
 :root { --folio-art-paper: #e8e4d8; --folio-art-sage: #dfe5d8; --folio-art-sand: #ead8c4; --folio-art-rust: #85502e; --folio-brand-tile: #fff; --folio-brand-ink: #203b30; --folio-overlay: #14201866; --folio-dialog-shadow: #0003; }
+
+/* Paired artwork follows the explicit stored theme, including before hydration. */
+:root img.theme-art-dark { display: none; }
+:root img.theme-art-light { display: block; }
+html[data-folio-theme="dark"] img.theme-art-light { display: none; }
+html[data-folio-theme="dark"] img.theme-art-dark { display: block; }
+
+/* Secondary accents distinguish reference labels without competing with the primary action. */
+:root { --folio-warm: #80522e; --folio-warm-soft: #eee2cf; --folio-surface-raised: #fffef9; }
+html[data-folio-theme="dark"] { --folio-warm: #dfbd8f; --folio-warm-soft: #3a3024; --folio-surface-raised: #1c2c23; }

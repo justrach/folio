@@ -1,3 +1,4 @@
+import { openEmailLogin } from "./login-helpers";
 import { selectValue } from "./select-helpers";
 import { expect, test, type Page } from "@playwright/test";
 import type { KeywordBenchmarkRun, KeywordBenchmarkSuite } from "../src/lib/keyword-benchmark-types";
@@ -67,6 +68,7 @@ const search = (page: Page) => page.getByRole("region", { name: "Saved search ov
 const metric = (page: Page, label: string) => page.locator(".real-overview-metrics > div").filter({ has: page.getByText(label, { exact: true }) });
 
 async function login(page: Page) {
+  await openEmailLogin(page);
   await page.getByLabel("Email address", { exact: true }).fill("bob@example.test");
   await page.getByLabel("Password", { exact: true }).fill("fixture-password");
   await page.getByRole("button", { name: "Sign in", exact: true }).click();

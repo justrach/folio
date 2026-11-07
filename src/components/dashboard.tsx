@@ -11,6 +11,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowDown,
+  ArrowLeft,
   ArrowDownToLine,
   ArrowRight,
   ArrowUp,
@@ -1857,6 +1858,9 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
       }
     } catch { /* Invalid return hints fall back to the private website list. */ }
   }
+  const [emailMode, setEmailMode] = useState(false);
+  const emailInput = useRef<HTMLInputElement>(null);
+  const emailChoice = useRef<HTMLButtonElement>(null);
   const [signup, setSignup] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -1878,14 +1882,54 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
       .catch(() => {});
     return () => controller.abort();
   }, []);
+  function chooseEmail(createAccount = false) {
+    setSignup(createAccount); setEmailMode(true); setError("");
+    requestAnimationFrame(() => emailInput.current?.focus({ preventScroll: true }));
+  }
+  function chooseMethod() {
+    setEmailMode(false); setSignup(false); setError(""); setPassword(""); setShowPassword(false);
+    requestAnimationFrame(() => emailChoice.current?.focus({ preventScroll: true }));
+  }
   return (
-    <div className="login-screen">
+    <div className="login-screen" data-login-method={emailMode ? "email" : "choose"}>
       <header className="login-header">
         <Link href="/" className="wordmark" aria-label="Folio home"><FolioMark /><span>folio.</span></Link>
         <div><Link href="/overview?view=demo">Explore the demo <ArrowUpRight size={15} aria-hidden="true" /></Link><DashboardAppearance /></div>
       </header>
       <main className="login-layout">
-      <section className="login-form-panel" aria-labelledby="login-title">
+      <section className="login-form-panel" aria-busy={busy} aria-labelledby="login-title">
+          <span className="login-kicker">Your Folio workspace</span>
+          <h1 id="login-title">{signup ? "Create your account." : "Welcome back."}</h1>
+          <p>
+            {signup
+              ? "Keep your websites, questions, and reports together."
+              : emailMode ? "Sign in with your email." : "Choose how you’d like to continue."}
+          </p>
+          <div className="login-providers" hidden={emailMode}>
+          {googleConfigured && <button className="login-choice login-choice-google" type="button" disabled={busy} onClick={async () => {
+            setBusy(true); setError("");
+            try {
+              const result = await authClient.signIn.social({ provider: "google", callbackURL: returnTo, errorCallbackURL: "/login?error=google" });
+              if (result.error) setError(result.error.message ?? "Google sign-in could not be completed.");
+            } catch { setError("Google sign-in could not be completed. Please try again."); }
+            finally { setBusy(false); }
+          }}><Image src="/images/favicons/google.com.png" alt="" loading="eager" width={20} height={20} unoptimized /><span>Sign in with Google</span><ArrowUpRight size={17} aria-hidden="true" /></button>}
+          {searchParams.get("error") === "google" && <p className="form-error" role="alert">Google sign-in could not be completed. If you already use email and password, sign in that way before linking Google in Search Console.</p>}
+          {searchParams.get("error") === "github" && <p className="form-error" role="alert">GitHub sign-in could not be completed. If you already have a Folio account, sign in with your existing method and connect GitHub in Settings.</p>}
+          <button ref={emailChoice} type="button" className="login-choice login-choice-email" disabled={busy} onClick={() => chooseEmail()}><Mail size={20} aria-hidden="true" /><span>Continue with email</span><ArrowRight size={17} aria-hidden="true" /></button>
+          {githubConfigured && <details className="login-other-method"><summary>More sign-in options</summary>          {githubConfigured && <button className="login-github" type="button" disabled={busy} onClick={async () => {
+            setBusy(true); setError("");
+            try {
+              const result = await authClient.signIn.social({ provider: "github", callbackURL: returnTo, errorCallbackURL: "/login?error=github" });
+              if (result.error) setError("GitHub sign-in could not be completed. If you already have a Folio account, sign in with your existing method and connect GitHub in Settings.");
+            } catch { setError("GitHub sign-in could not be completed. Please try again."); }
+            finally { setBusy(false); }
+          }}>Sign in with GitHub</button>}
+</details>}
+          <p className="login-account-switch">New to Folio? <button type="button" disabled={busy} onClick={() => chooseEmail(true)}>Create an account</button></p>
+          </div>
+        <div className="login-email-panel t-panel-slide" data-open={emailMode} hidden={!emailMode}>
+        <button type="button" className="login-back" disabled={busy} onClick={chooseMethod}><ArrowLeft size={15} aria-hidden="true" /> Other sign-in methods</button>
         <form className="login-form" aria-busy={busy} aria-label={signup ? "Create your Folio account" : "Sign in to Folio"}
           onSubmit={async (e) => {
             e.preventDefault();
@@ -1913,34 +1957,6 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
             }
           }}
         >
-          <span className="login-kicker">Your Folio workspace</span>
-          <h1 id="login-title">{signup ? "Create your account." : "Welcome back."}</h1>
-          <p>
-            {signup
-              ? "Keep your websites, questions, and reports together."
-              : "Sign in to pick up where you left off."}
-          </p>
-          <div className="login-providers">
-          {googleConfigured && <button className="button secondary" type="button" disabled={busy} onClick={async () => {
-            setBusy(true); setError("");
-            try {
-              const result = await authClient.signIn.social({ provider: "google", callbackURL: returnTo, errorCallbackURL: "/login?error=google" });
-              if (result.error) setError(result.error.message ?? "Google sign-in could not be completed.");
-            } catch { setError("Google sign-in could not be completed. Please try again."); }
-            finally { setBusy(false); }
-          }}>Sign in with Google</button>}
-          {searchParams.get("error") === "google" && <p className="form-error" role="alert">Google sign-in could not be completed. If you already use email and password, sign in that way before linking Google in Search Console.</p>}
-          {githubConfigured && <button className="button secondary" type="button" disabled={busy} onClick={async () => {
-            setBusy(true); setError("");
-            try {
-              const result = await authClient.signIn.social({ provider: "github", callbackURL: returnTo, errorCallbackURL: "/login?error=github" });
-              if (result.error) setError("GitHub sign-in could not be completed. If you already have a Folio account, sign in with your existing method and connect GitHub in Settings.");
-            } catch { setError("GitHub sign-in could not be completed. Please try again."); }
-            finally { setBusy(false); }
-          }}>Sign in with GitHub</button>}
-          {searchParams.get("error") === "github" && <p className="form-error" role="alert">GitHub sign-in could not be completed. If you already have a Folio account, sign in with your existing method and connect GitHub in Settings.</p>}
-          </div>
-          {(googleConfigured || githubConfigured) && <div className="login-divider"><span>or use email</span></div>}
           {signup && (
             <label>
               Your name
@@ -1957,6 +1973,7 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
           <label>
             Email address
             <input
+              ref={emailInput}
               type="email"
               autoComplete="email"
               required
@@ -2008,12 +2025,16 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
               {signup ? "Sign in" : "Create an account"}
             </button>
           </p>
-          <p className="login-privacy"><ShieldCheck size={14} aria-hidden="true" /> Your reports are private by default.</p>
         </form>
+        </div>
+        {!emailMode && error && <p className="form-error" role="alert">{error}</p>}
+        {busy && !emailMode && <p role="status" className="login-social-status">Opening sign-in…</p>}
+        <p className="login-privacy"><ShieldCheck size={14} aria-hidden="true" /> Your reports are private by default.</p>
       </section>
       <aside className="login-art" aria-label="Folio artwork">
-        <Image src="/images/folio-dune-hero.webp" alt="" width={1024} height={1280} sizes="(max-width: 800px) 0px, 40vw" />
-        <div><span>A little perspective.</span><span>Folio / 01</span></div>
+        <Image className="theme-art-light" src="/images/folio-login-arch.webp" alt="" width={1024} height={1280} sizes="(max-width: 800px) 0px, 40vw" />
+        <Image className="theme-art-dark" src="/images/folio-login-arch-dark.webp" alt="" width={1024} height={1280} sizes="(max-width: 800px) 0px, 40vw" />
+        <div><span>A little perspective.</span><span>Folio / 02</span></div>
       </aside>
       </main>
       <footer className="login-footer"><Link href="/privacy">Privacy</Link><span>A little clarity goes a long way.</span></footer>

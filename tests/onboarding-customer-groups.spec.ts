@@ -168,7 +168,7 @@ test("owner changes abort old reads and clear private groups on logout", async (
   state.releaseAlice(); await expect(input(page, 1)).toHaveValue("Bob unsaved private group");
   await expect(page.locator("body")).not.toContainText(groups[0]);
   state.owner = null; await refreshSession(page);
-  await expect(page.getByRole("heading", { name: "Which website should AI recommend?" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Start with your website." })).toBeVisible();
   await expect(page.getByRole("group", { name: "Customer group(s)", exact: true })).toHaveCount(0);
   const stored = await page.evaluate(() => sessionStorage.getItem("folio-onboarding-v1"));
   expect(stored).not.toContain("Bob unsaved private group"); expect(stored).not.toContain(groups[0]);

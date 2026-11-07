@@ -1,3 +1,4 @@
+import { openEmailLogin } from "./login-helpers";
 import { expect, test, type Page } from "@playwright/test";
 import { createDemoEvaluationRun } from "../src/lib/eval-verifier";
 import { EVAL_SUITE, evaluationSummary, type EvaluationRun } from "../src/lib/evals";
@@ -161,6 +162,7 @@ test("loading and late responses cannot restore one owner's summary after logout
   await expect(page.getByText(completed.siteName, { exact: true })).toHaveCount(0);
   state.runs = [{ ...completed, id: "bob-summary", siteName: "Bob private review", targetUrl: "https://bob.example.com/" }];
   await page.goto("/login");
+  await openEmailLogin(page);
   await page.getByLabel("Email address", { exact: true }).fill("bob@example.test");
   await page.getByLabel("Password", { exact: true }).fill("browser-fixture-password");
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
