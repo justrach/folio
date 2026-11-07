@@ -1,5 +1,7 @@
 import "server-only";
 import type { D1Database } from "@cloudflare/workers-types";
+import { Buffer } from "node:buffer";
+import type { evaluationSummary } from "./evals";
 import { EVAL_SUITE, type EvaluationRun } from "./evals";
 import type { AgentReservationGuard } from "./agent-observation-types";
 
@@ -78,6 +80,89 @@ export async function listEvaluationRuns(db: D1Database, ownerId: string): Promi
   const { results } = await db.prepare("SELECT result_json FROM evaluation_runs WHERE user_id = ? AND deleted_at IS NULL ORDER BY created_at DESC, id DESC LIMIT 50")
     .bind(ownerId).all<{ result_json: string }>();
   return results.map(row => JSON.parse(row.result_json) as EvaluationRun);
+}
+
+export type EvaluationSummary = ReturnType<typeof evaluationSummary>;
+export type EvaluationHistoryPage = { runs: EvaluationSummary[]; nextCursor: string | null };
+type EvaluationHistoryCursor = [version: 1, createdAt: number, id: string];
+
+function encodeHistoryCursor(cursor: EvaluationHistoryCursor): string {
+  return Buffer.from(JSON.stringify(cursor)).toString("base64url");
+}
+
+function decodeHistoryCursor(value: string | undefined): EvaluationHistoryCursor | null {
+  if (value === undefined) return null;
+  if (typeof value === "string" && value.length > 0 && value.length <= 1024 && /^[A-Za-z0-9_-]+$/.test(value)) {
+    try {
+      const cursor = JSON.parse(Buffer.from(value, "base64url").toString("utf8"));
+      if (Array.isArray(cursor) && cursor.length === 3 && cursor[0] === 1 &&
+        Number.isSafeInteger(cursor[1]) && Math.abs(cursor[1]) <= 8_640_000_000_000_000 &&
+        typeof cursor[2] === "string" && cursor[2].length > 0 && cursor[2].length <= 128 &&
+        encodeHistoryCursor(cursor as EvaluationHistoryCursor) === value)
+        return cursor as EvaluationHistoryCursor;
+    } catch { /* Reject malformed cursors before preparing a query. */ }
+  }
+  throw new EvalStoreError("Invalid evaluation history cursor.", 400);
+}
+
+/** Keyset history: D1 returns summaries only, never captured pages or provider evidence.
+ * The cursor is a position, not authority; every page independently scopes its owner.
+ */
+export async function listEvaluationRunSummaries(
+  db: D1Database,
+  ownerId: string,
+  options: { limit?: number; cursor?: string } = {},
+): Promise<EvaluationHistoryPage> {
+  if (!ownerId) throw new EvalStoreError("A signed-in owner is required.", 401);
+  const limit = options.limit === undefined ? 50 : options.limit;
+  if (!Number.isInteger(limit) || limit < 1 || limit > 50)
+    throw new EvalStoreError("Evaluation history limit must be an integer from 1 to 50.", 400);
+  const cursor = decodeHistoryCursor(options.cursor);
+  const { results } = await db.prepare(`
+    WITH page AS (
+      SELECT id, created_at, result_json FROM evaluation_runs
+      WHERE user_id = ? AND deleted_at IS NULL
+        ${cursor ? "AND (created_at < ? OR (created_at = ? AND id < ?))" : ""}
+      ORDER BY created_at DESC, id DESC LIMIT ?
+    )
+    SELECT id, created_at, json_object(
+      'id', json_extract(result_json, '$.id'),
+      'targetUrl', json_extract(result_json, '$.targetUrl'),
+      'siteName', json_extract(result_json, '$.siteName'),
+      'workflow', json_extract(result_json, '$.workflow'),
+      'suiteVersion', json_extract(result_json, '$.suiteVersion'),
+      'mode', json_extract(result_json, '$.mode'),
+      'status', json_extract(result_json, '$.status'),
+      'createdAt', json_extract(result_json, '$.createdAt'),
+      'updatedAt', json_extract(result_json, '$.updatedAt'),
+      'model', json_extract(result_json, '$.model'),
+      'sessionId', json_extract(result_json, '$.sessionId'),
+      'providerStatus', json_extract(result_json, '$.providerStatus'),
+      'preparationFailed', CASE WHEN json_extract(result_json, '$.mode') = 'live'
+        AND json_extract(result_json, '$.status') = 'failed'
+        AND json_type(result_json, '$.sessionId') = 'null'
+        AND NOT EXISTS (
+          SELECT 1 FROM json_each(result_json, '$.events') AS event
+          WHERE json_extract(event.value, '$.id') IN ('session-create-attempt', 'input-uncertain')
+        ) THEN 1 ELSE 0 END,
+      'result', json_extract(result_json, '$.result'),
+      'error', json_extract(result_json, '$.error'),
+      'publication', json_extract(result_json, '$.publication'),
+      'revision', json_extract(result_json, '$.revision')
+    ) AS summary_json FROM page ORDER BY created_at DESC, id DESC
+  `).bind(ownerId, ...(cursor ? [cursor[1], cursor[1], cursor[2]] : []), limit + 1)
+    .all<{ id: string; created_at: number; summary_json: string }>();
+  const page = results.slice(0, limit);
+  const last = page.at(-1);
+  return {
+    runs: page.map(row => {
+      const summary = JSON.parse(row.summary_json) as Omit<EvaluationSummary, "workflow" | "preparationFailed"> & {
+        workflow: EvaluationSummary["workflow"] | null; preparationFailed: 0 | 1;
+      };
+      return { ...summary, workflow: summary.workflow ?? undefined, preparationFailed: summary.preparationFailed === 1 };
+    }),
+    nextCursor: results.length > limit && last ? encodeHistoryCursor([1, last.created_at, last.id]) : null,
+  };
 }
 
 export type EvaluationUsage = {

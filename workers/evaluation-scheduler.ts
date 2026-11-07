@@ -19,10 +19,24 @@ export async function triggerEvaluationReconciliation(env: EvaluationSchedulerEn
     // type packages differ in the event-handler overload signatures.
     signal: AbortSignal.timeout(360_000) as unknown as WorkerAbortSignal,
   });
-  // Never log response bodies: this process only needs success/failure for
-  // Cloudflare's invocation status, not the application's private run records.
-  await response.body?.cancel();
-  if (!response.ok) throw new Error("Evaluation reconciliation request failed.");
+  // Never log arbitrary response bodies or errors. Only validated aggregate
+  // fields from the internal contract may reach operational logs.
+  const result: unknown = await response.json().catch(() => null);
+  if (!result || typeof result !== "object") throw new Error("Invalid reconciliation health response.");
+  const health = result as Record<string, unknown>;
+  const counts = [health.attempted, health.reconciled, health.failed, health.stale];
+  if (typeof health.status !== "string" || !["completed", "busy", "disabled"].includes(health.status) ||
+    !counts.every(value => typeof value === "number" && Number.isSafeInteger(value) && value >= 0) ||
+    Number(health.attempted) !== Number(health.reconciled) + Number(health.failed) ||
+    (health.lastSuccessAt !== null && !(typeof health.lastSuccessAt === "number" &&
+      Number.isSafeInteger(health.lastSuccessAt) && health.lastSuccessAt >= 0)))
+    throw new Error("Invalid reconciliation health response.");
+  console.info("Evaluation reconciliation health", {
+    status: health.status, attempted: health.attempted, reconciled: health.reconciled,
+    failed: health.failed, stale: health.stale, lastSuccessAt: health.lastSuccessAt,
+  });
+  if (!response.ok || health.status === "disabled" || Number(health.failed) > 0 || Number(health.stale) > 0)
+    throw new Error("Evaluation reconciliation is unhealthy; inspect aggregate health counts.");
 }
 
 export default {

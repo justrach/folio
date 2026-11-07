@@ -119,6 +119,14 @@ Repeatable as `bun run test:pg` (skips without `PLANETSCALE_APP_URL`). Three fin
 2. **Timestamps must be `bigint`.** Milliseconds since epoch (~1.7e12) overflow `integer`. `pg` returns `int8` as text by default, so the driver needs `types.setTypeParser(20, Number)` or every `new Date(created_at)` breaks.
 3. **`strftime(..., 'unixepoch')` input is seconds.** The call sites already divide by 1000 before formatting; the translation must not divide again.
 
+## Engine switch (implemented)
+
+`src/lib/db.ts` now chooses the store: `DB_ENGINE=postgres` returns the D1-shaped adapter over `pg`, anything else returns the D1 binding. Stores are unchanged — they still call `prepare().bind().first()/.all()/.run()`.
+
+Authentication is the one exception and is pinned to D1 through `getAuthDb()`: Better Auth's drizzle adapter is bound to the D1 client, and a half-migrated session table is the failure that locks people out.
+
+Verified against the application tables, not just the research ones: `sites` reads, the leaderboard's join, placeholder binding and `meta.changes` all behave through the Postgres adapter.
+
 ## What is already done
 
 - The PlanetScale database exists, runs PostgreSQL 18.6, and its schema is at migration `0024` after applying `0023`/`0024` as the owning role.

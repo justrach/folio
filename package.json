@@ -51,6 +51,7 @@
     "motion": "latest",
     "next": "15.5.25",
     "pg": "^8.23.1",
+    "pg-cloudflare": "^1.4.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "recharts": "^3.0.0",

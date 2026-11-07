@@ -4,7 +4,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { drizzle } from "drizzle-orm/d1";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
-import { getDb } from "@/lib/db";
+import { getAuthDb } from "@/lib/db";
 import * as schema from "@/lib/auth-schema";
 import { identityAuthOptions } from "@/lib/github-auth";
 
@@ -18,7 +18,7 @@ export async function getAuth() {
     );
   }
 
-  const database = drizzle(await getDb(), { schema });
+  const database = drizzle(await getAuthDb(), { schema });
   return betterAuth({
     appName: "Folio",
     baseURL,

@@ -2,13 +2,16 @@
 
 Folio includes a separate Cloudflare scheduled Worker that refreshes existing managed OpenAI sessions while the browser is closed. It is disabled by default and has not been deployed or tested against a live OpenAI account. OpenAI runs the agent; this Worker retrieves already-created session state and saves the independently verified result in Folio's private D1 records.
 
-The scheduler has no HTTP handler, Workers.dev URL, or preview URL. Its scheduled handler invokes the app through the `FOLIO_APP` service binding. The app's `POST /api/internal/evaluations/reconcile` requires an exact shared server secret and an explicit enabled flag. The endpoint returns 404 for missing or invalid authorization and when disabled. It never accepts an account, target, run ID, batch size, or provider URL from the caller. Successful responses contain aggregate counts only.
+The scheduler has no HTTP handler, Workers.dev URL, or preview URL. Its scheduled handler invokes the app through the `FOLIO_APP` service binding. The app's `POST /api/internal/evaluations/reconcile` requires an exact shared server secret and an explicit enabled flag. The endpoint returns 404 for missing or invalid authorization and when disabled. It never accepts an account, target, run ID, batch size, or provider URL from the caller. Responses contain only aggregate counts and a last-healthy-batch timestamp. Partial failures and stale backlogs return HTTP 503, not a successful invocation.
 
 ## Execution boundaries
 
 - Every five minutes, the enabled scheduler requests one batch of at most three active live runs. Demo and terminal runs are excluded.
 - A D1 lease prevents overlapping scheduled invocations for ten minutes. The lease is acquired atomically; an invocation releases only its own token. A crashed invocation's lease expires.
 - A separate attempt timestamp rotates runs across owners even when a provider repeatedly fails. Browser updates do not reset this ordering.
+- Successful background checks record `background_reconciled_at`. An active run with no successful background check for 15 minutes (or since creation if never checked) is counted as stale, including runs outside the current batch. Failed attempts do not reset freshness. This measures background-check health, not model progress: a successfully checked owner-action wait can be fresh.
+- `background_job_health` retains the latest start/finish timestamps, aggregate attempted/reconciled/failed/stale counts, and `last_success_at` for the most recent batch with no failures or stale backlog (including an empty healthy batch). A start newer than the finish can indicate an interrupted invocation. Expired lease holders cannot overwrite a newer health checkpoint.
+- The scheduler validates and logs only these aggregate fields, never raw responses, provider errors, run IDs, or evidence. A failed refresh, stale backlog, malformed response, or non-success HTTP status fails the scheduled invocation. A busy lease is a normal skip. Alerting destinations still require deployment configuration; a stopped scheduler cannot report itself, so monitor the persisted last-success timestamp externally.
 - The existing `reconcileEvaluationRun` function reads session, turns, and saved items. Pagination is capped at ten pages per collection; each provider request has a thirty-second timeout. The three selected runs execute concurrently.
 - The job does not create sessions, submit or repeat input, execute application tools, approve spend, restart failed work, send messages, or publish evaluations. A `requires_action` tool request remains available for the owner to review and resume explicitly in the application.
 - A completed provider turn and a valid final JSON contract are required before deterministic verification. Idle alone never becomes success. Optimistic D1 revisions protect against a browser and the scheduler updating the same run concurrently; a conflict is counted as a failed refresh and retried on a later scheduled pass.
@@ -16,7 +19,7 @@ The scheduler has no HTTP handler, Workers.dev URL, or preview URL. Its schedule
 
 ## Configure a real deployment
 
-1. Replace the all-zero D1 placeholder in `wrangler.jsonc` with the real production database ID. Apply all migrations, including `0006_background_lease.sql`, to that database. The scheduler itself has no D1 or OpenAI binding.
+1. Replace the all-zero D1 placeholder in `wrangler.jsonc` with the real production database ID. Apply all migrations, including `0006_background_lease.sql` and `0023_reconciliation_health.sql`, to that database. The scheduler itself has no D1 or OpenAI binding.
 2. Deploy the OpenNext app and ensure its Worker name matches `services[].service` in `wrangler.scheduler.jsonc` (`folio-visibility` by default). Run `bunx --no-install wrangler whoami` before an actual deployment.
 3. Generate a random secret with at least 32 characters. Set the same value, via secret prompts, on both Workers:
 
@@ -32,6 +35,6 @@ To stop refreshes, disable the flag on either Worker; removing the scheduler's `
 
 ## Verification
 
-`tests/eval-reconciliation-job.test.ts` uses real SQLite migration/lease SQL and mocked provider HTTP. It checks closed authentication, batch bounds, fairness after failures, lease overlap and crash recovery, private aggregate responses, and the real completed-session verification path with GET requests only. No live provider call or paid task is part of this test suite.
+`tests/eval-reconciliation-job.test.ts` uses real SQLite migration/lease SQL and mocked provider HTTP. It checks closed authentication, batch bounds, fairness after failures, lease overlap and crash recovery, private aggregate responses, stale-backlog detection, persisted last-success tracking, failure propagation to the scheduler, sanitized logs, and the real completed-session verification path with GET requests only. The actual D1 integration suite also exercises the health checkpoint migration and success/failure lifecycle. No live provider call or paid task is part of this test suite.
 
 Cloudflare reference: [Cron Triggers](https://developers.cloudflare.com/workers/configuration/cron-triggers/) and [HTTP service bindings](https://developers.cloudflare.com/workers/runtime-apis/bindings/service-bindings/http/).

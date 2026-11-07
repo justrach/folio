@@ -1,8 +1,8 @@
 import { readJsonBody } from "@/lib/api-request";
 import { managedRunAccess, startEvaluationRun } from "@/lib/agent-runs";
 import { evaluationRequestContext, evaluationErrorResponse, PRIVATE_EVAL_HEADERS } from "@/lib/eval-api";
-import { getEvaluationUsage, listEvaluationRuns } from "@/lib/eval-store";
-import { EVAL_SUITE, evaluationSummary } from "@/lib/evals";
+import { EvalStoreError, getEvaluationUsage, listEvaluationRunSummaries } from "@/lib/eval-store";
+import { EVAL_SUITE } from "@/lib/evals";
 import { expectedFactsFromRequest, ExpectedFactsValidationError } from "@/lib/expected-facts";
 import { ScanError } from "@/lib/scanner";
 
@@ -12,12 +12,20 @@ export const maxDuration = 60;
 export async function GET(request: Request) {
   try {
     const { db, ownerId, env } = await evaluationRequestContext(request);
+    const params = new URL(request.url).searchParams;
+    const rawLimit = params.get("limit");
+    if (params.getAll("limit").length > 1 || params.getAll("cursor").length > 1 ||
+      (rawLimit !== null && !/^(?:[1-9]|[1-4][0-9]|50)$/.test(rawLimit)))
+      throw new EvalStoreError("Invalid evaluation history pagination.", 400);
     const connection = managedRunAccess(env, ownerId);
-    const [runs, usage] = await Promise.all([
-      listEvaluationRuns(db, ownerId),
+    const [page, usage] = await Promise.all([
+      listEvaluationRunSummaries(db, ownerId, {
+        limit: rawLimit === null ? undefined : Number(rawLimit),
+        cursor: params.get("cursor") ?? undefined,
+      }),
       getEvaluationUsage(db, ownerId, connection.maxRunsPerDay),
     ]);
-    return Response.json({ runs: runs.map(evaluationSummary), connection: { ...connection, usage }, suite: EVAL_SUITE }, { headers: PRIVATE_EVAL_HEADERS });
+    return Response.json({ runs: page.runs, connection: { ...connection, usage }, suite: EVAL_SUITE, nextCursor: page.nextCursor }, { headers: PRIVATE_EVAL_HEADERS });
   } catch (error) { return evaluationErrorResponse(error); }
 }
 

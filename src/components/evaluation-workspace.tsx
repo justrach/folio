@@ -57,8 +57,13 @@ export function useEvaluationWorkspace({ enabled = true }: { enabled?: boolean }
     runs: EvaluationRun[];
     connection: EvaluationConnection | null;
     error: string;
-  }>({ ownerId: null, runs: [], connection: null, error: "" });
+    nextCursor: string | null;
+  }>({ ownerId: null, runs: [], connection: null, error: "", nextCursor: null });
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const nextPage = useRef<(() => void) | null>(null);
+  const loadMore = useCallback(() => nextPage.current?.(), []);
   const [revision, setRevision] = useState(0);
   const refresh = useCallback(() => setRevision((value) => value + 1), []);
 
@@ -72,9 +77,13 @@ export function useEvaluationWorkspace({ enabled = true }: { enabled?: boolean }
     const controller = new AbortController();
     let busy = false;
     let knownRuns: EvaluationRun[] = [];
-    async function load(reconcile: boolean) {
-      if (busy || document.visibilityState === "hidden") return;
+    let knownNextCursor: string | null = null;
+    let loadedPages = 1;
+    async function load(reconcile: boolean, more = false) {
+      if (busy || document.visibilityState === "hidden" || (more && !knownNextCursor)) return;
       busy = true;
+      setRefreshing(true);
+      setLoadingMore(more);
       if (!knownRuns.length) setLoading(true);
       try {
         let reconcileError = "";
@@ -92,33 +101,53 @@ export function useEvaluationWorkspace({ enabled = true }: { enabled?: boolean }
             }
           }
         }
-        const data = await evaluationRequest<{ runs: EvaluationRun[]; connection: EvaluationConnection }>(
-          "/api/evaluations", { signal: controller.signal },
-        );
-        if (!Array.isArray(data.runs)) throw new Error("The saved run list could not be read.");
+        let cursor = more ? knownNextCursor : null;
+        const runs = new Map((more ? knownRuns : []).map(run => [run.id, run]));
+        let connection: EvaluationConnection | null = null;
+        let pages = 0;
+        // Refresh all loaded pages from the head so inserts/deletions cannot
+        // leave holes or duplicates, while keeping older history visible.
+        do {
+          const data = await evaluationRequest<{
+            runs: EvaluationRun[]; connection: EvaluationConnection; nextCursor?: string | null;
+          }>(`/api/evaluations${cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""}`, { signal: controller.signal });
+          if (!Array.isArray(data.runs) || (data.nextCursor != null && typeof data.nextCursor !== "string"))
+            throw new Error("The saved run list could not be read.");
+          data.runs.forEach(run => runs.set(run.id, run));
+          connection ??= data.connection;
+          cursor = data.nextCursor ?? null;
+          pages++;
+        } while (!more && cursor && pages < loadedPages && !controller.signal.aborted);
         if (!controller.signal.aborted && account.current === ownerId) {
-          knownRuns = data.runs;
-          setState({ ownerId, runs: data.runs, connection: data.connection, error: reconcileError });
+          knownRuns = [...runs.values()];
+          knownNextCursor = cursor;
+          loadedPages = more ? loadedPages + 1 : pages;
+          setState({ ownerId, runs: knownRuns, connection, error: reconcileError, nextCursor: cursor });
         }
       } catch (error) {
         if (!controller.signal.aborted && account.current === ownerId) {
           setState((previous) => ({
             ownerId, runs: previous.ownerId === ownerId ? previous.runs : [],
             connection: previous.ownerId === ownerId ? previous.connection : null,
+            nextCursor: knownNextCursor,
             error: error instanceof Error ? error.message : "Run status is unavailable.",
           }));
         }
       } finally {
         busy = false;
-        if (!controller.signal.aborted && account.current === ownerId) setLoading(false);
+        if (!controller.signal.aborted && account.current === ownerId) {
+          setLoading(false); setRefreshing(false); setLoadingMore(false);
+        }
       }
     }
+    nextPage.current = () => { void load(false, true); };
     void load(false);
     const timer = setInterval(() => void load(true), 10_000);
     const visible = () => { if (document.visibilityState === "visible") void load(true); };
     document.addEventListener("visibilitychange", visible);
     return () => {
       controller.abort();
+      nextPage.current = null;
       clearInterval(timer);
       document.removeEventListener("visibilitychange", visible);
     };
@@ -130,6 +159,8 @@ export function useEvaluationWorkspace({ enabled = true }: { enabled?: boolean }
     runs: owned ? state.runs : [],
     connection: owned ? state.connection : null,
     error: owned ? state.error : "", refresh,
+    nextCursor: owned ? state.nextCursor : null,
+    loadingMore: owned && loadingMore, refreshing: owned && refreshing, loadMore,
   };
 }
 
