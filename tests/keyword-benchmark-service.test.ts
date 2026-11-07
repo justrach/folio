@@ -53,7 +53,7 @@ test("explicit open-web model selection freezes supported models and rejects uns
  await assert.rejects(keywordBenchmarkExecutionConfig(trial,env,{},"gpt-5.6-sol"));
  assert.equal((await keywordBenchmarkExecutionConfig(trial,env,{useSeoTools:true},"gpt-6-luna")).model,"gpt-6-luna");
  await assert.rejects(keywordBenchmarkExecutionConfig({...trial,searchMode:"reviewed-domains"},env,{},"gpt-6-luna"));
- assert.deepEqual(keywordBenchmarkAccess(env,"alice").openWebModels.map(model=>model.id),["gpt-6-astra","gpt-6-luna","gpt-6-sol"]);
+ assert.deepEqual(keywordBenchmarkAccess(env,"alice").openWebModels.map(model=>model.id),["gpt-6-astra","gpt-6-luna","gpt-6-sol","gpt-6.1-sol","gpt-6.1-terra"]);
 });
 
 test("SEO tools cannot silently upgrade the Luna default to Astra", async () => {
