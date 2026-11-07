@@ -41,6 +41,8 @@ export type PublicDashboardData = {
   /** Original artifact order is retained, including older observations. */
   observations: PublicSearchObservation[];
   htmlCoverage?: PublicHtmlCoverage | null;
+  /** Explicit notice when only the immutable bundled public artifacts are available. */
+  snapshotNotice?: string;
 };
 
 function invalid(): never { throw new Error("Invalid public collection progress artifact."); }
@@ -146,7 +148,8 @@ function assertHtmlCoverage(value: unknown): asserts value is PublicHtmlCoverage
 
 /** Validate fetched public data, including exact source order, relationships, and recomputed counters. */
 export function assertPublicDashboardData(value: unknown): asserts value is PublicDashboardData {
-  const data = plain(value, ["format", "updatedAt", "summary", "queries", "observations"], ["htmlCoverage"]);
+  const data = plain(value, ["format", "updatedAt", "summary", "queries", "observations"], ["htmlCoverage", "snapshotNotice"]);
+  if (data.snapshotNotice !== undefined && (typeof data.snapshotNotice !== "string" || data.snapshotNotice.length > 280)) return invalid();
   if (data.format !== "folio-public-dashboard-v1" || !Array.isArray(data.queries)) return invalid();
   const queries: Record<string, unknown>[] = [], progress: Record<string, unknown>[] = [];
   for (const item of data.queries) {

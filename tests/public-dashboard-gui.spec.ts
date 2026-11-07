@@ -66,6 +66,31 @@ async function selectTask(page: Page, index: number) {
 }
 function noPrivateWork(state: Awaited<ReturnType<typeof setup>>) { expect(state.forbidden, "The public dashboard must not request identity, private records, or provider work").toEqual([]); }
 
+test("a labelled public snapshot keeps the answer already being read during a failed live update", async ({ page }) => {
+  const state = await setup(page); await page.goto("/overview?query=fixture-task-1");
+  const detail = page.getByRole("region", { name: "Selected task", exact: true });
+  await expect(detail.getByRole("link", { name: "Beta Basics", exact: true })).toBeVisible();
+  const snapshot = fixture(); snapshot.snapshotNotice = "Showing published snapshot. Live shared updates are temporarily unavailable.";
+  snapshot.observations[0].recommendations[0].name = "Older snapshot answer";
+  snapshot.queries[0].latestObservation!.recommendations[0].name = "Older snapshot answer";
+  state.response = snapshot;
+  await page.getByRole("button", { name: "Refresh public results", exact: true }).click();
+  await expect(page.getByText(snapshot.snapshotNotice, { exact: true })).toBeVisible();
+  await expect(detail.getByRole("link", { name: "Beta Basics", exact: true })).toBeVisible();
+  await expect(detail.getByRole("link", { name: "Older snapshot answer", exact: true })).toHaveCount(0);
+  noPrivateWork(state);
+});
+
+test("a snapshot deep link never substitutes a different question for an unavailable shared question", async ({ page }) => {
+  const state = await setup(page); const snapshot = fixture(); snapshot.snapshotNotice = "Showing published snapshot. Live shared updates are temporarily unavailable."; state.response = snapshot;
+  await page.goto("/overview?query=shared-question-not-in-snapshot");
+  await expect(page.getByRole("heading", { name: "Question unavailable in this snapshot", exact: true })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Selected task", exact: true })).toHaveCount(0);
+  await selectTask(page, 0);
+  await expect(page.getByRole("region", { name: "Selected task", exact: true })).toBeVisible();
+  noPrivateWork(state);
+});
+
 test("signed-out overview presents public task coverage and the original recorded ranking with evidence", async ({ page }) => {
   const state = await setup(page); await page.goto("/overview");
   await expect(page.getByRole("heading", { name: "Benchmark dashboard", exact: true })).toBeVisible();

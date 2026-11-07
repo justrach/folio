@@ -13,6 +13,15 @@ cookies, record ownership, provider limits and database operations remain in
 `folio-visibility`; the frontend receives no database binding or provider secrets.
 No migration or production record copy is required for a presentation release.
 
+The deployed backend intermittently hangs on public benchmark reads. Only
+`GET /api/public/benchmarks` has a five-second bound and a fallback to the
+repository's real published artifacts. The response and dashboard explicitly
+label the snapshot; captured dates remain unchanged. A failed refresh preserves
+the answer already being read, and an unavailable shared-question deep link does
+not substitute another question. Private, authentication and paid endpoints are
+forwarded once without fallback or retries. This does not repair or replace the
+backend's database runtime.
+
 OpenNext is pinned to 1.20.16 for Next.js 16.4.5 runtime support. The prior 1.20.6
 adapter built successfully but crashed in Workers loading `preview-props.json`.
 CI now runs `frontend:smoke` against the actual built Worker, without database or
