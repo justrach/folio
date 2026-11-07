@@ -58,5 +58,5 @@ export function useFolioAppearance() {
 export function FolioAppearance() {
   const { preference, ready } = useFolioAppearance();
   const Icon = preference === "system" ? Monitor : preference === "dark" ? Moon : Sun;
-  return <div className="folio-theme-picker"><Icon size={16} aria-hidden="true"/><UiSelect aria-label="Color theme" value={preference} disabled={!ready} onChange={event => setThemePreference(parsePreference(event.target.value))}><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></UiSelect></div>;
+  return <div className="folio-theme-picker"><Icon size={16} aria-hidden="true"/><UiSelect className="squishy-control" aria-label="Color theme" value={preference} disabled={!ready} onChange={event => setThemePreference(parsePreference(event.target.value))}><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></UiSelect></div>;
 }
