@@ -27,6 +27,7 @@ Responses are JSON; unknown fields must be ignored by clients.
 | GET | `/entities/:id/pages` | `section`, `limit`, `cursor` | list of `page` |
 | GET | `/entities/:id/keywords` | `limit`, `cursor` | list of `keyword` |
 | GET | `/search` | `q` (1–300 chars), `entityId`, `limit` | list of `search hit` |
+| GET | `/health` | — | freshness and queue depth |
 
 ### List envelope
 
@@ -51,6 +52,31 @@ Responses are JSON; unknown fields must be ignored by clients.
 | 404 | `not_found` | the domain is not in the index; do not retry |
 | 429 | `rate_limited` | wait, then repeat the same request |
 | 503 | `index_unavailable` | inspect state before retrying |
+
+## Health and freshness
+
+`GET /health` answers "how current is this?" from the data itself, not from a status field someone sets:
+
+```json
+{
+  "generated_at": "2026-11-07T05:11:07.982Z",
+  "subjects": 186, "subjects_profiled": 34, "subjects_pending": 150,
+  "urls_total": 5958, "urls_unread": 5871, "urls_extracted": 87, "urls_failed": 0,
+  "pages_total": 1096, "pages_with_content": 6, "pages_embedded": 1066,
+  "newest_content_at": "2026-11-07T05:10:23.554Z",
+  "oldest_content_at": "2026-11-07T05:07:06.482Z",
+  "content_older_than_30d": 0, "content_last_7d": 6,
+  "content_coverage_pct": 0.5,
+  "domains": [{ "domain": "docs.stripe.com", "urls": 5139, "extracted": 75, "unread": 5064, "newest_at": null, "oldest_at": null }]
+}
+```
+
+Two different questions, two different fields:
+
+- **Coverage** — `pages_with_content / pages_total` and `urls_unread`. Low coverage means the index knows a URL exists but has not read it. A page can be listed and still be unread.
+- **Freshness** — `newest_content_at`, `content_last_7d`, `content_older_than_30d`. These say how old the *readings* are, regardless of how much is covered.
+
+An index can be fresh and thin (everything read yesterday, only 1% read) or thick and stale (90% covered, last read in March). Report both; a single "updated at" hides the difference.
 
 ## Client
 

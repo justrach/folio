@@ -61,6 +61,36 @@ export type SearchHit = PageRecord & { score: number };
 
 export type ListResult<T> = { items: T[]; nextCursor: string | null; truncated: boolean; version: string };
 
+/** How current the index is, derived from the data rather than asserted. */
+export type IndexHealth = {
+  version: string;
+  generated_at: string;
+  subjects: number;
+  subjects_profiled: number;
+  subjects_pending: number;
+  urls_total: number;
+  urls_unread: number;
+  urls_claimed: number;
+  urls_extracted: number;
+  urls_failed: number;
+  pages_total: number;
+  pages_with_content: number;
+  pages_embedded: number;
+  newest_content_at: string | null;
+  oldest_content_at: string | null;
+  content_older_than_30d: number;
+  content_last_7d: number;
+  content_coverage_pct: number;
+  domains: {
+    domain: string;
+    urls: number;
+    extracted: number;
+    unread: number;
+    newest_at: string | null;
+    oldest_at: string | null;
+  }[];
+};
+
 export type IndexClientErrorCode = "invalid_input" | "not_found" | "unauthorized" | "rate_limited" | "index_unavailable";
 
 export class IndexClientError extends Error {
@@ -165,6 +195,14 @@ export function createIndexClient(options: IndexClientOptions) {
     },
     keywords(entityId: string, page?: { limit?: number; cursor?: string }) {
       return request(`/entities/${encodeURIComponent(entityId)}/keywords${page ? pageQuery(page) : ""}`, assertList<KeywordRecord>);
+    },
+    /** Freshness and queue depth. Cheap enough to poll from a dashboard. */
+    health() {
+      return request(`/health`, payload => {
+        if (!isRecord(payload) || typeof payload.version !== "string" || typeof payload.pages_with_content !== "number")
+          throw new IndexClientError("The index returned an unexpected health shape.", "index_unavailable", 503, RETRY[503]);
+        return payload as IndexHealth;
+      });
     },
     search(input: { query: string; entityId?: string; limit?: number }) {
       const params = new URLSearchParams({ q: input.query });

@@ -97,3 +97,28 @@ test("an unreachable host is an index_unavailable error, not a crash", async () 
   await assert.rejects(() => client.entity({ domain: "manus.im" }), (error: unknown) =>
     error instanceof IndexClientError && error.code === "index_unavailable");
 });
+
+test("health reports coverage and queue depth", async () => {
+  const payload = {
+    version: "index-v1", generated_at: "2026-11-07T05:11:07.982Z",
+    subjects: 186, subjects_profiled: 34, subjects_pending: 150,
+    urls_total: 5958, urls_unread: 5871, urls_claimed: 0, urls_extracted: 87, urls_failed: 0,
+    pages_total: 1096, pages_with_content: 6, pages_embedded: 1066,
+    newest_content_at: "2026-11-07T05:10:23.554Z", oldest_content_at: "2026-11-07T05:07:06.482Z",
+    content_older_than_30d: 0, content_last_7d: 6, content_coverage_pct: 0.5,
+    domains: [{ domain: "docs.stripe.com", urls: 5139, extracted: 75, unread: 5064, newest_at: null, oldest_at: null }],
+  };
+  const { calls, fetchImpl } = fakeFetch([{ body: payload }]);
+  const client = createIndexClient({ baseUrl: "https://api.example.test", fetchImpl });
+  const health = await client.health();
+  assert.equal(health.pages_with_content, 6);
+  assert.equal(health.content_coverage_pct, 0.5);
+  assert.equal(health.domains[0].unread, 5064);
+  assert.equal(calls[0].url, "https://api.example.test/api/index/v1/health");
+});
+
+test("a health payload without coverage is rejected", async () => {
+  const { fetchImpl } = fakeFetch([{ body: { version: "index-v1" } }]);
+  const client = createIndexClient({ baseUrl: "https://api.example.test", fetchImpl });
+  await assert.rejects(() => client.health(), /unexpected health shape/);
+});
