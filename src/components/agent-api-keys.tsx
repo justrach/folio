@@ -1,4 +1,5 @@
 "use client";
+import { UiSelect } from "./ui/select";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Copy, KeyRound, Loader2 } from "lucide-react";
@@ -77,7 +78,7 @@ function OwnerApiKeys({account}:{account:string}) {
   if(access==="error")return <p role="alert">Your API keys could not be loaded. Refresh the page to try again.</p>;
   return <div className="api-keys"><p>Signed in as <strong>{account}</strong>. <Link href="/settings">Manage account</Link></p>
     <form onSubmit={event => { event.preventDefault(); void create(); }}>
-      <div className="api-key-fields"><label>Key name<input value={name} maxLength={100} required onChange={event => setName(event.target.value)} placeholder="My research agent" disabled={Boolean(busy)} /></label><label>Expires after<select value={days} onChange={event => setDays(Number(event.target.value))} disabled={Boolean(busy)}><option value={7}>7 days</option><option value={30}>30 days</option><option value={90}>90 days</option></select></label></div>
+      <div className="api-key-fields"><label>Key name<input value={name} maxLength={100} required onChange={event => setName(event.target.value)} placeholder="My research agent" disabled={Boolean(busy)} /></label><label>Expires after<UiSelect value={days} onChange={event => setDays(Number(event.target.value))} disabled={Boolean(busy)}><option value={7}>7 days</option><option value={30}>30 days</option><option value={90}>90 days</option></UiSelect></label></div>
       <label className="api-key-permission"><input type="checkbox" checked={canEvaluate} disabled={Boolean(busy)} onChange={event => setCanEvaluate(event.target.checked)} /><span>Allow this key to start evaluations<small>Can incur usage charges. Your account’s website access, run limits, and active-task limits still apply.</small></span></label>
       <label className="api-key-permission"><input type="checkbox" checked={canSeo} disabled={Boolean(busy)} onChange={event => setCanSeo(event.target.checked)} /><span>Allow paid SEO lookups<small>DataForSEO charges apply. Up to 20 lookups per hour; repeated requests with the same idempotency key reuse the saved report.</small></span></label>
       <button className="button primary" disabled={Boolean(busy) || !name.trim()}>{busy === "create" ? <Loader2 size={15} className="eval-spin" /> : <KeyRound size={15} />}Create API key</button><p className="api-small">Read access is always included. Keys expire and can be revoked here.</p>

@@ -1,3 +1,4 @@
+import { selectValue } from "./select-helpers";
 import { expect, test, type Page } from "@playwright/test";
 import { agentApiMarkdown, agentOpenApiSpec } from "../src/lib/agent-api-reference";
 import type { AgentApiKeySummary } from "../src/lib/agent-observation-types";
@@ -61,15 +62,17 @@ test("API reference is readable, has executable placeholder examples and never s
   await noOverflow(page);
   await page.screenshot({path: testInfo.outputPath("api-reference-opening.png"), fullPage: false});
   const nav = page.getByRole("navigation", {name: "API reference navigation"}), endpoint = page.locator("#api-endpoint");
+  if (!(await nav.isVisible())) await page.getByRole("button", { name: "On this page", exact: true }).click();
   await nav.getByRole("link", {name: /Read the latest saved result/}).click();
   await expect(endpoint.getByRole("heading", {name: "Read the latest saved result", exact: true})).toBeVisible();
   await expect(endpoint.locator("pre").first()).toContainText("$FOLIO_BASE_URL/api/v1/observations?kind=keyword&caseId=case_example&maxAgeSeconds=86400");
   await expect(endpoint.locator("pre").first()).not.toContainText("-X POST");
   await page.getByRole("button", {name: "Copy request example"}).click();
   expect(await page.evaluate(() => (window as Window & {copiedFixtureText?: string}).copiedFixtureText)).toContain("Authorization: Bearer $FOLIO_API_KEY");
+  if (!(await nav.isVisible())) await page.getByRole("button", { name: "On this page", exact: true }).click();
   await nav.getByRole("link", {name: /Get a fresh observation/}).click();
   await expect(endpoint).toContainText("This request can incur usage charges.");
-  await page.getByLabel("Example language", {exact: true}).selectOption("javascript");
+  await selectValue(page.getByLabel("Example language", {exact: true}), "javascript");
   await page.getByRole("button", {name: "Copy request example"}).click();
   const javascript = await page.evaluate(() => (window as Window & {copiedFixtureText?: string}).copiedFixtureText);
   expect(javascript).toContain('method: "POST"'); expect(javascript).toContain('"Idempotency-Key": "research-request-001"');

@@ -1,3 +1,4 @@
+import { selectValue } from "./select-helpers";
 import { expect, test, type Page } from "@playwright/test";
 import { PUBLIC_SEARCH_QUERIES, latestPublicSearchObservation } from "../src/lib/public-search-rankings";
 
@@ -40,7 +41,7 @@ test("public rankings preserve order and sources across category boundaries and 
   const query = report.getByRole("button", { name: "Change question", exact: true });
 
   for (const item of browserQueries) {
-    await category.selectOption(item.category);
+    await selectValue(category, item.category);
     await query.click();
     const picker = page.getByRole("dialog", { name: "Choose a question" });
     await picker.getByRole("searchbox", { name: "Filter questions" }).fill(item.query);
@@ -87,7 +88,7 @@ test("ranking categories constrain query selection and HTML checks remain a sepa
   const category = report.getByRole("combobox", { name: "Category", exact: true });
   const query = report.getByRole("button", { name: "Change question", exact: true });
   for (const categoryName of categories) {
-    await category.selectOption(categoryName);
+    await selectValue(category, categoryName);
     const expected = PUBLIC_SEARCH_QUERIES.filter(candidate => candidate.category === categoryName);
     await expect(report.locator(".ranked-search-query")).toHaveText(expected[0].query);
     await query.click();

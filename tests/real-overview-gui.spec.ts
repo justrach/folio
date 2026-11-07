@@ -1,3 +1,4 @@
+import { selectValue } from "./select-helpers";
 import { expect, test, type Page } from "@playwright/test";
 import type { KeywordBenchmarkRun, KeywordBenchmarkSuite } from "../src/lib/keyword-benchmark-types";
 
@@ -102,14 +103,14 @@ test("overview uses exact selected-site observations, preserves completed answer
   await expect(search(page)).toContainText("Legacy documentation question");
   await expect(metric(page, "Appeared in answers").locator("dd")).toHaveText("100%");
   await page.getByRole("button", { name: "Open-web observations", exact: true }).click();
-  await page.getByLabel("Selected website", { exact: true }).selectOption(beta.id);
+  await selectValue(page.getByLabel("Selected website", { exact: true }), beta.id);
   expect(new URL(page.url()).searchParams.get("view")).toBe("workspace");
   await expect(search(page)).toContainText("Beta private question"); await expect(search(page)).not.toContainText(suite.cases[0].query);
   await expect(evaluations.getByRole("listitem")).toHaveCount(3);
   await expect(evaluations).not.toContainText("Alpha saved evaluation");
   await expect(page.locator(".breadcrumb")).not.toContainText("alpha-fixture.dev");
   await expect(evidence).toContainText("0 saved audits"); await expect(evidence).toContainText("0 saved snapshots");
-  await page.goBack(); await expect(page.getByLabel("Selected website", { exact: true })).toHaveValue(alpha.id);
+  await page.goBack(); await expect(page.getByLabel("Selected website", { exact: true })).toHaveAttribute("data-value", alpha.id);
   await expect(metric(page, "Appeared in answers").locator("dd")).toHaveText("50%");
   await page.reload(); await expect(metric(page, "Appeared in answers").locator("dd")).toHaveText("50%");
   await first.getByRole("link", { name: `Open observation for ${suite.cases[0].query}` }).click();
@@ -131,7 +132,7 @@ test("signed-out overview offers private login, samples require selection, and l
   await page.goBack(); await page.getByRole("link", { name: "Sign in to your workspace" }).click();
   await expect(page).toHaveURL(/\/login\?next=%2Foverview%3Fview%3Dworkspace$/);
   await login(page); await expect(page).toHaveURL(/\/overview\?view=workspace$/);
-  await expect(page.getByLabel("Selected website", { exact: true })).toHaveValue(beta.id);
+  await expect(page.getByLabel("Selected website", { exact: true })).toHaveAttribute("data-value", beta.id);
   expect(state.writes).toEqual([]);
 });
 
@@ -146,7 +147,7 @@ test("legacy website and scope hints return to the exact private workspace after
   const params = new URL(page.url()).searchParams;
   expect(params.get("view")).toBe("workspace"); expect(params.get("website")).toBe(beta.id);
   expect(params.get("scope")).toBe("reviewed-domains"); expect(params.has("query")).toBe(false);
-  await expect(page.getByLabel("Selected website", { exact: true })).toHaveValue(beta.id);
+  await expect(page.getByLabel("Selected website", { exact: true })).toHaveAttribute("data-value", beta.id);
   await expect(page.getByRole("button", { name: "Reviewed documentation", exact: true })).toHaveAttribute("aria-pressed", "true");
   expect(state.writes).toEqual([]);
 });
@@ -177,7 +178,7 @@ test("delayed previous-owner answers are discarded after logout and a new owner 
   await page.goto("/overview?view=workspace"); await expect(page.locator(".real-overview-metrics")).toHaveCount(0);
   await expect(page.getByText(suite.cases[0].query, { exact: true })).toHaveCount(0);
   await page.getByRole("link", { name: "Sign in to your workspace" }).click(); await login(page);
-  await expect(page.getByLabel("Selected website", { exact: true })).toHaveValue(beta.id);
+  await expect(page.getByLabel("Selected website", { exact: true })).toHaveAttribute("data-value", beta.id);
   await expect(search(page)).toContainText("Beta private question"); await expect(search(page)).not.toContainText(suite.cases[0].query);
   expect(state.writes).toEqual([]);
 });
@@ -216,24 +217,24 @@ test("website overview separates models, keeps the filter through navigation and
   await expect(metric(page, "Appeared in answers").locator("dd")).toHaveText("0%");
   await expect(search(page)).toContainText("mixed-model summary");
   await expect(search(page).getByRole("link", { name: `Open observation for ${suite.cases[0].query}` })).toHaveAttribute("href", /run=luna-answer$/);
-  await picker.selectOption("gpt-6-astra");
+  await selectValue(picker, "gpt-6-astra");
   await expect(metric(page, "Appeared in answers").locator("dd")).toHaveText("100%");
   await expect(search(page).getByRole("link", { name: `Open observation for ${suite.cases[0].query}` })).toHaveAttribute("href", /run=astra-answer$/);
   expect(new URL(page.url()).searchParams.get("model")).toBe("gpt-6-astra");
   await page.reload();
-  await expect(picker).toHaveValue("gpt-6-astra");
+  await expect(picker).toHaveAttribute("data-value", "gpt-6-astra");
   await expect(metric(page, "Appeared in answers").locator("dd")).toHaveText("100%");
-  await picker.selectOption("gpt-5.6-luna");
+  await selectValue(picker, "gpt-5.6-luna");
   await expect(metric(page, "Appeared in answers").locator("dd")).toHaveText("0%");
   await expect(search(page)).not.toContainText("astra-answer");
   await page.getByRole("button", { name: "Reviewed documentation", exact: true }).click();
-  await expect(picker).toHaveValue("gpt-5.6-luna");
+  await expect(picker).toHaveAttribute("data-value", "gpt-5.6-luna");
   await expect(metric(page, "Appeared in answers").locator("dd")).toHaveText("Not measured");
-  await page.getByLabel("Selected website", { exact: true }).selectOption(beta.id);
+  await selectValue(page.getByLabel("Selected website", { exact: true }), beta.id);
   expect(new URL(page.url()).searchParams.get("model")).toBe("gpt-5.6-luna");
   await page.goBack();
-  await expect(page.getByLabel("Selected website", { exact: true })).toHaveValue(alpha.id);
-  await expect(picker).toHaveValue("gpt-5.6-luna");
+  await expect(page.getByLabel("Selected website", { exact: true })).toHaveAttribute("data-value", alpha.id);
+  await expect(picker).toHaveAttribute("data-value", "gpt-5.6-luna");
   expect(state.writes).toEqual([]);
 });
 
@@ -244,9 +245,9 @@ test("private model selection survives sign-in and rejects duplicate model hints
   await signIn.click(); await login(page);
   await expect(page).toHaveURL(/\/overview\?view=workspace&website=site-beta&scope=reviewed-domains&model=gpt-5.6-luna$/);
   expect(new URL(page.url()).searchParams.get("model")).toBe("gpt-5.6-luna");
-  await expect(page.getByRole("combobox", { name: "Answer model", exact: true })).toHaveValue("gpt-5.6-luna");
+  await expect(page.getByRole("combobox", { name: "Answer model", exact: true })).toHaveAttribute("data-value", "gpt-5.6-luna");
   await page.goto("/overview?view=workspace&website=site-beta&model=gpt-6-astra&model=gpt-5.6-luna");
-  await expect(page.getByRole("combobox", { name: "Answer model", exact: true })).toHaveValue("");
+  await expect(page.getByRole("combobox", { name: "Answer model", exact: true })).toHaveAttribute("data-value", "");
   expect(state.writes).toEqual([]);
 });
 

@@ -1,4 +1,5 @@
 "use client";
+import { UiSelect } from "./ui/select";
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import Link from 'next/link';
@@ -29,8 +30,8 @@ export function ModelLandscape() {
  return <section className="model-landscape website-landscape" aria-labelledby="landscape-title">
   <header className="landscape-heading"><div><h2 id="landscape-title">Which websites get recommended?</h2><p className="landscape-intro">Compare appearances in saved answers. Select a website to inspect its evidence.</p></div><div className="landscape-cohort"><span><strong>{rows.length}</strong> websites</span><span><strong>{answers}</strong> saved {answers===1?'answer':'answers'}</span><span><strong>{questions.length}</strong> {questions.length===1?'question':'questions'}</span></div></header>
   <div className="website-filter-bar">
-  <div className="website-controls"><label>Explore<select aria-label="Website comparison audience" value={audience} onChange={e=>set({landscapeAudience:e.target.value,query:'',site:''})}><option value="">All website categories</option>{audienceNames.map(a=><option key={a}>{a}</option>)}</select></label><label>Answers from<select aria-label="Website comparison model" value={selected} onChange={e=>set({model:e.target.value,site:''})}><option value="">Average across models</option>{LANDSCAPE_MODELS.map(m=><option key={m.id} value={m.id}>{m.label}</option>)}</select></label></div>
-  <label className="website-question-select">Question<select aria-label="Website comparison question" value={query?.id??''} onChange={e=>set({query:e.target.value,site:''})}><option value="">All {core.filter(q=>!audience||q.audience===audience).length} core questions</option>{query&&!core.some(q=>q.id===query.id)&&<option value={query.id}>{query.query}</option>}{core.filter(q=>!audience||q.audience===audience||q.id===query?.id).map(q=><option key={q.id} value={q.id}>{q.query}</option>)}</select></label>
+  <div className="website-controls"><label>Explore<UiSelect aria-label="Website comparison audience" value={audience} onChange={e=>set({landscapeAudience:e.target.value,query:'',site:''})}><option value="">All website categories</option>{audienceNames.map(a=><option key={a}>{a}</option>)}</UiSelect></label><label>Answers from<UiSelect aria-label="Website comparison model" value={selected} onChange={e=>set({model:e.target.value,site:''})}><option value="">Average across models</option>{LANDSCAPE_MODELS.map(m=><option key={m.id} value={m.id}>{m.label}</option>)}</UiSelect></label></div>
+  <label className="website-question-select">Question<UiSelect aria-label="Website comparison question" value={query?.id??''} onChange={e=>set({query:e.target.value,site:''})}><option value="">All {core.filter(q=>!audience||q.audience===audience).length} core questions</option>{query&&!core.some(q=>q.id===query.id)&&<option value={query.id}>{query.query}</option>}{core.filter(q=>!audience||q.audience===audience||q.id===query?.id).map(q=><option key={q.id} value={q.id}>{q.query}</option>)}</UiSelect></label>
   </div>
   {showChart && <WebsiteSummaryChart rows={rows} shareMax={shareMax} selectedDomain={active?.domain}/>}
   {query&&<p className="website-question">{query.query} <button className="website-reset" onClick={()=>set({query:'',landscapeAudience:'',site:''})}>Show all websites ↗</button></p>}

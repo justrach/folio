@@ -1,5 +1,6 @@
 "use client";
 
+import { UiSelect } from "./ui/select";
 import { useEffect, useState } from "react";
 import { ArrowRight, Fingerprint, GitCompareArrows, Info, Loader2, LockKeyhole } from "lucide-react";
 import { compareEvaluationRuns } from "@/lib/eval-comparison";
@@ -58,13 +59,13 @@ export function EvaluationComparison({ runs, ownerId, initialBaselineId }: {
     {baselineIntent && beforeId === baselineIntent && <p className="eval-comparison-intent" role="status">{beforeSummary ? <>Baseline selected: <strong>{beforeSummary.siteName || beforeSummary.targetUrl}</strong>. Choose another completed {beforeSummary.mode === "demo" ? "local fixture" : "live run"} to compare.</> : "The requested baseline is not available among this account’s completed evaluations. Choose a saved baseline below."}</p>}
     {completed.length < 2 ? <p className="eval-comparison-empty">Complete two saved evaluations to compare their results here. Local fixtures and live agent runs stay in separate comparisons.</p> : <>
       <div className="eval-comparison-selects">
-        <label>Baseline evaluation<select aria-label="Baseline evaluation" value={beforeId} onChange={event => {
+        <label>Baseline evaluation<UiSelect aria-label="Baseline evaluation" value={beforeId} onChange={event => {
           setSelection({ ownerId, baselineIntent, beforeId: event.target.value, afterId: "" });
-        }}><option value="">Choose a baseline</option>{completed.map(run => <option key={run.id} value={run.id}>{optionLabel(run)}</option>)}</select></label>
+        }}><option value="">Choose a baseline</option>{completed.map(run => <option key={run.id} value={run.id}>{optionLabel(run)}</option>)}</UiSelect></label>
         <ArrowRight size={18} aria-hidden="true" />
-        <label>Comparison evaluation<select aria-label="Comparison evaluation" value={afterId} disabled={!beforeSummary} onChange={event => {
+        <label>Comparison evaluation<UiSelect aria-label="Comparison evaluation" value={afterId} disabled={!beforeSummary} onChange={event => {
           setSelection({ ownerId, baselineIntent, beforeId, afterId: event.target.value });
-        }}><option value="">Choose another {beforeSummary?.mode === "demo" ? "local fixture" : "run"}</option>{eligibleAfter.map(run => <option key={run.id} value={run.id}>{optionLabel(run)}</option>)}</select></label>
+        }}><option value="">Choose another {beforeSummary?.mode === "demo" ? "local fixture" : "run"}</option>{eligibleAfter.map(run => <option key={run.id} value={run.id}>{optionLabel(run)}</option>)}</UiSelect></label>
       </div>
       {beforeSummary && eligibleAfter.length === 0 && <p className="eval-comparison-empty">No other completed {beforeSummary.mode === "demo" ? "local fixture" : "live agent run"} is available. Demo results are never mixed with live results.</p>}
     </>}

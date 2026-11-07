@@ -1,5 +1,6 @@
 "use client";
 
+import { UiSelect } from "./ui/select";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ExternalLink, Search } from "lucide-react";
@@ -87,12 +88,12 @@ export function DeveloperToolsIndex() {
       <div className="devtools-filters">
         <label className="devtools-search"><Search size={16} aria-hidden="true" /><span className="sr-only">Search websites</span>
           <input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Search websites, uses, or domains" /></label>
-        <label className="devtools-select"><span>Audience</span><select value={audience} onChange={event => { setAudience(event.target.value); setCategory("All categories"); }}>
-          {["All audiences", ...WEBSITE_AUDIENCES].map(item => <option key={item}>{item}</option>)}</select></label>
-        <label className="devtools-select"><span>Category</span><select value={category} onChange={event => setCategory(event.target.value)}>
-          {["All categories", ...categories].map(item => <option key={item}>{item}</option>)}</select></label>
-        <label className="devtools-select"><span>Page evaluation status</span><select value={resultFilter} onChange={event => setResultFilter(event.target.value)}>
-          {["All results", "Measured pages", "Not measured"].map(item => <option key={item}>{item}</option>)}</select></label>
+        <label className="devtools-select"><span>Audience</span><UiSelect value={audience} onChange={event => { setAudience(event.target.value); setCategory("All categories"); }}>
+          {["All audiences", ...WEBSITE_AUDIENCES].map(item => <option key={item}>{item}</option>)}</UiSelect></label>
+        <label className="devtools-select"><span>Category</span><UiSelect value={category} onChange={event => setCategory(event.target.value)}>
+          {["All categories", ...categories].map(item => <option key={item}>{item}</option>)}</UiSelect></label>
+        <label className="devtools-select"><span>Page evaluation status</span><UiSelect value={resultFilter} onChange={event => setResultFilter(event.target.value)}>
+          {["All results", "Measured pages", "Not measured"].map(item => <option key={item}>{item}</option>)}</UiSelect></label>
         {hasFilters && <button type="button" className="button secondary" onClick={() => { setQuery(""); setAudience("All audiences"); setCategory("All categories"); setResultFilter("All results"); }}>Clear filters</button>}
       </div>
       <p className="devtools-results-count" role="status">{rows.length} {rows.length === 1 ? "website" : "websites"}{audience !== "All audiences" && ` · ${audience}`}</p>

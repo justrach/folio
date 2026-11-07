@@ -1,5 +1,6 @@
 "use client";
 
+import { UiSelect } from "./ui/select";
 import { useEffect, useRef, useState } from "react";
 import evaluationBatch from "@/data/developer-tool-evaluations.json";
 import { DEVELOPER_TOOLS, WEBSITE_AUDIENCES } from "@/lib/developer-tools-source";
@@ -38,11 +39,11 @@ export function LandingPageReport() {
     <div className="landing-report-header">
       <div><p>Folio page evaluation</p><h3>{selected?.website.name ?? "Website report"}</h3></div>
       <label className="landing-report-picker"><span>Choose a website report</span>
-        <select value={selectedId} onChange={event => setSelectedId(event.target.value)} disabled={reports.length === 0}>
+        <UiSelect value={selectedId} onChange={event => setSelectedId(event.target.value)} disabled={reports.length === 0}>
           {WEBSITE_AUDIENCES.map(audience => <optgroup key={audience} label={audience}>
             {reports.filter(report => report.website.audience === audience).map(report => <option key={report.website.id} value={report.website.id}>{report.website.name}</option>)}
           </optgroup>)}
-        </select>
+        </UiSelect>
       </label>
     </div>
     {hasResult && observation && selected ? <>

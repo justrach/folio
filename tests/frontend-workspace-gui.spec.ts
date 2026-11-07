@@ -1,3 +1,4 @@
+import { selectValue } from "./select-helpers";
 import { expect, test, type Page } from "@playwright/test";
 import { evaluateHtml } from "../src/lib/evaluation";
 
@@ -262,15 +263,15 @@ test("website picker clears private websites on logout", async ({ page }) => {
 test("a selected website opens its combined results and prefills only an explicit audit", async ({ page }) => {
   const state = await fixture(page);
   await page.goto("/websites");
-  await page.getByLabel("Selected website", { exact: true }).selectOption("owned-older");
+  await selectValue(page.getByLabel("Selected website", { exact: true }), "owned-older");
   await page.getByRole("button", { name: "Audit website", exact: true }).click();
   await expect(page.getByLabel("Website URL", { exact: true })).toHaveValue(olderUrl);
   noStartedWork(state);
   await page.getByRole("button", { name: "Close dialog", exact: true }).click();
   await page.getByRole("link", { name: "View results", exact: true }).click();
   await expect(page).toHaveURL(/\/overview\?view=workspace&website=owned-older$/);
-  await expect(page.getByLabel("Selected website", { exact: true })).toHaveValue("owned-older");
+  await expect(page.getByLabel("Selected website", { exact: true })).toHaveAttribute("data-value", "owned-older");
   await page.reload();
-  await expect(page.getByLabel("Selected website", { exact: true })).toHaveValue("owned-older");
+  await expect(page.getByLabel("Selected website", { exact: true })).toHaveAttribute("data-value", "owned-older");
   noStartedWork(state);
 });
