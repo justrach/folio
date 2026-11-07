@@ -12,6 +12,20 @@ test("standalone and workspace routes share the palette without writes or viewpo
     expect(width.scroll, path).toBeLessThanOrEqual(width.viewport + 1);
   }
   await page.goto("/docs/api");
+  const menu = page.getByRole("button", { name: "On this page", exact: true });
+  const navigation = page.getByRole("navigation", { name: "API reference navigation" });
+  if (await menu.isVisible()) {
+    await expect(navigation).not.toBeVisible();
+    await menu.focus(); await page.keyboard.press("Enter");
+    await expect(navigation).toBeVisible();
+    await navigation.getByRole("link", { name: /Read a saved run/ }).click();
+    await expect(page.getByRole("heading", { name: "Read a saved run", exact: true })).toBeVisible();
+    await expect(menu).toHaveAttribute("aria-expanded", "false");
+    await expect(menu).toBeFocused();
+    await expect(navigation).not.toBeVisible();
+  } else {
+    await expect(navigation).toBeVisible();
+  }
   await page.getByRole("button", { name: "Dark appearance", exact: true }).click();
   await expect(page.locator("html")).toHaveAttribute("data-folio-theme", "dark");
   await page.goto("/privacy");

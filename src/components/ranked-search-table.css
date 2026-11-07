@@ -87,7 +87,6 @@
 .ranked-search .ranked-search-query { font-size: 18px; font-weight: 500; line-height: 1.55; margin-bottom: 10px; max-width: 75ch; }
 @media (max-width: 1000px) and (min-width: 641px) {
   .ranked-search .ranked-search-controls { grid-template-columns: 1fr 1fr; }
-  .ranked-search-controls label:last-child { grid-column: 1 / -1; }
 }
 @media (max-width: 640px) {
   .ranked-search .ranked-search-controls { grid-template-columns: 1fr; }
@@ -121,4 +120,10 @@
   .ranked-search .ranked-search-controls { grid-template-columns: 1fr 1fr; gap: 10px; }
   .ranked-question-trigger { padding: 14px; gap: 14px; }
   .ranked-search .ranked-question-trigger .ranked-search-query { font-size: 15px; }
+  .ranked-search-controls select, .ranked-question-search input { font-size: 16px; }
+  .ranked-search-evidence summary, .ranked-search-provenance summary { min-height: 44px; padding-block: 11px; }
+  .ranked-question-dialog header button { width: 44px; height: 44px; }
+}
+@media (max-width: 420px) {
+  .ranked-search .ranked-search-controls { grid-template-columns: minmax(0, 1fr); }
 }
