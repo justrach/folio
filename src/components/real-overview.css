@@ -19,6 +19,11 @@
 .folio-workspace .real-overview-metrics dt { font-size: 11px; color: var(--folio-text-secondary); }
 .folio-workspace .real-overview-metrics dd { font: 500 23px/1.2 var(--folio-font-display); margin: 7px 0; font-variant-numeric: tabular-nums; }
 .folio-workspace .real-overview-metrics p { font-size: 11px; }
+.real-overview-metric-details { margin: 0 26px 16px; border: 1px solid var(--folio-edge); border-radius: 14px; }
+.real-overview-metric-details > summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 12px 16px; font-size: 12px; color: var(--folio-text-secondary); cursor: pointer; list-style: none; }
+.real-overview-metric-details > summary::-webkit-details-marker { display: none; }
+.real-overview-metric-details[open] > summary svg { transform: rotate(180deg); }
+.real-overview-metric-details[open] > summary { border-bottom: 1px solid var(--folio-edge); }
 .folio-workspace .real-overview .real-search-scopes { gap: 6px; padding-block: 4px 12px; border: 0; }
 .folio-workspace .real-search-scopes button { min-height: 44px; padding: 10px 14px; border: 1px solid transparent; border-radius: 12px; }
 .folio-workspace .real-search-scopes button[aria-pressed=true] { background: var(--folio-accent-soft); border-color: var(--folio-accent-edge); }
@@ -41,6 +46,7 @@
   .folio-workspace .real-overview-context { grid-template-columns: 1fr; gap: 12px; padding: 16px 18px; }
   .folio-workspace .real-overview-metrics { padding: 18px; }
   .folio-workspace .real-overview-metrics dd { margin: 0; }
+  .real-overview-metric-details { margin-inline: 18px; }
   .folio-workspace .real-recommendations ol { grid-template-columns: 1fr; }
   .folio-workspace .real-search-scopes button { white-space: normal; text-align: left; font-size: 12px; }
 }

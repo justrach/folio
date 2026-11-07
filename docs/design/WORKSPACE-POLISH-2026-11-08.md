@@ -2,10 +2,11 @@
 
 Follow-up to the passing CI checkpoint `9b11b02`.
 
-- Matched navigation, buttons and shared dropdowns to rounded 12px controls; retained existing spring press feedback and reduced-motion behavior.
+- Matched navigation, buttons and shared dropdowns to rounded 16px controls; retained existing spring press feedback and reduced-motion behavior.
 - Gave public summary cards and the question browser consistent 16px corners.
 - Changed Index view controls to a segmented surface with an explicit selected state, wrapping on phones.
 - Placed the private overview's model selector beside its scope explanation on desktop; stacked them on mobile. Reduced summary-value emphasis so the chart cards lead.
+- Made press compression more tactile with a vertical squash and spring return. Repeated private summary values and public activity/model charts are collapsed by default; their data remains reachable through keyboard-accessible disclosures.
 - Grouped recommended steps and saved report types into cards, with clearer answer-link boundaries.
 
 Existing Bencho components, theme artwork, metric calculations, evidence caveats, record ownership and explicit provider actions are preserved. No new image generation or provider request was needed.

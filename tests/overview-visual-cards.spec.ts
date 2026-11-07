@@ -57,6 +57,14 @@ test("overview chart cards summarise saved records with text equivalents", async
   await page.goto("/overview?view=workspace&website=site-example");
   const charts = page.getByRole("region", { name: "Overview charts" });
   const appearance = charts.getByRole("article", { name: "Answer appearance" });
+  const summary = page.locator(".real-overview-metric-details");
+  await expect(summary).not.toHaveAttribute("open");
+  await expect(appearance).toBeVisible();
+  await summary.locator("summary").focus();
+  await page.keyboard.press("Enter");
+  await expect(summary.locator(".real-overview-metrics")).toBeVisible();
+  await page.keyboard.press("Enter");
+  await expect(summary).not.toHaveAttribute("open");
   await expect(appearance.locator(".ovc-total strong")).toHaveText("50%");
   await expect(appearance).toContainText("2 of 4 identified answers named your site.");
   await expect(appearance.getByRole("img", { name: /Named your site 2, Not named 2, Identity unknown 1/ })).toBeVisible();

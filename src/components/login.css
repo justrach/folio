@@ -53,11 +53,11 @@
 /* Method-first sign-in, with the email form revealed only on request. */
 .login-form-panel { padding: 30px; border: 1px solid var(--folio-edge); border-radius: 22px; background: var(--folio-surface); }
 .login-layout { grid-template-columns: minmax(0, 440px) minmax(0, 400px); gap: 80px; }
-.login-choice { display: flex; align-items: center; gap: 13px; width: 100%; min-height: 58px; padding: 14px 17px; border: 1px solid var(--folio-edge-strong); border-radius: 13px; color: var(--folio-ink); background: var(--folio-surface); font: 500 15px/1.4 var(--folio-font-body); transition: transform 420ms cubic-bezier(.34,1.56,.64,1), background-color 150ms ease, border-color 150ms ease; }
+.login-choice { display: flex; align-items: center; gap: 13px; width: 100%; min-height: 58px; padding: 14px 17px; border: 1px solid var(--folio-edge-strong); border-radius: 18px; color: var(--folio-ink); background: var(--folio-surface); font: 500 15px/1.4 var(--folio-font-body); transition: transform var(--folio-press-return) var(--folio-press-ease), background-color 150ms ease, border-color 150ms ease; }
 .login-choice > span { flex: 1; text-align: left; }
 .login-choice-email { color: var(--folio-on-accent); background: var(--folio-accent); border-color: var(--folio-accent); }
-@media (hover: hover) { .login-choice:hover:not(:disabled) { transform: translateY(-3px) scale(1.015); } }
-.login-choice:active:not(:disabled) { transform: translateY(1px) scale(.975); transition-duration: 100ms; }
+@media (hover: hover) { .login-choice:hover:not(:disabled) { transform: translateY(-1px) scale(1.008); } }
+.login-choice:active:not(:disabled) { transform: translateY(2px) scale(.98,.91); transition-duration: 100ms; }
 .login-form-panel > .login-providers { gap: 12px; }
 .login-form-panel > .login-privacy { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 20px; color: var(--folio-text-secondary); font-size: 12px; }
 .login-form-panel > .login-providers > .login-account-switch { text-align: center; font-size: 13px; color: var(--folio-text-secondary); }
@@ -67,8 +67,8 @@
 .login-github { display: block; min-height: 44px; margin: auto; text-decoration: underline; text-underline-offset: 3px; }
 .login-email-panel { --panel-translate-y: 12px; }
 @starting-style { .login-email-panel[data-open="true"] { opacity: 0; transform: translateY(var(--panel-translate-y)); filter: blur(var(--panel-blur)); } }
-.login-form > .button { transition: transform 420ms cubic-bezier(.34,1.56,.64,1), background-color 150ms ease; }
-.login-form > .button:active:not(:disabled) { transform: scale(.975); }
+.login-form > .button { transition: transform var(--folio-press-return) var(--folio-press-ease), background-color 150ms ease; }
+.login-form > .button:active:not(:disabled) { transform: scale(.98,.91); }
 @media (max-width: 800px) { .login-form-panel { padding: 24px; } .login-layout { max-width: 470px; padding-top: 26px; } }
 @media (max-width: 360px) { .login-form-panel { padding: 20px; } .login-layout { padding-inline: 16px; } .login-choice { font-size: 14px; padding-inline: 13px; } }
 @media (prefers-reduced-motion: reduce) { .login-choice, .login-form > .button { transition: none !important; transform: none !important; } }

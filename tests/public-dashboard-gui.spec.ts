@@ -71,6 +71,13 @@ test("signed-out overview presents public task coverage and the original recorde
   await expect(page.getByRole("heading", { name: "Benchmark dashboard", exact: true })).toBeVisible();
   const publicResults = page.getByRole("region", { name: "Public benchmark results", exact: true });
   await expect(publicResults).toBeVisible();
+  const insights = publicResults.locator(".overview-insights-disclosure");
+  await expect(insights).not.toHaveAttribute("open");
+  await insights.locator(":scope > summary").focus();
+  await page.keyboard.press("Enter");
+  await expect(insights.getByRole("region", { name: "Published observation insights" })).toBeVisible();
+  await page.keyboard.press("Enter");
+  await expect(insights).not.toHaveAttribute("open");
   await expect(publicResults.getByRole("progressbar", { name: "Tasks with published answers", exact: true })).toHaveAttribute("aria-valuemax", "15");
   await expect(publicResults.getByRole("progressbar", { name: "Tasks with published answers", exact: true })).toHaveAttribute("aria-valuenow", "1");
   const mobileSelect = page.getByRole("combobox", { name: "Task", exact: true });
