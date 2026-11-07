@@ -18,7 +18,7 @@ function runtime(directory: string) {
     host: "127.0.0.1", port: 0, cf: false, telemetry: { enabled: false },
     resourcePersistencePath: join(directory, "persist"), resourceTmpPath: join(directory, "runtime-tmp"),
     workers: [{ config: {
-      name: "folio-search-console-fixtures", type: "worker", compatibilityDate: "2026-09-13",
+      name: "folio-search-console-fixtures", compatibilityDate: "2026-09-13",
       manifest: { mainModule: "worker.mjs", modules: {
         "worker.mjs": { type: "esm", contents: 'export default { fetch() { return new Response("Fixture binding only", { status: 404 }); } };' },
       } },

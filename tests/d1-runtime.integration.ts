@@ -36,7 +36,7 @@ function createRuntime(directory: string) {
     resourceTmpPath: join(directory, "runtime-tmp"),
     workers: [{
       config: {
-        name: "folio-isolated-d1-integration", type: "worker", compatibilityDate: "2026-09-13",
+        name: "folio-isolated-d1-integration", compatibilityDate: "2026-09-13",
         manifest: { mainModule: "worker.mjs", modules: {
           "worker.mjs": { type: "esm", contents: 'export default { fetch() { return new Response("Integration binding only", { status: 404 }); } };' },
         } },

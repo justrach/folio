@@ -15,7 +15,7 @@ import { createEvaluationRun, updateEvaluationRun } from "../src/lib/eval-store"
 function runtime(directory: string) {
   return new Miniflare({ host: "127.0.0.1", port: 0, cf: false, telemetry: { enabled: false },
     resourcePersistencePath: join(directory, "persist"), resourceTmpPath: join(directory, "runtime-tmp"),
-    workers: [{ config: { name: "folio-cost-fixtures", type: "worker", compatibilityDate: "2026-09-13",
+    workers: [{ config: { name: "folio-cost-fixtures", compatibilityDate: "2026-09-13",
       manifest: { mainModule: "worker.mjs", modules: { "worker.mjs": { type: "esm", contents: 'export default { fetch() { return new Response("Fixture binding", {status:404}); } };' } } },
       env: { DB: { type: "d1", id: "d1d10000-0000-4000-8000-000000000015" } },
     } }],
