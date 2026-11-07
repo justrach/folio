@@ -45,4 +45,4 @@ Upgraded the checked-in Next.js pin and Bun lockfile from 15.5.25 to 16.4.5. The
 
 ## Verification
 
-The local CI result is failing; see `LOCAL-CI-2026-11-08.md` for exact results and remaining failures. Typecheck, 320 unit tests and both builds pass. The separate 10-case desktop/mobile login/artwork/motion scope passed. The full browser run and default parallel D1 run did not pass. No merge, push or deployment was performed.
+All nine local CI stages pass at revision `525736f`; see `LOCAL-CI-2026-11-08.md` for the runtime, environment and retained logs. Typecheck, 320 unit tests, 37 D1 integration tests, 368 desktop/mobile browser tests (two existing viewport-duplicate skips), the Cloudflare production build and scheduler dry build pass. Login/artwork/motion checks and the full light/dark route-audit matrix are included. External providers remain mocked; no production deployment is claimed.

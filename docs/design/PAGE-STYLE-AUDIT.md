@@ -4,7 +4,7 @@ Audited on 8 November 2026 with fixture data. This is local browser verification
 
 ## Route coverage
 
-`tests/page-style-audit.spec.ts` visits 24 route/view combinations in both signed-out and empty signed-in workspace fixtures, in desktop (1440 × 1000) and mobile (393 × 727) Chrome projects. The mobile runs also check overflow at 320 × 780. The expanded light/dark matrix is configured for 192 page visits and 96 additional narrow-width checks. The complete expanded run has not passed; see `LOCAL-CI-2026-11-08.md` for the interrupted CI result. The earlier light-only audit passed at revision `43bac97`.
+`tests/page-style-audit.spec.ts` visits 24 route/view combinations in both signed-out and empty signed-in workspace fixtures, in desktop (1440 × 1000) and mobile (393 × 727) Chrome projects. The mobile runs also check overflow at 320 × 780. All eight light/dark route-audit cases passed at revision `525736f`: 192 page visits and 96 additional narrow-width checks. See `LOCAL-CI-2026-11-08.md` for the complete passing CI result.
 
 | Surface | Paths / views |
 | --- | --- |
@@ -16,7 +16,7 @@ Audited on 8 November 2026 with fixture data. This is local browser verification
 | Standalone | `/pricing`, `/settings`, `/privacy`, `/docs/api` |
 | Login | `/login?next=%2Foverview%3Fview%3Dworkspace` |
 
-The audit checks visible native selects, page-level horizontal overflow, enabled dropdown menus and their viewport/text bounds, Escape/focus restoration, runtime errors and unintended API writes. Opening and control screenshots are retained in ignored Playwright results; screenshot contact sheets were visually reviewed. No visible native dropdown or page-level horizontal overflow was found in the final runs. Public artifact data, a named published-site fixture, and explicit empty private fixtures keep customer records out of screenshots. Populated private selections have separate workflow fixtures; the route audit does not stand in for every account/data configuration.
+The audit checks visible native selects, page-level horizontal overflow, enabled dropdown menus and their viewport/text bounds, Escape/focus restoration, runtime errors and unintended API writes. Opening and control screenshots are retained in ignored Playwright results. Screenshot contact sheets from the earlier light-only audit were visually reviewed; the expanded matrix is automated browser verification. No visible native dropdown or page-level horizontal overflow was found in the passing matrix. Public artifact data, a named published-site fixture, and explicit empty private fixtures keep customer records out of screenshots. Populated private selections have separate workflow fixtures; the route audit does not stand in for every account/data configuration.
 
 The initial private fixture omitted the cost summary's `groups` and `recent` arrays. Correcting that fixture removed its pricing-page exception; no production cost-summary behavior was changed.
 
@@ -28,6 +28,6 @@ Existing email/signup requests, configured-only Google/GitHub methods and valida
 
 ## Verification
 
-The combined CI result is recorded in `LOCAL-CI-2026-11-08.md`; it is failing and the full browser suite did not finish. The route-audit cases each contain all 24 route/view visits, rather than counting each visit as a separate test. Screenshots and generated reports remain ignored local artifacts.
+The combined CI result is recorded in `LOCAL-CI-2026-11-08.md`: typecheck, 320 unit tests, 37 D1 integration tests, 368 browser tests (two existing viewport-duplicate skips), and both builds pass. The route-audit cases each contain all 24 route/view visits, rather than counting each visit as a separate test. Screenshots and generated reports remain ignored local artifacts.
 
 The published technical Index uses a schema-complete named site fixture, and the audit asserts that its link is rendered. This covers the successful published-index state rather than mistaking a malformed fixture’s error panel for loaded content.
