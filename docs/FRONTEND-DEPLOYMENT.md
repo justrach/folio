@@ -13,6 +13,11 @@ cookies, record ownership, provider limits and database operations remain in
 `folio-visibility`; the frontend receives no database binding or provider secrets.
 No migration or production record copy is required for a presentation release.
 
+OpenNext is pinned to 1.20.16 for Next.js 16.4.5 runtime support. The prior 1.20.6
+adapter built successfully but crashed in Workers loading `preview-props.json`.
+CI now runs `frontend:smoke` against the actual built Worker, without database or
+provider bindings, to catch initialization failures before deployment.
+
 The existing public-index Worker retains `/api/question-index*`. Current
 `/leaderboard` requests render the new UI. Explicit legacy `view=questions`,
 `cohort`, and `q` links forward to `folio-public-index` using a separate service

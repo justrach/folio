@@ -29,4 +29,5 @@ jobs:
       - run: bun run test:gui
       - run: bun run cf:build
       - run: bun run frontend:build
+      - run: bun run frontend:smoke
       - run: bun run scheduler:build
