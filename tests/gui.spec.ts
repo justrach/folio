@@ -1,3 +1,4 @@
+import { selectValue } from "./select-helpers";
 import { openEmailLogin } from "./login-helpers";
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
 import { randomBytes, randomUUID } from "node:crypto";
@@ -5,31 +6,40 @@ import { readFile } from "node:fs/promises";
 import JSZip from "jszip";
 import { evaluationMethodology } from "../src/lib/evaluation";
 
+// Navigation and illustration tests use an anonymous fixture; only the explicit
+// real-signup case below exercises Better Auth and its isolated D1 state.
+test.beforeEach(async ({ page }, info) => {
+  if (info.title === "real signup, simulated scan history, and logout protect account data") return;
+  await page.route("**/api/auth/get-session**", route => route.fulfill({ json: null }));
+  await page.route("**/api/scans", route => route.request().method() === "GET" ? route.fulfill({ json: { scans: [] } }) : route.fallback());
+  await page.route("**/api/sites", route => route.request().method() === "GET" ? route.fulfill({ json: { sites: [] } }) : route.fallback());
+});
+
 const routes = [
   {
-    path: "/overview",
-    label: /^Public dashboard$/,
-    heading: "Benchmark dashboard",
+    path: "/overview?view=workspace",
+    label: /^My workspace$/,
+    heading: "My website results",
   },
   {
     path: "/websites",
     label: /^My websites$/,
-    heading: "Good things start with a website.",
+    heading: "Your websites",
   },
   {
     path: "/visibility",
     label: /^AI visibility$/,
-    heading: "Be the name that comes up.",
+    heading: "AI visibility",
   },
   {
     path: "/seo",
     label: /^SEO health$/,
-    heading: "A stronger foundation for discovery.",
+    heading: "SEO health",
   },
   {
     path: "/patches",
     label: /^Patch studio/,
-    heading: "From insight to improvement.",
+    heading: "Patch studio",
   },
   {
     path: "/leaderboard",
@@ -39,7 +49,7 @@ const routes = [
   {
     path: "/agents",
     label: /^Your agents$/,
-    heading: "A little intelligence. A lot of clarity.",
+    heading: "Your agents",
   },
   {
     path: "/settings",
@@ -71,13 +81,16 @@ async function noPageOverflow(page: Page) {
 
 async function navigate(page: Page, route: (typeof routes)[number]) {
   const link = page.locator(`.nav-link[href="${route.path}"]`);
+  if (!(await link.count())) {
+    await page.getByRole("link", { name: "My workspace", exact: true }).click();
+  }
   const menu = page.getByRole("button", {
     name: "Open navigation",
     exact: true,
   });
   if (await menu.isVisible()) await menu.click();
   await link.click();
-  await expect(page).toHaveURL(new RegExp(`${route.path}$`));
+  await expect(page).toHaveURL(route.path);
   await expect(
     page.getByRole("heading", { level: 1, name: route.heading, exact: true }),
   ).toBeVisible();
@@ -129,7 +142,7 @@ test("all navigation pages work without layout overflow or runtime errors", asyn
   page,
 }, testInfo) => {
   const runtimeErrors = trackRuntimeErrors(page);
-  await page.goto("/overview");
+  await page.goto("/overview?view=workspace");
   for (const route of [...routes.slice(1), routes[0]]) {
     await test.step(`Navigate to ${route.path}`, async () => {
       await navigate(page, route);
@@ -153,8 +166,9 @@ test("audit, methodology, and search dialogs support keyboard dismissal and navi
   await page.getByRole("button", { name: "Run an audit", exact: true }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await expect(page.getByLabel("Website URL", { exact: true })).toHaveValue(
-    "https://example.com",
+    "",
   );
+  await page.getByLabel("Website URL", { exact: true }).fill("https://example.com");
   await expect(
     page.getByRole("link", { name: "Sign in to save your audit" }),
   ).toBeVisible();
@@ -183,57 +197,33 @@ test("audit, methodology, and search dialogs support keyboard dismissal and navi
   await expect(page.getByRole("dialog")).toHaveCount(0);
 });
 
-test("leaderboard filters, metric sorting, search, and evaluation drill-down work", async ({
-  page,
-}, testInfo) => {
+test("Index filters, website lookup and source drill-down work", async ({ page }, testInfo) => {
   await page.goto("/leaderboard");
-  await page.getByRole("button", {name:"Explore sample rankings",exact:true}).click();
-  const rows = page.locator(".ranking-table tbody tr");
-  await expect(rows).toHaveCount(12);
-  await page.getByLabel("Filter by industry").selectOption("Developer tools");
-  await expect(rows).toHaveCount(2);
-  await expect(rows.first()).toContainText("Vercel");
-  await expect(rows.last()).toContainText("Resend");
-
-  await page
-    .getByLabel("Search websites", { exact: true })
-    .fill("missing-website-123");
-  await expect(rows).toHaveCount(0);
-  await expect(
-    page.getByText("No websites match your search.", { exact: true }),
-  ).toBeVisible();
-  await page.getByLabel("Search websites", { exact: true }).clear();
-  await page.getByLabel("Filter by industry").selectOption("All industries");
-  await page.getByRole("button", { name: "Discovery", exact: true }).click();
-  await expect(
-    page.getByRole("columnheader", { name: "DISCOVERY", exact: true }),
-  ).toBeVisible();
-  await expect(rows.first()).toContainText("Notion");
-  await expect(rows.first().locator(".score-cell")).toContainText("89");
-
-  await page
-    .getByRole("button", { name: "View Vercel evaluation", exact: true })
-    .click();
-  const dialog = page.getByRole("dialog");
-  await expect(dialog).toBeVisible();
-  await expect(
-    dialog.getByRole("heading", {
-      name: "Vercel, in perspective.",
-      exact: true,
-    }),
-  ).toBeVisible();
-  await expect(dialog).toContainText("illustrative scores");
-  await page.keyboard.press("Escape");
-  await expect(page.getByRole("dialog")).toHaveCount(0);
-
-  await page.getByRole("button", { name: "SEO health", exact: true }).click();
-  await page.getByLabel("Search websites", { exact: true }).fill("notion");
-  await expect(rows).toHaveCount(1);
-  await expect(rows.first().locator(".score-cell")).toContainText("96");
-  await expect(page.locator(".rank-column")).toHaveCount(1);
-  await page.getByLabel("Search websites", { exact: true }).clear();
+  const comparison = page.getByRole("region", { name: "Which websites get recommended?" });
+  await expect(comparison).toBeVisible();
+  await selectValue(comparison.getByLabel("Website comparison audience"), "Shops & brands");
+  await expect(page).toHaveURL(/landscapeAudience=Shops/);
+  await selectValue(comparison.getByLabel("Website comparison audience"), "");
+  await comparison.getByLabel("Find a website").fill("missing-website-123");
+  await expect(comparison.locator(".website-ranking-row")).toHaveCount(0);
+  await comparison.getByLabel("Find a website").fill("railway.com");
+  await expect(comparison.locator(".website-ranking-row")).toHaveCount(1);
+  await comparison.locator(".website-ranking-row").click();
+  const detail = comparison.getByRole("complementary", { name: "Model results for railway.com" });
+  await expect(detail).toBeVisible();
+  await detail.getByRole("link", { name: "See source answer" }).first().click();
+  await expect(page).toHaveURL(/query=.+model=/);
+  await expect(page.getByRole("region", { name: "Public search rankings" })).toBeVisible();
+  await page.getByRole("button", { name: "HTML page checks", exact: true }).click();
+  const score = page.getByRole("button", { name: "Folio page evaluation", exact: true });
+  await score.click();
+  const heading = page.getByRole("columnheader").filter({ has: score });
+  await expect(heading).toHaveAttribute("aria-sort", /ascending|descending/);
+  const previous = await heading.getAttribute("aria-sort");
+  await score.click();
+  await expect(heading).not.toHaveAttribute("aria-sort", previous!);
   await noPageOverflow(page);
-  await screenshot(page, testInfo, "leaderboard");
+  await screenshot(page, testInfo, "index-filters");
 });
 
 test("patch approval gates a ZIP download containing the reviewed suggestion", async ({
@@ -275,7 +265,7 @@ test("patch approval gates a ZIP download containing the reviewed suggestion", a
   await expect(downloadButton).toBeDisabled();
 });
 
-test("published audits stay separate from sample rankings through filtering and errors", async ({
+test("published audits stay separate from search rankings through filtering and errors", async ({
   page,
 }) => {
   let responseMode: "populated" | "error" | "empty" = "populated";
@@ -303,8 +293,7 @@ test("published audits stay separate from sample rankings through filtering and 
     });
   });
   await page.goto("/leaderboard");
-  await page.getByRole("button", { name: "Explore sample rankings", exact: true }).click();
-  await expect(page.locator(".ranking-table tbody tr")).toHaveCount(12);
+  await expect(page.getByRole("region", { name: "Which websites get recommended?" })).toBeVisible();
   await page
     .getByRole("button", { name: "Published page audits", exact: true })
     .click();
@@ -348,9 +337,10 @@ test("published audits stay separate from sample rankings through filtering and 
     }),
   ).toBeVisible();
   await page
-    .getByRole("button", { name: "Explore sample rankings", exact: true })
+    .getByRole("button", { name: "Search rankings", exact: true })
     .click();
-  await expect(page.locator(".ranking-table tbody tr")).toHaveCount(12);
+  await expect(page.getByRole("region", { name: "Which websites get recommended?" })).toBeVisible();
+  await expect(index).toHaveCount(0);
 });
 
 test("overview chart controls and report export remain usable", async ({

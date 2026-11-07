@@ -35,6 +35,10 @@ async function mockAccount(page: Page, signedIn = true) {
     authenticated = false;
     return route.fulfill({ json: { success: true } });
   });
+  await page.route("**/api/evaluations/*/semantic-review", route => route.request().method() === "GET"
+    ? route.fulfill({ json: { review: null, available: false } }) : route.fallback());
+  await page.route("**/api/costs", route => route.request().method() === "GET"
+    ? route.fulfill({ json: { currency: "USD", groups: [], recent: [], recentLimit: 50 } }) : route.fallback());
   await page.route("**/api/seo-reports", (route) => route.fulfill({ json: { reports: [] } }));
   await page.route("**/api/scans", (route) => route.fulfill({ json: { scans: [] } }));
   await page.route("**/api/benchmarks/runs**", (route) => route.fulfill({ json: { runs: [] } }));
@@ -191,6 +195,8 @@ test("managed session starts once, follows navigation, exposes private returns, 
     } else if (path.endsWith("/reconcile") && method === "POST") {
       if (allowCompletion) saved = completed;
       await route.fulfill({ json: { run: saved } });
+    } else if (path.endsWith("/semantic-review") && method === "GET") {
+      await route.fulfill({ json: { review: null, available: false } });
     } else if (path.endsWith("/export") && method === "GET") {
       exports += 1;
       await route.fulfill({ json: { format: "folio-evidence-bundle", run: saved, suite: EVAL_SUITE } });
@@ -291,7 +297,7 @@ test("pricing saves only an explicit private preference and preserves it across 
   await expect(builder.getByRole("button", { name: "Register interest", exact: true })).toBeVisible();
   expect(writes).toEqual([]);
   await builder.getByRole("button", { name: "Register interest", exact: true }).click();
-  await expect(page.getByRole("status")).toContainText("No subscription or charge has been created");
+  await expect(page.getByRole("status").filter({ hasText: "No subscription or charge has been created" })).toContainText("No subscription or charge has been created");
   await expect(builder.getByRole("button", { name: "Preference saved", exact: true })).toBeVisible();
   expect(writes).toEqual([{ plan: "builder" }]);
   await page.reload();

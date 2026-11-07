@@ -77,9 +77,9 @@ async function fixture(page: Page, initialRuns: EvaluationRun[]) {
 async function navigate(page: Page, href: string) {
   const menu = page.getByRole("button", { name: "Open navigation", exact: true });
   if (await menu.isVisible()) await menu.click();
-  await page.locator(`.nav-link[href="${href}"]`).click();
-  await expect(page).toHaveURL(new RegExp(`${href}$`));
-  if (href === "/overview") await page.getByRole("link", { name: "My website results", exact: true }).click();
+  const destination = href === "/overview" ? "/overview?view=workspace" : href;
+  await page.locator(`.nav-link[href="${destination}"]`).click();
+  await expect(page).toHaveURL(destination);
 }
 
 test("overview shows the three recent private evaluations without requiring a technical audit", async ({ page }, testInfo) => {

@@ -45,7 +45,7 @@ test("incoming website and SEO intent prepares a fresh evaluation without starti
   await page.goto(evaluationHref({ targetUrl: "https://example.com/", seoReportId: "loop-seo-report" }));
   const target = page.getByLabel("Website to evaluate", { exact: true });
   await expect(target).toHaveValue("https://example.com/");
-  await expect(page.locator("#eval-seo-report")).toHaveValue("loop-seo-report");
+  await expect(page.locator("#eval-seo-report")).toHaveAttribute("data-value", "loop-seo-report");
   await expect(page.getByRole("region", { name: "Evaluation preflight" })).toContainText("Ready to evaluate");
   expect(creates).toEqual([]);
   await page.getByText("Optional reference answers", { exact: true }).click();
@@ -56,7 +56,7 @@ test("incoming website and SEO intent prepares a fresh evaluation without starti
   await expect(page.locator(".eval-report")).toHaveCount(0);
   await expect(target).toHaveValue(old.targetUrl);
   await expect(page.getByLabel("Expected product name", { exact: true })).toHaveValue("");
-  await expect(page.locator("#eval-seo-report")).toHaveValue("");
+  await expect(page.locator("#eval-seo-report")).toHaveAttribute("data-value", "");
   await expect(page.locator(".eval-notice")).toContainText("Reference answers and saved SEO evidence were cleared");
   expect(creates).toEqual([]);
   await page.getByRole("button", { name: "Run evaluation", exact: true }).click();
@@ -100,7 +100,7 @@ test("same-page run navigation hides stale details and supports browser history 
   await expect(page.locator(".eval-report")).toContainText(b.siteName);
   await page.getByRole("button", { name: "Compare this run", exact: true }).click();
   await expect(page).toHaveURL(/baseline=loop-b/);
-  await expect(page.getByLabel("Baseline evaluation", { exact: true })).toHaveValue(b.id);
+  await expect(page.getByLabel("Baseline evaluation", { exact: true })).toHaveAttribute("data-value", b.id);
   await page.locator(".eval-more-actions > summary").click();
   await expect(page.getByRole("link", { name: "Open agent activity", exact: false })).toHaveAttribute("href", `/agents?run=${b.id}`);
   expect(creates).toBe(0);
