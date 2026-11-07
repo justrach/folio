@@ -46,9 +46,10 @@ The **Demo report** remains an explicit alternative. Its sample percentages, spa
 | A saved site in `/websites` | **Evaluate** | Opens the target's evaluation form |
 | Selected technical audit | **Search & backlinks** | Opens `/search-data` with the domain prepared; no lookup is submitted |
 | A persisted SEO result | **Use in evaluation** | Opens the target's evaluation form with that saved-report selection requested |
+| A persisted SEO result | **Collect keyword and link rows** | Runs two more explicit paid tasks for that saved report, then shows keyword/landing-page and backlink rows |
 | A recent private evaluation | **Report** or **Agent returns** | Reads the selected owned run |
 
-A saved SEO handoff is resolved against the signed-in account's completed reports and the exact target hostname. An unavailable, mismatched, or other-account report is not attached; the UI explains that the page capture can be used alone. Reopening saved SEO history or selecting its report does not make another DataForSEO request.
+A saved SEO handoff is resolved against the signed-in account's completed reports and the exact target hostname. An unavailable, mismatched, or other-account report is not attached; the UI explains that the page capture can be used alone. Reopening saved SEO history or selecting its report does not make another DataForSEO request. Row-level detail is collected only by its own explicit action, once per saved report; opening a report that already has rows never repeats the request.
 
 Opening an owned SEO report also prepares that report's verified matching domain in the lookup form. The next paid lookup still requires an explicit submission. If a selected Search Console report fails to load, its history button retries the saved-record GET without adding an identical browser-history entry or importing new data.
 
@@ -61,6 +62,12 @@ The login return hint accepts only local `/evaluations`, `/agents`, `/benchmarks
 Plain `/evaluations` opens **Search questions**, using the same private workspace available at `/benchmarks`. **Page evidence** opens captured-page verification. Legacy `run`, `target`, `seoReport`, and `baseline` website links retain their page view; explicit `view=search` selects keyword context. Only one workspace reads a run ID at a time. Login preserves the validated mode and selected owned-record hints.
 
 The question editor saves 1–10 questions against an existing owned website, with a suite name, language and locale. Starter packs cover work, shopping, services, learning and coding harnesses. Questions can be edited before saving. Saving a suite stores drafts only; each later baseline or fresh observation remains an explicit start with the same active-run safeguards.
+
+## Private evaluation history
+
+`GET /api/evaluations` returns lightweight summaries projected by D1, not full evidence bundles. It accepts an optional `limit` (1–50, default 50) and an opaque `cursor`; `nextCursor` is `null` at the end. Ordering is newest creation first, with run ID as the stable tie-breaker. Cursors are navigation hints, never ownership credentials; every page is authenticated and excludes deleted evidence.
+
+The Page evidence notebook and Agents session list expose **Load older evaluations/sessions**. Loading history makes only saved-record GETs. Polling refreshes the loaded pages without dropping older history; explicit workspace refresh starts at the latest page. Account changes abort pending reads and hide the previous owner's pages. Opening a report still reads its owned detail endpoint, and no history action creates a paid run.
 
 ## Open a saved report or prepare a new run
 
