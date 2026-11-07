@@ -1,6 +1,6 @@
 import type { PublicSearchRankings } from "./public-search-rankings";
 
-const audiences = new Set(["Developer tools", "Software & work", "Shops & brands", "Services & travel", "Learning"]);
+const audiences = new Set(["Developer tools", "AI tools", "Software & work", "Shops & brands", "Services & travel", "Learning"]);
 const idPattern = /^[a-z0-9][a-z0-9_-]{0,159}$/;
 
 function fail(path: string, message: string): never {

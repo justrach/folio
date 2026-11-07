@@ -1,12 +1,14 @@
 # Website directory coverage
 
-Source review: **13 September 2026**. The catalog now contains **36 websites**: the original 24 developer-tool entries plus 12 websites spanning workplace software, retail, services/travel, and learning. Existing IDs are preserved. Audience labels are editorial groupings; inclusion does not establish customer demand, product quality, a recommendation, or a purchased placement.
+Source review: **7 November 2026**. The catalog now contains **50 websites**: the original 24 developer-tool entries, 12 websites spanning workplace software, retail, services/travel, and learning, and 14 AI products (eight assistants, four app builders, two coding agents). Existing IDs are preserved. Audience labels are editorial groupings; inclusion does not establish customer demand, product quality, a recommendation, or a purchased placement.
 
 The directory's broader audience coverage does not create new task suites. Folio's actual page evaluations still use the bounded `readiness-v1` HTML rubric. A technical result does not test a store's checkout, a tour booking, service availability, learning outcomes, or an API integration. Actual capture timestamps, failures, checks and measured results belong to the separate [evaluation record](DEVELOPER-TOOLS-EVALUATION.md).
 
 ## What the completed batch found
 
-Batch `2026-09-13T04-44-48-052Z-429a6072` measured all 36 public pages. The original eight capture failures were resolved through a larger bounded capture and Cloudflare's reviewed canonical URL. All public results and the separate local preview reproduced offline from their saved captures.
+Batch `2026-11-07T12-31-58-411Z-66553fc8` re-captured all 50 reviewed homepages on 7 November 2026: **41 measured and nine unavailable**. The unavailable outcomes are retained, not scored as failures: Box, Claude, Grok, IKEA and Lovable returned HTTP 403; Gemini could not be fetched; and v0, Bolt and Replit captured HTML that the local sandbox could not evaluate. Severely bot-protected or client-rendered AI homepages are a known limitation of this bounded HTML capture, not a product judgment. Measured AI homepages were ChatGPT 95, Microsoft Copilot 100, Manus 85, Perplexity 58, Cursor 95, DeepSeek 80 and Devin 100. All 50 saved outcomes reproduced offline from their frozen captures.
+
+The earlier batch `2026-09-13T04-44-48-052Z-429a6072` measured all 36 then-catalogued public pages. The original eight capture failures were resolved through a larger bounded capture and Cloudflare's reviewed canonical URL. All public results and the separate local preview reproduced offline from their saved captures.
 
 Across these captured pages, 14 titles received partial points, 10 pages failed the structured-data check, nine descriptions received partial points, and nine primary-heading checks received partial or no points. These are findings under Folio's fixed HTML rubric, not evidence of commercial harm or poor agent task performance. The directory now counts partial checks as needing attention as well as showing explicit failures.
 
@@ -32,12 +34,26 @@ The descriptions in `src/data/developer-tools.json` are brief original summaries
 | Learning | Coursera | [Homepage](https://www.coursera.org/), [about](https://www.coursera.org/about): courses, certificates and degree programs. |
 | Learning | Duolingo | [Homepage](https://www.duolingo.com/), [official product explanation](https://blog.duolingo.com/new-subjects/): language, math and music lessons. |
 | Learning | edX | [Homepage](https://www.edx.org/), [about](https://www.edx.org/about-us): online courses, professional certificates and degrees. |
+| AI tools | ChatGPT | [Homepage](https://chatgpt.com/), [help](https://help.openai.com/en/): general AI assistant for research, writing and analysis. |
+| AI tools | Claude | [Homepage](https://claude.ai/), [support](https://support.anthropic.com/): AI assistant for writing, analysis and coding. |
+| AI tools | Gemini | [Homepage](https://gemini.google.com/): Google's AI assistant. |
+| AI tools | Perplexity | [Homepage](https://www.perplexity.ai/), [API docs](https://docs.perplexity.ai/): cited answers from web sources. |
+| AI tools | Microsoft Copilot | [Homepage](https://copilot.com/): Microsoft's AI assistant. |
+| AI tools | Manus | [Homepage](https://manus.im/), [help](https://manus.im/help): autonomous general AI agent. |
+| AI tools | Grok | [Homepage](https://grok.com/): xAI's assistant. |
+| AI tools | DeepSeek | [Homepage](https://www.deepseek.com/), [API docs](https://api-docs.deepseek.com/): assistant for chat, reasoning and coding. |
+| AI tools | Lovable | [Homepage](https://lovable.dev/), [docs](https://docs.lovable.dev/): prompt-to-app builder. |
+| AI tools | v0 | [Homepage](https://v0.app/), [docs](https://v0.dev/docs): Vercel's AI interface and app builder. |
+| AI tools | Bolt | [Homepage](https://bolt.new/), [support](https://support.bolt.new/): in-browser app builder. |
+| AI tools | Replit | [Homepage](https://replit.com/), [docs](https://docs.replit.com/): browser development environment and AI agent. |
+| AI tools | Cursor | [Homepage](https://cursor.com/), [docs](https://docs.cursor.com/): AI-first code editor. |
+| AI tools | Devin | [Homepage](https://devin.ai/), [docs](https://docs.devin.ai/): autonomous coding agent. |
 
 The 24 existing entries retain their official source references and are grouped under **Developer tools**. This preserves their original integration-oriented descriptions; a product such as Box can serve other audiences too. The label identifies this catalog's chosen framing, not an exclusive market definition.
 
 ## Selection and capture conditions
 
-This is a small editorial convenience sample. Selection aimed to broaden the kinds of websites available for inspection while retaining the established developer coverage. It is not a representative sample of industries, countries, popularity, or AI visibility. Three entries in each new group do not support group-level performance claims.
+This is a small editorial convenience sample. Selection aimed to broaden the kinds of websites available for inspection while retaining the established developer coverage. It is not a representative sample of industries, countries, popularity, or AI visibility. The three-entry retail, travel and learning groups do not support group-level performance claims. The AI tools group is a 14-entry convenience sample, and only seven of its homepages were measurable, so it supports no group-level performance claim either.
 
 The new homepage URLs returned HTTP 200 in a lightweight public HTTP preflight from the local environment. That check established reachability only; it used a different request path from Folio's evaluator and did not create a score. Some returned minimal HTML shells, and IKEA returned more than the one-megabyte preflight sample limit. The actual bounded evaluator must retain any size, access, timeout, or content failure rather than treat preflight success as measured success.
 

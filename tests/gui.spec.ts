@@ -105,7 +105,7 @@ function trackRuntimeErrors(page: Page) {
   return errors;
 }
 
-test("landing opens evaluations from a real result preview", async ({ page }, testInfo) => {
+test("landing opens the start flow from the sparse hero", async ({ page }, testInfo) => {
   const runtimeErrors = trackRuntimeErrors(page);
   const writes: string[] = [];
   await page.route("**/api/**", route => {
@@ -114,14 +114,12 @@ test("landing opens evaluations from a real result preview", async ({ page }, te
   });
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("See which competitors AI recommends.");
-  const preview = page.getByRole("complementary", { name: "Real recommendation preview" });
-  await expect(preview).toBeVisible();
-  await expect(preview.getByRole("listitem")).toHaveCount(4);
+  await expect(page.getByRole("img", { name: /sculptural dune/ })).toBeVisible();
   await noPageOverflow(page);
   await screenshot(page, testInfo, "landing");
-  await page.locator('.landing-hero a[href="/evaluations"]').click();
-  await expect(page).toHaveURL(/\/evaluations$/);
-  await expect(page.getByRole("heading", { name: "Evaluations", exact: true })).toBeVisible();
+  await page.locator('.landing-hero a[href="/start"]').click();
+  await expect(page).toHaveURL(/\/start$/);
+  await expect(page.getByRole("heading", { name: "Which website should AI recommend?", exact: true })).toBeVisible();
   expect(writes).toEqual([]);
   expect(runtimeErrors).toEqual([]);
 });

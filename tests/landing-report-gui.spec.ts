@@ -3,11 +3,22 @@ import evaluationBatch from "../src/data/developer-tool-evaluations.json";
 import { DEVELOPER_TOOLS, WEBSITE_AUDIENCES } from "../src/lib/developer-tools-source";
 
 const observations = evaluationBatch.results.filter(result => result.captureKind === "public-homepage");
+const measuredObservations = observations.filter(result => result.status === "complete" && typeof result.score === "number");
+const htmlChecksLabel = `HTML page checks for ${measuredObservations.length} measured websites`;
 const statusOrder: Record<string, number> = { fail: 0, warning: 1, pass: 2, optional: 3 };
 const report = (page: Page) => page.getByRole("region", { name: "Folio website report", exact: true });
 const picker = (page: Page) => report(page).getByRole("combobox", { name: "Choose a website report", exact: true });
 const table = (page: Page, name: string) => report(page).getByRole("table", { name: `Folio checks for ${name}`, exact: true });
 const pagination = (page: Page, name: string) => report(page).getByRole("navigation", { name: `Folio checks for ${name} pagination`, exact: true });
+
+/** Dev-server hydration can lag the first interaction; retry the selection until the report responds. */
+async function chooseReport(page: Page, id: string, name: string) {
+  const heading = report(page).getByRole("heading", { name, exact: true });
+  await expect.poll(async () => {
+    await picker(page).selectOption(id);
+    return heading.isVisible().catch(() => false);
+  }, { timeout: 15_000, intervals: [300, 600, 1000] }).toBe(true);
+}
 
 async function readOnlyFixture(page: Page) {
   const writes: string[] = [], providers: string[] = [], errors: string[] = [];
@@ -33,7 +44,7 @@ async function noOverflow(page: Page) {
 test("landing reports show actual captured results across all audiences without starting work", async ({ page }) => {
   const verifyReadOnly = await readOnlyFixture(page);
   await page.goto("/");
-  await page.getByText(`HTML page checks for ${observations.length} websites`, { exact: true }).click();
+  await page.getByText(htmlChecksLabel, { exact: true }).click();
   await expect(report(page)).toBeVisible();
   await expect(picker(page)).toHaveValue("allbirds");
   await expect(picker(page).getByRole("option")).toHaveCount(DEVELOPER_TOOLS.length);
@@ -42,7 +53,7 @@ test("landing reports show actual captured results across all audiences without 
   for (const id of ["allbirds", "better-auth", "clerk"]) {
     const observed = observations.find(result => result.toolId === id)!;
     expect(observed.status).toBe("complete");
-    await picker(page).selectOption(id);
+    await chooseReport(page, id, observed.name);
     await expect(report(page).getByRole("heading", { name: observed.name, exact: true })).toBeVisible();
     await expect(report(page).locator(".landing-report-score > strong")).toHaveText(`${observed.score} / 100`);
     await expect(report(page).locator("time")).toHaveAttribute("datetime", observed.capturedAt);
@@ -59,9 +70,11 @@ test("landing reports show actual captured results across all audiences without 
 test("landing check sorting, pagination, keyboard disclosure, and source data stay tied to the selected capture", async ({ page }, testInfo) => {
   const verifyReadOnly = await readOnlyFixture(page);
   await page.goto("/");
-  await page.getByText(`HTML page checks for ${observations.length} websites`, { exact: true }).click();
-  await picker(page).selectOption("better-auth");
+  await page.getByText(htmlChecksLabel, { exact: true }).click();
+  await expect(report(page)).toBeVisible();
+  await expect(picker(page)).toHaveValue("allbirds");
   const observed = observations.find(result => result.toolId === "better-auth")!;
+  await chooseReport(page, "better-auth", observed.name);
   const checks = table(page, observed.name);
   const nav = pagination(page, observed.name);
   await nav.getByRole("button", { name: "Next page", exact: true }).click();
@@ -95,5 +108,36 @@ test("landing check sorting, pagination, keyboard disclosure, and source data st
   await expect(pagination(page, "Clerk")).toContainText("Page 1 of 2");
   await noOverflow(page);
   await page.screenshot({ path: testInfo.outputPath("landing-report.png"), fullPage: true, scale: "css" });
+  verifyReadOnly();
+});
+
+test("manual workflow cycles with keyboard and swipe while sound remains opt-in", async ({ page }) => {
+  const verifyReadOnly = await readOnlyFixture(page);
+  await page.goto("/");
+  const sound = page.getByRole("button", { name: "Interaction sounds", exact: true });
+  await expect(sound).toHaveAttribute("aria-pressed", "false");
+  const front = page.locator('.csw-card[data-front]');
+  await expect(front).toContainText("Ask a question.");
+  await front.focus();
+  await page.keyboard.press("Enter");
+  await expect(front).toContainText("Follow the evidence.");
+  await expect(front).toBeFocused();
+  await page.getByRole("button", { name: "Next workflow step" }).click();
+  await expect(front).toContainText("Find your next move.");
+  await page.getByRole("button", { name: "Next workflow step" }).click();
+  await expect(front).toContainText("Ask a question.");
+  const box = (await front.boundingBox())!;
+  await page.mouse.move(box.x + box.width * .8, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width * .2, box.y + box.height / 2, { steps: 5 });
+  await page.mouse.up();
+  await expect(front).toContainText("Follow the evidence.");
+  await sound.click();
+  await expect(sound).toHaveAttribute("aria-pressed", "true");
+  await sound.click();
+  await expect(sound).toHaveAttribute("aria-pressed", "false");
+  await page.reload();
+  await expect(sound).toHaveAttribute("aria-pressed", "false");
+  await noOverflow(page);
   verifyReadOnly();
 });

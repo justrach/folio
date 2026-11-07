@@ -22,6 +22,32 @@ This guide describes the current UI. The [evaluation loop](EVALUATION-LOOP.md) e
 
 The `/seo` checks panel shows a left-hand percentage breakdown of all checks (including optional checks), with status filters and an inspector on the right. No tests appear until a user selects Pass, Needs improvement, Fail, or Optional using a bar or filter. Rows then expand to show findings, short supporting notes, and points. Optional checks are labeled Not scored; these count-based percentages are not the weighted SEO score. On mobile the breakdown stacks above the inspector. Saved evidence and scoring remain unchanged.
 
+## Customer question preview
+
+In `/start`, step 4 (**Customers**) previews the first question as the owner edits their customer and task descriptions. Long words and URLs wrap inside the preview on desktop and mobile without clipping, truncation, or changing the entered text. Editing this preview starts no paid work; customer descriptions are preserved without a field-length cap, while the shared task retains its 120-character limit.
+
+## Onboarding competitor display
+
+At `/start?step=6`, competitor rows and the live add-company preview show the website domain rather than alternate company names. Selected domains are persisted independently of matching aliases by migration `0025_tracked_competitor_domain.sql`; reopening never substitutes a current index domain based only on the company name. Starter-pack and manually entered website aliases supply a domain when available, including valid domains longer than the alias-name limit. Older records can display their saved website aliases without guessing missing websites. Rows without a website say **Website not provided** rather than guessing from a company name. Saved-answer counts and average positions remain separate from the website. Alternate names remain matching metadata, not displayed alias lists. Selecting, deselecting, or revisiting this step starts no paid work; saving competitors remains explicit.
+
+## Onboarding competitors
+
+At `/start?step=6`, users can select suggested companies or add competitors themselves. Competitor rows do not display provenance labels such as **Added by you** or a replacement badge/tooltip. Names, alternate-name matching, and measured public-answer counts remain unchanged.
+
+Provenance stays in the private `tracked_competitors.source` column (`manual`, `public-index`, or `starter-pack`), alongside `user_id` and `site_id`, for authorized developer inspection. Customer-facing competitor and onboarding responses omit it. Saving a new selection records the client-supplied origin hint (not independently verified evidence); reopening and resaving an existing selection preserves its stored origin rather than reclassifying it as manual. Existing records are not backfilled or inferred from their names. Viewing or saving competitors starts no provider work.
+
+## Customer groups in onboarding
+
+Step 4 of `/start` begins with one content-sized input under **Customer group(s)**. **+ Add more** adds closely stacked inputs, up to four rows (including unused blank rows). At four, the add control is replaced by **Max customer groups added.** in the same accent color. Red cross buttons remove rows when more than one exists; removing a row restores the add control and keeps keyboard focus in the remaining list.
+
+**Draft my questions** saves all nonblank groups separately with the shared **What they want to do** task. Optional blank rows are ignored; at least one group is required. Drafting interleaves distinct groups into ten total questions so the initial five selections represent every distinct group, rather than multiplying the suite size. Case-insensitive, whitespace-normalized duplicate groups draft only once; saved descriptions remain unchanged. The preview identifies its first nonblank-group context. Drafting and editing start no provider work.
+
+Saved groups reopen through the owner-scoped onboarding API. Migration `0024_onboarding_customer_groups.sql` adds group storage while existing single-audience records reopen as one group. Client and server enforce four groups; each group uses a content-sized textarea and preserves its full description, including line breaks. The shared task remains limited to 120 characters; the existing request-size limit and saved-question limits still apply. Apply migrations before deploying the updated application. Owner changes remount private onboarding state, abort outstanding onboarding requests, and discard old unkeyed browser drafts; only an explicitly anonymous page check is retained in tab storage for the sign-in handoff.
+
+## Guided setup questions
+
+In `/start` Step 5, the right-hand questions panel keeps its collapsed seven-row footprint (including the former expansion-control space). All questions are rendered and scroll within the panel; there is no **Show More** action. A partial blur/fade at the bottom edge indicates more questions below, clears as questions scroll into view, and disappears at the end or when the list fits. Mouse, touch, and keyboard scrolling preserve the panel size and surrounding layout. Selecting or scrolling questions starts no provider work; saving still stores drafts only.
+
 ## Start from your workspace
 
 `/overview` defaults to the public benchmark dashboard. **My website results** is the explicit `/overview?view=workspace` view. Signed-out visitors to that view see a sign-in prompt; signed-in owners choose an existing saved website. The overview loads saved application records with GET requests only. It does not reconcile provider sessions, start a search, or import an SEO report.
@@ -46,10 +72,9 @@ The **Demo report** remains an explicit alternative. Its sample percentages, spa
 | A saved site in `/websites` | **Evaluate** | Opens the target's evaluation form |
 | Selected technical audit | **Search & backlinks** | Opens `/search-data` with the domain prepared; no lookup is submitted |
 | A persisted SEO result | **Use in evaluation** | Opens the target's evaluation form with that saved-report selection requested |
-| A persisted SEO result | **Collect keyword and link rows** | Runs two more explicit paid tasks for that saved report, then shows keyword/landing-page and backlink rows |
 | A recent private evaluation | **Report** or **Agent returns** | Reads the selected owned run |
 
-A saved SEO handoff is resolved against the signed-in account's completed reports and the exact target hostname. An unavailable, mismatched, or other-account report is not attached; the UI explains that the page capture can be used alone. Reopening saved SEO history or selecting its report does not make another DataForSEO request. Row-level detail is collected only by its own explicit action, once per saved report; opening a report that already has rows never repeats the request.
+A saved SEO handoff is resolved against the signed-in account's completed reports and the exact target hostname. An unavailable, mismatched, or other-account report is not attached; the UI explains that the page capture can be used alone. Reopening saved SEO history or selecting its report does not make another DataForSEO request.
 
 Opening an owned SEO report also prepares that report's verified matching domain in the lookup form. The next paid lookup still requires an explicit submission. If a selected Search Console report fails to load, its history button retries the saved-record GET without adding an identical browser-history entry or importing new data.
 
@@ -63,11 +88,11 @@ Plain `/evaluations` opens **Search questions**, using the same private workspac
 
 The question editor saves 1–10 questions against an existing owned website, with a suite name, language and locale. Starter packs cover work, shopping, services, learning and coding harnesses. Questions can be edited before saving. Saving a suite stores drafts only; each later baseline or fresh observation remains an explicit start with the same active-run safeguards.
 
-## Private evaluation history
+## Describe customers during onboarding
 
-`GET /api/evaluations` returns lightweight summaries projected by D1, not full evidence bundles. It accepts an optional `limit` (1–50, default 50) and an opaque `cursor`; `nextCursor` is `null` at the end. Ordering is newest creation first, with run ID as the stable tie-breaker. Cursors are navigation hints, never ownership credentials; every page is authenticated and excludes deleted evidence.
+At `/start?step=4`, **Your customers** starts as a compact single-row field without a field-specific character cap. It grows and shrinks with the description (including when saved text reopens or the available width changes), up to 16rem tall, then scrolls internally. No resize handle or character-cap helper line is shown. Saving preserves the description, including paragraph breaks and tabs. Question drafting uses all its words, with whitespace normalized into sentences; it does not cut the audience to 60 characters. **What they want to do** retains its separate 120-character limit.
 
-The Page evidence notebook and Agents session list expose **Load older evaluations/sessions**. Loading history makes only saved-record GETs. Polling refreshes the loaded pages without dropping older history; explicit workspace refresh starts at the latest page. Account changes abort pending reads and hide the previous owner's pages. Opening a report still reads its owned detail endpoint, and no history action creates a paid run.
+The existing 4 KB JSON request-size safeguard still applies to saving setup; this is not an unbounded-upload promise. Individual saved questions retain their 300-character limit and suites their 4 KB limit. Step 5 offers **Edit question wording**, automatically opened for overlong drafts, so the owner can refine questions without shortening the saved customer description. Drafting and saving do not start provider work.
 
 ## Open a saved report or prepare a new run
 

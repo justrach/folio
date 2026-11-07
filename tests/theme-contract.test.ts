@@ -6,6 +6,8 @@ import { join, resolve } from 'node:path';
 function cssFiles(directory: string): string[] {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const path = join(directory, entry.name);
+    // Licensed upstream Bencho styles retain their own fallback palette; Folio overrides use theme tokens.
+    if (entry.isDirectory() && entry.name === "bencho") return [];
     return entry.isDirectory() ? cssFiles(path) : entry.name.endsWith('.css') ? [path] : [];
   });
 }

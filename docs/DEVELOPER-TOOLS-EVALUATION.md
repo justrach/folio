@@ -68,6 +68,12 @@ The largest accepted HTML body in this batch was edX at 2,527,043 bytes. Capture
 
 During expansion, a provisional Khan Academy capture returned HTTP 200 with the title `Client Challenge` and an instruction to enable JavaScript. That response was identified as an access interstitial rather than a homepage and its provisional score was rejected. The harness now rejects those known challenge titles before evaluation. The reviewed learning examples use edX instead; the provisional batch remains private for diagnosis and is not the current directory. Catalog selection is an editorial convenience sample, not a representative or exhaustive comparison; capture availability influenced the sample.
 
+### AI-tool expansion (7 November 2026)
+
+Batch `2026-11-07T12-31-58-411Z-66553fc8` re-captured all **50 reviewed public homepages** on 7 November 2026 at 12:31 UTC: the existing 36 plus 14 AI products (eight assistants, four app builders, two coding agents) under the new **AI tools** audience. **41 produced actual `readiness-v1` reports and nine stayed unavailable**: Box, Claude, Grok, IKEA and Lovable returned HTTP 403; Gemini could not be fetched; and v0, Bolt and Replit captured HTML that the local sandbox could not evaluate. Unavailable outcomes retain a null score and no checks. They are not zero-readiness results.
+
+The seven measured AI homepages were Microsoft Copilot 100, Devin 100, ChatGPT 95, Cursor 95, Manus 85, DeepSeek 80 and Perplexity 58. AI homepages are frequently client-rendered or protected by bot challenges, so this bounded HTML capture is less complete for that group. The catalog remains a 50-entry editorial convenience sample, and the 14-entry AI group does not support population or product-quality claims. No model calls or API transactions were made. All 50 saved outcomes reproduced offline from their frozen captures and the unchanged evaluator source.
+
 All seven focused fixture tests passed after the capture and challenge corrections. No known challenge document is included in the accepted batch; the title-based detector does not guarantee detection of every possible future interstitial. Full response HTML remains in ignored private storage, and the public summary includes only the recorded measurements and bounded provenance.
 
 Optional repository commands can expose this Node command through `bun run` for capture and offline verification. Keep the `--write-public-summary` flag explicit so a routine validation command cannot replace published observations.

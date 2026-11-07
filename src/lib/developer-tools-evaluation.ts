@@ -84,7 +84,7 @@ export function validateDeveloperTools(value: unknown): DeveloperTool[] {
       || seen.has(item.id) || typeof item.name !== "string" || item.name.length > 100 || !item.name
       || typeof item.category !== "string" || item.category.length > 100 || !item.category
       || typeof item.websiteUrl !== "string"
-      || (item.audience !== undefined && !["Developer tools", "Software & work", "Shops & brands", "Services & travel", "Learning"].includes(item.audience)))
+      || (item.audience !== undefined && !["Developer tools", "AI tools", "Software & work", "Shops & brands", "Services & travel", "Learning"].includes(item.audience)))
       throw new Error("The website catalog contains an invalid or duplicate entry.");
     reviewedHomepageHosts(item.websiteUrl); seen.add(item.id);
     if (item.id === "folio-local") throw new Error("folio-local is reserved for the explicit local-preview option.");

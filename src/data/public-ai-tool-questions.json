@@ -1,0 +1,1602 @@
+[
+  {
+    "id": "ai-assistants-v1",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a small team choosing one general AI assistant, how should I compare ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus on answer quality, citations, plan limits, data handling and when a specialist tool is a better fit?",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s01-q01",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a solo professional using AI daily for research and drafts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically answer quality with citations and source transparency? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s01-q02",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a solo professional using AI daily for research and drafts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically long-document and file analysis limits? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s01-q03",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a solo professional using AI daily for research and drafts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically coding help, data analysis and code execution? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s01-q04",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a solo professional using AI daily for research and drafts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically multi-step browser or computer-use automation? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s01-q05",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a solo professional using AI daily for research and drafts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically team administration, shared workspaces and retention controls? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s01-q06",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a solo professional using AI daily for research and drafts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically free-plan limits and subscription cost triggers? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s01-q07",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a solo professional using AI daily for research and drafts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically data privacy, training opt-out and residency? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s01-q08",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a solo professional using AI daily for research and drafts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically mobile, voice and cross-device continuity? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s01-q09",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a solo professional using AI daily for research and drafts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically API access, export and vendor lock-in? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s02-q01",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a two-person startup with a $100 monthly software budget, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically answer quality with citations and source transparency? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s02-q02",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a two-person startup with a $100 monthly software budget, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically long-document and file analysis limits? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s02-q03",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a two-person startup with a $100 monthly software budget, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically coding help, data analysis and code execution? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s02-q04",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a two-person startup with a $100 monthly software budget, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically multi-step browser or computer-use automation? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s02-q05",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a two-person startup with a $100 monthly software budget, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically team administration, shared workspaces and retention controls? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s02-q06",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a two-person startup with a $100 monthly software budget, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically free-plan limits and subscription cost triggers? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s02-q07",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a two-person startup with a $100 monthly software budget, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically data privacy, training opt-out and residency? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s02-q08",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a two-person startup with a $100 monthly software budget, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically mobile, voice and cross-device continuity? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s02-q09",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a two-person startup with a $100 monthly software budget, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically API access, export and vendor lock-in? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s03-q01",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a ten-person team standardizing on one assistant, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically answer quality with citations and source transparency? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s03-q02",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a ten-person team standardizing on one assistant, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically long-document and file analysis limits? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s03-q03",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a ten-person team standardizing on one assistant, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically coding help, data analysis and code execution? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s03-q04",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a ten-person team standardizing on one assistant, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically multi-step browser or computer-use automation? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s03-q05",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a ten-person team standardizing on one assistant, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically team administration, shared workspaces and retention controls? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s03-q06",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a ten-person team standardizing on one assistant, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically free-plan limits and subscription cost triggers? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s03-q07",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a ten-person team standardizing on one assistant, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically data privacy, training opt-out and residency? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s03-q08",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a ten-person team standardizing on one assistant, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically mobile, voice and cross-device continuity? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s03-q09",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a ten-person team standardizing on one assistant, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically API access, export and vendor lock-in? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s04-q01",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a regulated business handling confidential client data, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically answer quality with citations and source transparency? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s04-q02",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a regulated business handling confidential client data, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically long-document and file analysis limits? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s04-q03",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a regulated business handling confidential client data, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically coding help, data analysis and code execution? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s04-q04",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a regulated business handling confidential client data, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically multi-step browser or computer-use automation? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s04-q05",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a regulated business handling confidential client data, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically team administration, shared workspaces and retention controls? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s04-q06",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a regulated business handling confidential client data, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically free-plan limits and subscription cost triggers? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s04-q07",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a regulated business handling confidential client data, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically data privacy, training opt-out and residency? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s04-q08",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a regulated business handling confidential client data, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically mobile, voice and cross-device continuity? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s04-q09",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a regulated business handling confidential client data, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically API access, export and vendor lock-in? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s05-q01",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a student working on a free plan, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically answer quality with citations and source transparency? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s05-q02",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a student working on a free plan, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically long-document and file analysis limits? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s05-q03",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a student working on a free plan, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically coding help, data analysis and code execution? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s05-q04",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a student working on a free plan, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically multi-step browser or computer-use automation? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s05-q05",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a student working on a free plan, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically team administration, shared workspaces and retention controls? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s05-q06",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a student working on a free plan, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically free-plan limits and subscription cost triggers? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s05-q07",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a student working on a free plan, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically data privacy, training opt-out and residency? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s05-q08",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a student working on a free plan, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically mobile, voice and cross-device continuity? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s05-q09",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a student working on a free plan, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically API access, export and vendor lock-in? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s06-q01",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a consultant working across several client accounts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically answer quality with citations and source transparency? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s06-q02",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a consultant working across several client accounts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically long-document and file analysis limits? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s06-q03",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a consultant working across several client accounts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically coding help, data analysis and code execution? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s06-q04",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a consultant working across several client accounts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically multi-step browser or computer-use automation? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s06-q05",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a consultant working across several client accounts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically team administration, shared workspaces and retention controls? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s06-q06",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a consultant working across several client accounts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically free-plan limits and subscription cost triggers? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s06-q07",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a consultant working across several client accounts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically data privacy, training opt-out and residency? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s06-q08",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a consultant working across several client accounts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically mobile, voice and cross-device continuity? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s06-q09",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a consultant working across several client accounts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically API access, export and vendor lock-in? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s07-q01",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a team migrating from a mix of consumer chatbot accounts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically answer quality with citations and source transparency? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s07-q02",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a team migrating from a mix of consumer chatbot accounts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically long-document and file analysis limits? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s07-q03",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a team migrating from a mix of consumer chatbot accounts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically coding help, data analysis and code execution? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s07-q04",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a team migrating from a mix of consumer chatbot accounts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically multi-step browser or computer-use automation? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s07-q05",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a team migrating from a mix of consumer chatbot accounts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically team administration, shared workspaces and retention controls? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s07-q06",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a team migrating from a mix of consumer chatbot accounts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically free-plan limits and subscription cost triggers? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s07-q07",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a team migrating from a mix of consumer chatbot accounts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically data privacy, training opt-out and residency? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s07-q08",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a team migrating from a mix of consumer chatbot accounts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically mobile, voice and cross-device continuity? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s07-q09",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a team migrating from a mix of consumer chatbot accounts, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically API access, export and vendor lock-in? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s08-q01",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a distributed team working across US and European time zones, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically answer quality with citations and source transparency? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s08-q02",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a distributed team working across US and European time zones, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically long-document and file analysis limits? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s08-q03",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a distributed team working across US and European time zones, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically coding help, data analysis and code execution? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s08-q04",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a distributed team working across US and European time zones, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically multi-step browser or computer-use automation? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s08-q05",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a distributed team working across US and European time zones, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically team administration, shared workspaces and retention controls? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s08-q06",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a distributed team working across US and European time zones, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically free-plan limits and subscription cost triggers? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s08-q07",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a distributed team working across US and European time zones, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically data privacy, training opt-out and residency? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s08-q08",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a distributed team working across US and European time zones, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically mobile, voice and cross-device continuity? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s08-q09",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a distributed team working across US and European time zones, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically API access, export and vendor lock-in? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s09-q01",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a budget-capped nonprofit, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically answer quality with citations and source transparency? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s09-q02",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a budget-capped nonprofit, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically long-document and file analysis limits? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s09-q03",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a budget-capped nonprofit, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically coding help, data analysis and code execution? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s09-q04",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a budget-capped nonprofit, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically multi-step browser or computer-use automation? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s09-q05",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a budget-capped nonprofit, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically team administration, shared workspaces and retention controls? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s09-q06",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a budget-capped nonprofit, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically free-plan limits and subscription cost triggers? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s09-q07",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a budget-capped nonprofit, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically data privacy, training opt-out and residency? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s09-q08",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a budget-capped nonprofit, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically mobile, voice and cross-device continuity? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s09-q09",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a budget-capped nonprofit, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically API access, export and vendor lock-in? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s10-q01",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a non-technical operations team, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically answer quality with citations and source transparency? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s10-q02",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a non-technical operations team, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically long-document and file analysis limits? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s10-q03",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a non-technical operations team, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically coding help, data analysis and code execution? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s10-q04",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a non-technical operations team, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically multi-step browser or computer-use automation? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s10-q05",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a non-technical operations team, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically team administration, shared workspaces and retention controls? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s10-q06",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a non-technical operations team, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically free-plan limits and subscription cost triggers? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s10-q07",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a non-technical operations team, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically data privacy, training opt-out and residency? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s10-q08",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a non-technical operations team, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically mobile, voice and cross-device continuity? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s10-q09",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For a non-technical operations team, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically API access, export and vendor lock-in? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s11-q01",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For an enterprise pilot that may become a paid rollout, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically answer quality with citations and source transparency? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s11-q02",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For an enterprise pilot that may become a paid rollout, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically long-document and file analysis limits? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s11-q03",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For an enterprise pilot that may become a paid rollout, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically coding help, data analysis and code execution? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s11-q04",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For an enterprise pilot that may become a paid rollout, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically multi-step browser or computer-use automation? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s11-q05",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For an enterprise pilot that may become a paid rollout, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically team administration, shared workspaces and retention controls? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s11-q06",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For an enterprise pilot that may become a paid rollout, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically free-plan limits and subscription cost triggers? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s11-q07",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For an enterprise pilot that may become a paid rollout, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically data privacy, training opt-out and residency? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s11-q08",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For an enterprise pilot that may become a paid rollout, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically mobile, voice and cross-device continuity? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-assistants-v1-s11-q09",
+    "audience": "AI tools",
+    "category": "AI assistants",
+    "query": "For an enterprise pilot that may become a paid rollout, how should I evaluate ChatGPT, Claude, Gemini, Perplexity, Microsoft Copilot and Manus when choosing an AI assistant, specifically API access, export and vendor lock-in? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "Which AI app builder or coding agent should a small product team evaluate for turning a prompt into a maintainable web app? Compare Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot on stack control, code export, backend services, deployment and cost.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s01-q01",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a solo professional using AI daily for research and drafts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically prompt-to-app fidelity and editability? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s01-q02",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a solo professional using AI daily for research and drafts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically framework choice, source ownership and code export? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s01-q03",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a solo professional using AI daily for research and drafts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically database, authentication and backend integration? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s01-q04",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a solo professional using AI daily for research and drafts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically deployment, custom domains and environment promotion? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s01-q05",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a solo professional using AI daily for research and drafts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically version control and team collaboration? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s01-q06",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a solo professional using AI daily for research and drafts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically secrets, environment variables and permission boundaries? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s01-q07",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a solo professional using AI daily for research and drafts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically credit pricing and usage limits? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s01-q08",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a solo professional using AI daily for research and drafts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically security review, dependency updates and auditability? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s01-q09",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a solo professional using AI daily for research and drafts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically migration to a conventional codebase and vendor lock-in? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s02-q01",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a two-person startup with a $100 monthly software budget, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically prompt-to-app fidelity and editability? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s02-q02",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a two-person startup with a $100 monthly software budget, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically framework choice, source ownership and code export? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s02-q03",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a two-person startup with a $100 monthly software budget, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically database, authentication and backend integration? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s02-q04",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a two-person startup with a $100 monthly software budget, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically deployment, custom domains and environment promotion? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s02-q05",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a two-person startup with a $100 monthly software budget, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically version control and team collaboration? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s02-q06",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a two-person startup with a $100 monthly software budget, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically secrets, environment variables and permission boundaries? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s02-q07",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a two-person startup with a $100 monthly software budget, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically credit pricing and usage limits? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s02-q08",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a two-person startup with a $100 monthly software budget, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically security review, dependency updates and auditability? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s02-q09",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a two-person startup with a $100 monthly software budget, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically migration to a conventional codebase and vendor lock-in? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s03-q01",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a ten-person team standardizing on one assistant, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically prompt-to-app fidelity and editability? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s03-q02",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a ten-person team standardizing on one assistant, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically framework choice, source ownership and code export? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s03-q03",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a ten-person team standardizing on one assistant, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically database, authentication and backend integration? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s03-q04",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a ten-person team standardizing on one assistant, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically deployment, custom domains and environment promotion? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s03-q05",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a ten-person team standardizing on one assistant, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically version control and team collaboration? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s03-q06",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a ten-person team standardizing on one assistant, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically secrets, environment variables and permission boundaries? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s03-q07",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a ten-person team standardizing on one assistant, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically credit pricing and usage limits? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s03-q08",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a ten-person team standardizing on one assistant, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically security review, dependency updates and auditability? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s03-q09",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a ten-person team standardizing on one assistant, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically migration to a conventional codebase and vendor lock-in? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s04-q01",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a regulated business handling confidential client data, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically prompt-to-app fidelity and editability? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s04-q02",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a regulated business handling confidential client data, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically framework choice, source ownership and code export? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s04-q03",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a regulated business handling confidential client data, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically database, authentication and backend integration? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s04-q04",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a regulated business handling confidential client data, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically deployment, custom domains and environment promotion? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s04-q05",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a regulated business handling confidential client data, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically version control and team collaboration? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s04-q06",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a regulated business handling confidential client data, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically secrets, environment variables and permission boundaries? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s04-q07",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a regulated business handling confidential client data, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically credit pricing and usage limits? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s04-q08",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a regulated business handling confidential client data, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically security review, dependency updates and auditability? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s04-q09",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a regulated business handling confidential client data, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically migration to a conventional codebase and vendor lock-in? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s05-q01",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a student working on a free plan, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically prompt-to-app fidelity and editability? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s05-q02",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a student working on a free plan, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically framework choice, source ownership and code export? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s05-q03",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a student working on a free plan, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically database, authentication and backend integration? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s05-q04",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a student working on a free plan, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically deployment, custom domains and environment promotion? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s05-q05",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a student working on a free plan, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically version control and team collaboration? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s05-q06",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a student working on a free plan, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically secrets, environment variables and permission boundaries? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s05-q07",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a student working on a free plan, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically credit pricing and usage limits? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s05-q08",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a student working on a free plan, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically security review, dependency updates and auditability? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s05-q09",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a student working on a free plan, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically migration to a conventional codebase and vendor lock-in? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s06-q01",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a consultant working across several client accounts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically prompt-to-app fidelity and editability? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s06-q02",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a consultant working across several client accounts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically framework choice, source ownership and code export? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s06-q03",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a consultant working across several client accounts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically database, authentication and backend integration? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s06-q04",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a consultant working across several client accounts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically deployment, custom domains and environment promotion? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s06-q05",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a consultant working across several client accounts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically version control and team collaboration? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s06-q06",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a consultant working across several client accounts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically secrets, environment variables and permission boundaries? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s06-q07",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a consultant working across several client accounts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically credit pricing and usage limits? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s06-q08",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a consultant working across several client accounts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically security review, dependency updates and auditability? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s06-q09",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a consultant working across several client accounts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically migration to a conventional codebase and vendor lock-in? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s07-q01",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a team migrating from a mix of consumer chatbot accounts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically prompt-to-app fidelity and editability? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s07-q02",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a team migrating from a mix of consumer chatbot accounts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically framework choice, source ownership and code export? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s07-q03",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a team migrating from a mix of consumer chatbot accounts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically database, authentication and backend integration? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s07-q04",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a team migrating from a mix of consumer chatbot accounts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically deployment, custom domains and environment promotion? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s07-q05",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a team migrating from a mix of consumer chatbot accounts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically version control and team collaboration? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s07-q06",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a team migrating from a mix of consumer chatbot accounts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically secrets, environment variables and permission boundaries? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s07-q07",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a team migrating from a mix of consumer chatbot accounts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically credit pricing and usage limits? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s07-q08",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a team migrating from a mix of consumer chatbot accounts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically security review, dependency updates and auditability? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s07-q09",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a team migrating from a mix of consumer chatbot accounts, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically migration to a conventional codebase and vendor lock-in? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s08-q01",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a distributed team working across US and European time zones, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically prompt-to-app fidelity and editability? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s08-q02",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a distributed team working across US and European time zones, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically framework choice, source ownership and code export? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s08-q03",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a distributed team working across US and European time zones, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically database, authentication and backend integration? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s08-q04",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a distributed team working across US and European time zones, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically deployment, custom domains and environment promotion? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s08-q05",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a distributed team working across US and European time zones, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically version control and team collaboration? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s08-q06",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a distributed team working across US and European time zones, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically secrets, environment variables and permission boundaries? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s08-q07",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a distributed team working across US and European time zones, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically credit pricing and usage limits? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s08-q08",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a distributed team working across US and European time zones, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically security review, dependency updates and auditability? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s08-q09",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a distributed team working across US and European time zones, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically migration to a conventional codebase and vendor lock-in? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s09-q01",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a budget-capped nonprofit, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically prompt-to-app fidelity and editability? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s09-q02",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a budget-capped nonprofit, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically framework choice, source ownership and code export? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s09-q03",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a budget-capped nonprofit, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically database, authentication and backend integration? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s09-q04",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a budget-capped nonprofit, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically deployment, custom domains and environment promotion? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s09-q05",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a budget-capped nonprofit, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically version control and team collaboration? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s09-q06",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a budget-capped nonprofit, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically secrets, environment variables and permission boundaries? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s09-q07",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a budget-capped nonprofit, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically credit pricing and usage limits? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s09-q08",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a budget-capped nonprofit, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically security review, dependency updates and auditability? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s09-q09",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a budget-capped nonprofit, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically migration to a conventional codebase and vendor lock-in? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s10-q01",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a non-technical operations team, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically prompt-to-app fidelity and editability? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s10-q02",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a non-technical operations team, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically framework choice, source ownership and code export? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s10-q03",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a non-technical operations team, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically database, authentication and backend integration? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s10-q04",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a non-technical operations team, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically deployment, custom domains and environment promotion? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s10-q05",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a non-technical operations team, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically version control and team collaboration? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s10-q06",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a non-technical operations team, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically secrets, environment variables and permission boundaries? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s10-q07",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a non-technical operations team, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically credit pricing and usage limits? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s10-q08",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a non-technical operations team, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically security review, dependency updates and auditability? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s10-q09",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For a non-technical operations team, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically migration to a conventional codebase and vendor lock-in? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s11-q01",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For an enterprise pilot that may become a paid rollout, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically prompt-to-app fidelity and editability? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s11-q02",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For an enterprise pilot that may become a paid rollout, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically framework choice, source ownership and code export? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s11-q03",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For an enterprise pilot that may become a paid rollout, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically database, authentication and backend integration? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s11-q04",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For an enterprise pilot that may become a paid rollout, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically deployment, custom domains and environment promotion? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s11-q05",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For an enterprise pilot that may become a paid rollout, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically version control and team collaboration? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s11-q06",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For an enterprise pilot that may become a paid rollout, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically secrets, environment variables and permission boundaries? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s11-q07",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For an enterprise pilot that may become a paid rollout, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically credit pricing and usage limits? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s11-q08",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For an enterprise pilot that may become a paid rollout, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically security review, dependency updates and auditability? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  },
+  {
+    "id": "ai-app-builders-v1-s11-q09",
+    "audience": "AI tools",
+    "category": "AI app builders",
+    "query": "For an enterprise pilot that may become a paid rollout, how should I evaluate Lovable, v0, Bolt, Replit, Cursor, Devin and GitHub Copilot when choosing an AI app builder or coding agent, specifically migration to a conventional codebase and vendor lock-in? Use current official sources, name the plans or limits that change the answer, distinguish documented capabilities from marketing claims, and explain the evidence I should check before choosing. If a capability is unavailable or unclear, say so rather than assuming it exists.",
+    "language": "en",
+    "locale": "en-US"
+  }
+]

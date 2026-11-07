@@ -207,7 +207,8 @@ test("audience selection exposes broader examples and retains a developer-only v
   expect(developerCount).toBe(24);
   await expect(rows(page).locator(".devtool-category > small")).toHaveText(Array(12).fill("Developer tools"));
   await page.getByRole("combobox", { name: "Page evaluation status", exact: true }).selectOption("Measured pages");
-  await expect(directory(page).locator(".devtools-results-count")).toHaveText(`${developerCount} websites · Developer tools`);
+  const measuredDeveloperCount = DEVELOPER_TOOLS.filter(tool => tool.audience === "Developer tools" && measuredIds.has(tool.id)).length;
+  await expect(directory(page).locator(".devtools-results-count")).toHaveText(`${measuredDeveloperCount} websites · Developer tools`);
   await page.getByRole("button", { name: "Clear filters", exact: true }).click();
   await expect(audience).toHaveValue("All audiences");
   await expect(directory(page).locator(".devtools-results-count")).toHaveText(`${DEVELOPER_TOOLS.length} websites`);
@@ -277,8 +278,9 @@ test("Spectrum pagination and keyboard detail controls preserve readable row evi
   const unavailable = publicObservations.find(result => result.status !== "complete");
   if (unavailable) {
     await search.fill(unavailable.name);
-    await expect(rows(page).locator(".devtool-capture-error")).toHaveText(unavailable.error!);
-    await rows(page).getByRole("button", { name: "View details", exact: true }).click();
+    const unavailableRow = rows(page).filter({ has: page.getByRole("link", { name: unavailable.name, exact: true }) });
+    await expect(unavailableRow.locator(".devtool-capture-error")).toHaveText(unavailable.error!);
+    await unavailableRow.getByRole("button", { name: "View details", exact: true }).click();
     await expect(table(page).locator(".spectrum-table-detail")).toContainText(unavailable.error!);
     await expect(table(page).locator(".spectrum-table-detail")).not.toContainText("0 / 100 Folio page evaluation");
   }
@@ -291,7 +293,7 @@ test("directory, sample, published, and private-evaluation navigation submits no
   await page.goto("/leaderboard");
   await showHtmlChecks(page);
   await expect(directory(page)).toBeVisible();
-  await page.getByRole("button", { name: "Explore sample rankings", exact: true }).click();
+  await page.getByRole("button", { name: "Search rankings", exact: true }).click();
   await expect(directory(page)).toHaveCount(0);
   await page.getByRole("button", { name: "Published page audits", exact: true }).click();
   await expect(page.getByRole("heading", { name: "No page audits published yet.", exact: true })).toBeVisible();

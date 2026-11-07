@@ -15,7 +15,9 @@ for(const state of ["signed-out","expired","unavailable","signed-in"] as const){
   if(state==="signed-in"){
    await expect(page.getByText("owner@example.test",{exact:true})).toBeVisible();
    await expect(page.getByLabel("Key name",{exact:true})).toBeVisible();
-   await expect(page.getByRole("checkbox")).not.toBeChecked();
+   const permissions = page.getByRole("checkbox");
+   await expect(permissions).toHaveCount(2);
+   for (const permission of await permissions.all()) await expect(permission).not.toBeChecked();
   }else{
    await expect(page.getByLabel("Key name",{exact:true})).toHaveCount(0);
    if(state==="unavailable")await expect(page.locator("#api-keys").getByRole("alert")).toContainText("could not be loaded");

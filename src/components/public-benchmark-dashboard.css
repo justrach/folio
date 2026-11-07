@@ -14,8 +14,9 @@
 .public-benchmark-progress{display:flex;align-items:center;gap:16px;margin-bottom:18px;color:var(--folio-text-secondary);font-size:12px}
 .public-benchmark-progress>[role=progressbar]{height:5px;background:var(--folio-canvas);flex:1;overflow:hidden}
 .public-benchmark-progress>[role=progressbar]>span{display:block;height:100%;background:var(--folio-inverse-surface);transition:width .2s ease}
-.public-benchmark-filters{display:flex;gap:10px;padding:0 0 16px;border-bottom:1px solid var(--folio-edge)}
+.public-benchmark-filters{display:flex;flex-wrap:wrap;gap:10px;padding:0 0 16px;border-bottom:1px solid var(--folio-edge)}
 .public-benchmark-filters label{min-width:0}
+.public-benchmark-filters label:not(.public-benchmark-search){flex:1 1 140px}
 .public-benchmark-search{display:flex;gap:9px;align-items:center;flex:1;border:1px solid var(--folio-edge);border-radius:4px;background:var(--folio-surface);padding:0 12px;color:var(--folio-text-secondary)}
 .public-benchmark-search input{width:100%;height:42px;border:0;background:none;color:var(--folio-ink);outline:0;font:inherit}
 .public-benchmark-filters select,.public-benchmark-mobile-picker select{width:100%;min-height:44px;padding:8px 30px 8px 12px;border:1px solid var(--folio-edge);border-radius:4px;background:var(--folio-surface);color:var(--folio-ink);font:inherit;font-size:13px}
@@ -48,6 +49,7 @@
 .public-benchmark-result{min-width:0;background:var(--folio-surface);border:1px solid var(--folio-edge);border-radius:6px;padding:24px}
 .public-benchmark-result>header{padding-bottom:18px;border-bottom:1px solid var(--folio-edge)}
 .public-task-detail-label{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px;color:var(--folio-text-secondary);margin-bottom:14px}
+.public-task-detail-meta{display:flex;align-items:center;gap:10px;flex-shrink:0}
 .public-benchmark-result h2{font:500 21px/1.5 var(--sans,Arial,sans-serif);letter-spacing:-.3px;margin:0;color:var(--folio-ink);overflow-wrap:anywhere;scroll-margin-top:30px}
 .public-benchmark-result h2:focus{outline:0}
 .public-task-locale{display:flex;justify-content:space-between;align-items:center;gap:12px;color:var(--folio-text-secondary);font-size:12px;margin:13px 0 0}
