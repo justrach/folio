@@ -115,10 +115,10 @@ test("ranking categories constrain query selection and HTML checks remain a sepa
 
 test("selected questions wrap once and the searchable picker restores focus and URL history", async ({ page }) => {
   const readOnly = await browseOnly(page);
-  await page.goto("/leaderboard");
+  await page.goto("/leaderboard?indexView=rankings");
   const report = rankings(page);
   const trigger = report.getByRole("button", { name: "Change question", exact: true });
-  for (const path of ["/", "/leaderboard"]) {
+  for (const path of ["/", "/leaderboard?indexView=rankings"]) {
     await page.goto(path);
     for (const width of [1280, 900, 640, 450, 320]) {
       await page.setViewportSize({ width, height: 900 });
