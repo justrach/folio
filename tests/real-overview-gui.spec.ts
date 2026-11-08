@@ -357,6 +357,8 @@ test("My websites gives signed-out visitors the same setup flow without pretend 
   await expect(page.getByRole('link',{name:'Sign in to your workspace'})).toHaveAttribute('href','/login');
   await expect(page.locator('.website-card-stats')).toHaveCount(0);
   await expect(page.getByRole('heading',{name:'Your audit history'})).toHaveCount(0);
+  await expect(page.locator('.breadcrumb')).not.toContainText('acme.com');
+  await expect(page.locator('.profile')).not.toContainText('Alex Morgan');
   await guide.getByRole('link',{name:'Explore the sample demo'}).click();
   await expect(page.getByRole('region',{name:'Sample data notice'})).toBeVisible();
   expect(state.writes).toEqual([]);

@@ -306,6 +306,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
   const query = useSearchParams();
   const demoRequested = query.getAll("view").length === 1 && query.get("view") === "demo";
   const privateOverview = section === "overview" && !demoRequested;
+  const personalWorkspace = privateOverview || section === "websites";
   const { data: session, isPending } = authClient.useSession();
   const [modal, setModal] = useState<Modal>(null);
   const [auditTarget, setAuditTarget] = useState<{ ownerId: string | null; url: string } | null>(null);
@@ -509,11 +510,11 @@ function WorkspaceDashboard({ section }: { section: string }) {
           </button>
           <Link href={session ? "/settings" : "/login"} className="profile">
             <span className="avatar">
-              {session?.user.name?.slice(0, 1) ?? (privateOverview ? "—" : "A")}
+              {session?.user.name?.slice(0, 1) ?? (personalWorkspace ? "—" : "A")}
             </span>
             <span>
-              {session?.user.name ?? (privateOverview ? "Sign in" : "Alex Morgan")}
-              <small>{session?.user.email ?? (privateOverview ? "Your private workspace" : "Exploring the demo")}</small>
+              {session?.user.name ?? (personalWorkspace ? "Sign in" : "Alex Morgan")}
+              <small>{session?.user.email ?? (personalWorkspace ? "Your private workspace" : "Exploring the demo")}</small>
             </span>
             <MoreHorizontal size={17} />
           </Link>
@@ -532,7 +533,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
             </button>
             <Globe2 size={15} />
             <button onClick={() => router.push("/websites")}>
-              {privateOverview ? "Your workspace" : actual ? new URL(actual.url).hostname : session ? "Your workspace" : "acme.com"}
+              {personalWorkspace ? "Your workspace" : actual ? new URL(actual.url).hostname : session ? "Your workspace" : "acme.com"}
             </button>
             <ChevronRight size={13} />
             <span>
@@ -554,7 +555,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
             </button>
             <span className="topbar-divider" />
             <NotificationBell
-              count={actual?.patches.length ?? (mode === "sample" && !privateOverview ? 3 : 0)}
+              count={actual?.patches.length ?? (mode === "sample" && !personalWorkspace ? 3 : 0)}
               size={30}
               color="green"
               onClick={() => setModal("notifications")}
@@ -565,7 +566,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
               className="avatar top-avatar"
               aria-label="Account"
             >
-              {session?.user.name?.[0] ?? (privateOverview ? "—" : "A")}
+              {session?.user.name?.[0] ?? (personalWorkspace ? "—" : "A")}
             </Link>
           </div>
         </header>
@@ -1091,9 +1092,9 @@ function WorkspaceDashboard({ section }: { section: string }) {
           {modal === "notifications" && (
             <div className="notification-list">
               <p className="muted">
-                {actual ? "From your latest audit" : mode === "sample" && !privateOverview ? "From the sample report" : "No saved audit suggestions yet"}
+                {actual ? "From your latest audit" : mode === "sample" && !personalWorkspace ? "From the sample report" : "No saved audit suggestions yet"}
               </p>
-              {(actual?.patches ?? (mode === "sample" && !privateOverview ? samplePatches : [])).map((p) => (
+              {(actual?.patches ?? (mode === "sample" && !personalWorkspace ? samplePatches : [])).map((p) => (
                 <button
                   key={p.id}
                   onClick={() => {

@@ -598,9 +598,9 @@ test("real signup, simulated scan history, and logout protect account data", asy
   await navigate(page, routes[1]);
   await expect(page.locator(".audit-history button")).toHaveCount(0);
   await expect(
-    page.getByRole("link", { name: "Sign in to begin" }),
+    page.getByRole("link", { name: "Sign in to your workspace" }),
   ).toBeVisible();
-  await page.getByRole("link", { name: "Sign in to begin" }).click();
+  await page.getByRole("link", { name: "Sign in to your workspace" }).click();
   await openEmailLogin(page);
   await page.getByLabel("Email address", { exact: true }).fill(email);
   await page.getByLabel("Password", { exact: true }).fill(password);

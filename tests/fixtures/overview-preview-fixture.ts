@@ -39,7 +39,7 @@ export function overviewFixture(base: number) {
   function respond(method: string, path: string, options: { failRuns?: boolean } = {}): FixtureResponse {
     if (path === "/api/auth/get-session") return { status: 200, json: { user, session: { id: "s", userId: "fixture", token: "fixture", expiresAt: "2099-01-01T00:00:00Z" } } };
     if (method !== "GET") return { status: 409, json: { error: "Fixture prohibits writes" } };
-    if (path === "/api/sites") return { status: 200, json: { sites: [FIXTURE_SITE] } };
+    if (path === "/api/sites") return { status: 200, json: { sites: [{ ...FIXTURE_SITE, isPublic: false, seoScore: scans.at(-1)?.seoScore ?? null }] } };
     if (path === "/api/benchmarks") return { status: 200, json: { suites: [{ ...suite, cases: undefined, caseCount: suite.cases.length }] } };
     if (path === `/api/benchmarks/${suite.id}`) return { status: 200, json: { suite } };
     if (path === "/api/benchmarks/runs") {
