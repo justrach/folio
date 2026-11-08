@@ -67,3 +67,12 @@ needed.
 The paused publisher must incorporate current main and its request-scoped backend
 entry point before deploying again; publishing the older backend would reintroduce
 the regression. Earlier failures above remain recorded as historical evidence.
+
+A subsequent publish, `bc6b7c06-4fc7-4a8a-b558-be966b7ff8c8`, retained targeted
+Singapore placement and the live response marker. Its downloaded artifact also
+contained the shared request-scope coordinator. Unlike the earlier replacements,
+it preserved the fix and did not require rollback. Google initiation on that
+version returned 200 in 2,542 ms and its cancellation callback returned cleanly
+to login. Cold sign-in latency remains variable; the live-data median above is
+not a guarantee for the full Google account flow. Publishers must continue using
+the corrected main implementation.
