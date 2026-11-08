@@ -50,10 +50,14 @@ function usePopover() {
     // Set the width before entering the top layer to avoid mobile viewport expansion.
     element.style.width=`${Math.min((window.visualViewport?.width??document.documentElement.clientWidth)-36,element.classList.contains("owb-export")?440:360)}px`;
     element.showPopover?.();place();
+    // Text wrapping and streamed styles can change the panel after its first
+    // measurement. Keep its bottom clear of the theme control as it grows.
+    const observer=new ResizeObserver(place);
+    observer.observe(element);
     window.addEventListener("resize",place);
     window.visualViewport?.addEventListener("resize",place);
     window.visualViewport?.addEventListener("scroll",place);
-    return()=>{window.removeEventListener("resize",place);window.visualViewport?.removeEventListener("resize",place);window.visualViewport?.removeEventListener("scroll",place);};
+    return()=>{observer.disconnect();window.removeEventListener("resize",place);window.visualViewport?.removeEventListener("resize",place);window.visualViewport?.removeEventListener("scroll",place);};
   },[open]);
   useEffect(() => {
     if (!open) return;

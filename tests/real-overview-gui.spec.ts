@@ -71,6 +71,8 @@ async function login(page: Page) {
   await openEmailLogin(page);
   await page.getByLabel("Email address", { exact: true }).fill("bob@example.test");
   await page.getByLabel("Password", { exact: true }).fill("fixture-password");
+  await expect(page.getByLabel("Email address", { exact: true })).toHaveValue("bob@example.test");
+  await expect(page.getByLabel("Password", { exact: true })).toHaveValue("fixture-password");
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
 }
 

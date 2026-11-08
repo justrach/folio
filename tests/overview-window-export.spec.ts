@@ -92,8 +92,12 @@ test("mobile date and export panels stay above the theme picker with touch-sized
   const preset=await datePanel.getByRole("button",{name:"Last 7 days"}).boundingBox();expect(preset!.height).toBeGreaterThanOrEqual(44);
   await datePanel.getByRole("button",{name:"Last 7 days"}).click();
   await bar(page).getByRole("button",{name:"Export",exact:true}).click();
-  const menu=page.getByRole("dialog",{name:"Export CSV"});const exportBounds=await menu.boundingBox();
-  expect(exportBounds!.y+exportBounds!.height).toBeLessThanOrEqual(theme!.y);
+  const menu=page.getByRole("dialog",{name:"Export CSV"});
+  const exportBottom=async()=>{const box=await menu.boundingBox();return box!.y+box!.height;};
+  await expect.poll(exportBottom).toBeLessThanOrEqual(theme!.y);
+  // Late wrapping/style changes must keep an already-open panel in bounds too.
+  await menu.locator('.owb-panel-note').evaluate(node=>{node.textContent += ' Additional saved-history context.'.repeat(5);});
+  await expect.poll(exportBottom).toBeLessThanOrEqual(theme!.y);
   expect(await menu.getByRole("button").evaluateAll(buttons=>buttons.every(button=>button.getBoundingClientRect().height>=44))).toBe(true);
 });
 
