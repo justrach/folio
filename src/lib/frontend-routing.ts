@@ -23,6 +23,7 @@ export async function serveFrontend(request: Request, services: Services, render
     }
     return Response.json({ error: { code: "public_data_unavailable", message: "Live published results are temporarily unavailable. Please refresh to try again." } }, { status: 503, headers: { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" } });
   }
+  if (url.pathname === "/admin" || url.pathname === "/folio-internal" || url.pathname.startsWith("/folio-internal/")) return services.FOLIO_BACKEND.fetch(request);
   if (url.pathname === "/api" || url.pathname.startsWith("/api/")) return services.FOLIO_BACKEND.fetch(request);
   if (url.pathname === "/leaderboard" && (url.searchParams.get("view") === "questions" || url.searchParams.has("cohort") || url.searchParams.has("q")))
     return services.FOLIO_PUBLIC_INDEX.fetch(request);

@@ -19,6 +19,7 @@
       "database_id": "00000000-0000-0000-0000-000000000000",
       "migrations_dir": "migrations",
     },
+    { "binding": "ANALYTICS_DB", "database_name": "folio-product-analytics", "database_id": "00000000-0000-0000-0000-000000000001", "migrations_dir": "analytics-migrations", "remote": false }
   ],
   "observability": { "enabled": true },
 }

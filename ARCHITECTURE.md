@@ -206,3 +206,7 @@ See [Luna crawl and Jev review](docs/WEBSITE-CRAWL.md): agent-controlled same-we
 ## Website keyword research
 
 Managed website questions now support Luna with optional, bounded DataForSEO related-keyword research. General coding clients can use the same research via Folio MCP. See [keyword research](docs/KEYWORD-RESEARCH.md) for authorization, limits, private D1 receipts and cost semantics.
+
+## First-party product analytics
+
+Behavioral events use a separate `ANALYTICS_DB` D1 binding and migration directory (`analytics-migrations`). They never read or mutate website/report/account tables through `getDb()`. Client capture is optional and does not await writes; the backend schedules bounded event persistence with `waitUntil` after validating the payload. Admin report queries are isolated from dashboard rendering and authorized with the same existing `isAdmin` policy as index operations. The database-free frontend forwards internal admin pages to the authenticated backend. There is no anonymous-to-account/job identifier join or billing ledger in the analytics stream. See [product analytics](docs/PRODUCT-ANALYTICS.md).

@@ -67,7 +67,9 @@ async function fixture(page: Page, options: { signedIn?: boolean; failFirstAudit
 async function navigate(page: Page, path: string) {
   const menu = page.getByRole("button", { name: "Open navigation", exact: true });
   if (await menu.isVisible()) await menu.click();
-  await page.locator(`.nav-link[href="${path}"]`).click();
+  const link = page.locator(`.nav-link[href="${path}"]`);
+  if (!(await link.isVisible())) await page.locator(".sidebar-more > summary").click();
+  await link.click();
   await expect(page).toHaveURL(new RegExp(`${path}$`));
   if (path === "/overview") await page.getByRole("link", { name: "My website results", exact: true }).click();
 }

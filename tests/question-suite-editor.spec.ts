@@ -73,7 +73,9 @@ async function openEditor(page: Page, owner = "alice") {
 async function navigate(page: Page, path: string) {
   const opener = page.getByRole("button", { name: "Open navigation", exact: true });
   if (await opener.isVisible()) await opener.click();
-  await page.locator(`.nav-link[href="${path}"]`).click();
+  const link = page.locator(`.nav-link[href="${path}"]`);
+  if (!(await link.isVisible())) await page.locator(".sidebar-more > summary").click();
+  await link.click();
 }
 async function noWorkOrOverflow(page: Page, state: Awaited<ReturnType<typeof fixture>>) {
   expect(state.forbidden).toEqual([]);

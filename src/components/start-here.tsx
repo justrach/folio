@@ -15,7 +15,7 @@ const STEPS = [
   { id: "site", title: "Add a website", detail: "A saved site is the target for every check.", href: "/websites", action: "Add a website" },
   { id: "question", title: "Track a customer question", detail: "Record what agents answer, and who they recommend.", href: "/benchmarks", action: "Start from a template" },
   { id: "evaluation", title: "Run an evaluation", detail: "See what the agent understood from your page.", href: "/evaluations", action: "Run an evaluation" },
-  { id: "fix", title: "Fix what failed", detail: "Open the checks and the reviewable repairs.", href: "/patches", action: "Open patches" },
+  { id: "fix", title: "Review findings", detail: "Inspect the saved checks and any findings that need attention.", href: "/evaluations?view=page", action: "Review checks" },
 ] as const;
 
 /** The first screen answers three questions: what is tracked, what is done, what is next. */
@@ -46,8 +46,7 @@ export function StartHere({ ownerId }: { ownerId: string | null }) {
   const done = new Set<string>();
   if ((data?.sites.length ?? 0) > 0) done.add("site");
   if ((data?.suites.length ?? 0) > 0) done.add("question");
-  if ((data?.runs.length ?? 0) > 0) done.add("evaluation");
-  if (done.has("evaluation")) done.add("fix");
+  if (data?.runs.some(run=>run.status==="completed")) done.add("evaluation");
   const next = STEPS.find(step => !done.has(step.id)) ?? null;
 
   return (

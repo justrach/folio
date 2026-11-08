@@ -115,7 +115,9 @@ async function noOverflow(page: Page) {
 async function navigate(page: Page, path: string) {
   const opener = page.getByRole("button", { name: "Open navigation", exact: true });
   if (await opener.isVisible()) await opener.click();
-  await page.locator(`.nav-link[href="${path}"]`).click();
+  const link = page.locator(`.nav-link[href="${path}"]`);
+  if (!(await link.isVisible())) await page.locator(".sidebar-more > summary").click();
+  await link.click();
 }
 
 test("saving questions binds an existing private site; only one explicit baseline starts work", async ({ page }) => {

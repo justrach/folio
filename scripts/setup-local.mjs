@@ -20,3 +20,8 @@ const result = spawnSync("bun", ["run", "db:migrate:local"], {
 });
 if (result.error) console.error("Bun could not start. Install the Bun version specified in package.json and retry.");
 process.exitCode = result.status ?? 1;
+
+if (process.exitCode === 0) {
+  const analytics = spawnSync("bun", ["run", "analytics:migrate:local"], {stdio: "inherit"});
+  process.exitCode = analytics.status ?? 1;
+}

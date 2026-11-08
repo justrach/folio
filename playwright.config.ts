@@ -14,6 +14,7 @@ export default defineConfig({
   reporter: [["list"], ["html", { open: "never" }]],
   use: {
     baseURL,
+    ...(process.env.CI ? {storageState:{cookies:[],origins:[{origin:new URL(baseURL).origin,localStorage:[{name:"folio-product-analytics-opt-out",value:"1"}]}]}} : {}),
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     video: "off",

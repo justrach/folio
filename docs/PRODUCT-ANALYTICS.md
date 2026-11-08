@@ -8,7 +8,7 @@ Folio has an event-only first-party collector and operator report. No external P
 
 - `/api/analytics/config` exposes whether collection is enabled.
 - `/api/analytics` accepts allowlisted anonymous browser events. The client honors opt-out, Do Not Track and Global Privacy Control. Collection failure does not block product actions.
-- `/analytics` reads recorded events only for accounts accepted by the existing internal `isAdmin` policy from main (`src/lib/admin.ts` / `admin-emails.ts`). Ordinary accounts cannot access the product-wide report.
+- `/analytics` reads recorded events only for accounts accepted by the existing internal `isAdmin` policy from main (`src/lib/admin.ts` / `admin-emails.ts`). Ordinary accounts cannot access the product-wide report. Internal admin pages are forwarded to the authenticated backend; the public frontend has no analytics database binding.
 - `/overview?view=demo&demo=analytics` is a fictional demonstration, with no stored-user reads. Real analytics errors never substitute sample numbers.
 - `/overview?view=demo&demo=team` is a separate sample credit-allocation concept. It does not implement employee memberships, a credit wallet, financial accounting, or billing.
 
@@ -53,14 +53,16 @@ Operational records have a different purpose and permission boundary: owner-scop
 
 ## Configuration and storage
 
-Apply migration `0026_product_usage_events.sql` to the intended database through the existing migration workflow. Validate the active database engine before migration; a local D1 fixture does not migrate a production Postgres database.
+Analytics uses its own `ANALYTICS_DB` D1 binding and `analytics-migrations/0001_product_usage_events.sql`. It never calls the business `getDb()` helper and never falls back to Postgres or the account D1 database. Local setup migrates the separate local binding; production migrations explicitly select ANALYTICS_DB with the production config.
 
 - `PRODUCT_ANALYTICS_ENABLED=false` disables collection; otherwise it is enabled. Missing/unavailable storage does not fabricate accepted events or sample reports.
 - Admin access reuses `isAdmin(session.user.email)` from main, including its existing named owners and optional server-only `ADMIN_EMAILS` additions. Session identity comes from Better Auth, never a request body. There is no separate analytics admin list. The actual admin page is `/folio-internal/analytics`; the report API checks the same policy before storage access. Do not reuse the paid-provider allowlist.
 - Stored events retain random browser/session IDs and allowlisted properties. Browser sessions renew after 30 minutes idle.
-- Ingestion removes events older than 30 days. This is ingestion-driven cleanup, not a guaranteed scheduled deletion while idle.
+- Ingestion removes at most 100 expired rows per write using the created-at index. Reports always exclude events outside their requested window. Cleanup is bounded and ingestion-driven, not a guaranteed scheduled deletion while idle.
 - Ingestion is bounded to 4 KiB, 30 events per browser per minute and 50,000 per day. These are ingestion controls, not billing-grade or abuse-proof identity quotas.
 - The report returns at most 5,000 matching events and labels partial results. Product events are the default; demo interactions require explicit inclusion.
+
+The collector returns a queued acknowledgement and uses Cloudflare waitUntil for its database write. Browser actions never await telemetry. Collection and reporting run as separate requests from page rendering. Missing storage does not fall back to business SQL; a failed telemetry write stays non-blocking.
 
 The schema/store have unit and actual temporary Miniflare D1 coverage, including sanitization, restart persistence, permissions, retention and ingestion bounds. Browser tests cover opt-out, sample separation and access denial. Local fixture validation does not establish production migration, real operator configuration, deployment, or actual provider behavior.
 
@@ -75,3 +77,7 @@ Validation of this revision: typecheck and 370 unit tests passed; the actual tem
 ## Funnel view
 
 The admin view now includes an original responsive funnel with website-research, content-demo and repair-request paths, direct stage counts, selectable stages, keyboard controls and an equivalent data table. The selected journey and demo inclusion survive refresh through URL parameters. Product and demo events cannot complete each other's journeys. See [funnel design and generated-art provenance](design/ADMIN-FUNNEL-2026-11-08.md). This revision passed typecheck, 372 unit tests and 20 focused desktop/mobile checks. It remains a local preview, not a production deployment record.
+
+## Release integration
+
+The release integrates the existing named admin accounts and main's authenticated admin/index operations page. `/folio-internal` resolves to the existing admin surface after authorization, `/folio-internal/analytics` opens analytics, and the admin overview links to it. The frontend routes these pages to the backend that owns Better Auth; there is no fixture identity in this deployed path. The dedicated analytics database is provisioned in APAC. Unit/runtime regressions cover database-binding isolation, a stalled write returning before storage finishes, and backend-only admin rendering. The local demo remains separate from real-account and production verification.

@@ -3,6 +3,8 @@ import type { D1Database, Fetcher } from "@cloudflare/workers-types";
 declare global {
   interface CloudflareEnv {
     DB: D1Database;
+    ANALYTICS_DB: D1Database;
+    PRODUCT_ANALYTICS_ENABLED?: string;
     ASSETS: Fetcher;
     WORKER_SELF_REFERENCE: Fetcher;
     BETTER_AUTH_SECRET: string;

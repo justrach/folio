@@ -65,3 +65,11 @@ test("frontend renders current pages and preserves explicit legacy index links",
     assert.equal(await (await serveFrontend(new Request(`https://usefolio.site${path}`), services, async () => { throw new Error("Wrong renderer"); })).text(), "legacy");
   assert.deepEqual(calls, ["legacy", "legacy", "legacy", "legacy", "legacy"]);
 });
+
+test("internal admin pages render on the authenticated backend rather than the database-free frontend",async()=>{
+ for(const path of ['/admin','/folio-internal','/folio-internal/analytics']){
+  const request=new Request(`https://usefolio.site${path}?_rsc=fixture`,{headers:{cookie:'fixture=session'}});let forwarded=0;
+  const result=await serveFrontend(request,{FOLIO_BACKEND:{async fetch(r){forwarded++;assert.equal(r,request);return new Response('Private admin rendering');}},FOLIO_PUBLIC_INDEX:{async fetch(){throw new Error('Wrong service');}}},async()=>{throw new Error('Frontend cannot read auth/analytics SQL');});
+  assert.equal(forwarded,1);assert.equal(await result.text(),'Private admin rendering');
+ }
+});

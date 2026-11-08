@@ -2,7 +2,7 @@ import type {D1Database} from '@cloudflare/workers-types';
 import {parseProductEvent,type ProductEvent} from './product-analytics-schema';
 export type UsageEvent={id:string;browserId:string;sessionId:string;event:ProductEvent;area:string;surface:string;properties:Record<string,string|number|boolean>;at:string};
 export async function saveProductEvent(db:D1Database,input:unknown,now=Date.now()){const data=parseProductEvent(input);if(!data)return false;const cutoff=new Date(now-30*86400000).toISOString(),minute=new Date(now-60000).toISOString(),day=new Date(now).toISOString().slice(0,10)+'T00:00:00.000Z';const result=await db.batch([
- db.prepare('DELETE FROM product_usage_events WHERE created_at < ?').bind(cutoff),
+ db.prepare('DELETE FROM product_usage_events WHERE id IN (SELECT id FROM product_usage_events WHERE created_at < ? ORDER BY created_at LIMIT 100)').bind(cutoff),
  db.prepare(`INSERT OR IGNORE INTO product_usage_events(id,browser_id,session_id,event_name,area,surface,properties_json,created_at) SELECT ?,?,?,?,?,?,?,? WHERE (SELECT COUNT(*) FROM product_usage_events WHERE browser_id = ? AND created_at >= ?) < 30 AND (SELECT COUNT(*) FROM product_usage_events WHERE created_at >= ?) < 50000 RETURNING id`).bind(data.event_id,data.browser_id,data.session_id,data.event,String(data.properties.area??'other'),String(data.properties.surface??'product'),JSON.stringify(data.properties),new Date(now).toISOString(),data.browser_id,minute,day)
  ]);return Boolean(result[1]?.results?.length);}
 export function isAnalyticsOperator(userId:string|null,allowed:string|undefined){return Boolean(userId&&allowed?.split(',').map(s=>s.trim()).filter(Boolean).includes(userId));}

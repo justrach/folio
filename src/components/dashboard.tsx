@@ -343,6 +343,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
   const [modal, setModal] = useState<Modal>(null);
   const [auditTarget, setAuditTarget] = useState<{ ownerId: string | null; url: string } | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [extrasOpen,setExtrasOpen]=useState(false);
   const [period, setPeriod] = useState("28d");
   const [compare, setCompare] = useState(true);
   const [toast, setToast] = useState("");
@@ -622,8 +623,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
           </div>}
           {section === "overview" && !teamDemo && <nav className="real-overview-tabs" aria-label="Overview view"><Link href={workspaceOverviewHref(query)} aria-current={!demoRequested ? "page" : undefined}>My website results</Link><Link href="/overview?view=demo" aria-current={demoRequested ? "page" : undefined} onClick={() => setMode("sample")}>Demo report</Link></nav>}
           {section === "overview" && chartsDemo && <OverviewDemoNotice/>}
-          {section === "overview" && !demoRequested && <StartHere ownerId={ownerId} />}
-          {section === "overview" && !demoRequested && <WorkspaceRecords ownerId={ownerId} />}
+          {section === "overview" && !demoRequested && ownerId && <details className="workspace-extras" onToggle={event=>setExtrasOpen(event.currentTarget.open)}><summary>Saved records and setup checklist</summary>{extrasOpen&&<><StartHere key={`setup:${ownerId}`} ownerId={ownerId}/><WorkspaceRecords key={`records:${ownerId}`} ownerId={ownerId}/></>}</details>}
           {usageDemo ? <TeamUsageDemo/> : analyticsDemo ? <ProductAnalyticsPanel sample/> : revenueDemo ? <RevenueGlobeDemo/> : teamDemo ? <ManusDashboardDemo actualHref={workspaceOverviewHref(query)}/> : section === "overview" && !demoRequested ? <RealOverview ownerId={ownerId} scans={scans} scansLoading={loadingScans} scansError={scanOwnerId === ownerId ? scanError : ""} onRetryScans={() => setScanRefresh(value => value + 1)} onOpenScan={openScan} /> : <>
 
           {scanOwnerId === ownerId && scanError && ["overview", "websites", "seo", "patches"].includes(section) && (

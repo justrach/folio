@@ -78,7 +78,9 @@ async function navigate(page: Page, href: string) {
   const menu = page.getByRole("button", { name: "Open navigation", exact: true });
   if (await menu.isVisible()) await menu.click();
   const destination = href === "/overview" ? "/overview?view=workspace" : href;
-  await page.locator(`.nav-link[href="${destination}"]`).click();
+  const link = page.locator(`.nav-link[href="${destination}"]`);
+  if (!(await link.isVisible())) await page.locator(".sidebar-more > summary").click();
+  await link.click();
   await expect(page).toHaveURL(destination);
 }
 

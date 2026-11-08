@@ -41,7 +41,8 @@
     "backend:smoke": "FOLIO_SMOKE_ENTRY=backend node scripts/frontend-runtime-smoke.mjs",
     "design:check": "impeccable detect src/components src/app",
     "design:live": "impeccable detect http://localhost:3000",
-    "design:install": "impeccable install --yes --project --no-hooks"
+    "design:install": "impeccable install --yes --project --no-hooks",
+    "analytics:migrate:local": "wrangler d1 migrations apply ANALYTICS_DB --local --persist-to .wrangler/state"
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "latest",

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { getSession } from "@/lib/auth";
@@ -40,6 +41,7 @@ export default async function AdminPage() {
       <header>
         <span className="admin-kicker">Internal</span>
         <h1>Index operations</h1>
+        <Link href="/folio-internal/analytics">Open product analytics →</Link>
         <p>Signed in as {session.user.email}. This page is limited to the owner accounts and is not indexed.</p>
       </header>
 

@@ -23,7 +23,8 @@
       "database_name": "folio-visibility",
       "database_id": "1ac63021-5da1-45c8-839e-5ba35898bea5",
       "migrations_dir": "migrations"
-    }
+    },
+    { "binding": "ANALYTICS_DB", "database_name": "folio-product-analytics", "database_id": "9b1e45e7-0bf1-400b-83da-4c050dc8271b", "migrations_dir": "analytics-migrations" }
   ],
   // Postgres is the system of record (DB_ENGINE below). The D1 binding stays
   // attached for the explicitly selected D1 development/rollback engine.
@@ -34,7 +35,8 @@
   "vars": {
     "BETTER_AUTH_URL": "https://usefolio.site",
     "EVALUATION_RECONCILE_ENABLED": "false",
-    "DB_ENGINE": "postgres"
+    "DB_ENGINE": "postgres",
+    "PRODUCT_ANALYTICS_ENABLED": "true"
   },
   // Supply BETTER_AUTH_SECRET and Google production OAuth credentials as Worker secrets.
   // Paid provider credentials/allowlists are separate from public Google sign-in.

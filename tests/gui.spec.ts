@@ -92,6 +92,7 @@ async function navigate(page: Page, route: (typeof routes)[number]) {
     exact: true,
   });
   if (await menu.isVisible()) await menu.click();
+  if (!(await link.isVisible())) await page.locator(".sidebar-more > summary").click();
   await link.click();
   await expect(page).toHaveURL(route.path);
   await expect(
