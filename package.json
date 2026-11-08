@@ -9,7 +9,7 @@
   },
   "trustedDependencies": ["esbuild", "workerd"],
   "scripts": {
-    "dev": "next dev --hostname 0.0.0.0",
+    "dev": "node scripts/dev.mjs",
     "build": "next build",
     "start": "next start",
     "typecheck": "next typegen && tsc --noEmit",
