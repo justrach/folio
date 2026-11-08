@@ -1,0 +1,2 @@
+.arc-controls{--foreground:var(--folio-accent);--background:var(--folio-inverse-text);--control-height-md:46px;--space-2:8px;--space-4:16px;--space-5:20px;--radius-control:16px;--radius-pill:999px;--text-sm:13px;--leading-body:1.5;--duration-fast:160ms;--ease-standard:cubic-bezier(.2,0,0,1);--shadow-resting:0 4px 12px rgb(0 0 0 / .1)}
+.arc-controls button:focus-visible{outline:2px solid var(--folio-focus);outline-offset:4px}

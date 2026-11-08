@@ -14,3 +14,8 @@
 .website-picker button > span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .website-picker small { display: block; font-size: 10px; color: var(--folio-inverse-text); margin-top: 4px; overflow-wrap: anywhere; }
 .website-picker .website-picker-add { border-top: 1px solid var(--folio-edge-strong); border-radius: 0; margin-top: 6px; }
+
+/* The compact rail must not become the width of the website popover. */
+@media(min-width:761px){
+ .folio-workspace[data-nav-compact="true"] .website-picker{position:fixed;left:76px;top:110px;width:min(300px,calc(100vw - 92px));max-height:calc(100dvh - 126px);overflow-y:auto;z-index:100;border-radius:16px;}
+}

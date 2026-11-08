@@ -1,4 +1,5 @@
 "use client";
+import {trackProductEvent} from "@/lib/product-analytics-client";
 
 import Link from "next/link";
 import { CompanyFavicon } from "./company-favicon";
@@ -49,11 +50,16 @@ const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? o
 const websiteOf = (company: { domain?: string; aliases: string[] }) => competitorWebsite(company) ?? "Website not provided";
 
 async function requestApi<T>(url: string, init?: { method?: string; body?: unknown; signal?: AbortSignal }): Promise<T> {
+  const isCheck=url==="/api/onboarding/check"&&init?.method==="POST",began=typeof performance!=="undefined"?performance.now():0;
+  if(isCheck)trackProductEvent("website_check_requested");
+  try {
   const response = await fetch(url, { signal: init?.signal, method: init?.method ?? "GET", cache: "no-store", headers: init?.body !== undefined ? { "Content-Type": "application/json" } : undefined, body: init?.body !== undefined ? JSON.stringify(init.body) : undefined });
   const body = await response.json().catch(() => ({}));
   init?.signal?.throwIfAborted();
   if (!response.ok) throw new Error((body as { error?: string }).error ?? "Something went wrong. Please try again.");
+  if(isCheck)trackProductEvent("website_check_result",{result:"success",duration_ms:performance.now()-began});
   return body as T;
+  }catch(error){if(isCheck)trackProductEvent("website_check_result",{result:"failed",error_code:"request_failed",duration_ms:performance.now()-began});throw error;}
 }
 
 type Nav = { can: (step: number) => boolean; go: (step: number) => void; dir: "forward" | "back" };
@@ -100,6 +106,7 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
   const params = useSearchParams();
   const requestedStep = useRef(Number(params.get("step")));
   const [step, setStepState] = useState(0);
+  useEffect(()=>{if(step>0)trackProductEvent("onboarding_step_viewed",{step});},[step]);
   const [dir, setDir] = useState<"forward" | "back">("forward");
   const current = useRef(0);
   useEffect(() => { current.current = step; }, [step]);
@@ -241,6 +248,7 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
     <p className="ob-lede">Get a free page check. Then choose the customer questions you want to research.</p>
     <form onSubmit={event => { event.preventDefault(); void run(async () => {
       const result = await api<{ check: Check; siteId: string | null }>("/api/onboarding/check", { method: "POST", body: { url: url.includes("://") ? url : `https://${url}` } });
+      trackProductEvent("onboarding_step_completed", {step:1,result:"success"});
       setCheck(result.check); setSiteId(result.siteId);
       const { audience: who, task: need } = result.check.suggestion;
       setCustomerGroups([who]); setTask(need); applyDrafts([who], need); setCandidates(candidatesFrom(result.check));
@@ -272,6 +280,7 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
 
   if (step === 3 && check) {
     const social = async (provider: "google" | "github") => run(async () => {
+      trackProductEvent("sign_in_requested",{method:provider});
       const result = await authClient.signIn.social({ provider, callbackURL: "/start?step=4", errorCallbackURL: "/start?step=3" });
       if (result.error) throw new Error(result.error.message ?? "Sign-in could not be completed.");
     });
@@ -289,9 +298,12 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
       </div>}
       {primarySocial && <p className="ob-or">or use email</p>}
       <form onSubmit={event => { event.preventDefault(); void run(async () => {
+        trackProductEvent("sign_in_requested",{method:"email"});
         const result = haveAccount ? await authClient.signIn.email({ email, password }) : await authClient.signUp.email({ email, password, name: email.split("@")[0].slice(0, 60) || "Folio user" });
         if (result.error) throw new Error(result.error.message ?? "The account could not be created.");
+        trackProductEvent("sign_in_return_observed",{method:"email",result:"success"});
         const claimed = await api<{ siteId: string; check: Check }>("/api/onboarding/claim", { method: "POST", body: {} });
+        trackProductEvent("onboarding_step_completed",{step:3,result:"success"});
         setSiteId(claimed.siteId);
         window.location.assign("/start?step=4");
       }); }}>
@@ -324,6 +336,7 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
       <form onSubmit={event => { event.preventDefault(); void run(async () => {
         await api("/api/onboarding", { method: "PUT", body: { customerGroups: groups, task }, signal: requests.current?.signal });
         if (requests.current?.signal.aborted) return;
+        trackProductEvent("onboarding_step_completed", {step:4,result:"success"});
         setCustomerGroups(groups); applyDrafts(groups, task); setStep(5);
       }); }}>
         <fieldset className="ob-customer-groups" disabled={busy}>
@@ -367,6 +380,7 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
       <div className="ob-actions"><button className="ob-btn primary" type="button" disabled={busy || !selected.length || !siteId} onClick={() => void run(async () => {
         const { suite: saved } = await api<{ suite: { id: string; cases: { id: string; query: string }[] } }>("/api/benchmarks", { method: "POST", body: { name: `${check?.host ?? "Website"} buyer questions`, websiteId: siteId, questions: selected, language: LANGUAGE, locale: LOCALE } });
         await api("/api/onboarding", { method: "PUT", body: { suiteId: saved.id } });
+        trackProductEvent("onboarding_step_completed", {step:5,result:"success"});
         setSuite({ id: saved.id, cases: saved.cases.map(item => ({ id: item.id, query: item.query })) }); setStep(6);
       })}>Save {plural(selected.length, "question")} <Arrow /></button></div>
       {error && <p className="ob-error" role="alert">{error}</p>}
@@ -411,6 +425,7 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
       <p className="ob-lede">{fromIndex && check?.competitors.category ? `From the public Folio index for ${check.competitors.category.toLowerCase()}. Track them to see where they appear and you do not.` : "Track up to 10 companies. Folio looks for them, and any other names you add, in every saved answer."}</p>
       <div className="ob-actions"><button className="ob-btn primary" type="button" disabled={busy || !siteId || !candidates.length} onClick={() => void run(async () => {
         await api("/api/competitors", { method: "PUT", body: { siteId, competitors: picked.map(item => ({ name: item.name, aliases: item.aliases, source: item.source, domain: competitorWebsite(item) })) } });
+        trackProductEvent("onboarding_step_completed", {step:6,result:"success"});
         setStep(7);
       })}>{picked.length ? `Track ${plural(picked.length, "competitor")}` : candidates.length ? "Continue without competitors" : "Track competitors"} <Arrow /></button>
         {!adding && candidates.length > 0 && candidates.length < 10 && <button type="button" className="ob-quiet" onClick={() => setAdding(true)}>Add another</button>}
@@ -434,6 +449,7 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
       <div className="ob-actions">
         {canRun ? <button className="ob-btn primary" type="button" disabled={busy || !count} onClick={() => void run(async () => {
           await api("/api/onboarding", { method: "PUT", body: { baselineRequested: true } });
+          trackProductEvent("onboarding_step_completed", {step:7,result:"success"});
           setBaselineRequested(true); setStep(8);
         })}>Start baseline <Arrow /></button>
           : <button className="ob-btn primary" type="button" disabled={!access} onClick={() => setStep(8)}>Continue <Arrow /></button>}
@@ -445,7 +461,7 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
   }
 
   // Step 8: optional Search Console while the baseline runs.
-  const finish = async (skipped: boolean) => { await api("/api/onboarding", { method: "PUT", body: skipped ? { searchConsoleSkipped: true, completed: true } : { completed: true } }); };
+  const finish = async (skipped: boolean) => { await api("/api/onboarding", { method: "PUT", body: skipped ? { searchConsoleSkipped: true, completed: true } : { completed: true } });trackProductEvent("onboarding_step_completed",{step:8,result:"success"}); };
   return <Screen nav={nav} step={8} eyebrow={baselineRequested ? "While your baseline runs" : "One more thing"} title="Add your real Google clicks." side={<div className="ob-card">
     <div className="ob-card-head"><span>Baseline</span><b>{!baselineRequested ? "Not started" : queue.saved === (suite?.cases.length ?? 0) && queue.saved > 0 ? "Complete" : queue.active ? "Running" : "Queued"}</b></div>
     {suite?.cases.length ? <BaselineProgress rows={queue.rows} error={queue.error} /> : <p className="ob-note">No questions saved yet.</p>}

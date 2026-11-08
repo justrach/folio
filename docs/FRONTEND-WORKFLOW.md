@@ -34,29 +34,39 @@ preference. Theme artwork follows the resolved palette before hydration.
 
 ### Overview setup and data labels
 
-`/overview?view=workspace` starts with a three-stage setup card: add your website,
-choose customer questions, and collect/review answers. It derives the next action
-from the selected website's loaded, owned records. Empty workspaces link to
-`/start` for the free page-check flow; saved websites link to the existing
-website-scoped question editor. Active searches open their saved progress,
-failed/attention attempts open for review, and completed answers reopen directly.
-Links do not start searches, reconcile runs or spend provider credits. The run
-handoff explicitly explains confirmation and possible provider costs.
+`/overview?view=workspace` starts with a website brief for the selected owned
+website: **What we checked**, **What we found**, and one **Your next move** action.
+It uses loaded records from the selected scope/model. Unavailable data offers a
+read retry, attention/failed attempts reopen the existing record, active searches
+open their progress, and completed answers reopen with their sources. Earlier
+completed answers remain available behind a newer unsuccessful attempt. Opening
+a next step never starts a paid run. Empty workspaces retain the short setup guide
+and free `/start` handoff. Charts and extra findings are disclosures, leaving
+question-level evidence available without a wall of charts.
 
-Loading and unavailable data never mark setup complete or imply a new search is
-needed. Missing reads offer a retry. Websites with no questions in the current
-scope get an explanatory placeholder instead of empty charts; scope/model
-selectors remain available. The private view labels its values **Your actual
-results**, identifies the selected URL, and keeps unmeasured results empty.
+`/overview?view=demo` is a single-page social-marketer concept for Manus: sample
+post views, reactions and comments lead to a suggested caption, an editor,
+simulated agent brainstorming, and a local save/export. The audience/writer/reviewer
+roles use pre-generated Ampersand ideas for three presets and local templates for custom topics. There are no social account connections, live analytics,
+publishing or provider calls. Filters recompute the displayed sample post totals.
+The real Manus favicon is local. Arc UI’s actual MIT Action Button source supplies
+commit controls and motion; its license and attribution remain beside the source.
 
-`/overview?view=demo` is an interactive walkthrough with the fictional Moss Inbox
-team. A visitor chooses a buyer situation, opens an authored example answer,
-inspects its fictional source excerpts, and edits/copies a follow-up note. The
-clipboard output includes its sample-data label and example sources. Copy errors
-preserve the note and offer manual copying; completion appears only after a
-successful clipboard write. The walkthrough makes no provider or owner-data
-requests of its own, stores no account state, and offers the real `/start` flow
-separately. Motion respects reduced-motion preferences.
+`/overview?view=demo&demo=revenue` is a separate simulated revenue globe with
+40 cities, deterministic per-minute payments, region/city selection and replay.
+It is an independent implementation of the public Arc Pro visual reference;
+no Arc Pro source is included. Neither revenue nor social numbers enter the
+actual website dashboard. The globe is loaded only when its demo is requested.
+See [social workspace and globe](design/SOCIAL-WORKSPACE-AND-GLOBE-2026-11-08.md).
+
+The public demo renders while the account service is pending; private workspace routes retain their authentication loading gate.
+
+The sidebar has four main destinations. Specialist tools live under **More tools**,
+which opens automatically when one of its routes is active. Website checks opens
+`/evaluations?view=page`, where the user enters a website, confirms/runs, and reads
+findings in place. Reference answers, multi-page crawl, and saved SEO evidence are
+under **Advanced options**, opened when carried context requires them. The existing
+availability, ownership, quota and explicit paid-operation guards are unchanged.
 
 The former illustrative charts and labelled sample export remain at
 `/overview?view=demo&demo=charts`. Both demo views retain **My actual results**

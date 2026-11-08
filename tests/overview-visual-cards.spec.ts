@@ -55,9 +55,10 @@ async function fixture(page: Page, options: { failRuns?: boolean } = {}) {
 test("overview chart cards summarise saved records with text equivalents", async ({ page }, info) => {
   await fixture(page);
   await page.goto("/overview?view=workspace&website=site-example");
+  await page.getByText("Charts and trends", {exact:true}).click();
   const charts = page.getByRole("region", { name: "Overview charts" });
   const appearance = charts.getByRole("article", { name: "Answer appearance" });
-  const summary = page.locator(".real-overview-metric-details");
+  const summary = page.locator(".real-overview-metric-details").filter({has:page.getByText("Summary details",{exact:true})});
   await expect(summary).not.toHaveAttribute("open");
   await expect(appearance).toBeVisible();
   await summary.locator("summary").focus();

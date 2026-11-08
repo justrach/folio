@@ -62,7 +62,7 @@ async function fixture(page: Page) {
   return state;
 }
 
-function viewButton(page: Page, name: "Search questions" | "Page evidence") {
+function viewButton(page: Page, name: "AI search answers" | "Website checks") {
   return page.getByRole("group", { name: "Evaluation view", exact: true }).getByRole("button", { name, exact: true });
 }
 async function noOverflow(page: Page) {
@@ -72,22 +72,22 @@ async function noOverflow(page: Page) {
 test("plain evaluations starts with search questions; keyboard switching preserves a valid draft without starting work", async ({ page }, info) => {
   const state = await fixture(page);
   await page.goto("/evaluations");
-  await expect(viewButton(page, "Search questions")).toHaveAttribute("aria-pressed", "true");
-  await expect(page.getByRole("region", { name: "Search questions", exact: true })).toBeVisible();
+  await expect(viewButton(page, "AI search answers")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("region", { name: "AI search answers", exact: true })).toBeVisible();
   await expect(page.locator(".benchmark-workspace")).toBeVisible();
   await expect(page.locator("#eval-launch")).toHaveCount(0);
   await expect(page.getByRole("heading", { name: suite.cases[0].query, exact: true })).toBeVisible();
   await page.screenshot({ path: info.outputPath("evaluation-hub-search.png"), fullPage: true });
-  await viewButton(page, "Search questions").focus();
+  await viewButton(page, "AI search answers").focus();
   await page.keyboard.press("Tab");
-  await expect(viewButton(page, "Page evidence")).toBeFocused();
+  await expect(viewButton(page, "Website checks")).toBeFocused();
   await page.keyboard.press("Enter");
-  await expect(viewButton(page, "Page evidence")).toHaveAttribute("aria-pressed", "true");
+  await expect(viewButton(page, "Website checks")).toHaveAttribute("aria-pressed", "true");
   expect(new URL(page.url()).searchParams.get("view")).toBe("page");
   await expect(page.locator(".benchmark-workspace")).toHaveCount(0);
   await page.getByLabel("Website to evaluate", { exact: true }).fill("https://example.org/");
-  await viewButton(page, "Search questions").click();
-  await expect(viewButton(page, "Search questions")).toHaveAttribute("aria-pressed", "true");
+  await viewButton(page, "AI search answers").click();
+  await expect(viewButton(page, "AI search answers")).toHaveAttribute("aria-pressed", "true");
   expect(new URL(page.url()).searchParams.get("target")).toBe("https://example.org/");
   expect(state.mutations).toEqual([]);
   expect(state.errors).toEqual([]);
@@ -99,9 +99,9 @@ test("legacy page run links reopen the notebook through switches, back navigatio
   await page.goto("/evaluations?run=hub-page-run&baseline=hub-page-run");
   const report = page.getByRole("region", { name: "Page evidence fixture", exact: true });
   await expect(report).toBeVisible();
-  await expect(viewButton(page, "Page evidence")).toHaveAttribute("aria-pressed", "true");
-  await viewButton(page, "Search questions").click();
-  await expect(page.getByRole("region", { name: "Search questions", exact: true })).toBeVisible();
+  await expect(viewButton(page, "Website checks")).toHaveAttribute("aria-pressed", "true");
+  await viewButton(page, "AI search answers").click();
+  await expect(page.getByRole("region", { name: "AI search answers", exact: true })).toBeVisible();
   const search = new URL(page.url()).searchParams;
   expect(search.get("target")).toBe(target);
   for (const key of ["run", "baseline", "suite", "seoReport"]) expect(search.has(key)).toBe(false);
@@ -128,7 +128,7 @@ test("explicit search run IDs never reach the page report loader and remain sear
   await expect(report).toBeVisible();
   await expect(report).toContainText("A saved fixture answer about walking shoes.");
   expect(state.reads).not.toContain(`/api/evaluations/${searchRun.id}`);
-  await viewButton(page, "Page evidence").click();
+  await viewButton(page, "Website checks").click();
   await expect(page.getByLabel("Website to evaluate", { exact: true })).toHaveValue(target);
   const params = new URL(page.url()).searchParams;
   for (const key of ["run", "suite", "website"]) expect(params.has(key)).toBe(false);
@@ -136,7 +136,7 @@ test("explicit search run IDs never reach the page report loader and remain sear
   await expect(report).toBeVisible();
   await page.reload();
   await expect(report).toBeVisible();
-  await expect(viewButton(page, "Search questions")).toHaveAttribute("aria-pressed", "true");
+  await expect(viewButton(page, "AI search answers")).toHaveAttribute("aria-pressed", "true");
   expect(state.reads).not.toContain(`/api/evaluations/${searchRun.id}`);
   expect(state.mutations).toEqual([]);
   expect(state.errors).toEqual([]);
@@ -147,13 +147,13 @@ test("explicit search run IDs never reach the page report loader and remain sear
 test("valid legacy website and SEO intent uses page evidence while ambiguous or unsafe targets do not", async ({ page }) => {
   const state = await fixture(page);
   await page.goto(`/evaluations?target=${encodeURIComponent(target)}&seoReport=missing-fixture`);
-  await expect(viewButton(page, "Page evidence")).toHaveAttribute("aria-pressed", "true");
+  await expect(viewButton(page, "Website checks")).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByLabel("Website to evaluate", { exact: true })).toHaveValue(target);
   await expect(page.locator(".eval-notice")).toContainText("unavailable for this account or website");
-  await viewButton(page, "Search questions").click();
+  await viewButton(page, "AI search answers").click();
   expect(new URL(page.url()).searchParams.has("seoReport")).toBe(false);
   await page.goto("/evaluations?target=https%3A%2F%2Flocalhost%2F&target=https%3A%2F%2Fexample.com%2F&website=bad%2Fid");
-  await expect(viewButton(page, "Search questions")).toHaveAttribute("aria-pressed", "true");
+  await expect(viewButton(page, "AI search answers")).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator("#eval-launch")).toHaveCount(0);
   expect(state.mutations).toEqual([]);
   expect(state.errors).toEqual([]);

@@ -10,6 +10,7 @@ import { WorkspaceLoader } from "@/components/workspace-loader";
 
 const routes = [
   "overview",
+  "analytics",
   "search-data",
   "search-console",
   "websites",

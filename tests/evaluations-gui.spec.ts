@@ -65,9 +65,12 @@ async function screenshot(page: Page, info: TestInfo, name: string) {
 async function navigate(page: Page, path: string) {
   const opener = page.getByRole("button", { name: "Open navigation", exact: true });
   if (await opener.isVisible()) await opener.click();
-  await page.locator(`.nav-link[href="${path}"]`).click();
-  await expect(page).toHaveURL(new RegExp(`${path}$`));
-  if (path === "/evaluations") await page.getByRole("button", { name: "Page evidence", exact: true }).click();
+  const href=path==="/evaluations"?"/evaluations?view=page":path;
+  const link=page.locator(`.nav-link[href="${href}"]`);
+  if(!await link.isVisible()) await page.locator(".sidebar-more > summary").click();
+  await link.click();
+  await expect(page).toHaveURL(url=>url.pathname===path&&(path!=="/evaluations"||url.searchParams.get("view")==="page"));
+  if (path === "/evaluations") await page.getByRole("button", { name: "Website checks", exact: true }).click();
 }
 
 test("evaluation demo is explicit, verifiable, keyboard navigable, and exportable without a provider", async ({ page }, testInfo) => {
@@ -78,7 +81,7 @@ test("evaluation demo is explicit, verifiable, keyboard navigable, and exportabl
     await route.fulfill({ status: 401, json: { error: "Sign in to view private evaluations." } });
   });
   await page.goto("/evaluations?view=page");
-  await expect(page.getByRole("button", { name: "Run evaluation", exact: true })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Run website check", exact: true })).toBeDisabled();
   await expect(page.getByRole("link", { name: /Sign in to connect your workspace/ })).toBeVisible();
   await expect(page.getByRole("link", { name: /Sign in to connect your workspace/ })).toHaveAttribute("href", "/login?next=%2Fevaluations%3Fview%3Dpage");
   await expect(page.locator(".eval-report")).toHaveCount(0);
@@ -136,12 +139,12 @@ test("signed-in evaluation page requires configured access and never launches au
   await page.goto("/evaluations?view=page");
   await expect(page.getByText("New evaluations are currently unavailable for this workspace. You can still inspect saved evidence or try the local demo.", { exact: true })).toBeVisible();
   await page.getByLabel("Website to evaluate", { exact: true }).fill("example.com");
-  await expect(page.getByRole("button", { name: "Run evaluation", exact: true })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Run website check", exact: true })).toBeDisabled();
   await page.getByRole("button", { name: "Refresh agent connection", exact: true }).click();
   await navigate(page, "/agents");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await navigate(page, "/evaluations");
-  await expect(page.getByRole("button", { name: "Run evaluation", exact: true })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Run website check", exact: true })).toBeDisabled();
   expect(creates).toBe(0);
 });
 
@@ -208,7 +211,7 @@ test("managed session starts once, follows navigation, exposes private returns, 
   });
 
   await page.goto("/evaluations?view=page");
-  const launch = page.getByRole("button", { name: "Run evaluation", exact: true });
+  const launch = page.getByRole("button", { name: "Run website check", exact: true });
   expect(creates).toEqual([]);
   await page.getByLabel("Website to evaluate", { exact: true }).fill("example.com");
   await expect(launch).toBeEnabled();

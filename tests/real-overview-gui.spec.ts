@@ -132,7 +132,7 @@ test("signed-out overview offers private login, samples require selection, and l
   await expect(page.locator(".nav-count")).toHaveCount(0);
   await page.getByRole("link", { name: "Demo report", exact: true }).click();
   await expect(page).toHaveURL(/\/overview\?view=demo$/);
-  await expect(page.getByRole("region", {name:"Interactive team walkthrough"})).toBeVisible();
+  await expect(page.getByRole("region", {name:"Manus social workspace demo"})).toBeVisible();
   await page.goBack(); await page.getByRole("link", { name: "Sign in to your workspace" }).click();
   await expect(page).toHaveURL(/\/login\?next=%2Foverview%3Fview%3Dworkspace$/);
   await login(page); await expect(page).toHaveURL(/\/overview\?view=workspace$/);
@@ -200,10 +200,10 @@ for (const view of ["search", "page"] as const) {
     if (view === "search") {
       expect(params.get("suite")).toBe(suite.id); expect(params.get("run")).toBe("beta-answer"); expect(params.get("website")).toBe(beta.id);
       expect(params.has("baseline")).toBe(false);
-      await expect(page.getByRole("button", { name: "Search questions", exact: true })).toHaveAttribute("aria-pressed", "true");
+      await expect(page.getByRole("button", { name: "AI search answers", exact: true })).toHaveAttribute("aria-pressed", "true");
       await expect(page.getByRole("region", { name: "Keyword observation", exact: true })).toContainText("Beta private question");
     } else {
-      await expect(page.getByRole("button", { name: "Page evidence", exact: true })).toHaveAttribute("aria-pressed", "true");
+      await expect(page.getByRole("button", { name: "Website checks", exact: true })).toHaveAttribute("aria-pressed", "true");
       await expect(page.getByLabel("Website to evaluate", { exact: true })).toHaveValue(beta.url);
     }
     expect(state.writes).toEqual([]);
@@ -291,8 +291,8 @@ test("new workspace starts with a free setup action and keeps the demo separate"
   await expect(page.getByLabel('Selected website',{exact:true})).toHaveCount(0);
   await expect(page.getByRole('region',{name:'Overview charts'})).toHaveCount(0);
   await guide.getByRole('link',{name:'Explore the sample demo'}).click();
-  await expect(page.getByRole('region',{name:'Sample data notice'})).toContainText('Fictional team & answers');
-  await expect(page.getByRole('region',{name:'Sample data notice'}).getByRole('link',{name:'Use my website'})).toHaveAttribute('href','/start');
+  await expect(page.getByRole('region',{name:'Sample data notice'})).toContainText('Social numbers are simulated');
+  await expect(page.getByRole('region',{name:'Sample data notice'}).getByRole('link',{name:'My actual website results'})).toHaveAttribute('href','/overview?view=workspace');
   expect(state.writes).toEqual([]);
 });
 
@@ -300,8 +300,8 @@ test("website without questions gets a scoped next action instead of empty chart
   const state=await fixture(page);state.runs=[];
   await page.route(`**/api/benchmarks/${suite.id}`,route=>route.fulfill({json:{suite:{...suite,cases:[]}}}));
   await page.goto('/overview?view=workspace&website=site-alpha');
-  const guide=page.getByRole('region',{name:'Website setup and next step'});
-  await expect(guide.locator('[aria-current="step"]')).toContainText('Choose questions');
+  const guide=page.getByRole('region',{name:'Your website brief'});
+  await expect(guide).toContainText('What we checked');
   await expect(guide.getByRole('link',{name:'Choose my questions'})).toHaveAttribute('href','/benchmarks?website=site-alpha');
   await expect(page.getByRole('heading',{name:'Your answers will appear here.'})).toBeVisible();
   await expect(page.getByRole('region',{name:'Overview charts'})).toHaveCount(0);
@@ -313,14 +313,14 @@ test("website without questions gets a scoped next action instead of empty chart
 test("saved questions require explicit run confirmation and completed answers reopen directly", async({page})=>{
   const state=await fixture(page);state.runs=[];
   await page.goto('/overview?view=workspace&website=site-alpha');
-  const guide=page.getByRole('region',{name:'Website setup and next step'});
+  const guide=page.getByRole('region',{name:'Your website brief'});
   await expect(guide.getByRole('link',{name:'Review and run questions'})).toHaveAttribute('href','/benchmarks?website=site-alpha');
-  await expect(guide).toContainText('requires confirmation');
+  await expect(guide).toContainText('before collecting an answer');
   state.runs=[run('first-answer',0,true)];
   await page.getByRole('button',{name:'Refresh saved overview'}).click();
   await expect(guide.getByRole('link',{name:'Review latest answer'})).toHaveAttribute('href',/run=first-answer$/);
-  await expect(guide).toContainText('Your answers are ready to explore.');
-  await expect(guide.locator('[data-step-state="done"]')).toHaveCount(3);
+  await expect(guide).toContainText('Your answers are ready to review.');
+  await expect(guide).toContainText('1 of 1 identified answers named your site.');
   state.runs.unshift({...run('pending-answer',0,true,'2026-09-14T08:00:00.000Z'),status:'running',answer:null});
   await page.getByRole('button',{name:'Refresh saved overview'}).click();
   await expect(guide.getByRole('link',{name:'View search progress'})).toHaveAttribute('href',/run=pending-answer$/);

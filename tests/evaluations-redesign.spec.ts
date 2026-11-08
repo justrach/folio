@@ -72,12 +72,12 @@ async function savedRun(id: string, status: EvaluationRun["status"] = "completed
 }
 
 async function selectedReportLeads(page: Page, report: Locator, info: TestInfo) {
-  await expect(page.getByRole("heading", { level: 1, name: "Evaluations", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Website checks", exact: true })).toBeVisible();
   await expect(report).toBeVisible();
   const bounds = await report.boundingBox();
   expect(bounds, "Selected evaluation must occupy the opening viewport").not.toBeNull();
-  const pageView = page.getByRole("region", { name: "Page evidence", exact: true });
-  await expect(page.getByRole("button", { name: "Page evidence", exact: true })).toHaveAttribute("aria-pressed", "true");
+  const pageView = page.getByRole("region", { name: "Website checks", exact: true });
+  await expect(page.getByRole("button", { name: "Website checks", exact: true })).toHaveAttribute("aria-pressed", "true");
   const hub = await page.locator(".evaluation-hub").boundingBox();
   const workspace = await pageView.locator(".evaluations-panel").boundingBox();
   expect(hub).not.toBeNull();

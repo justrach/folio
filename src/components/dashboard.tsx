@@ -1,4 +1,6 @@
 "use client";
+import {isAdminOwner} from "@/lib/admin-emails";
+import {trackProductEvent} from "@/lib/product-analytics-client";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -71,7 +73,9 @@ import { OwnedWebsites } from "./owned-websites";
 import { RealOverview, workspaceOverviewHref } from "./real-overview";
 import { OverviewDemoNotice, OverviewSetupGuide } from "./overview-setup-guide";
 import { CompanyFavicon } from "./company-favicon";
-import { TeamDemoJourney } from "./team-demo-journey";
+import dynamic from "next/dynamic";
+import {ProductAnalyticsPanel} from "./product-analytics-panel";
+import { ManusDashboardDemo } from "./manus-dashboard-demo";
 import { PublicBenchmarkDashboard } from "./public-benchmark-dashboard";
 import "./public-overview-shell.css";
 import { KeywordActivitySummary } from "./keyword-activity-summary";
@@ -88,6 +92,9 @@ import { evaluationHref, readEvaluationIntent } from "@/lib/evaluation-navigatio
 import { WebsiteSwitcher } from "./website-switcher";
 import { GithubConnection } from "./github-connection";
 import { WorkspaceLoader } from "./workspace-loader";
+
+const TeamUsageDemo=dynamic(()=>import("./team-usage-demo").then(module=>module.TeamUsageDemo),{ssr:false});
+const RevenueGlobeDemo = dynamic(() => import("./revenue-globe-demo").then(module => module.RevenueGlobeDemo), {ssr:false,loading:()=> <p role="status">Loading sample globe…</p>});
 
 type Modal = "scan" | "methodology" | "notifications" | "search" | null;
 const navigation = [
@@ -112,8 +119,8 @@ const navigation = [
     icon: Search,
   },
   {
-    label: "Evaluations",
-    href: "/evaluations",
+    label: "Website checks",
+    href: "/evaluations?view=page",
     section: "evaluations",
     icon: FlaskConical,
   },
@@ -130,6 +137,7 @@ const titles: Record<
   string,
   { eyebrow: string; title: string; description: string }
 > = {
+  analytics: {eyebrow:"INTERNAL",title:"Product analytics",description:"First-party usage and event timelines."},
   overview: {
     eyebrow: "THE BIG PICTURE",
     title: "My website results",
@@ -165,9 +173,9 @@ const titles: Record<
   },
   evaluations: {
     eyebrow: "THE EVIDENCE BEHIND THE ANSWER",
-    title: "Evaluations",
+    title: "Website checks",
     description:
-      "Review what the agent found and the evidence behind it.",
+      "Check your website, then review findings and supporting evidence here.",
   },
   benchmarks: { eyebrow: "YOUR RESEARCH QUESTIONS", title: "Search rankings", description: "See where your website appears in recorded AI answers and which sites appear alongside it." },
   agents: {
@@ -307,6 +315,9 @@ function WorkspaceDashboard({ section }: { section: string }) {
   const query = useSearchParams();
   const demoRequested = query.getAll("view").length === 1 && query.get("view") === "demo";
   const chartsDemo = demoRequested && query.getAll("demo").length === 1 && query.get("demo") === "charts";
+  const usageDemo = section === "overview" && demoRequested && query.getAll("demo").length===1 && query.get("demo")==="team";
+  const analyticsDemo = section === "overview" && demoRequested && query.getAll("demo").length===1 && query.get("demo")==="analytics";
+  const revenueDemo = section === "overview" && demoRequested && query.get("demo") === "revenue";
   const teamDemo = section === "overview" && demoRequested && !chartsDemo;
   const privateOverview = section === "overview" && !demoRequested;
   const personalWorkspace = privateOverview || section === "websites";
@@ -403,6 +414,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
     notify("Your report has been downloaded.");
   }
   function prepareAudit(url = activeScan?.url ?? "") {
+    if(activeScan && url===activeScan.url)trackProductEvent("followup_prepared",{flow:"fresh"});
     setAuditTarget({ ownerId, url });
     setModal("scan");
   }
@@ -415,10 +427,10 @@ function WorkspaceDashboard({ section }: { section: string }) {
     router.push("/seo");
   }
   if (section === "login") return <Login onNotify={notify} />;
-  if (isPending) return <WorkspaceLoader />;
+  if (isPending && !demoRequested) return <WorkspaceLoader />;
   const title = section === "overview" && demoRequested ? { ...titles.overview, title: chartsDemo ? "Demo report" : "Try Folio", description: chartsDemo ? "Illustrative sample data." : "One customer question. One useful next step." } : titles[section] ?? titles.overview;
   return (
-    <div className="app-shell folio-workspace" data-nav-compact="true">
+    <div className="app-shell folio-workspace" data-nav-compact="true" suppressHydrationWarning>
       {mobileOpen && (
         <button
           className="sidebar-scrim"
@@ -451,50 +463,25 @@ function WorkspaceDashboard({ section }: { section: string }) {
         />
         <span className="nav-caption">WORKSPACE</span>
         <nav aria-label="Main navigation">
-          {navigation.map((item) => (
+          {navigation.filter(item => ["overview","websites","evaluations"].includes(item.section)).map((item) => (
             <Link
               key={item.section}
               title={item.label}
               href={item.href}
               onClick={() => setMobileOpen(false)}
-              className={`nav-link ${section === item.section ? "active" : ""}`}
-              aria-current={section === item.section ? "page" : undefined}
+              className={`nav-link ${section === item.section && !(item.section === "overview" && demoRequested) ? "active" : ""}`}
+              aria-current={section === item.section && !(item.section === "overview" && demoRequested) ? "page" : undefined}
             >
               <item.icon size={17} />
               <span>{item.label}</span>
             </Link>
           ))}
+        <Link href="/overview?view=demo" className={`nav-link ${teamDemo?"active":""}`} aria-current={teamDemo?"page":undefined} onClick={()=>setMobileOpen(false)} title="Content demo"><Sparkles size={17}/><span>Content demo</span></Link>
         </nav>
-        <span className="nav-caption explore-caption">EXPLORE</span>
-        <nav aria-label="Explore">
-          <Link
-            href="/leaderboard"
-            className={`nav-link ${section === "leaderboard" ? "active" : ""}`}
-            aria-current={section === "leaderboard" ? "page" : undefined}
-            onClick={() => setMobileOpen(false)}
-          >
-            <Trophy size={17} />
-            <span>The Folio Index</span>
-          </Link>
-          <Link
-            href="/agents"
-            className={`nav-link ${section === "agents" ? "active" : ""}`}
-            aria-current={section === "agents" ? "page" : undefined}
-            onClick={() => setMobileOpen(false)}
-          >
-            <Bot size={17} />
-            <span>Your agents</span>
-          </Link>
-          <Link href="/docs/api" title="API reference" className="nav-link" onClick={() => setMobileOpen(false)}>
-            <Code2 size={17} />
-            <span>API reference</span>
-          </Link>
-        </nav>
+
+        <details className="sidebar-more" open={!["overview","websites","evaluations","settings"].includes(section)}><summary className="nav-link" title="More tools"><MoreHorizontal size={17}/><span>More tools</span></summary><nav aria-label="More tools">{navigation.filter(item=>!["overview","websites","evaluations"].includes(item.section)).map(item=><Link key={item.section} href={item.href} title={item.label} className={`nav-link ${section===item.section?"active":""}`} aria-current={section===item.section?"page":undefined} onClick={()=>setMobileOpen(false)}><item.icon size={17}/><span>{item.label}</span></Link>)}<Link href="/leaderboard" title="The Folio Index" className="nav-link" onClick={()=>setMobileOpen(false)}><Trophy size={17}/><span>The Folio Index</span></Link><Link href="/agents" title="Your agents" className="nav-link" onClick={()=>setMobileOpen(false)}><Bot size={17}/><span>Your agents</span></Link><Link href="/docs/api" title="API reference" className="nav-link" onClick={()=>setMobileOpen(false)}><Code2 size={17}/><span>API reference</span></Link><Link href="/pricing" title="Plans & usage" className="nav-link" onClick={()=>setMobileOpen(false)}><BookOpen size={17}/><span>Plans & usage</span></Link></nav></details>
         <div className="sidebar-bottom">
-          <Link href="/pricing" className="nav-link">
-            <BookOpen size={17} />
-            <span>Plans & usage</span>
-          </Link>
+          {isAdminOwner(session?.user.email) && <Link className="nav-link" href="/folio-internal/analytics" title="Product analytics"><BarChart3 size={17}/><span>Product analytics</span></Link>}
           <Link
             href="/settings"
             className={`nav-link ${section === "settings" ? "active" : ""}`}
@@ -517,7 +504,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
             </span>
             <span>
               {session?.user.name ?? (teamDemo ? "Demo teammate" : personalWorkspace ? "Sign in" : "Alex Morgan")}
-              <small>{session?.user.email ?? (teamDemo ? "Fictional team walkthrough" : personalWorkspace ? "Your private workspace" : "Exploring the demo")}</small>
+              <small>{session?.user.email ?? (teamDemo ? "Hypothetical marketer workflow" : personalWorkspace ? "Your private workspace" : "Exploring the demo")}</small>
             </span>
             <MoreHorizontal size={17} />
           </Link>
@@ -536,7 +523,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
             </button>
             <Globe2 size={15} />
             <button onClick={() => router.push("/websites")}>
-              {teamDemo ? "Moss Inbox · Demo" : personalWorkspace ? "Your workspace" : actual ? new URL(actual.url).hostname : session ? "Your workspace" : "acme.com"}
+              {usageDemo ? "Team credits · Sample" : analyticsDemo ? "Product analytics · Sample" : section==="analytics" ? "Folio operator analytics" : revenueDemo ? "Revenue · Sample" : teamDemo ? "Manus · Workflow mock" : personalWorkspace ? "Your workspace" : actual ? new URL(actual.url).hostname : session ? "Your workspace" : "acme.com"}
             </button>
             <ChevronRight size={13} />
             <span>
@@ -574,7 +561,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
           </div>
         </header>
         <main className={`page-content${["evaluations", "benchmarks", "overview"].includes(section) ? " evaluation-page" : ""}${section === "overview" ? " overview-page" : ""}${section === "leaderboard" ? " index-page" : ""}`}>
-          {!teamDemo && <div className="page-heading">
+          {!teamDemo && section!=="analytics" && <div className="page-heading">
             <div>
               <h1>{title.title}</h1>
               <p>{title.description}</p>
@@ -616,7 +603,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
           </div>}
           {section === "overview" && !teamDemo && <nav className="real-overview-tabs" aria-label="Overview view"><Link href={workspaceOverviewHref(query)} aria-current={!demoRequested ? "page" : undefined}>My website results</Link><Link href="/overview?view=demo" aria-current={demoRequested ? "page" : undefined} onClick={() => setMode("sample")}>Demo report</Link></nav>}
           {section === "overview" && chartsDemo && <OverviewDemoNotice/>}
-          {teamDemo ? <TeamDemoJourney actualHref={workspaceOverviewHref(query)}/> : section === "overview" && !demoRequested ? <RealOverview ownerId={ownerId} scans={scans} scansLoading={loadingScans} scansError={scanOwnerId === ownerId ? scanError : ""} onRetryScans={() => setScanRefresh(value => value + 1)} onOpenScan={openScan} /> : <>
+          {usageDemo ? <TeamUsageDemo/> : analyticsDemo ? <ProductAnalyticsPanel sample/> : revenueDemo ? <RevenueGlobeDemo/> : teamDemo ? <ManusDashboardDemo actualHref={workspaceOverviewHref(query)}/> : section === "overview" && !demoRequested ? <RealOverview ownerId={ownerId} scans={scans} scansLoading={loadingScans} scansError={scanOwnerId === ownerId ? scanError : ""} onRetryScans={() => setScanRefresh(value => value + 1)} onOpenScan={openScan} /> : <>
 
           {scanOwnerId === ownerId && scanError && ["overview", "websites", "seo", "patches"].includes(section) && (
             <div className="workspace-read-error" role="alert">{scanError}<Button kind="secondary" onClick={() => setScanRefresh(n => n + 1)}>Retry audits</Button></div>
@@ -1028,6 +1015,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
                   onNotify={notify}
                 />
               )}
+              {section === "analytics" && <ProductAnalyticsPanel key={ownerId??"signed-out"} ownerId={ownerId}/>}
               {section === "agents" && <><KeywordActivitySummary /><AgentRunsPanel /></>}
               {section === "evaluations" && (
                 <EvaluationsPanel initialTargetUrl={actual?.url} />
@@ -1427,6 +1415,7 @@ function PatchStudio({
   const [downloading, setDownloading] = useState(false);
   const patch = patches.find((p) => p.id === selected) ?? patches[0];
   async function downloadPatches() {
+    trackProductEvent("repair_download_requested", {kind:"repair_bundle",surface:sample?"repair_demo":"product"});
     setDownloading(true);
     try {
       const JSZip = (await import("jszip")).default;
@@ -1445,8 +1434,10 @@ function PatchStudio({
         await zip.generateAsync({ type: "blob" }),
         "folio-reviewed-patches.zip",
       );
+      trackProductEvent("repair_download_result", {kind:"repair_bundle",result:"success",surface:sample?"repair_demo":"product"});
       onNotify("Your reviewed patch bundle is ready.");
     } catch {
+      trackProductEvent("repair_download_result", {kind:"repair_bundle",result:"failed",surface:sample?"repair_demo":"product"});
       onNotify("The download failed. Please try again.");
     } finally {
       setDownloading(false);
@@ -1712,6 +1703,8 @@ function ScanForm({
         e.preventDefault();
         setBusy(true);
         setError("");
+        const began=performance.now();
+        trackProductEvent("website_check_requested");
         try {
           const r = await fetch("/api/scans", {
             method: "POST",
@@ -1721,8 +1714,10 @@ function ScanForm({
           const d = await r.json();
           if (!r.ok)
             throw new Error(d.error ?? "This audit could not be completed.");
+          trackProductEvent("website_check_result",{result:"success",duration_ms:performance.now()-began});
           onComplete(d);
         } catch (e) {
+          trackProductEvent("website_check_result",{result:"failed",duration_ms:performance.now()-began,error_code:"request_failed"});
           setError(e instanceof Error ? e.message : "Please try again.");
         } finally {
           setBusy(false);
@@ -1812,6 +1807,7 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
         const view = views.length === 1 ? views[0] : null;
         returnTo = view === "demo" ? "/overview?view=demo" : view === "workspace" || next.searchParams.has("website") || next.searchParams.has("scope") ? workspaceOverviewHref(next.searchParams) : "/overview";
       }
+      if (next.origin === "https://folio.invalid" && next.pathname === "/folio-internal/analytics") returnTo = "/folio-internal/analytics";
       if (next.origin === "https://folio.invalid" && next.pathname === "/docs/api") returnTo = "/docs/api";
       if (next.origin === "https://folio.invalid" && ["/evaluations", "/agents"].includes(next.pathname)) {
         const views = next.searchParams.getAll("view");
@@ -1891,6 +1887,7 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
           {googleConfigured && <button className="login-choice login-choice-google" type="button" disabled={busy} onClick={async () => {
             setBusy(true); setError("");
             try {
+              trackProductEvent("sign_in_requested", {method:"google"});
               const result = await authClient.signIn.social({ provider: "google", callbackURL: returnTo, errorCallbackURL: "/login?error=google" });
               if (result.error) setError(result.error.message ?? "Google sign-in could not be completed.");
             } catch { setError("Google sign-in could not be completed. Please try again."); }
@@ -1902,6 +1899,7 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
           {githubConfigured && <details className="login-other-method"><summary>More sign-in options</summary>          {githubConfigured && <button className="login-github" type="button" disabled={busy} onClick={async () => {
             setBusy(true); setError("");
             try {
+              trackProductEvent("sign_in_requested", {method:"github"});
               const result = await authClient.signIn.social({ provider: "github", callbackURL: returnTo, errorCallbackURL: "/login?error=github" });
               if (result.error) setError("GitHub sign-in could not be completed. If you already have a Folio account, sign in with your existing method and connect GitHub in Settings.");
             } catch { setError("GitHub sign-in could not be completed. Please try again."); }
@@ -1919,6 +1917,7 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
             setBusy(true);
             setError("");
             try {
+              trackProductEvent("sign_in_requested", {method:"email"});
               const result = signup
                 ? await authClient.signUp.email({ email, password, name })
                 : await authClient.signIn.email({ email, password });
@@ -1928,6 +1927,7 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
                     "Unable to sign in. Please try again.",
                 );
               } else {
+                trackProductEvent("sign_in_return_observed", {method:"email",result:"success"});
                 onNotify("Welcome to Folio.");
                 router.push(returnTo);
                 router.refresh();

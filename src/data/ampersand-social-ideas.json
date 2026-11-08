@@ -1,0 +1,35 @@
+{
+  "disclaimer": "Hypothetical ideation only. None of the posts below describe real Manus work, results, or capabilities.",
+  "post_ideas": [
+    {
+      "title": "The Tabs You Close Every Day",
+      "topic": "repetitive browser tasks",
+      "linkedin_caption": "Copy-paste between tabs. Open the same five sites. Rename the same files. Most knowledge work has a loop nobody questions. If an AI assistant could handle those repetitive browser steps for you, which loop would you hand off first? Tell us in the comments.",
+      "x_caption": "You have a browser loop you repeat every day. Copy-paste, same tabs, same clicks. If an AI could take it over, which task goes first? Reply below.",
+      "audience_question": "What's one browser task you repeat so often you could do it half-asleep?",
+      "reviewer_note": "Frame is a prompt to the audience, not a claim Manus does this today. No results, stats, or capability assertions.",
+      "short_label": "Browser chores"
+    },
+    {
+      "title": "Friday Report, Without the Friday",
+      "topic": "weekly campaign reporting",
+      "linkedin_caption": "Weekly reporting eats the afternoon before it starts: pull numbers, format slides, write the summary, again. We're curious how teams handle it. Is your report automated, semi-automated, or built by hand each week? What's the most painful step? Share your workflow.",
+      "x_caption": "Weekly campaign reports: fully automated, half-automated, or hand-built every Friday? Which step takes the longest—and what would you hand off first?",
+      "audience_question": "How does your team actually build weekly reports today, and what would you automate first?",
+      "reviewer_note": "Describes a common pain point and asks a question. No claim Manus automates reporting or any customer example.",
+      "short_label": "Campaign reporting"
+    },
+    {
+      "title": "What Would You Hand to an AI Assistant?",
+      "topic": "choosing an AI assistant",
+      "linkedin_caption": "Choosing an AI assistant often comes down to one question: what do you actually want to delegate? Not the demo-trick tasks. The recurring, well-defined work. What's on your shortlist, and what would you need to see before trusting it? Tell us what makes you say yes or no.",
+      "x_caption": "Picking an AI assistant: skip the demo tricks. What real task would you delegate first, and what must you see before you trust it? Tell us.",
+      "audience_question": "What's the first task you'd delegate to an AI assistant, and what proof would you need?",
+      "reviewer_note": "Positions Manus as curious, not superior. No comparison claims, no feature promises, no named competitors.",
+      "short_label": "Choosing an assistant"
+    }
+  ],
+  "model": "humansand/ampersand-v0.1",
+  "generatedAt": "2026-11-08",
+  "reviewStatus": "Reviewed for unsupported Manus feature or performance claims; editable draft ideas, not approved campaign copy."
+}

@@ -1,3 +1,5 @@
+> Superseded: the fictional Moss walkthrough was removed. Current behavior is documented in MANUS-MARKETER-FLOWS-2026-11-08.md.
+
 # A teammate's first useful question — 8 November 2026
 
 The default demo is now a playable workflow for the fictional Moss Inbox team.

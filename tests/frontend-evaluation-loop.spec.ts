@@ -48,6 +48,7 @@ test("incoming website and SEO intent prepares a fresh evaluation without starti
   await expect(page.locator("#eval-seo-report")).toHaveAttribute("data-value", "loop-seo-report");
   await expect(page.getByRole("region", { name: "Evaluation preflight" })).toContainText("Ready to evaluate");
   expect(creates).toEqual([]);
+  if(await page.locator(".eval-advanced").getAttribute("open")===null) await page.locator(".eval-advanced > summary").click();
   await page.getByText("Optional reference answers", { exact: true }).click();
   await page.getByLabel("Expected product name", { exact: true }).fill("Private draft reference");
   await page.locator(".eval-history-list button").filter({ hasText: old.siteName }).click();
@@ -59,7 +60,7 @@ test("incoming website and SEO intent prepares a fresh evaluation without starti
   await expect(page.locator("#eval-seo-report")).toHaveAttribute("data-value", "");
   await expect(page.locator(".eval-notice")).toContainText("Reference answers and saved SEO evidence were cleared");
   expect(creates).toEqual([]);
-  await page.getByRole("button", { name: "Run evaluation", exact: true }).click();
+  await page.getByRole("button", { name: "Run website check", exact: true }).click();
   await expect(page).toHaveURL(/run=loop-failed/);
   await expect(page.locator(".eval-notice")).toContainText("saved as failed");
   await expect(page.locator(".eval-notice")).not.toContainText("can continue");
@@ -122,7 +123,7 @@ test("preflight exposes the active session and prevents another paid launch", as
   });
   await page.goto("/evaluations?view=page");
   await expect(page.getByRole("region", { name: "Evaluation preflight" })).toContainText("Finish your saved session first");
-  await expect(page.getByRole("button", { name: "Run evaluation", exact: true })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Run website check", exact: true })).toBeDisabled();
   await page.getByRole("link", { name: "saved session", exact: true }).click();
   await expect(page).toHaveURL(/run=loop-blocked/);
   await expect(page.getByRole("button", { name: "Cancel run", exact: true })).toBeEnabled();
@@ -140,7 +141,7 @@ test("preflight keeps exhausted allowances and unsafe website inputs from launch
   });
   await page.goto("/evaluations?target=example.com");
   const preflight = page.getByRole("region", { name: "Evaluation preflight" });
-  const launch = page.getByRole("button", { name: "Run evaluation", exact: true });
+  const launch = page.getByRole("button", { name: "Run website check", exact: true });
   await expect(preflight).toContainText("rolling 24-hour run allowance is used");
   await expect(preflight).toContainText("0 live attempts remaining");
   await expect(launch).toBeDisabled();
@@ -152,7 +153,7 @@ test("preflight keeps exhausted allowances and unsafe website inputs from launch
   for (const invalid of ["http://example.com", "https://credentials@example.com/", "https://unapproved.example.org/"]) {
     await target.fill(invalid);
     await expect(launch).toBeDisabled();
-    await expect(preflight).toContainText("Choose an enabled website target");
+    await expect(preflight).toContainText("Checks aren’t enabled for this website");
   }
   await target.fill("https://example.com/");
   await expect(launch).toBeEnabled();
@@ -170,7 +171,7 @@ test("no daily limit retains explicit website evaluation starts and the active-s
   });
   await page.goto("/evaluations?target=example.com");
   const preflight = page.getByRole("region", { name: "Evaluation preflight", exact: true });
-  const launch = page.getByRole("button", { name: "Run evaluation", exact: true });
+  const launch = page.getByRole("button", { name: "Run website check", exact: true });
   await expect(preflight).toContainText("No daily limit");
   await expect(launch).toBeEnabled();
   expect(creates).toBe(0);

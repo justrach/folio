@@ -22,6 +22,7 @@ test('crawl launch is explicit, defaults to Luna, and saved Jev evidence survive
  });
  await page.goto('/evaluations?view=page');
  await page.getByLabel('Website to evaluate',{exact:true}).fill('example.com');
+ await page.getByText('Advanced options',{exact:false}).click();
  const option=page.getByRole('checkbox',{name:'Crawl up to 10 pages with Luna, then review with Jev'});
  await expect(option).not.toBeChecked();await option.focus();await page.keyboard.press('Space');await expect(option).toBeChecked();expect(calls).toEqual([]);
  await page.getByRole('button',{name:'Crawl with Luna + Jev',exact:true}).click();

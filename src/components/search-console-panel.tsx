@@ -1,4 +1,5 @@
 "use client";
+import {trackProductEvent} from "@/lib/product-analytics-client";
 
 import { UiSelect } from "./ui/select";
 import Link from "next/link";
@@ -114,8 +115,10 @@ function OwnerSearchConsole({ ownerId }: { ownerId: string | null }) {
     if (!signal || signal.aborted || actionPending.current) return;
     actionPending.current = true;
     setBusy(name); setError("");
-    try { await work(signal); }
-    catch (error) { if (!signal.aborted) setError(error instanceof Error ? error.message : "This action could not be completed."); }
+    const tracked = ["connect","import","disconnect"].includes(name);
+    if(tracked) trackProductEvent("integration_action_requested", {action:name});
+    try { await work(signal); if(tracked && !signal.aborted) trackProductEvent("integration_action_result", {action:name,result:"accepted"}); }
+    catch (error) { if (!signal.aborted) { if(tracked) trackProductEvent("integration_action_result", {action:name,result:"failed"}); setError(error instanceof Error ? error.message : "This action could not be completed."); } }
     finally { actionPending.current = false; if (!signal.aborted) setBusy(""); }
   }
 

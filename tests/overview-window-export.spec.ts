@@ -9,6 +9,7 @@ async function open(page: Page) {
   await page.clock.setFixedTime(new Date(base));
   await page.route("**/api/**", route => { const req = route.request(); const result = fixture.respond(req.method(), new URL(req.url()).pathname); return route.fulfill({ status: result.status, json: result.json }); });
   await page.goto("/overview?view=workspace&website=site-example");
+  await page.getByText("Charts and trends",{exact:true}).click();
   await expect(page.getByRole("region", { name: "Date window and export" })).toBeVisible();
 }
 const bar = (page: Page) => page.getByRole("region", { name: "Date window and export" });

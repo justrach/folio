@@ -45,9 +45,10 @@ test("reference answers require confirmation, stay explicit, and are omitted fro
     return route.fulfill({ json: { run: saved } });
   });
   await page.goto("/evaluations?view=page");
-  const launch = page.getByRole("button", { name: "Run evaluation", exact: true });
+  const launch = page.getByRole("button", { name: "Run website check", exact: true });
   await page.getByLabel("Website to evaluate", { exact: true }).fill("example.com");
   await expect(launch).toBeEnabled();
+  if(await page.locator(".eval-advanced").getAttribute("open")===null) await page.locator(".eval-advanced > summary").click();
   await page.getByText("Optional reference answers", { exact: true }).click();
   await page.getByLabel("Expected product name", { exact: true }).fill("Sable Analytics");
   await expect(launch).toBeDisabled();
@@ -77,6 +78,7 @@ test("reference answers require confirmation, stay explicit, and are omitted fro
   await expect(page.locator(".eval-reference-report")).toContainText("not independently established by Folio");
   await expect(page.locator(".eval-reference-report dd")).toHaveText(["Sable Analytics", "29 USD / month"]);
   await page.getByRole("button", { name: "Evaluate current website", exact: true }).click();
+  if(await page.locator(".eval-advanced").getAttribute("open")===null) await page.locator(".eval-advanced > summary").click();
   await page.getByText("Optional reference answers", { exact: true }).click();
   await page.getByLabel("Expected product name", { exact: true }).fill("Changed draft answer");
   await expect(confirmation).not.toBeChecked();

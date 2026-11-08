@@ -1,3 +1,5 @@
+import {Suspense} from "react";
+import {ProductAnalytics} from "@/components/product-analytics";
 import { FolioAppearance } from "@/components/folio-appearance";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
@@ -50,7 +52,7 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning lang="en" data-scroll-behavior="smooth" className={`${dmSans.variable} ${dmMono.variable}`}>
       <head><script dangerouslySetInnerHTML={{ __html: "(()=>{let p='system';try{const v=localStorage.getItem('folio-dashboard-appearance');if(v==='light'||v==='dark')p=v}catch{}document.documentElement.dataset.folioPreference=p;document.documentElement.dataset.folioTheme=p==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):p})()" }} /></head>
-      <body><FolioAppearance />{children}</body>
+      <body><FolioAppearance /><Suspense fallback={null}><ProductAnalytics /></Suspense>{children}</body>
     </html>
   );
 }
