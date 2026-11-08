@@ -26,7 +26,7 @@ Responses are JSON; unknown fields must be ignored by clients.
 | GET | `/entities/:id/sections` | `limit` (1–100), `cursor` | list of `section` |
 | GET | `/entities/:id/pages` | `section`, `limit`, `cursor` | list of `page` |
 | GET | `/entities/:id/keywords` | `limit`, `cursor` | list of `keyword` |
-| GET | `/search` | `q` (1–300 chars), `entityId`, `limit` | list of `search hit` (cosine, `gemini-embedding-2`, 768 dims) |
+| GET | `/search` | `q` (1–300 chars), `entityId`, `limit` | list of `search hit` — ANN over turbopuffer (`folio-pages`), `gemini-embedding-2`, 768 dims, `score = 1 - cosine distance` |
 | GET | `/health` | — | freshness and queue depth |
 
 ### List envelope

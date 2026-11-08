@@ -78,7 +78,7 @@ A separate PlanetScale Postgres database named `folio` (branch `main`, PostgreSQ
 What it is used for today:
 
 - Reading the September snapshot without touching D1.
-- A `research` schema owned by the default role, holding `research.page_embeddings` (pgvector 0.8.5, HNSW cosine index) with the 979 sampled page excerpts from the site-inventory work. This is the one capability D1 cannot provide.
+- A `research` schema owned by the default role, holding `research.page_embeddings` (pgvector 0.8.5, HNSW cosine index) with the 979 sampled page excerpts from the site-inventory work. Vectors themselves now live in turbopuffer (see [embeddings](EMBEDDINGS.md)); Postgres holds the marker rows.
 
 Operational facts worth knowing:
 

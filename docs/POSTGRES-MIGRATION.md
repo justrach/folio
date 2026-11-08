@@ -176,5 +176,5 @@ Verified against the application tables, not just the research ones: `sites` rea
 ## What is already done
 
 - The PlanetScale database exists, runs PostgreSQL 18.6, and its schema is at migration `0024` after applying `0023`/`0024` as the owning role.
-- `pgvector 0.8.5` is installed and `research.page_embeddings` holds 979 embedded pages with an HNSW index — the vector path needs no further migration work.
+- Vector search moved out of Postgres: **100,254 page embeddings now live in turbopuffer** (`folio-pages`, 768-dim cosine), and `research.page_embeddings_v2` was dropped. Postgres keeps `research.page_embedding_ids` as the idempotence marker. See [embeddings](EMBEDDINGS.md).
 - Credentials live in the ignored `.dev.vars` as `PLANETSCALE_APP_URL`.

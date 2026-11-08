@@ -65,6 +65,7 @@ Restart the dev server after intended `.dev.vars` changes. Obtain D1 through the
 | SEO provider and saved reports | `src/lib/dataforseo.ts`, `seo-store.ts`, `src/components/seo-data-panel.tsx` |
 | Google identity and Search Console | `src/lib/google-auth.ts`, `search-console.ts`, `search-console-store.ts`, `src/app/api/search-console/`, `src/components/search-console-panel.tsx` |
 | Selected-report agent tool | `src/lib/managed-seo-tool.ts`, `src/app/api/evaluations/[id]/tools/` |
+| Embeddings and vector search | `docs/EMBEDDINGS.md`, `research.page_embedding_ids`; vectors live in turbopuffer |
 | Auth and database | `src/lib/auth.ts`, `auth-client.ts`, `auth-schema.ts`, `db.ts`, `migrations/` |
 | Background retrieval | `src/lib/eval-reconciliation-job.ts`, `src/app/api/internal/evaluations/reconcile/`, `wrangler.scheduler.jsonc` |
 | Proposed pricing | `src/components/pricing.tsx`, `src/app/api/plans/route.ts` |

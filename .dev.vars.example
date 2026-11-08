@@ -36,3 +36,7 @@ FOLIO_MCP_URL=
 
 # Exact approved account IDs permitted three simultaneous keyword observations.
 OPENAI_PARALLEL_USER_IDS=
+
+# Vectors live in turbopuffer (see docs/EMBEDDINGS.md). Create a key at
+# https://turbopuffer.com/dashboard and set the same value as a Worker secret.
+TURBOPUFFER_API_KEY=
