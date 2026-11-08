@@ -1,3 +1,4 @@
+import {selectValue} from "./select-helpers";
 import { publicIndexFixture } from "./public-index-fixture";
 import { expect, test } from "@playwright/test";
 
@@ -8,16 +9,15 @@ test("dashboard appearance and Index view survive refresh without paid operation
     return route.fulfill({ json: new URL(route.request().url()).pathname === "/api/public/benchmarks" ? publicIndexFixture : null });
   });
   await page.goto("/leaderboard");
-  const shell = page.locator(".folio-workspace");
-  const theme = page.getByRole("button", { name: "Dark appearance", exact: true });
-  await theme.click();
-  await expect(shell).toHaveAttribute("data-dashboard-theme", "dark");
+  const theme = page.getByRole("combobox",{name:"Color theme",exact:true});
+  await selectValue(theme,"dark");
+  await expect(page.locator("html")).toHaveAttribute("data-folio-theme", "dark");
   await page.getByRole("button", { name: "HTML page checks", exact: true }).click();
   await expect(page).toHaveURL(/indexView=html/);
   await page.reload();
-  await expect(theme).toHaveAttribute("aria-pressed", "true");
+  await expect(theme).toHaveAttribute("data-value", "dark");
   await expect(page.getByRole("button", { name: "HTML page checks", exact: true })).toHaveAttribute("aria-pressed", "true");
-  await page.getByRole("button", { name: "Search rankings", exact: true }).click();
+  await page.getByRole("button", { name: "Sample rankings", exact: true }).click();
   await expect(page.getByLabel("Website comparison question")).toBeVisible();
   await page.goBack();
   await expect(page.getByRole("button", { name: "HTML page checks", exact: true })).toHaveAttribute("aria-pressed", "true");
@@ -29,7 +29,7 @@ test("long question filters, website list and setup remain usable at 320 pixels"
   page.on("pageerror", error => errors.push(error.message));
   await page.route("**/api/**", route => { if (route.request().method() !== "GET") writes.push(route.request().url()); return route.fulfill({ json: new URL(route.request().url()).pathname === "/api/public/benchmarks" ? publicIndexFixture : null }); });
   await page.setViewportSize({ width: 320, height: 780 });
-  await page.goto("/leaderboard");
+  await page.goto("/leaderboard?indexView=rankings");
   await expect(page.getByRole("button", { name: "Show chart", exact: true })).toBeVisible();
   await page.getByRole("searchbox", { name: "Find a website", exact: true }).fill("railway");
   await expect(page.locator(".website-ranking-row")).toHaveCount(1);

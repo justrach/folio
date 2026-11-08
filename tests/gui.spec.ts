@@ -347,7 +347,7 @@ test("published audits stay separate from search rankings through filtering and 
     }),
   ).toBeVisible();
   await page
-    .getByRole("button", { name: "Search rankings", exact: true })
+    .getByRole("button", { name: "Sample rankings", exact: true })
     .click();
   await expect(page.getByRole("region", { name: "Which websites get recommended?" })).toBeVisible();
   await expect(index).toHaveCount(0);

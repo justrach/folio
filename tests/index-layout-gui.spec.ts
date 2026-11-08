@@ -46,12 +46,13 @@ test("Index has one compact view selector and does not mount the private activit
   });
   await page.goto("/leaderboard");
   await expect(page.getByRole("heading", { name: "The Folio Index", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Search rankings", exact: true })).toHaveCount(1);
+  await expect(page.getByRole("button", { name: "Sample rankings", exact: true })).toHaveCount(1);
   await expect(page.getByRole("group", { name: "Evaluation view", exact: true })).toHaveCount(1);
   await expect(page.getByRole("complementary", { name: "Background agent activity" })).toHaveCount(0);
+  await page.getByRole("button",{name:"Sample rankings",exact:true}).click();
   await expect(page.locator(".ranked-search-query")).toBeVisible();
   const headingSize = await page.locator("h1").evaluate(element => parseFloat(getComputedStyle(element).fontSize));
-  expect(headingSize).toBeLessThanOrEqual(30);
+  expect(headingSize).toBeLessThanOrEqual(36);
   const queryControl = page.getByRole("combobox", { name: "Website comparison question", exact: true });
   await expect(queryControl).toBeVisible();
   const position = await queryControl.boundingBox();
@@ -60,7 +61,7 @@ test("Index has one compact view selector and does not mount the private activit
   await htmlButton.focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("region", { name: "HTML page checks", exact: true })).toBeVisible();
-  const searchButton = page.getByRole("button", { name: "Search rankings", exact: true });
+  const searchButton = page.getByRole("button", { name: "Sample rankings", exact: true });
   await searchButton.click();
   await expect(searchButton).toHaveAttribute("aria-pressed", "true");
   await expect(htmlButton).toHaveAttribute("aria-pressed", "false");

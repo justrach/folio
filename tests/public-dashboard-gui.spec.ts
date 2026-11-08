@@ -44,12 +44,14 @@ function fixture(): PublicDashboardData {
   } };
 }
 async function setup(page: Page) {
-  const state: { response: unknown; publicReads: number; forbidden: string[] } = { response: fixture(), publicReads: 0, forbidden: [] };
+  const state: { response: unknown; publicReads: number; identityReads:number; forbidden: string[] } = { response: fixture(), publicReads: 0, identityReads:0, forbidden: [] };
   await page.route("**/api/**", async route => {
     const request = route.request(), pathname = new URL(request.url()).pathname;
     if (pathname === "/api/public/benchmarks" && request.method() === "GET") {
       state.publicReads++; return route.fulfill({ json: state.response });
     }
+    if(pathname === "/api/auth/get-session" && request.method()==="GET"){state.identityReads++;return route.fulfill({json:null});}
+    if(pathname === "/api/index-domains" && request.method()==="GET")return route.fulfill({json:{domains:[],totalPages:0,totalHosts:0}});
     state.forbidden.push(`${request.method()} ${pathname}`);
     return route.fulfill({ status: 403, json: { error: "Public browser fixtures block authentication, private data, and paid operations." } });
   });
@@ -64,7 +66,7 @@ async function selectTask(page: Page, index: number) {
   await expect(page).toHaveURL(new RegExp(`/overview\\?query=fixture-task-${index + 1}$`));
   await expect(page.getByRole("region", { name: "Selected task", exact: true }).getByRole("heading", { name: questions[index], exact: true })).toBeVisible();
 }
-function noPrivateWork(state: Awaited<ReturnType<typeof setup>>) { expect(state.forbidden, "The public dashboard must not request identity, private records, or provider work").toEqual([]); }
+function noPrivateWork(state: Awaited<ReturnType<typeof setup>>) { expect(state.forbidden, "The signed-out dashboard must not request private records or provider work").toEqual([]); }
 
 test("a labelled public snapshot keeps the answer already being read during a failed live update", async ({ page }) => {
   const state = await setup(page); await page.goto("/overview?query=fixture-task-1");
@@ -241,12 +243,13 @@ test("leaderboard loads publicly without consulting identity or private APIs", a
   const state = await setup(page);
   await page.goto("/leaderboard?view=workspace&website=private-hint");
   await expect(page.getByRole("heading", { name: "The Folio Index", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Search rankings", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Sample rankings", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "HTML page checks", exact: true }).click();
   await expect(page.getByRole("region", { name: "HTML page checks", exact: true })).toBeVisible();
   await page.reload();
   await expect(page.getByRole("heading", { name: "The Folio Index", exact: true })).toBeVisible();
   noPrivateWork(state);
+  expect(state.identityReads).toBe(0);
 });
 
 

@@ -283,14 +283,14 @@ export function Dashboard({ section }: { section: string }) {
   const view = views.length === 1 ? views[0] : null;
   const workspace = view === "workspace" || query.has("website") || query.has("scope");
   if (section === "leaderboard") return <PublicOverviewShell section="leaderboard" />;
-  // A signed-in visitor belongs in their workspace; only signed-out visitors get
-  // the public benchmark shell, and the pending state must not flash it first.
-  const { data: session, isPending } = authClient.useSession();
-  if (section === "overview" && view !== "demo" && !workspace) {
-    if (isPending) return <WorkspaceLoader />;
-    if (!session) return <PublicOverviewShell />;
-  }
+  if (section === "overview" && view !== "demo" && !workspace) return <AccountOverview/>;
   return <WorkspaceDashboard section={section} />;
+}
+
+function AccountOverview(){
+  const {data:session,isPending}=authClient.useSession();
+  if(isPending)return <WorkspaceLoader/>;
+  return session?<WorkspaceDashboard section="overview"/>:<PublicOverviewShell/>;
 }
 
 function PublicOverviewShell({ section = "overview" }: { section?: "overview" | "leaderboard" }) {

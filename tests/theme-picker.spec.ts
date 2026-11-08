@@ -31,8 +31,8 @@ test("system theme follows the device while explicit choices persist and sync", 
   await page.emulateMedia({ colorScheme: "dark" });
   await expect(page.locator("html")).toHaveAttribute("data-folio-theme", "dark");
   await page.goto("/leaderboard");
-  await expect(page.locator(".app-shell")).toHaveAttribute("data-dashboard-theme", "dark");
-  await page.getByRole("button", { name: "Dark appearance", exact: true }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-folio-theme", "dark");
+  await selectValue(picker,"light");
   await expect(picker).toHaveAttribute("data-value", "light");
   expect(writes).toEqual([]);
 });

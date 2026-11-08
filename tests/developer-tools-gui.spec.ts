@@ -58,7 +58,7 @@ async function showHtmlChecks(page: Page) {
   await htmlButton.focus();
   await page.keyboard.press("Enter");
   await expect(htmlButton).toHaveAttribute("aria-pressed", "true");
-  await expect(switcher.getByRole("button", { name: "Search rankings", exact: true })).toHaveAttribute("aria-pressed", "false");
+  await expect(switcher.getByRole("button", { name: "Sample rankings", exact: true })).toHaveAttribute("aria-pressed", "false");
   await expect(page.getByRole("region", { name: "HTML page checks", exact: true })).toBeVisible();
 }
 
@@ -294,11 +294,11 @@ test("directory, sample, published, and private-evaluation navigation submits no
   await page.goto("/leaderboard");
   await showHtmlChecks(page);
   await expect(directory(page)).toBeVisible();
-  await page.getByRole("button", { name: "Search rankings", exact: true }).click();
+  await page.getByRole("button", { name: "Sample rankings", exact: true }).click();
   await expect(directory(page)).toHaveCount(0);
   await page.getByRole("button", { name: "Published page audits", exact: true }).click();
   await expect(page.getByRole("heading", { name: "No page audits published yet.", exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "Search rankings", exact: true }).click();
+  await page.getByRole("button", { name: "Sample rankings", exact: true }).click();
   await showHtmlChecks(page);
   await expect(directory(page)).toBeVisible();
   const methodology = page.getByText("How to read these observations", { exact: true });
