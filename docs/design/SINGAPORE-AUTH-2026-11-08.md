@@ -43,3 +43,27 @@ worktree's active files.
 Provider secrets, OAuth request data, private tail output and deployment artifacts
 remain outside Git. No paid agent work, database migration or credential change
 was performed.
+
+
+## Resumed after deployment coordination
+
+After the user confirmed they would pause the competing publisher, the backend
+was rebuilt from main `0689e44` and deployed as
+`80cbf464-d547-425b-a05f-22633e912dff`. The production build passed. Cloudflare
+version metadata confirmed targeted placement at `aws:ap-southeast-1`; the same
+version remained active during verification. Existing identity secrets, D1 and
+Hyperdrive binding metadata were preserved.
+
+Twelve live public reads all succeeded without snapshot fallback, with a median
+of 432.5 ms and maximum of 743 ms. All reported `local-SIN`. Two separately spaced
+Google sign-in starts returned 200 in 700 ms and 1,692 ms with accounts.google.com
+and the correct production callback. Both cancellation callbacks returned cleanly
+to login. Ten account/report/integration-status endpoints returned their expected
+anonymous responses. No real Google identity consent or successful authorization
+code exchange was performed; the owner should retry the actual Google account
+flow in their browser. No credential change, migration or paid provider run was
+needed.
+
+The paused publisher must incorporate current main and its request-scoped backend
+entry point before deploying again; publishing the older backend would reintroduce
+the regression. Earlier failures above remain recorded as historical evidence.
