@@ -49,11 +49,18 @@ scope get an explanatory placeholder instead of empty charts; scope/model
 selectors remain available. The private view labels its values **Your actual
 results**, identifies the selected URL, and keeps unmeasured results empty.
 
-`/overview?view=demo` has a prominent **Demo · Sample data** notice, a **Set up my
-website** link and a separate **My actual results** return link. It does not load
-or substitute the owner's technical scans into illustrative charts. Signed-out
-workspace visitors can start the free setup, sign in to existing results, or
-explicitly open the demo.
+`/overview?view=demo` is an interactive walkthrough with the fictional Moss Inbox
+team. A visitor chooses a buyer situation, opens an authored example answer,
+inspects its fictional source excerpts, and edits/copies a follow-up note. The
+clipboard output includes its sample-data label and example sources. Copy errors
+preserve the note and offer manual copying; completion appears only after a
+successful clipboard write. The walkthrough makes no provider or owner-data
+requests of its own, stores no account state, and offers the real `/start` flow
+separately. Motion respects reduced-motion preferences.
+
+The former illustrative charts and labelled sample export remain at
+`/overview?view=demo&demo=charts`. Both demo views retain **My actual results**
+navigation and never load/substitute private technical scans into sample data.
 
 The local fixture proxy is test-only, prohibits writes and displays a prominent
 sample-account notice. `OVERVIEW_PREVIEW_STAGE=empty` previews first-time setup;
@@ -64,10 +71,11 @@ My websites uses the same setup card for signed-out and empty accounts, with a
 separate sign-in link for returning owners. It does not display fictional Acme
 scores as a saved website or an empty personal audit history before sign-in.
 Adding a website enters `/start?step=1`; viewing a saved website's results and
-choosing its customer questions are the two main owned-site actions. Technical
-audits, page-evidence evaluations and Search Console connections live under
-**More website tools**. Existing owned handoffs and explicit audit confirmation
-remain intact. Publication controls appear with actual saved audits.
+choosing its customer questions are concrete team jobs alongside the explicit
+page-audit action. Job cards explain what each destination helps the team learn.
+Page-evidence evaluations and Search Console connections live under **More
+website tools**. Existing owned handoffs and explicit audit confirmation remain
+intact. Publication controls appear with actual saved audits.
 
 Folio connects saved technical audits, private SEO reports, and managed website evaluations through prepared forms and owned records. Moving between pages does not start a paid lookup or model task. The owner reviews the inputs and chooses the action that creates work.
 

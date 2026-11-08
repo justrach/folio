@@ -283,3 +283,18 @@ test("a selected website opens its combined results and prefills only an explici
   await expect(page.getByLabel("Selected website", { exact: true })).toHaveAttribute("data-value", "owned-older");
   noStartedWork(state);
 });
+
+test("a teammate chooses a concrete website job and keeps its owned context",async({page})=>{
+  const state=await fixture(page);
+  await page.goto('/websites');
+  await selectValue(page.getByLabel('Selected website',{exact:true}),'owned-older');
+  const jobs=page.getByRole('region',{name:'Choose a job for your team'});
+  await expect(jobs.getByRole('heading',{name:'What’s on our team’s mind?'})).toBeVisible();
+  await expect(jobs).toContainText('Are buyers hearing about us?');
+  await expect(jobs.getByRole('link',{name:'View results',exact:true})).toHaveAttribute('href','/overview?view=workspace&website=owned-older');
+  await expect(jobs.getByRole('link',{name:'Choose questions',exact:true})).toHaveAttribute('href','/benchmarks?website=owned-older');
+  await expect(jobs.getByRole('link',{name:'Play through one team’s first question'})).toHaveAttribute('href','/overview?view=demo');
+  await jobs.getByRole('button',{name:'Audit website',exact:true}).click();
+  await expect(page.getByLabel('Website URL',{exact:true})).toHaveValue(olderUrl);
+  noStartedWork(state);
+});

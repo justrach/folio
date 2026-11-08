@@ -71,6 +71,7 @@ import { OwnedWebsites } from "./owned-websites";
 import { RealOverview, workspaceOverviewHref } from "./real-overview";
 import { OverviewDemoNotice, OverviewSetupGuide } from "./overview-setup-guide";
 import { CompanyFavicon } from "./company-favicon";
+import { TeamDemoJourney } from "./team-demo-journey";
 import { PublicBenchmarkDashboard } from "./public-benchmark-dashboard";
 import "./public-overview-shell.css";
 import { KeywordActivitySummary } from "./keyword-activity-summary";
@@ -305,6 +306,8 @@ function WorkspaceDashboard({ section }: { section: string }) {
   const router = useRouter();
   const query = useSearchParams();
   const demoRequested = query.getAll("view").length === 1 && query.get("view") === "demo";
+  const chartsDemo = demoRequested && query.getAll("demo").length === 1 && query.get("demo") === "charts";
+  const teamDemo = section === "overview" && demoRequested && !chartsDemo;
   const privateOverview = section === "overview" && !demoRequested;
   const personalWorkspace = privateOverview || section === "websites";
   const { data: session, isPending } = authClient.useSession();
@@ -413,7 +416,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
   }
   if (section === "login") return <Login onNotify={notify} />;
   if (isPending) return <WorkspaceLoader />;
-  const title = section === "overview" && demoRequested ? { ...titles.overview, title: "Demo report", description: "Illustrative sample data." } : titles[section] ?? titles.overview;
+  const title = section === "overview" && demoRequested ? { ...titles.overview, title: chartsDemo ? "Demo report" : "Try Folio", description: chartsDemo ? "Illustrative sample data." : "One customer question. One useful next step." } : titles[section] ?? titles.overview;
   return (
     <div className="app-shell folio-workspace" data-nav-compact="true">
       {mobileOpen && (
@@ -510,11 +513,11 @@ function WorkspaceDashboard({ section }: { section: string }) {
           </button>
           <Link href={session ? "/settings" : "/login"} className="profile">
             <span className="avatar">
-              {session?.user.name?.slice(0, 1) ?? (personalWorkspace ? "—" : "A")}
+              {session?.user.name?.slice(0, 1) ?? (teamDemo ? "M" : personalWorkspace ? "—" : "A")}
             </span>
             <span>
-              {session?.user.name ?? (personalWorkspace ? "Sign in" : "Alex Morgan")}
-              <small>{session?.user.email ?? (personalWorkspace ? "Your private workspace" : "Exploring the demo")}</small>
+              {session?.user.name ?? (teamDemo ? "Demo teammate" : personalWorkspace ? "Sign in" : "Alex Morgan")}
+              <small>{session?.user.email ?? (teamDemo ? "Fictional team walkthrough" : personalWorkspace ? "Your private workspace" : "Exploring the demo")}</small>
             </span>
             <MoreHorizontal size={17} />
           </Link>
@@ -533,7 +536,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
             </button>
             <Globe2 size={15} />
             <button onClick={() => router.push("/websites")}>
-              {personalWorkspace ? "Your workspace" : actual ? new URL(actual.url).hostname : session ? "Your workspace" : "acme.com"}
+              {teamDemo ? "Moss Inbox · Demo" : personalWorkspace ? "Your workspace" : actual ? new URL(actual.url).hostname : session ? "Your workspace" : "acme.com"}
             </button>
             <ChevronRight size={13} />
             <span>
@@ -555,7 +558,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
             </button>
             <span className="topbar-divider" />
             <NotificationBell
-              count={actual?.patches.length ?? (mode === "sample" && !personalWorkspace ? 3 : 0)}
+              count={actual?.patches.length ?? (mode === "sample" && !personalWorkspace && !teamDemo ? 3 : 0)}
               size={30}
               color="green"
               onClick={() => setModal("notifications")}
@@ -566,12 +569,12 @@ function WorkspaceDashboard({ section }: { section: string }) {
               className="avatar top-avatar"
               aria-label="Account"
             >
-              {session?.user.name?.[0] ?? (personalWorkspace ? "—" : "A")}
+              {session?.user.name?.[0] ?? (teamDemo ? "M" : personalWorkspace ? "—" : "A")}
             </Link>
           </div>
         </header>
         <main className={`page-content${["evaluations", "benchmarks", "overview"].includes(section) ? " evaluation-page" : ""}${section === "overview" ? " overview-page" : ""}${section === "leaderboard" ? " index-page" : ""}`}>
-          <div className="page-heading">
+          {!teamDemo && <div className="page-heading">
             <div>
               <h1>{title.title}</h1>
               <p>{title.description}</p>
@@ -584,7 +587,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
               ) : section === "overview" && !demoRequested ? (
                 <Link href="/websites" className="button secondary">My websites <ArrowRight size={14} /></Link>
               ) : section === "overview" && demoRequested ? (
-                <><Button kind="secondary" onClick={exportReport}><ArrowDownToLine size={14}/>Export sample report</Button><Link href={workspaceOverviewHref(query)} className="button secondary">My actual results <ArrowRight size={14} /></Link></>
+                <>{chartsDemo && <Button kind="secondary" onClick={exportReport}><ArrowDownToLine size={14}/>Export sample report</Button>}<Link href={workspaceOverviewHref(query)} className="button secondary">My actual results <ArrowRight size={14} /></Link></>
               ) : section === "agents" ? (
                 <Link href="/pricing" className="button secondary">
                   Plans & usage <ArrowUpRight size={14} />
@@ -610,10 +613,10 @@ function WorkspaceDashboard({ section }: { section: string }) {
                 </>
               )}
             </div>
-          </div>
-          {section === "overview" && <nav className="real-overview-tabs" aria-label="Overview view"><Link href={workspaceOverviewHref(query)} aria-current={!demoRequested ? "page" : undefined}>My website results</Link><Link href="/overview?view=demo" aria-current={demoRequested ? "page" : undefined} onClick={() => setMode("sample")}>Demo report</Link></nav>}
-          {section === "overview" && demoRequested && <OverviewDemoNotice/>}
-          {section === "overview" && !demoRequested ? <RealOverview ownerId={ownerId} scans={scans} scansLoading={loadingScans} scansError={scanOwnerId === ownerId ? scanError : ""} onRetryScans={() => setScanRefresh(value => value + 1)} onOpenScan={openScan} /> : <>
+          </div>}
+          {section === "overview" && !teamDemo && <nav className="real-overview-tabs" aria-label="Overview view"><Link href={workspaceOverviewHref(query)} aria-current={!demoRequested ? "page" : undefined}>My website results</Link><Link href="/overview?view=demo" aria-current={demoRequested ? "page" : undefined} onClick={() => setMode("sample")}>Demo report</Link></nav>}
+          {section === "overview" && chartsDemo && <OverviewDemoNotice/>}
+          {teamDemo ? <TeamDemoJourney actualHref={workspaceOverviewHref(query)}/> : section === "overview" && !demoRequested ? <RealOverview ownerId={ownerId} scans={scans} scansLoading={loadingScans} scansError={scanOwnerId === ownerId ? scanError : ""} onRetryScans={() => setScanRefresh(value => value + 1)} onOpenScan={openScan} /> : <>
 
           {scanOwnerId === ownerId && scanError && ["overview", "websites", "seo", "patches"].includes(section) && (
             <div className="workspace-read-error" role="alert">{scanError}<Button kind="secondary" onClick={() => setScanRefresh(n => n + 1)}>Retry audits</Button></div>
@@ -1092,9 +1095,9 @@ function WorkspaceDashboard({ section }: { section: string }) {
           {modal === "notifications" && (
             <div className="notification-list">
               <p className="muted">
-                {actual ? "From your latest audit" : mode === "sample" && !personalWorkspace ? "From the sample report" : "No saved audit suggestions yet"}
+                {actual ? "From your latest audit" : mode === "sample" && !personalWorkspace && !teamDemo ? "From the sample report" : "No saved audit suggestions yet"}
               </p>
-              {(actual?.patches ?? (mode === "sample" && !personalWorkspace ? samplePatches : [])).map((p) => (
+              {(actual?.patches ?? (mode === "sample" && !personalWorkspace && !teamDemo ? samplePatches : [])).map((p) => (
                 <button
                   key={p.id}
                   onClick={() => {

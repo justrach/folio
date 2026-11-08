@@ -355,7 +355,7 @@ test("published audits stay separate from search rankings through filtering and 
 test("overview chart controls and report export remain usable", async ({
   page,
 }) => {
-  await page.goto("/overview?view=demo");
+  await page.goto("/overview?view=demo&demo=charts");
   await page.getByRole("button", { name: "7d", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "7d", exact: true }),

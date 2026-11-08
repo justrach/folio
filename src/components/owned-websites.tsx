@@ -11,6 +11,7 @@ import type { SearchConsoleReportSummary } from "@/lib/search-console-types";
 import { WebsiteSeoSummary } from "./website-seo-summary";
 import { OverviewSetupGuide } from "./overview-setup-guide";
 import { CompanyFavicon } from "./company-favicon";
+import { WebsiteWorkboard } from "./website-workboard";
 import "./owned-websites.css";
 
 type Site = { id: string; name: string; url: string; isPublic: boolean; seoScore: number | null };
@@ -100,14 +101,9 @@ function OwnerWebsites({ onAudit }: { onAudit?: (url: string) => void }) {
         </UiSelect></label>}
         {selected && <>
           <div className="owned-website-title"><h3><CompanyFavicon url={selected.url} name={selected.name}/>{new URL(selected.url).hostname}</h3><span>{selected.isPublic ? "Technical scan shared" : "Private website"}</span></div>
-          <p>Start with your dashboard to see your next step, or choose the customer questions you want to investigate.</p>
           <p>{selected.seoScore == null ? "Technical readiness has not been measured yet." : `Latest technical readiness: ${selected.seoScore}/100.`}</p>
-          <div className="owned-website-actions">
-            <Link href={`/overview?view=workspace&website=${encodeURIComponent(selected.id)}`} className="button primary squishy-control">View results <ArrowRight size={15} /></Link>
-            <Link href={`/benchmarks?website=${encodeURIComponent(selected.id)}`} className="button secondary squishy-control">Choose questions <ArrowRight size={15} /></Link>
-          </div>
+          <WebsiteWorkboard key={selected.id} websiteId={selected.id} onAudit={onAudit?()=>onAudit(selected.url):undefined}/>
           <details className="owned-website-tools"><summary>More website tools</summary><p>Page audits and page-evidence evaluations are separate from your customer-question answers. Opening a tool starts no work.</p><div className="owned-website-actions">
-            {onAudit && <button className="button secondary" onClick={() => onAudit(selected.url)}>Audit website</button>}
             <Link href={evaluationHref({ targetUrl: selected.url })} className="button secondary">Evaluate website <ArrowRight size={15} /></Link>
             <Link href="/search-console" className="button secondary">Connect Search Console <ArrowRight size={15}/></Link>
             {matchingReport && <Link href={`/search-console?report=${encodeURIComponent(matchingReport.id)}`} className="button secondary">Open search report</Link>}

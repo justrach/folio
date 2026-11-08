@@ -132,7 +132,7 @@ test("signed-out overview offers private login, samples require selection, and l
   await expect(page.locator(".nav-count")).toHaveCount(0);
   await page.getByRole("link", { name: "Demo report", exact: true }).click();
   await expect(page).toHaveURL(/\/overview\?view=demo$/);
-  await expect(page.locator(".metric-card").first()).toContainText("AI visibility");
+  await expect(page.getByRole("region", {name:"Interactive team walkthrough"})).toBeVisible();
   await page.goBack(); await page.getByRole("link", { name: "Sign in to your workspace" }).click();
   await expect(page).toHaveURL(/\/login\?next=%2Foverview%3Fview%3Dworkspace$/);
   await login(page); await expect(page).toHaveURL(/\/overview\?view=workspace$/);
@@ -291,8 +291,8 @@ test("new workspace starts with a free setup action and keeps the demo separate"
   await expect(page.getByLabel('Selected website',{exact:true})).toHaveCount(0);
   await expect(page.getByRole('region',{name:'Overview charts'})).toHaveCount(0);
   await guide.getByRole('link',{name:'Explore the sample demo'}).click();
-  await expect(page.getByRole('region',{name:'Sample data notice'})).toContainText('Every chart and number in this demo is illustrative');
-  await expect(page.getByRole('region',{name:'Sample data notice'}).getByRole('link',{name:'Set up my website'})).toHaveAttribute('href','/start');
+  await expect(page.getByRole('region',{name:'Sample data notice'})).toContainText('Fictional team & answers');
+  await expect(page.getByRole('region',{name:'Sample data notice'}).getByRole('link',{name:'Use my website'})).toHaveAttribute('href','/start');
   expect(state.writes).toEqual([]);
 });
 
@@ -337,7 +337,7 @@ test("saved questions require explicit run confirmation and completed answers re
 test("demo stays illustrative for an owner and never substitutes their saved audit",async({page})=>{
   const state=await fixture(page);const scanReads:string[]=[];
   page.on('request',request=>{if(new URL(request.url()).pathname==='/api/scans')scanReads.push(request.url());});
-  await page.goto('/overview?view=demo');
+  await page.goto('/overview?view=demo&demo=charts');
   await expect(page.getByRole('region',{name:'Sample data notice'})).toBeVisible();
   const brands=page.locator('.mini-leaderboard img');
   await expect(brands).toHaveCount(5);
