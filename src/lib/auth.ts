@@ -2,9 +2,11 @@ import "server-only";
 
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
-import { drizzle } from "drizzle-orm/d1";
+import { drizzle as drizzleD1 } from "drizzle-orm/d1";
+import { drizzle as drizzlePg } from "drizzle-orm/node-postgres";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
-import { getDb } from "@/lib/db";
+import { getAuthDb, getPgPool, postgresConnection } from "@/lib/db";
+import { authSchema as pgSchema } from "@/lib/auth-schema-pg";
 import * as schema from "@/lib/auth-schema";
 import { identityAuthOptions } from "@/lib/github-auth";
 
@@ -18,7 +20,12 @@ export async function getAuth() {
     );
   }
 
-  const database = drizzle(await getDb(), { schema });
+  const settings = env as unknown as { DB_ENGINE?: string; HYPERDRIVE?: { connectionString: string }; PLANETSCALE_APP_URL?: string };
+  const postgres = postgresConnection(settings);
+  if ((settings.DB_ENGINE ?? process.env.DB_ENGINE) === "postgres" && !postgres) throw new Error("Postgres authentication is not configured.");
+  const database = postgres
+    ? drizzlePg(getPgPool(postgres, Boolean(settings.HYPERDRIVE)), { schema: pgSchema })
+    : drizzleD1(await getAuthDb(), { schema });
   return betterAuth({
     appName: "Folio",
     baseURL,
@@ -29,7 +36,7 @@ export async function getAuth() {
       GITHUB_CLIENT_ID: env.GITHUB_CLIENT_ID || process.env.GITHUB_CLIENT_ID,
       GITHUB_CLIENT_SECRET: env.GITHUB_CLIENT_SECRET || process.env.GITHUB_CLIENT_SECRET,
     }),
-    database: drizzleAdapter(database, { provider: "sqlite", schema }),
+    database: drizzleAdapter(database as never, postgres ? { provider: "pg", schema: pgSchema } : { provider: "sqlite", schema }),
     emailAndPassword: {
       enabled: true,
       minPasswordLength: 10,

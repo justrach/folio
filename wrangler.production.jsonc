@@ -3,7 +3,7 @@
   // Deliberate production target. Local development continues to use wrangler.jsonc.
   "name": "folio-visibility",
   "account_id": "d87222df6f3f663e802014f8eb5a274e",
-  "main": ".open-next/worker.js",
+  "main": "workers/backend.ts",
   "compatibility_date": "2026-09-13",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "workers_dev": false,
@@ -24,9 +24,16 @@
       "migrations_dir": "migrations"
     }
   ],
+  // Postgres is the system of record (DB_ENGINE below). The D1 binding stays
+  // attached for the explicitly selected D1 development/rollback engine.
+  // Authentication follows DB_ENGINE; failures never switch stores automatically.
+  "hyperdrive": [
+    { "binding": "HYPERDRIVE", "id": "8bc46b614caf4b9f9e1f19e22ce1bbc1" }
+  ],
   "vars": {
     "BETTER_AUTH_URL": "https://usefolio.site",
-    "EVALUATION_RECONCILE_ENABLED": "false"
+    "EVALUATION_RECONCILE_ENABLED": "false",
+    "DB_ENGINE": "postgres"
   },
   // Supply BETTER_AUTH_SECRET and Google production OAuth credentials as Worker secrets.
   // Paid provider credentials/allowlists are separate from public Google sign-in.

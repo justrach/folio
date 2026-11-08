@@ -1,9 +1,10 @@
+import { publicIndexFixture } from "./public-index-fixture";
 import { selectValue } from "./select-helpers";
 import {test,expect} from '@playwright/test';
 test('website averages show all sites, model details and URL filters without spending',async({page},info)=>{
  const writes:string[]=[],errors:string[]=[];
  page.on('pageerror',e=>errors.push(e.message));
- await page.route('**/api/**',r=>{if(r.request().method()!=='GET')writes.push(r.request().url());return r.fulfill({json:null})});
+ await page.route('**/api/**',r=>{if(r.request().method()!=='GET')writes.push(r.request().url());return r.fulfill({json:new URL(r.request().url()).pathname === "/api/public/benchmarks" ? publicIndexFixture : null})});
  await page.goto('/leaderboard');
  const chart=page.getByRole('region',{name:'Which websites get recommended?'});
  await expect(chart).toBeVisible();

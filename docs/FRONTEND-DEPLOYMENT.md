@@ -13,14 +13,29 @@ cookies, record ownership, provider limits and database operations remain in
 `folio-visibility`; the frontend receives no database binding or provider secrets.
 No migration or production record copy is required for a presentation release.
 
-The deployed backend intermittently hangs on public benchmark reads. Only
-`GET /api/public/benchmarks` has a five-second bound and a fallback to the
-repository's real published artifacts. The response and dashboard explicitly
-label the snapshot; captured dates remain unchanged. A failed refresh preserves
-the answer already being read, and an unavailable shared-question deep link does
-not substitute another question. Private, authentication and paid endpoints are
-forwarded once without fallback or retries. This does not repair or replace the
-backend's database runtime.
+The backend's PostgreSQL sockets are request-scoped through
+`workers/backend.ts` and `src/lib/pg/request-scope.ts`. Hyperdrive owns upstream
+connection pooling; no `pg.Pool` or socket is retained across Worker invocations.
+Authentication and stores select the same explicit `DB_ENGINE`. Local development
+still defaults to D1; an error never changes the selected database.
+
+`GET /api/public/benchmarks` reads explicit public projections from the selected
+database and merges the dated published catalog. Successful reads identify
+`X-Folio-Public-Source: live-published-data`. Its frontend deadline is twelve
+seconds; failures return 503 rather than silently substituting a bundled snapshot.
+The dashboard retains its last successful data when a refresh fails and displays
+an error. Private, authentication and paid endpoints are forwarded once without
+fallback or retries. No browser navigation starts fresh agent collection.
+
+The Index comparison and original-answer panels share one validated public GET.
+Refresh updates both from the same response, including newly published shared
+questions and model identities. Its default comparison includes every question with a published answer in the
+current response, including expanded scenarios and explicit shared questions.
+Questions without a published answer remain available through their original
+question links and render an unmeasured state. The landing answer table also
+uses this live public read. HTML catalog checks remain dated captured artifacts;
+published page audits use their existing public API. Live retrieval does not mean
+all underlying observations were freshly collected.
 
 OpenNext is pinned to 1.20.16 for Next.js 16.4.5 runtime support. The prior 1.20.6
 adapter built successfully but crashed in Workers loading `preview-props.json`.

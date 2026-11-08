@@ -1,3 +1,4 @@
+import { publicIndexFixture } from "./public-index-fixture";
 import { expect, test } from "@playwright/test";
 import { PUBLIC_CORE_QUERIES, PUBLIC_SEARCH_QUERIES } from "../src/lib/public-search-rankings";
 import { selectValue } from "./select-helpers";
@@ -8,7 +9,7 @@ test("shared dropdowns wrap long options, fit narrow screens and retain keyboard
   await page.route("**/api/**", route => {
     if (!new URL(route.request().url()).pathname.startsWith("/api/")) return route.fallback();
     if (route.request().method() !== "GET") writes.push(route.request().url());
-    return route.fulfill({ json: null });
+    return route.fulfill({ json: new URL(route.request().url()).pathname === "/api/public/benchmarks" ? publicIndexFixture : null });
   });
   await page.goto("/");
   const category = page.getByRole("combobox", { name: "Category", exact: true });

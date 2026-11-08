@@ -1,7 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { serveFrontend } from "../src/lib/frontend-routing";
-import { assertPublicDashboardData } from "../src/lib/public-dashboard";
 
 test("frontend forwards API requests and responses unchanged without rendering or reading a database", async () => {
   const request = new Request("https://usefolio.site/api/auth/callback/google?code=fixture", { method: "POST", headers: { cookie: "fixture=session", "content-type": "text/plain" }, body: "fixture payload" });
@@ -14,7 +13,7 @@ test("frontend forwards API requests and responses unchanged without rendering o
   assert.equal(result.headers.get("set-cookie"), "fixture=next; HttpOnly; Secure");
 });
 
-test("public read failures return a labelled valid published snapshot without retrying private requests", async () => {
+test("public read failures report unavailable live data without substituting snapshots or retrying private requests", async () => {
   let reads = 0;
   const services = {
     FOLIO_BACKEND: { async fetch() { reads++; return new Response("Unavailable", { status: 500 }); } },
@@ -22,31 +21,31 @@ test("public read failures return a labelled valid published snapshot without re
   };
   const render = async () => { throw new Error("Not a UI route"); };
   const response = await serveFrontend(new Request("https://usefolio.site/api/public/benchmarks"), services, render);
-  assert.equal(response.status, 200);
-  assert.equal(response.headers.get("X-Folio-Public-Source"), "bundled-published-snapshot");
-  const data = await response.json(); assertPublicDashboardData(data);
-  assert.match(data.snapshotNotice!, /Live shared updates are temporarily unavailable/);
-  assert.ok(data.observations.length > 0);
+  assert.equal(response.status, 503);
+  assert.equal(response.headers.get("X-Folio-Public-Source"), null);
+  const data = await response.json();
+  assert.equal(data.error.code, "public_data_unavailable");
+  assert.equal(data.observations, undefined);
   assert.equal((await serveFrontend(new Request("https://usefolio.site/api/sites"), services, render)).status, 500);
   assert.equal((await serveFrontend(new Request("https://usefolio.site/api/public/benchmarks", { method: "POST" }), services, render)).status, 500);
   assert.equal(reads, 3, "Every request is forwarded once; paid/private requests are not retried");
 });
 
-test("public fallback handles a failed binding but propagates a cancelled visitor request", async () => {
+test("public availability error handles a failed binding but propagates a cancelled visitor request", async () => {
   const services = { FOLIO_BACKEND: { async fetch() { throw new Error("Binding unavailable"); } }, FOLIO_PUBLIC_INDEX: { async fetch() { throw new Error("Wrong service"); } } };
   const render = async () => { throw new Error("Not a UI route"); };
-  assert.equal((await serveFrontend(new Request("https://usefolio.site/api/public/benchmarks"), services, render)).status, 200);
+  assert.equal((await serveFrontend(new Request("https://usefolio.site/api/public/benchmarks"), services, render)).status, 503);
   const controller = new AbortController(); controller.abort();
   await assert.rejects(serveFrontend(new Request("https://usefolio.site/api/public/benchmarks", { signal: controller.signal }), services, render), /Binding unavailable/);
 });
 
-test("public read deadline returns a snapshot even when the binding never settles", async context => {
+test("public read deadline reports unavailable data when the binding never settles", async context => {
   context.mock.timers.enable({ apis: ["setTimeout"] });
   let signal: AbortSignal | undefined;
   const services = { FOLIO_BACKEND: { fetch(request: Request): Promise<Response> { signal = request.signal; return new Promise(() => {}); } }, FOLIO_PUBLIC_INDEX: { async fetch() { throw new Error("Wrong service"); } } };
   const result = serveFrontend(new Request("https://usefolio.site/api/public/benchmarks"), services, async () => { throw new Error("Wrong renderer"); });
-  context.mock.timers.tick(5_000);
-  assert.equal((await result).status, 200);
+  context.mock.timers.tick(12_000);
+  assert.equal((await result).status, 503);
   assert.equal(signal?.aborted, true);
 });
 

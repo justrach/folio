@@ -1,5 +1,3 @@
-import { publishedSnapshotResponse } from "./frontend-public-snapshot";
-
 type Service = { fetch(request: Request): Promise<Response> };
 type Services = { FOLIO_BACKEND: Service; FOLIO_PUBLIC_INDEX: Service };
 
@@ -14,7 +12,7 @@ export async function serveFrontend(request: Request, services: Services, render
       const signal = AbortSignal.any([request.signal, controller.signal]);
       const response = await Promise.race([
         services.FOLIO_BACKEND.fetch(new Request(request, { signal })),
-        new Promise<Response>((_, reject) => { timeout = setTimeout(() => { controller.abort(); reject(new Error("Public snapshot read timed out")); }, 5_000); }),
+        new Promise<Response>((_, reject) => { timeout = setTimeout(() => { controller.abort(); reject(new Error("Live public read timed out")); }, 12_000); }),
       ]);
       if (response.status < 500) return response;
       await response.body?.cancel();
@@ -23,7 +21,7 @@ export async function serveFrontend(request: Request, services: Services, render
     } finally {
       clearTimeout(timeout);
     }
-    return publishedSnapshotResponse();
+    return Response.json({ error: { code: "public_data_unavailable", message: "Live published results are temporarily unavailable. Please refresh to try again." } }, { status: 503, headers: { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" } });
   }
   if (url.pathname === "/api" || url.pathname.startsWith("/api/")) return services.FOLIO_BACKEND.fetch(request);
   if (url.pathname === "/leaderboard" && (url.searchParams.get("view") === "questions" || url.searchParams.has("cohort") || url.searchParams.has("q")))

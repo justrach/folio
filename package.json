@@ -33,7 +33,9 @@
     "agents:approve": "node scripts/approve-agent-user.mjs",
     "eval:verify": "tsx scripts/verify-evaluation.ts",
     "scheduler:build": "wrangler deploy --config wrangler.scheduler.jsonc --dry-run",
-    "scheduler:deploy": "wrangler deploy --config wrangler.scheduler.jsonc"
+    "scheduler:deploy": "wrangler deploy --config wrangler.scheduler.jsonc",
+    "backend:build": "wrangler deploy --config wrangler.production.jsonc --dry-run",
+    "backend:smoke": "FOLIO_SMOKE_ENTRY=backend node scripts/frontend-runtime-smoke.mjs"
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "latest",
@@ -50,6 +52,7 @@
     "lucide-react": "latest",
     "motion": "latest",
     "next": "16.4.5",
+    "pg": "8.16.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "recharts": "^3.0.0",
@@ -62,6 +65,7 @@
     "@cloudflare/workers-types": "latest",
     "@playwright/test": "latest",
     "@types/node": "^22.0.0",
+    "@types/pg": "8.15.6",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "miniflare": "5.20261104.0-beta",

@@ -7,6 +7,7 @@ import { resolve, join } from "node:path";
 
 // Run the actual built Worker, without database, account or provider bindings.
 const root = process.cwd();
+const entry = process.env.FOLIO_SMOKE_ENTRY === "backend" ? "backend" : "frontend";
 const temporary = await mkdtemp(join(tmpdir(), "folio-frontend-smoke-"));
 await mkdir(resolve(root, ".local"), { recursive: true });
 const log = await open(resolve(root, ".local/frontend-runtime-smoke.log"), "w");
@@ -18,7 +19,7 @@ await new Promise(resolveClose => socket.close(resolveClose));
 const config = join(temporary, "wrangler.json");
 await writeFile(config, JSON.stringify({
   name: "folio-frontend-runtime-smoke",
-  main: resolve(root, "workers/frontend.ts"),
+  main: resolve(root, `workers/${entry}.ts`),
   compatibility_date: "2026-09-13",
   compatibility_flags: ["nodejs_compat", "global_fetch_strictly_public"],
   assets: { directory: resolve(root, ".open-next/assets"), binding: "ASSETS" },
@@ -51,7 +52,7 @@ try {
   if (!stylesheet) throw new Error("Built Worker omitted its stylesheet.");
   const css = await fetch(new URL(stylesheet, base), { signal: AbortSignal.timeout(15_000) });
   if (css.status !== 200 || !(await css.text()).length) throw new Error("Built Worker stylesheet failed to load.");
-  console.log("Built Worker rendered dashboard, login, Index and stylesheet without database/provider bindings.");
+  console.log(`Built ${entry} Worker rendered dashboard, login, Index and stylesheet without database/provider bindings.`);
 } finally {
   if (child.exitCode === null) {
     const exited = once(child, "exit");

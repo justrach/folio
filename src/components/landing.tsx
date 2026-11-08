@@ -1,3 +1,4 @@
+import { LivePublicIndex } from "./live-public-index";
 import Link from "next/link";
 import Image from "next/image";
 import { LandingWorkflow, LandingSound } from "./landing-interactions";
@@ -56,7 +57,7 @@ export function Landing() {
         </div>
         <p className="landing-method-note">One answer per exact question. Position is the order the agent returned, not a score.</p>
         <h3 className="sr-only">Returned recommendations</h3>
-        <RankedSearchTable compact />
+        <LivePublicIndex><RankedSearchTable compact /></LivePublicIndex>
         <details className="landing-technical-report">
           <summary>HTML page checks for {reportCount} measured websites</summary>
           <p>Open a saved page report to inspect technical findings alongside the search observations.</p>

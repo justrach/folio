@@ -1,3 +1,4 @@
+import { publicIndexFixture } from "./public-index-fixture";
 import { selectValue } from "./select-helpers";
 import { expect, test, type Page } from "@playwright/test";
 import evaluationBatch from "../src/data/developer-tool-evaluations.json";
@@ -30,7 +31,7 @@ async function readOnlyFixture(page: Page) {
       writes.push(`${request.method()} ${new URL(request.url()).pathname}`);
       return route.fulfill({ status: 409, json: { error: "Report browsing does not start work." } });
     }
-    return route.fulfill({ status: 200, json: null });
+    return route.fulfill({ status: 200, json: new URL(route.request().url()).pathname === "/api/public/benchmarks" ? publicIndexFixture : null });
   });
   for (const pattern of ["https://api.openai.com/**", "https://api.dataforseo.com/**", "https://searchconsole.googleapis.com/**"])
     await page.route(pattern, route => { providers.push(route.request().url()); return route.abort("blockedbyclient"); });

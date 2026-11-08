@@ -14,7 +14,7 @@ export async function GET() {
     const merged = mergeSharedKeywordObservations(rankings, progress, shared);
     const data = buildPublicDashboard(merged.rankings, merged.progress);
     data.htmlCoverage = buildPublicHtmlCoverage(catalog, homepageBatch);
-    return Response.json(data, {headers: {"Cache-Control": "no-store", "X-Content-Type-Options": "nosniff"}});
+    return Response.json(data, {headers: {"Cache-Control": "no-store", "X-Content-Type-Options": "nosniff", "X-Folio-Public-Source": "live-published-data"}});
   } catch {
     return Response.json({error: {code: "public_data_unavailable", message: "Public benchmark data is temporarily unavailable."}},
       {status: 503, headers: {"Cache-Control": "no-store", "X-Content-Type-Options": "nosniff"}});
