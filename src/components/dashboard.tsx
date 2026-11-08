@@ -283,6 +283,7 @@ export function Dashboard({ section }: { section: string }) {
   const view = views.length === 1 ? views[0] : null;
   const workspace = view === "workspace" || query.has("website") || query.has("scope");
   if (section === "leaderboard") return <PublicOverviewShell section="leaderboard" />;
+  if (section === "overview" && query.has("query") && !workspace) return <PublicOverviewShell/>;
   if (section === "overview" && view !== "demo" && !workspace) return <AccountOverview/>;
   return <WorkspaceDashboard section={section} />;
 }
@@ -498,7 +499,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
         <Link href="/overview?view=demo" className={`nav-link ${teamDemo?"active":""}`} aria-current={teamDemo?"page":undefined} onClick={()=>setMobileOpen(false)} title="Content demo"><Sparkles size={17}/><span>Content demo</span></Link>
         </nav>
 
-        <details className="sidebar-more" open={!["overview","websites","evaluations","settings"].includes(section)}><summary className="nav-link" title="More tools"><MoreHorizontal size={17}/><span>More tools</span></summary><nav aria-label="More tools">{navigation.filter(item=>!["overview","websites","evaluations"].includes(item.section)).map(item=><Link key={item.section} href={item.href} title={item.label} className={`nav-link ${section===item.section?"active":""}`} aria-current={section===item.section?"page":undefined} onClick={()=>setMobileOpen(false)}><item.icon size={17}/><span>{item.label}</span></Link>)}<Link href="/leaderboard" title="The Folio Index" className="nav-link" onClick={()=>setMobileOpen(false)}><Trophy size={17}/><span>The Folio Index</span></Link><Link href="/agents" title="Your agents" className="nav-link" onClick={()=>setMobileOpen(false)}><Bot size={17}/><span>Your agents</span></Link><Link href="/orgs" title="Organizations" className="nav-link" onClick={()=>setMobileOpen(false)}><Building2 size={17}/><span>Organizations</span></Link><Link href="/docs/api" title="API reference" className="nav-link" onClick={()=>setMobileOpen(false)}><Code2 size={17}/><span>API reference</span></Link><Link href="/pricing" title="Plans & usage" className="nav-link" onClick={()=>setMobileOpen(false)}><BookOpen size={17}/><span>Plans & usage</span></Link></nav></details>
+        <details className="sidebar-more" open={!["overview","websites","evaluations","settings"].includes(section)}><summary className="nav-link" title="More tools"><MoreHorizontal size={17}/><span>More tools</span></summary><nav aria-label="More tools">{navigation.filter(item=>!["overview","websites","evaluations"].includes(item.section)).map(item=><Link key={item.section} href={item.href} title={item.label} className={`nav-link ${section===item.section?"active":""}`} aria-current={section===item.section?"page":undefined} onClick={()=>setMobileOpen(false)}><item.icon size={17}/><span>{item.label}</span></Link>)}<Link href="/leaderboard" title="The Folio Index" className="nav-link" onClick={()=>setMobileOpen(false)}><Trophy size={17}/><span>The Folio Index</span></Link><Link href="/agents" title="Your agents" className={`nav-link ${section==="agents"?"active":""}`} aria-current={section==="agents"?"page":undefined} onClick={()=>setMobileOpen(false)}><Bot size={17}/><span>Your agents</span></Link><Link href="/orgs" title="Organizations" className={`nav-link ${section==="orgs"?"active":""}`} aria-current={section==="orgs"?"page":undefined} onClick={()=>setMobileOpen(false)}><Building2 size={17}/><span>Organizations</span></Link><Link href="/docs/api" title="API reference" className="nav-link" onClick={()=>setMobileOpen(false)}><Code2 size={17}/><span>API reference</span></Link><Link href="/pricing" title="Plans & usage" className="nav-link" onClick={()=>setMobileOpen(false)}><BookOpen size={17}/><span>Plans & usage</span></Link></nav></details>
         <div className="sidebar-bottom">
           {isAdminOwner(session?.user.email) && <Link className="nav-link" href="/folio-internal/analytics" title="Product analytics"><BarChart3 size={17}/><span>Product analytics</span></Link>}
           {isAdminOwner(session?.user.email) && <Link href="/admin" title="Admin" className="nav-link" onClick={()=>setMobileOpen(false)}><ShieldCheck size={17}/><span>Admin</span></Link>}
@@ -1336,10 +1337,10 @@ function safeHostname(value: string | null | undefined, fallback = ""): string {
 function Leaderboard(_props: {onMethod:()=>void;onNotify:(s:string)=>void}) {
   const params = useSearchParams();
   const requestedView = params.get("indexView");
-  const indexView = requestedView === "rankings" || requestedView === "html" || requestedView === "published" ? requestedView : "indexed";
+  const indexView = requestedView === "indexed" || requestedView === "rankings" || requestedView === "html" || requestedView === "published" ? requestedView : params.has("query") || params.has("site") ? "rankings" : "indexed";
   function selectView(value: string) {
     const next = new URLSearchParams(params.toString());
-    if (value === "indexed") next.delete("indexView"); else next.set("indexView", value);
+    next.set("indexView", value);
     window.history.pushState(null, "", `/leaderboard${next.size ? `?${next}` : ""}`);
   }
   return <>

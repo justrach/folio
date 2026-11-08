@@ -208,7 +208,7 @@ test("audit, methodology, and search dialogs support keyboard dismissal and navi
 });
 
 test("Index filters, website lookup and source drill-down work", async ({ page }, testInfo) => {
-  await page.goto("/leaderboard");
+  await page.goto("/leaderboard?indexView=rankings");
   const comparison = page.getByRole("region", { name: "Which websites get recommended?" });
   await expect(comparison).toBeVisible();
   await selectValue(comparison.getByLabel("Website comparison audience"), "Shops & brands");
@@ -302,7 +302,7 @@ test("published audits stay separate from search rankings through filtering and 
       },
     });
   });
-  await page.goto("/leaderboard");
+  await page.goto("/leaderboard?indexView=rankings");
   await expect(page.getByRole("region", { name: "Which websites get recommended?" })).toBeVisible();
   await page
     .getByRole("button", { name: "Published page audits", exact: true })

@@ -5,7 +5,7 @@ test('website averages show all sites, model details and URL filters without spe
  const writes:string[]=[],errors:string[]=[];
  page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/api/**',r=>{if(r.request().method()!=='GET')writes.push(r.request().url());return r.fulfill({json:new URL(r.request().url()).pathname === "/api/public/benchmarks" ? publicIndexFixture : null})});
- await page.goto('/leaderboard');
+ await page.goto('/leaderboard?indexView=rankings');
  const chart=page.getByRole('region',{name:'Which websites get recommended?'});
  await expect(chart).toBeVisible();
  await chart.getByRole('button',{name:'Show chart',exact:true}).click();
@@ -56,6 +56,7 @@ test('website averages show all sites, model details and URL filters without spe
 });
 
 test('website ranking values stay inside the chart at intermediate widths',async({page})=>{
+ await page.route('**/api/**',r=>r.fulfill({json:new URL(r.request().url()).pathname==='/api/public/benchmarks'?publicIndexFixture:null}));
  await page.setViewportSize({width:768,height:900});
  await page.goto('/leaderboard?site=ikea.com');
  const bounds=await page.locator('.website-ranking-chart').evaluate(chart=>{

@@ -20,13 +20,14 @@ test("Index refresh uses live published observations in comparison and source an
   await expect(page.getByRole('region',{name:'Public search rankings'})).not.toContainText('Live fixture site');
   updated=true;await page.getByRole('button',{name:'Refresh results',exact:true}).click();
   await expect(page.getByRole('region',{name:'Public search rankings'})).toContainText('Live fixture site');
+  await page.getByRole('button',{name:'Show chart',exact:true}).click();
   await expect(page.getByRole('group',{name:'Top websites by appearance rate'})).toContainText('live-index.example');
   expect(writes).toEqual([]);
 });
 
 test("Index reports unavailable live data without silently rendering the bundled cohort", async({page})=>{
   await page.route('**/api/public/benchmarks',route=>route.fulfill({status:503,json:{error:'Fixture unavailable'}}));
-  await page.goto('/leaderboard');
+  await page.goto('/leaderboard?indexView=rankings');
   await expect(page.getByRole('status')).toContainText('Live results could not be refreshed');
   await expect(page.getByRole('group',{name:'Top websites by appearance rate'})).toHaveCount(0);
   await expect(page.getByRole('button',{name:'Refresh results'})).toBeEnabled();
