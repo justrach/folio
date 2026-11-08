@@ -14,6 +14,13 @@ async function openDemo(page: Page) {
 }
 function noWork(state:Awaited<ReturnType<typeof openDemo>>){expect(state.writes).toEqual([]);expect(state.reads).not.toContain('/api/scans');expect(state.reads).not.toContain('/api/benchmarks/runs');expect(state.errors).toEqual([]);}
 
+test('opening the walkthrough leaves the intro visible and does not take keyboard focus',async({page})=>{
+  const state=await openDemo(page);await page.waitForLoadState('networkidle');
+  await expect(page.getByRole('heading',{name:'“Would a buyer find us?”'})).toBeInViewport();
+  await expect(page.getByRole('heading',{name:'Think like the person buying.'})).not.toBeFocused();
+  noWork(state);
+});
+
 test('a teammate can turn a buyer question into a sourced, clearly labelled handoff',async({page,context})=>{
   await context.grantPermissions(['clipboard-read','clipboard-write']);
   const state=await openDemo(page);

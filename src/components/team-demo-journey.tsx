@@ -57,10 +57,11 @@ export function TeamDemoJourney({actualHref = "/overview?view=workspace"}: {actu
   const [copying, setCopying] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
   const editor = useRef<HTMLTextAreaElement>(null);
-  const mounted = useRef(false);
+  const previousStep = useRef(step);
   const example = examples[choice];
   useLayoutEffect(() => {
-    if (!mounted.current) { mounted.current = true; return; }
+    if (previousStep.current === step) return;
+    previousStep.current = step;
     heading.current?.focus({ preventScroll: true });
     heading.current?.scrollIntoView({ block: "nearest" });
   }, [step]);
