@@ -70,6 +70,7 @@ import { SeoChecks } from "./seo-checks";
 import { SearchConsolePanel } from "./search-console-panel";
 import { OwnedWebsites } from "./owned-websites";
 import { RealOverview, workspaceOverviewHref } from "./real-overview";
+import { isAdminOwner } from "@/lib/admin-emails";
 import { IndexedDomains } from "./indexed-domains";
 import { OrgPreview } from "./org-preview";
 import { StartHere } from "./start-here";
@@ -510,6 +511,12 @@ function WorkspaceDashboard({ section }: { section: string }) {
             <BookOpen size={17} />
             <span>Plans & usage</span>
           </Link>
+          {isAdminOwner(session?.user.email) && (
+            <Link href="/admin" className="nav-link" onClick={() => setMobileOpen(false)}>
+              <ShieldCheck size={17} />
+              <span>Admin</span>
+            </Link>
+          )}
           <Link
             href="/settings"
             className={`nav-link ${section === "settings" ? "active" : ""}`}

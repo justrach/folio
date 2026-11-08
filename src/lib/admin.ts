@@ -7,7 +7,9 @@ import "server-only";
  * additive so a local dev account can be added in `.dev.vars` without editing
  * code or widening the deployed list.
  */
-const OWNERS = ["rachxpradhan@gmail.com", "yuxilim22@gmail.com"];
+import { ADMIN_OWNERS } from "./admin-emails";
+
+const OWNERS = [...ADMIN_OWNERS];
 
 export function adminEmails(): string[] {
   const extra = (process.env.ADMIN_EMAILS ?? "")
