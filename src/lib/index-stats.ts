@@ -26,7 +26,8 @@ export async function indexStats(): Promise<IndexStats> {
     const domains = await db.prepare(
       "SELECT COUNT(DISTINCT site_domain) AS domains FROM research.pages WHERE site_domain IS NOT NULL",
     ).first<{ domains: number }>();
-    const embedded = await db.prepare("SELECT COUNT(*) AS embedded FROM research.page_embeddings_v2").first<{ embedded: number }>();
+    // Vectors live in turbopuffer now; Postgres keeps one marker row per embedded page.
+    const embedded = await db.prepare("SELECT COUNT(*) AS embedded FROM research.page_embedding_ids").first<{ embedded: number }>();
     const latest = await db.prepare("SELECT MAX(fetched_at) AS at FROM research.pages").first<{ at: string | null }>();
     const value: IndexStats = {
       available: true,
@@ -37,7 +38,8 @@ export async function indexStats(): Promise<IndexStats> {
     };
     cache = { value, at: Date.now() };
     return value;
-  } catch {
+  } catch (error) {
+    console.error("indexStats failed", error instanceof Error ? error.message : error);
     return empty;
   }
 }

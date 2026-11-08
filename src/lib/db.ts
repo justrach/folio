@@ -16,8 +16,11 @@ export function postgresConnection(env: EngineEnv): string | null {
 
 /** Hyperdrive pools upstream connections. Local pg sockets belong to one request. */
 export function getPgPool(connectionString: string, viaHyperdrive = false): Pool {
-  return requestResource(`${viaHyperdrive}:${connectionString}`, () => new Pool({
-    connectionString,
+  // libpq-style parameters (sslrootcert=system) are not understood by
+  // node-postgres: it reads them as file paths. The TLS decision is made below.
+  const clean = connectionString.split("?")[0];
+  return requestResource(`${viaHyperdrive}:${clean}`, () => new Pool({
+    connectionString: clean,
     ssl: viaHyperdrive ? undefined : { rejectUnauthorized: true },
     max: 5,
     // Also release sockets when called by a local Next route outside the Worker wrapper.
