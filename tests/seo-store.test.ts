@@ -3,12 +3,12 @@ import test from "node:test";
 import { readFileSync } from "node:fs";
 import { DatabaseSync, type SQLInputValue } from "node:sqlite";
 import type { D1Database } from "@cloudflare/workers-types";
-import { fetchSeoOverview, type SeoOverviewResult } from "../src/lib/dataforseo";
-import { reserveSeoReport, completeSeoReport, getOwnedSeoReport, listOwnedSeoReports, SeoStoreError } from "../src/lib/seo-store";
+import { fetchSeoOverview, fetchSeoDetail, type SeoDetailResult, type SeoOverviewResult } from "../src/lib/dataforseo";
+import { reserveSeoReport, completeSeoReport, saveSeoReportDetail, getOwnedSeoReport, listOwnedSeoReports, SeoStoreError } from "../src/lib/seo-store";
 
 function database() {
   const sqlite = new DatabaseSync(":memory:");
-  for (const migration of ["0001_initial.sql", "0004_seo_reports.sql"])
+  for (const migration of ["0001_initial.sql", "0004_seo_reports.sql", "0024_seo_report_detail.sql"])
     sqlite.exec(readFileSync(new URL(`../migrations/${migration}`, import.meta.url), "utf8"));
   for (const id of ["alice", "bob"])
     sqlite.prepare("INSERT INTO user(id,name,email,created_at,updated_at) VALUES(?,?,?,?,?)")
@@ -116,4 +116,49 @@ test("empty authenticated owner IDs never bypass private report checks", async t
   await assert.rejects(reserveSeoReport(db, "", "example.com"), SeoStoreError);
   await assert.rejects(listOwnedSeoReports(db, ""), SeoStoreError);
   await assert.rejects(getOwnedSeoReport(db, "", "any"), SeoStoreError);
+});
+
+async function fixtureDetail(): Promise<SeoDetailResult> {
+  return fetchSeoDetail("example.com", { userId: "alice" }, {
+    env: { DATAFORSEO_LOGIN: "fixture-login", DATAFORSEO_PASSWORD: "fixture-password", DATAFORSEO_ALLOWED_USER_IDS: "alice" },
+    fetcher: async (input) => String(input).includes("ranked_keywords")
+      ? Response.json({ status_code: 20000, cost: 0.01, tasks: [{ status_code: 20000, cost: 0.01, id: "fixture-task", result: [{ items: [{ keyword_data: { keyword: "example pricing", keyword_info: { search_volume: 900 } }, ranked_serp_element: { serp_item: { rank_absolute: 3, url: "https://example.com/pricing", etv: 4.5 } } }] }] }] })
+      : Response.json({ status_code: 20000, cost: 0.02, tasks: [{ status_code: 20000, cost: 0.02, id: "fixture-task", result: [{ items: [{ url_from: "https://source.example/post", domain_from: "source.example", rank: 55 }] }] }] }),
+  });
+}
+
+test("row-level detail is saved once, owner-scoped, and never inside the aggregate history list", async t => {
+  const { db, sqlite } = database(); t.after(() => sqlite.close());
+  const reserved = await reserveSeoReport(db, "alice", "example.com");
+  const detail = await fixtureDetail();
+  // A pending report has no aggregate observation to attach rows to.
+  await assert.rejects(saveSeoReportDetail(db, "alice", reserved.id, detail), SeoStoreError);
+  const saved = await completeSeoReport(db, "alice", reserved.id, await fixtureResult());
+  assert.equal(saved.detail, null);
+  assert.equal(saved.detailRetrievedAt, null);
+  await assert.rejects(saveSeoReportDetail(db, "bob", saved.id, detail), SeoStoreError);
+  const withDetail = await saveSeoReportDetail(db, "alice", saved.id, detail);
+  assert.equal(withDetail.detail?.keywords.data?.rows[0].keyword, "example pricing");
+  assert.equal(withDetail.detailRetrievedAt, detail.collectedAt);
+  assert.equal(withDetail.result?.domain, "example.com");
+  // A second collection would be another paid request and is refused here.
+  await assert.rejects(saveSeoReportDetail(db, "alice", saved.id, detail), SeoStoreError);
+  assert.equal((await getOwnedSeoReport(db, "alice", saved.id))?.detail?.backlinks.data?.rows.length, 1);
+  assert.deepEqual(await listOwnedSeoReports(db, "bob"), []);
+  const summary = (await listOwnedSeoReports(db, "alice"))[0];
+  assert.equal(summary.detailState, "collected");
+  assert.equal(Object.hasOwn(summary, "detail"), false);
+  assert.ok(!JSON.stringify(summary).includes("source.example"));
+});
+
+test("detail rows cannot be attached to a report for a different domain", async t => {
+  const { db, sqlite } = database(); t.after(() => sqlite.close());
+  const reserved = await reserveSeoReport(db, "alice", "example.com");
+  const saved = await completeSeoReport(db, "alice", reserved.id, await fixtureResult());
+  const detail = await fixtureDetail();
+  await assert.rejects(
+    saveSeoReportDetail(db, "alice", saved.id, { ...detail, domain: "other.example.com" }),
+    SeoStoreError,
+  );
+  assert.equal((await getOwnedSeoReport(db, "alice", saved.id))?.detail, null);
 });

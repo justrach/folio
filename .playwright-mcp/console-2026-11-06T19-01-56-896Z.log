@@ -1,0 +1,2 @@
+[    2775ms] [WARNING] No available adapters. @ https://count.perplexity.ai/bs#2ec35cee-f0dc-4bf9-9276-7764bce50d17:0
+[    3024ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.perplexity.ai/rest/event/analytics/probe:0

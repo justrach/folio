@@ -48,3 +48,24 @@ Check landing, index, pricing, workspace, evaluations, website crawl, costs, and
 The dashboard and `/start` now extend the approved cream/forest-green landing identity. Dashboard tokens and compact operational layout are scoped in `src/components/dashboard-refresh.css`; onboarding uses scoped tokens in `onboarding.css`. Dashboard appearance and icon-rail expansion are explicit, persistent local preferences. Keep titles at 24–26px, preserve task labels, and show filters before exploratory charts.
 
 The Index's searchable website list is primary; its chart and full comparison table are optional detail. Public overview uses actual Bencho Stacked Bars source with published observation counts and dates, plus actual Bencho Label Input source for searches. Never restore the upstream generated demo series. Keep latest-per-question totals distinct from published history counts. Mobile collapses analytics so questions and evidence remain accessible. See `docs/design/DASHBOARD-REFRESH.md` for research, asset prompt and validation.
+
+
+## Checking with Impeccable
+
+Impeccable is a design reviewer for agents and a CLI, installed as a dev
+dependency (`impeccable`) plus a project skill in `.claude/skills/impeccable`.
+Use the bun scripts, not `npx`:
+
+```sh
+bun run design:check    # regex + structure scan of src/components and src/app
+bun run design:live     # full DOM scan of the running dev server (catches tiny text, contrast)
+bun run design:install  # refresh the skill files; the platform binary is gitignored
+```
+
+The landing deliberately uses the warm paper palette, so `cream-palette` is
+ignored in `.impeccable/config.json`; every other rule stays on.
+
+The DOM scan needs a running `bun run dev`. Findings are ranked failures, not
+style suggestions: a page with findings has text below the legibility floor or a
+contrast problem. The type floor is 12px for functional text; `design:live`
+should report zero before a UI change is considered done.

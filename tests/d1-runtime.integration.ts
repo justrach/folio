@@ -12,12 +12,13 @@ import { Miniflare } from "miniflare";
 import { unstable_splitSqlQuery } from "wrangler";
 import * as authSchema from "../src/lib/auth-schema";
 import { createDemoEvaluationRun } from "../src/lib/eval-verifier";
-import { createEvaluationRun, getEvaluationRun, getEvaluationUsage, listEvaluationRuns,
+import { createEvaluationRun, getEvaluationRun, getEvaluationUsage, listEvaluationRuns, listEvaluationRunSummaries,
   updateEvaluationRun, EvalStoreError } from "../src/lib/eval-store";
 import { deleteEvaluationEvidence } from "../src/lib/eval-deletion";
 import { reserveSeoReport, completeSeoReport, getOwnedSeoReport, listOwnedSeoReports,
   SeoStoreError } from "../src/lib/seo-store";
-import type { EvaluationRun } from "../src/lib/evals";
+import { evaluationSummary, type EvaluationRun } from "../src/lib/evals";
+import { RECONCILIATION_STALE_MS, runEvaluationReconciliationJob } from "../src/lib/eval-reconciliation-job";
 import type { SeoOverviewResult } from "../src/lib/dataforseo";
 
 /** Standalone: node --conditions=react-server --import tsx --test tests/d1-runtime.integration.ts
@@ -70,6 +71,38 @@ async function applyMigrations(db: D1Database) {
 }
 
 async function withIsolatedDatabase(work: (db: D1Database) => Promise<void>) {
+  // Setting PG_INTEGRATION_URL runs the same assertions against the Postgres
+  // adapter inside a transaction that is always rolled back, so the mirror keeps
+  // only real data and no migration step is needed (the schema already exists).
+  const pgUrl = process.env.PG_INTEGRATION_URL;
+  if (pgUrl) {
+    const { default: pg } = await import("pg");
+    const { createPostgresDatabase } = await import("../src/lib/pg/database");
+    const pool = new pg.Pool({ connectionString: pgUrl.split("?")[0], ssl: { rejectUnauthorized: false }, max: 1 });
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+      // One savepoint per statement keeps a failed query from poisoning the rest
+      // of the transaction, so the assertion that fails is the one reported.
+      const executor = {
+        query: async (sql: string, values: unknown[]) => {
+          await client.query("SAVEPOINT statement");
+          try {
+            const result = await client.query(sql, values);
+            await client.query("RELEASE SAVEPOINT statement");
+            return { rows: result.rows as never[], rowCount: result.rowCount };
+          } catch (error) {
+            await client.query("ROLLBACK TO SAVEPOINT statement");
+            throw error;
+          }
+        },
+      };
+      await work(createPostgresDatabase(executor) as unknown as D1Database);
+    } finally {
+      try { await client.query("ROLLBACK"); } finally { client.release(); await pool.end(); }
+    }
+    return;
+  }
   const directory = await mkdtemp(join(tmpdir(), "folio-d1-integration-"));
   let runtime: Miniflare | undefined;
   try {
@@ -148,7 +181,10 @@ test("real D1 nullable website daily cap retains reservations and the atomic act
   });
 });
 
-test("real D1 applies every migration and supports Better Auth, private repositories, foreign keys and batch rollback", { timeout: 90_000 }, async () => {
+test("real D1 applies every migration and supports Better Auth, private repositories, foreign keys and batch rollback",
+  // The Postgres mirror is created from these migrations by scripts/pg-schema;
+  // applying SQLite DDL and asserting PRAGMA behaviour only makes sense on D1.
+  { timeout: 90_000, skip: process.env.PG_INTEGRATION_URL ? "D1-only migration and PRAGMA assertions" : false }, async () => {
   await withIsolatedDatabase(async db => {
     assert.equal((await db.prepare("PRAGMA foreign_keys").first<{ foreign_keys: number }>())?.foreign_keys, 1);
     const trigger = await db.prepare("SELECT name FROM sqlite_master WHERE type = 'trigger' AND name = ?")
@@ -301,4 +337,73 @@ test("D1 auth, evaluations, SEO observations and deletion quotas survive runtime
     const failure = disposals.find((result): result is PromiseRejectedResult => result.status === "rejected");
     if (failure) throw failure.reason;
   }
+});
+
+test("real D1 returns owner-scoped summary pages with stable ties and deletion-safe cursors", { timeout: 90_000 }, async () => {
+  await withIsolatedDatabase(async db => {
+    const alice = await signUp(db, "history-alice");
+    const bob = await signUp(db, "history-bob");
+    const fixture = await createDemoEvaluationRun();
+    const at = "2026-09-13T12:00:00.000Z";
+    const saved: EvaluationRun[] = [];
+    for (const id of ["history-a", "history-b", "history-c", "history-d"]) {
+      saved.push(await createEvaluationRun(db, alice.id, {
+        ...fixture, id, createdAt: at, updatedAt: at,
+        mode: "live", status: "failed", sessionId: null,
+        events: id === "history-c" ? [{ ...fixture.events[0], id: "input-uncertain" }] : [],
+        agentOutput: { privatePayload: "D1_PRIVATE_SENTINEL".repeat(1000) },
+      }, { maxLivePerDay: null }));
+    }
+    await createEvaluationRun(db, bob.id, { ...fixture, id: "other-owner", createdAt: at });
+    const first = await listEvaluationRunSummaries(db, alice.id, { limit: 2 });
+    assert.deepEqual(first.runs, saved.slice(2).reverse().map(evaluationSummary));
+    assert.ok(first.nextCursor);
+    assert.ok(!JSON.stringify(first).includes("D1_PRIVATE_SENTINEL"));
+    await deleteEvaluationEvidence(db, alice.id, "history-c", 0);
+    await deleteEvaluationEvidence(db, alice.id, "history-b", 0);
+    const second = await listEvaluationRunSummaries(db, alice.id, { limit: 2, cursor: first.nextCursor });
+    assert.deepEqual(second.runs, [evaluationSummary(saved[0])]);
+    assert.equal(second.nextCursor, null);
+    assert.deepEqual(await listEvaluationRunSummaries(db, bob.id, { cursor: first.nextCursor }), { runs: [], nextCursor: null });
+    assert.equal((await getEvaluationUsage(db, alice.id, null)).remainingLiveRuns, null);
+  });
+});
+
+test("real D1 reconciliation health preserves successful freshness after failed stale checks", { timeout: 90_000 }, async () => {
+  await withIsolatedDatabase(async db => {
+    const owner = await signUp(db, "health-owner");
+    const now = Date.parse("2026-09-13T12:00:00.000Z");
+    const run = await createEvaluationRun(db, owner.id, {
+      ...await liveRun(), createdAt: new Date(now).toISOString(), updatedAt: new Date(now).toISOString(),
+    });
+    const env = {
+      EVALUATION_RECONCILE_ENABLED: "true",
+      EVALUATION_RECONCILE_SECRET: "isolated-reconciliation-fixture-secret",
+      OPENAI_API_KEY: "synthetic-unused-fixture",
+    };
+    const successful = await runEvaluationReconciliationJob(db, env, {
+      now: () => now,
+      reconcile: async (_db, ownerId, runId) => {
+        assert.equal(ownerId, owner.id); assert.equal(runId, run.id);
+        return run;
+      },
+    });
+    assert.deepEqual(successful, { status: "completed", attempted: 1, reconciled: 1, failed: 0, stale: 0, lastSuccessAt: now });
+    const later = now + RECONCILIATION_STALE_MS + 1;
+    const failed = await runEvaluationReconciliationJob(db, env, {
+      now: () => later,
+      reconcile: async () => { throw new Error("Synthetic reconciliation failure"); },
+    });
+    assert.deepEqual(failed, { status: "completed", attempted: 1, reconciled: 0, failed: 1, stale: 1, lastSuccessAt: now });
+    assert.deepEqual(await db.prepare(`
+      SELECT last_started_at, last_finished_at, last_success_at, attempted, reconciled, failed, stale
+      FROM background_job_health WHERE name = ?
+    `).bind("evaluation-read-reconciliation").first(), {
+      last_started_at: later, last_finished_at: later, last_success_at: now,
+      attempted: 1, reconciled: 0, failed: 1, stale: 1,
+    });
+    assert.deepEqual(await db.prepare(`
+      SELECT background_checked_at, background_reconciled_at FROM evaluation_runs WHERE user_id = ? AND id = ?
+    `).bind(owner.id, run.id).first(), { background_checked_at: later, background_reconciled_at: now });
+  });
 });

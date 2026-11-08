@@ -29,7 +29,13 @@ const providerObservation = (data:z.ZodType) => obj({status:z.enum(["success","e
 const organic = obj({domain:s,searchEngine:z.literal("Google"),locationCode:n,locationName:z.literal("United States"),languageCode:s,organicKeywords:nn,estimatedMonthlyTraffic:nn,estimatedTrafficValueUsd:nn,positions:z.array(obj({label:s,count:nn})),movement:obj({new:nn,up:nn,down:nn,lost:nn}),dataUpdatedAt:nil,note:s});
 const backlinks = obj({domain:s,backlinks:nn,referringDomains:nn,referringMainDomains:nn,referringPages:nn,brokenBacklinks:nn,brokenPages:nn,crawledPages:nn,authorityRank:nn,authorityRankScale:z.literal(100),backlinksSpamScore:nn,firstSeenAt:sn,includeSubdomains:z.literal(true),statusType:z.literal("live"),note:s});
 const seoResult = obj({id:s,domain:s,provider:z.literal("DataForSEO"),fetchedAt:s,organic:providerObservation(organic),backlinks:providerObservation(backlinks),status:z.enum(["error","partial","complete"]),totalCostUsd:nn,knownCostUsd:n,costIsComplete:b,notes:strings});
-const report = obj({id:s,domain:s,createdAt:s,retrievedAt:sn,publication:z.literal("private"),state:z.enum(["pending","complete"]),result:seoResult.nullable()});
+const report = obj({id:s,domain:s,createdAt:s,retrievedAt:sn,publication:z.literal("private"),state:z.enum(["pending","complete"]),result:seoResult.nullable(),detail:z.unknown().nullable().optional(),detailRetrievedAt:sn.optional()});
+const seoScope = obj({location:sn,language:sn,includeSubdomains:b.nullable()});
+const seoDetailRows = {
+  keywords:z.array(obj({keyword:s,position:nn,landingPage:sn,searchVolume:nn,estimatedTraffic:nn})).nullable(),
+  landingPages:z.array(obj({url:s,keywords:n,estimatedTraffic:nn})).nullable(),
+  backlinkRows:z.array(obj({sourceUrl:s,sourceDomain:sn,targetUrl:sn,dofollow:b.nullable(),authorityRank:nn,spamScore:nn,firstSeenAt:sn})).nullable(),
+};
 const seoLookup = z.union([obj({report,replayed:b,saved:b}),obj({report:obj({id:s,domain:s,result:seoResult}),replayed:z.literal(false),saved:z.literal(false),storageWarning:s})]);
 const recommendation = obj({position:n,name:s,url:sn,domain:sn,matchesTarget:b.nullable(),citationUrls:strings});
 const metrics = {targetDomain:sn,targetNamed:z.enum(["yes","no","unknown"]),targetCited:b.nullable(),targetPositions:z.array(n),recommendations:z.array(recommendation),citationCount:n};
@@ -52,7 +58,11 @@ export const folioSuccessSchemas: Record<string,z.ZodType> = {
   folio_observations:obj({items:z.array(z.union([obj({target,result:savedObservation}),obj({target,error:folioErrorSchema})]))}),
   folio_capabilities:obj({version:s,supportedFeatures:strings,allowedScopes:z.array(scope),tools:z.array(obj({name:s,requiredScope:scope,allowed:b,paid:b,requirements:strings,conditionalScopes:z.array(obj({when:s,requiredScope:scope,allowed:b}))})),observationTargets:obj({website:obj({kind:z.literal("website"),websiteId:s}),keyword:obj({kind:z.literal("keyword"),caseId:s})})}),
   folio_seo_lookup:seoLookup,folio_sandbox_seo:seoLookup,
-  folio_seo_reports:z.union([obj({...page,items:z.array(obj({id:s,domain:s,createdAt:s,retrievedAt:sn}))}),obj({report,detail:obj({state:z.literal("not_collected"),keywords:nil,landingPages:nil,backlinkRows:nil,reason:s,sourceUpdatedAt:nil,retrievedAt:sn,scope:obj({location:sn,language:sn,includeSubdomains:b.nullable()}),estimates:z.literal(true)})})]),
+  folio_seo_reports:z.union([
+    obj({...page,items:z.array(obj({id:s,domain:s,createdAt:s,retrievedAt:sn,detailState:z.enum(["collected","not_collected"]).optional()}))}),
+    obj({report,detail:obj({state:z.literal("not_collected"),...seoDetailRows,reason:s,sourceUpdatedAt:nil,retrievedAt:sn,detailRetrievedAt:nil,scope:seoScope,estimates:z.literal(true)})}),
+    obj({report,detail:obj({state:z.enum(["collected","error"]),...seoDetailRows,reason:s,sections:obj({keywords:z.enum(["collected","error"]),backlinks:z.enum(["collected","error"])}),sourceUpdatedAt:sn,retrievedAt:sn,detailRetrievedAt:sn,detailCostUsd:nn,costIsComplete:b,rowLimit:nn,scope:seoScope,estimates:z.literal(true)})}),
+  ]),
   folio_visibility:visibility,folio_visibility_compare:comparison,
   folio_page_evidence:obj({...page,state:z.enum(["saved_history","not_collected"]),recommendationRule:s,items:z.array(z.union([
     obj({runId:s,state:z.enum(["fetch_failed","not_collected"]),url:s}),

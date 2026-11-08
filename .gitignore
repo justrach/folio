@@ -14,3 +14,8 @@ test-results/
 .local/
 .graff/
 .DS_Store
+
+# Impeccable ships a per-platform binary; source it from the npm package
+# (`bun run design:install`) instead of committing it.
+.claude/skills/impeccable/scripts/bin/
+.agents/skills/impeccable/scripts/bin/

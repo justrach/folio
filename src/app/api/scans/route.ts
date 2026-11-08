@@ -50,12 +50,21 @@ export async function GET(request: Request) {
           )
           .bind(session.user.id);
     const { results } = await query.all<{ result_json: string }>();
-    return Response.json(
-      {
-        scans: results.map((row) => JSON.parse(row.result_json) as ScanResult),
-      },
-      { headers: { "Cache-Control": "private, no-store" } },
-    );
+    // A stored payload can predate the current shape (or be a fixture). Skip the
+    // ones that are not a usable scan instead of handing the client rows whose
+    // id and url are missing.
+    const scans = results
+      .map((row) => {
+        try {
+          return JSON.parse(row.result_json) as Partial<ScanResult>;
+        } catch {
+          return null;
+        }
+      })
+      .filter((scan): scan is ScanResult =>
+        Boolean(scan && typeof scan.id === "string" && typeof scan.url === "string" && typeof scan.createdAt === "string"),
+      );
+    return Response.json({ scans }, { headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
     return errorResponse(error);
   }

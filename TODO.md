@@ -22,6 +22,8 @@ Working checklist for completing the current website-evaluation pilot. Check ite
 - [x] Let the managed agent inspect an explicitly selected saved SEO report through a bounded application tool; do not give it unrestricted paid-provider access.
 - [x] Add private evaluation-evidence deletion with lifecycle safeguards and preserved spending accounting.
 - [x] Add an authenticated, bounded background reconciliation job and Cloudflare scheduling configuration; it may retrieve existing sessions but never create paid tasks automatically.
+- [x] Persist reconciliation health and last-success timestamps, flag stale background checks, and propagate partial failures through sanitized scheduler diagnostics. Requires migration `0023_reconciliation_health.sql`; deployed monitoring remains unverified.
+- [x] Project lightweight private evaluation summaries in D1 and expose stable cursor pagination with older-history controls in Page evidence and Agents. Local unit, focused actual-D1, and desktop/mobile history regressions pass; no provider requests or deployment were performed.
 - [x] Add GUI and backend regression coverage for these workflows, then run type checking, unit tests, GUI tests, and the Cloudflare build.
 - [x] Update README/architecture/evaluation docs and this checklist; push the completed changes to the public repository.
 
@@ -50,11 +52,16 @@ Search Console implementation now includes optional Google identity, explicit re
 - [ ] Finish production application configuration, deployment secrets, the intended `https://usefolio.site` hostname, and deployed scheduler validation. The saved checkpoint below records an existing production D1 with migration `0013` applied; checked-in local Wrangler configuration still uses a placeholder ID. Remote database existence does not establish deployment of this revision or hosted validation.
 - [x] Verify hosted Actions on the public repository. The full `Folio checks` workflow passed on cleaned commit `b9c5cf0` on 13 September 2026 ([run](https://github.com/justrach/folio/actions/runs/34738507709)); validation of later commits is recorded separately.
 - [ ] Choose/configure a payment processor before enabling actual subscriptions. Current pricing is a proposal and creates no charges.
+- [x] Upgrade Better Auth to 1.7.18 for CVE-2026-114607 (critical: OAuth state usable as a magic link) and two further advisories fixed in 1.7.7, one of them specific to Postgres rate limiting. TypeScript, 336 unit tests, 37 real-D1 integration cases and the GitHub auth GUI spec pass; the one intermittent GUI failure reproduces as dev-server file-descriptor exhaustion, not auth.
+- [ ] Validate the enterprise proposal in [enterprise pricing](docs/ENTERPRISE-PRICING.md): a $1,000/month Index Partner tier and a $3,000 pilot quarter exist only as a quote. No entitlements, ledger, or payment provider enforce them, and no customer has agreed to a price yet.
 
 ## September checkpoint and next implementation steps
 
 - [x] Add optional Google identity and explicit, private Search Console imports with isolated D1 and browser regressions.
 - [x] Add an independently sourced 36-website directory across five audiences, Spectrum-derived sortable tables, and bounded public-homepage `readiness-v1` observations. The current batch measures all 36 public pages and reproduces offline; see [coverage](docs/DIRECTORY-COVERAGE.md) and [evaluation](docs/DEVELOPER-TOOLS-EVALUATION.md). These are separate from agent-task benchmarks.
+- [x] Read what those 36 companies do on their own public pages — agent-ready documentation, proof next to claims, migration and support as product — with Parallel Extract over 72 URLs. It is a non-scoring review with stated limits; see [strengths](docs/DEVELOPER-TOOLS-STRENGTHS.md).
+- [x] Inventory the same 36 sites from their sitemaps (188,705 URLs across 33 that answered; three block non-browser agents) and join the cached ranking sample for five domains. Free pass; the paid ranking run stopped at HTTP 402 after six domains and $0.2628, so 30 domains lack a ranking join. See [site inventory](docs/SITE-INVENTORY-ANALYSIS.md).
+- [x] Complete the ranking join for all 36 sites ($1.42 total) and sample what the pages are about with Parallel Extract (979 pages, about $1.08, 30 URLs per site). `box.com` and `daytona.io` remain unavailable for sitemap inventory. See [site inventory](docs/SITE-INVENTORY-ANALYSIS.md).
 - [x] Add a public privacy notice using `support@usefolio.site` and preserve the cream/green visual system during landing cleanup.
 - [x] Implement separate private keyword suite/case/run storage and a managed hosted-sandbox transport with fixture tests. Baselines are prior observations, not answer keys.
 - [x] Validate the supplied DataForSEO credentials using its free account endpoint. No paid SEO lookup is implied by this credential check.
@@ -119,7 +126,7 @@ Production Cloudflare deployment and payment setup remain unchecked. Hosted CI p
 ## MCP evidence and public graph follow-up
 
 - Implemented separate historical/current-compatible observations, bounded typed batch reads, paginated discovery/history, matched saved visibility comparisons, separate reviewed product/host metrics, capability/error envelopes, and saved page-evidence access. See [MCP contracts and limits](docs/MCP.md).
-- SEO detail investigation found that current persisted reports contain aggregates only. Exact report reads now state that keyword, landing-page and backlink rows were not collected. A row-level provider collector is not implemented by this change.
+- Row-level SEO detail is now implemented as a separate explicit paid collection on a saved report: up to 50 ranked keyword rows with landing pages plus 50 live backlink rows, stored in `seo_reports.detail_json` (migration `0024_seo_report_detail.sql`). Exact MCP report reads return either `not_collected` or the collected rows.
 - Public rankings now graph actual returned positions; the public sample-score tab is removed. A separate real multi-company scoring evaluation is tracked in [issue #8](https://github.com/justrach/folio/issues/8).
 - Local fixtures, provider validation and production deployment remain separately recorded; these entries do not establish new paid/live collection.
 
@@ -134,7 +141,7 @@ Production: migration `0013_seo_agent_tools.sql` was applied successfully to the
 Remaining acceptance work:
 - [ ] Finish final integrated build/deployment and verify public pages/authenticated boundary on the deployed version. No new paid provider test is authorized by this checkpoint.
 - [ ] Validate the MCP workflows with a hosted owner-scoped client separately from SDK/D1 fixtures.
-- [ ] Review issue #7 row-level collection scope: saved aggregate reports now explicitly say detail was never collected; no new detailed SEO collector exists.
+- [x] Review issue #7 row-level collection scope: persisted reports keep aggregates, and keyword/landing-page/backlink rows are collected only on an explicit second action for one saved report, once per report, with its own hourly limit and unknown-cost handling. No aggregate is ever presented as a row set.
 - [ ] Integrate/review the separate real-readiness graph task (#8) when ready; do not invent Overall/SEO health/Discovery scores.
 
 ## Luna crawl follow-up
@@ -145,3 +152,12 @@ Remaining acceptance work:
 
 - [x] Implement Luna-compatible website-question research and reusable keyword research MCP with bounded private D1 receipts and reported costs.
 - [ ] Validate a live Luna → keyword research MCP → DataForSEO task; fixtures do not establish provider connectivity. See [keyword research](docs/KEYWORD-RESEARCH.md).
+
+## SEO row-level detail
+
+- [x] Add explicit keyword/landing-page/backlink row collection on one saved SEO report (`POST /api/seo-reports/<id>/detail`, migration `0024_seo_report_detail.sql`), an explicit browser action, and collected/not-collected MCP detail states. Local fixtures, 315 unit tests, four desktop/mobile SEO browser cases and TypeScript pass; no paid provider request was made.
+- [x] Validate live row retrieval with the real DataForSEO account, through both the adapter and the authenticated routes served from the built Worker: 50 keyword rows, 33 grouped landing pages and 30 backlink rows, persisted and reopened from D1, with a second collection refused (`409`). An invalid `mode` value was caught and fixed (provider status `40501`). Panel and MCP live reads keep fixture coverage. See [live validation](docs/LIVE-VALIDATION.md).
+
+## OpenNext build tooling
+
+- [x] Upgraded off the unsupported pin: `next` **16.4.5**, `@opennextjs/cloudflare` **1.20.16**, `wrangler` **4.158.0**. `bun run cf:build` now succeeds with no `--dangerouslyUseUnsupportedNextVersion` flag, the peers (`next >=15.5.29 <16 || >=16.4.5`, `wrangler ^4.148.0`) are satisfied, and the deployment was verified live. Next 16 also updated `tsconfig.json` (`jsx: react-jsx`, `.next/dev/types` in `include`) and `dev` now runs Turbopack.

@@ -33,7 +33,7 @@
 .login-form .form-error { margin-top: 14px; font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
 .login-art { min-width: 0; }
 .login-art img { display: block; width: 100%; height: auto; aspect-ratio: 4/5; object-fit: cover; border-radius: 12px; }
-.login-art > div { display: flex; justify-content: space-between; gap: 16px; margin-top: 12px; color: var(--folio-text-secondary); font-size: 11px; }
+.login-art > div { display: flex; justify-content: space-between; gap: 16px; margin-top: 12px; color: var(--folio-text-secondary); font-size: 12px; }
 .login-footer { display: flex; justify-content: space-between; gap: 16px; width: min(1240px, 100%); margin-inline: auto; padding: 16px 40px 22px; color: var(--folio-text-secondary); font-size: 12px; }
 .login-footer a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: underline; text-underline-offset: 3px; }
 .login-footer > span { align-self: center; }

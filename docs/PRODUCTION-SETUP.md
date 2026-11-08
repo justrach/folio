@@ -83,3 +83,15 @@ The production configuration was used with `--keep-vars`; existing D1, auth URL,
 Validation: TypeScript, all 258 unit tests, 44 affected desktop/mobile browser checks, and the final production OpenNext build passed. Earlier public-ranking UI tests timed out by repeating all 3,500 catalog queries in 45 seconds; browser coverage now checks every category boundary plus published/unmeasured states, while strict artifact tests still validate all stored records. A prior baseline also passed 14 public-dashboard browser checks.
 
 Live API validation confirmed 3,500 questions, 286 published observations, 121 distinct recommended hosts and 1,142 distinct cited URLs. All 286 observations are Astra open-web results; this release creates no new observations or model diversity. Homepage/login/overview returned 200; anonymous private site/benchmark APIs returned 401. The independent mention index retained its three cohorts and ten query breakdowns. These are different evaluation scopes and are not pooled.
+
+### Vector store
+
+Page embeddings live in turbopuffer, not Postgres (see [embeddings](EMBEDDINGS.md)).
+The index worker needs the key for search and ingestion; the app worker carries the
+same secret for server-side vector work.
+
+```sh
+wrangler secret put TURBOPUFFER_API_KEY --config wrangler.jsonc              # folio-index-api
+wrangler secret put TURBOPUFFER_API_KEY --config wrangler.production.jsonc   # folio-visibility
+```
+

@@ -273,7 +273,7 @@ test("proposed pricing requires sign-in and links to evaluations without startin
   });
   await page.goto("/pricing");
   await expect(page.getByText("Proposed pricing · billing is not active", { exact: true })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Sign in to register interest", exact: false })).toHaveCount(2);
+  await expect(page.getByRole("link", { name: "Sign in to register interest", exact: false })).toHaveCount(3);
   await expect(page.getByRole("button", { name: "Register interest", exact: true })).toHaveCount(0);
   await page.getByText("Are private results included in the public index?", { exact: true }).click();
   await expect(page.getByText(/Evaluation prompts, captured evidence, agent outputs, and your account remain private/)).toBeVisible();
@@ -296,16 +296,16 @@ test("pricing saves only an explicit private preference and preserves it across 
     await route.fulfill({ json: { interest: selected ? { plan: selected, updatedAt: Date.now() } : null, billingActive: false } });
   });
   await page.goto("/pricing");
-  const builder = page.locator(".pricing-card").filter({ has: page.getByRole("heading", { name: "Builder", exact: true }) });
+  const builder = page.locator(".pricing-card").filter({ has: page.getByRole("heading", { name: "Index", exact: true }) });
   await expect(builder.getByRole("button", { name: "Register interest", exact: true })).toBeVisible();
   expect(writes).toEqual([]);
   await builder.getByRole("button", { name: "Register interest", exact: true }).click();
   await expect(page.getByRole("status").filter({ hasText: "No subscription or charge has been created" })).toContainText("No subscription or charge has been created");
   await expect(builder.getByRole("button", { name: "Preference saved", exact: true })).toBeVisible();
-  expect(writes).toEqual([{ plan: "builder" }]);
+  expect(writes).toEqual([{ plan: "index" }]);
   await page.reload();
   await expect(builder.getByRole("button", { name: "Preference saved", exact: true })).toBeVisible();
-  expect(writes).toEqual([{ plan: "builder" }]);
+  expect(writes).toEqual([{ plan: "index" }]);
   await noOverflow(page);
 });
 

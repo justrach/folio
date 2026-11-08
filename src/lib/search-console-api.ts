@@ -1,6 +1,7 @@
 import "server-only";
+import { isTrustedWriteOrigin } from "./request-origin";
 
-import { getAuth } from "./auth";
+import { getAuth, getSession } from "./auth";
 import { getDb } from "./db";
 import { searchConsoleAccount } from "./google-auth";
 import { ScanError } from "./scanner";
@@ -13,14 +14,14 @@ export const PRIVATE_SEARCH_CONSOLE_HEADERS = {
 
 export async function searchConsoleRequestContext(request: Request) {
   const auth = await getAuth();
-  const session = await auth.api.getSession({ headers: request.headers });
+  const session = await getSession(request.headers);
   if (!session) throw new ScanError("Sign in to use private Search Console data.", 401);
   return { auth, ownerId: session.user.id, db: await getDb() };
 }
 
 /** Mutations accept only the configured app origin, including in local development. */
 export function requireSearchConsoleOrigin(request: Request, baseURL: unknown) {
-  if (typeof baseURL !== "string" || request.headers.get("origin") !== new URL(baseURL).origin)
+  if (!isTrustedWriteOrigin(request, baseURL))
     throw new ScanError("Cross-origin writes are not permitted.", 403);
 }
 

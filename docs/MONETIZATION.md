@@ -8,6 +8,8 @@ Charge for a private, repeatable improvement workflow: saved evaluations, the ev
 
 Folio's emphasis is inspectable website tasks alongside technical readiness and SEO context. It is not defensible to claim that combining SEO and AEO, keeping evidence, or publishing a leaderboard is unique. Current competitors already overlap in these areas; see [AEO research](research-aeo.md), [SEO research](research-seo.md), and [evaluation research](research-evaluations.md). The business hypothesis is that a focused evidence-to-improvement workflow earns repeat usage. There is no customer evidence yet proving that hypothesis.
 
+An enterprise tier with an onboarding brief, a monthly delta and an index-contribution licence is proposed separately in [enterprise onboarding and pricing](ENTERPRISE-PRICING.md). It is a quote template, not an enforced plan.
+
 ## Suggested pilot plans
 
 All prices are proposed USD per month, before any applicable taxes. Seats, site limits, allowances, and retention entitlements in this table are not implemented plan limits.

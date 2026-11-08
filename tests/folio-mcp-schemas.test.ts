@@ -25,7 +25,7 @@ const fixtures:Record<string,unknown>={
   folio_observation:saved,folio_run:observation,folio_evaluate:observation,folio_reconcile:observation,
   folio_run_history:{...page,items:[keywordRun],changePolling:null},
   folio_observations:{items:[{target:{kind:"keyword",caseId:"case"},result:saved},{target:{kind:"website",websiteId:"missing"},error}]},
-  folio_seo_reports:{report:pendingReport,detail:{state:"not_collected",keywords:null,landingPages:null,backlinkRows:null,reason:"Aggregates only",sourceUpdatedAt:null,retrievedAt:null,scope:{location:null,language:null,includeSubdomains:null},estimates:true}},
+  folio_seo_reports:{report:pendingReport,detail:{state:"not_collected",keywords:null,landingPages:null,backlinkRows:null,reason:"Aggregates only",sourceUpdatedAt:null,retrievedAt:null,detailRetrievedAt:null,scope:{location:null,language:null,includeSubdomains:null},estimates:true}},
   folio_keyword_research:{id:"research",domain:"example.com",status:"pending",createdAt:at,publication:"private",replayed:true,result:null},
   folio_seo_lookup:{report:pendingReport,replayed:true,saved:false},folio_sandbox_seo:{report:pendingReport,replayed:true,saved:false},
   folio_page_evidence:{...page,state:"saved_history",recommendationRule:"Inspect saved content",items:[{runId:"failed",state:"fetch_failed",url:"https://example.com"},{runId:"run",captureId:"page",url:"https://example.com",capturedAt:at,sha256:"fixture-hash",hashEncoding:"utf8-text-v1",transport:null,state:"observed",excerpt:"<html><h1>Example</h1></html>",contentTruncated:false,httpStatus:null,finalUrl:null,canonical:null,indexability:null,headings:null,derivedHtml:{basis:"Saved HTML",checks:evaluateHtml("<html><h1>Example</h1></html>","https://example.com").checks.filter(c=>["headings","canonical","indexability"].includes(c.id)).map(c=>({id:c.id,evidence:c.evidence}))},unavailableReason:"Metadata was not stored"}]},
@@ -93,6 +93,20 @@ test("website result, missing history, pending SEO and save failure preserve dis
   assert.deepEqual(folioSuccessSchemas.folio_observation.parse(missing),missing);
   assert.deepEqual(folioSuccessSchemas.folio_seo_lookup.parse(fixtures.folio_seo_lookup),fixtures.folio_seo_lookup);
   assert.equal(folioOutputSchema("folio_run").safeParse({result:{...observation,run:{...website,privateCapture:"must not escape"}}}).success,false);
+});
+
+test("collected SEO detail rows validate and unknown row fields are rejected",()=>{
+  const detail={state:"collected",
+    keywords:[{keyword:"example pricing",position:3,landingPage:"https://example.com/pricing",searchVolume:900,estimatedTraffic:4.5}],
+    landingPages:[{url:"https://example.com/pricing",keywords:1,estimatedTraffic:4.5}],
+    backlinkRows:[{sourceUrl:"https://source.example/post",sourceDomain:"source.example",targetUrl:"https://example.com/",dofollow:true,authorityRank:55,spamScore:3,firstSeenAt:at}],
+    reason:"Collected separately from the aggregate report",
+    sections:{keywords:"collected",backlinks:"collected"},
+    sourceUpdatedAt:null,retrievedAt:at,detailRetrievedAt:at,detailCostUsd:0.03,costIsComplete:true,rowLimit:50,
+    scope:{location:"United States",language:"en",includeSubdomains:true},estimates:true};
+  const payload={report:{...pendingReport,state:"complete",retrievedAt:at,result:null},detail};
+  assert.deepEqual(folioSuccessSchemas.folio_seo_reports.parse(payload),payload);
+  assert.equal(folioSuccessSchemas.folio_seo_reports.safeParse({...payload,detail:{...detail,keywords:[{keyword:"private-row",privateField:"must not escape"}]}}).success,false);
 });
 
 test("actual SEO projection with fixture transport validates partial results and storage failure alternatives",async()=>{

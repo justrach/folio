@@ -76,12 +76,51 @@ const customerQuestionPacks = [
       "How should a beginner compare self-paced Python courses with instructor-led courses?",
     ],
   },
+  {
+    id: "ai-browsers-v1", name: "Agent products · Browsers and computer use",
+    queries: [
+      "AI agent that can use a real browser for me and show what it is doing",
+      "agent that operates a desktop computer to finish a task",
+      "browser agent that fills forms and downloads files unattended",
+      "which AI agents can log into sites I already use and take over repetitive work",
+      "agent product where I can take over the browser session at any point",
+      "which browser agents keep a recording of every action they took",
+    ],
+  },
+  {
+    id: "coding-agents-v1", name: "Developer tools · Coding agents",
+    queries: [
+      "AI coding agent that works on my existing repository from the terminal",
+      "coding agent that can run tests and prove its change works",
+      "which coding agents support more than one model provider",
+      "AI coding tool that reviews a pull request and leaves inline comments",
+      "coding agent that can work in the cloud while I am away from my laptop",
+      "which coding agents let me review and edit the plan before they start",
+    ],
+  },
+  {
+    id: "agent-interface-v1", name: "Agent products · Interface and control",
+    queries: [
+      "AI agent where I can watch it use a browser live",
+      "agent dashboard to manage several tasks running at once",
+      "AI agent that shows each step as it works",
+      "AI workspace where I can preview files it creates",
+      "AI agent that asks before it does something destructive",
+      "tool to review and edit an agent's plan before it runs",
+      "AI agent with a gallery of ready-made workflow templates",
+      "AI agent I can check from my phone while it runs",
+      "AI agent with scheduled recurring task setup in the UI",
+      "shareable link to an agent session for a teammate",
+      "AI agent with side-by-side comparison of two outputs",
+      "AI tool with a clear cost or credit counter while it works",
+    ],
+  },
 ] as const;
 
 // Each question becomes its own explicit sandbox observation. Saving a pack does not run it.
 export const CUSTOMER_QUESTION_TEMPLATES = customerQuestionPacks.map(pack => ({
   id: pack.id, name: pack.name,
-  description: "Six customer questions covering discovery, comparison, practical details, and getting started. Edit them for your audience before evaluating.",
+  description: `${pack.queries.length} customer questions covering discovery, comparison, practical details, and getting started. Edit them for your audience before evaluating.`,
   cases: pack.queries.map(query => ({ query, targetUrl: null, language: "English", locale: "United States",
     rubricVersion: "keyword-open-web-v1", searchMode: "open-web" as const })),
 }));

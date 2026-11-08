@@ -20,6 +20,7 @@ import {
   ArrowUpRight,
   BarChart3,
   BookOpen,
+  Building2,
   Bot,
   Check,
   CheckCheck,
@@ -76,6 +77,12 @@ import { CompanyFavicon } from "./company-favicon";
 import dynamic from "next/dynamic";
 import {ProductAnalyticsPanel} from "./product-analytics-panel";
 import { ManusDashboardDemo } from "./manus-dashboard-demo";
+import { IndexedDomains } from "./indexed-domains";
+import { OrgPreview } from "./org-preview";
+import { StartHere } from "./start-here";
+import { WorkspaceRecords } from "./workspace-records";
+import { XStandingPanel } from "./x-standing";
+
 import { PublicBenchmarkDashboard } from "./public-benchmark-dashboard";
 import "./public-overview-shell.css";
 import { KeywordActivitySummary } from "./keyword-activity-summary";
@@ -138,6 +145,11 @@ const titles: Record<
   { eyebrow: string; title: string; description: string }
 > = {
   analytics: {eyebrow:"INTERNAL",title:"Product analytics",description:"First-party usage and event timelines."},
+  orgs: {
+    eyebrow: "",
+    title: "Organizations",
+    description: "Sample team workspace: seats, roles, shared records, and audit activity.",
+  },
   overview: {
     eyebrow: "THE BIG PICTURE",
     title: "My website results",
@@ -271,7 +283,13 @@ export function Dashboard({ section }: { section: string }) {
   const view = views.length === 1 ? views[0] : null;
   const workspace = view === "workspace" || query.has("website") || query.has("scope");
   if (section === "leaderboard") return <PublicOverviewShell section="leaderboard" />;
-  if (section === "overview" && view !== "demo" && !workspace) return <PublicOverviewShell />;
+  // A signed-in visitor belongs in their workspace; only signed-out visitors get
+  // the public benchmark shell, and the pending state must not flash it first.
+  const { data: session, isPending } = authClient.useSession();
+  if (section === "overview" && view !== "demo" && !workspace) {
+    if (isPending) return <WorkspaceLoader />;
+    if (!session) return <PublicOverviewShell />;
+  }
   return <WorkspaceDashboard section={section} />;
 }
 
@@ -479,9 +497,10 @@ function WorkspaceDashboard({ section }: { section: string }) {
         <Link href="/overview?view=demo" className={`nav-link ${teamDemo?"active":""}`} aria-current={teamDemo?"page":undefined} onClick={()=>setMobileOpen(false)} title="Content demo"><Sparkles size={17}/><span>Content demo</span></Link>
         </nav>
 
-        <details className="sidebar-more" open={!["overview","websites","evaluations","settings"].includes(section)}><summary className="nav-link" title="More tools"><MoreHorizontal size={17}/><span>More tools</span></summary><nav aria-label="More tools">{navigation.filter(item=>!["overview","websites","evaluations"].includes(item.section)).map(item=><Link key={item.section} href={item.href} title={item.label} className={`nav-link ${section===item.section?"active":""}`} aria-current={section===item.section?"page":undefined} onClick={()=>setMobileOpen(false)}><item.icon size={17}/><span>{item.label}</span></Link>)}<Link href="/leaderboard" title="The Folio Index" className="nav-link" onClick={()=>setMobileOpen(false)}><Trophy size={17}/><span>The Folio Index</span></Link><Link href="/agents" title="Your agents" className="nav-link" onClick={()=>setMobileOpen(false)}><Bot size={17}/><span>Your agents</span></Link><Link href="/docs/api" title="API reference" className="nav-link" onClick={()=>setMobileOpen(false)}><Code2 size={17}/><span>API reference</span></Link><Link href="/pricing" title="Plans & usage" className="nav-link" onClick={()=>setMobileOpen(false)}><BookOpen size={17}/><span>Plans & usage</span></Link></nav></details>
+        <details className="sidebar-more" open={!["overview","websites","evaluations","settings"].includes(section)}><summary className="nav-link" title="More tools"><MoreHorizontal size={17}/><span>More tools</span></summary><nav aria-label="More tools">{navigation.filter(item=>!["overview","websites","evaluations"].includes(item.section)).map(item=><Link key={item.section} href={item.href} title={item.label} className={`nav-link ${section===item.section?"active":""}`} aria-current={section===item.section?"page":undefined} onClick={()=>setMobileOpen(false)}><item.icon size={17}/><span>{item.label}</span></Link>)}<Link href="/leaderboard" title="The Folio Index" className="nav-link" onClick={()=>setMobileOpen(false)}><Trophy size={17}/><span>The Folio Index</span></Link><Link href="/agents" title="Your agents" className="nav-link" onClick={()=>setMobileOpen(false)}><Bot size={17}/><span>Your agents</span></Link><Link href="/orgs" title="Organizations" className="nav-link" onClick={()=>setMobileOpen(false)}><Building2 size={17}/><span>Organizations</span></Link><Link href="/docs/api" title="API reference" className="nav-link" onClick={()=>setMobileOpen(false)}><Code2 size={17}/><span>API reference</span></Link><Link href="/pricing" title="Plans & usage" className="nav-link" onClick={()=>setMobileOpen(false)}><BookOpen size={17}/><span>Plans & usage</span></Link></nav></details>
         <div className="sidebar-bottom">
           {isAdminOwner(session?.user.email) && <Link className="nav-link" href="/folio-internal/analytics" title="Product analytics"><BarChart3 size={17}/><span>Product analytics</span></Link>}
+          {isAdminOwner(session?.user.email) && <Link href="/admin" title="Admin" className="nav-link" onClick={()=>setMobileOpen(false)}><ShieldCheck size={17}/><span>Admin</span></Link>}
           <Link
             href="/settings"
             className={`nav-link ${section === "settings" ? "active" : ""}`}
@@ -523,7 +542,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
             </button>
             <Globe2 size={15} />
             <button onClick={() => router.push("/websites")}>
-              {usageDemo ? "Team credits · Sample" : analyticsDemo ? "Product analytics · Sample" : section==="analytics" ? "Folio operator analytics" : revenueDemo ? "Revenue · Sample" : teamDemo ? "Manus · Workflow mock" : personalWorkspace ? "Your workspace" : actual ? new URL(actual.url).hostname : session ? "Your workspace" : "acme.com"}
+              {usageDemo ? "Team credits · Sample" : analyticsDemo ? "Product analytics · Sample" : section==="analytics" ? "Folio operator analytics" : revenueDemo ? "Revenue · Sample" : teamDemo ? "Manus · Workflow mock" : personalWorkspace ? "Your workspace" : actual ? safeHostname(actual.url, "Your workspace") : session ? "Your workspace" : "acme.com"}
             </button>
             <ChevronRight size={13} />
             <span>
@@ -545,7 +564,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
             </button>
             <span className="topbar-divider" />
             <NotificationBell
-              count={actual?.patches.length ?? (mode === "sample" && !personalWorkspace && !teamDemo ? 3 : 0)}
+              count={actual?.patches?.length ?? (mode === "sample" && !personalWorkspace && !teamDemo ? 3 : 0)}
               size={30}
               color="green"
               onClick={() => setModal("notifications")}
@@ -603,6 +622,8 @@ function WorkspaceDashboard({ section }: { section: string }) {
           </div>}
           {section === "overview" && !teamDemo && <nav className="real-overview-tabs" aria-label="Overview view"><Link href={workspaceOverviewHref(query)} aria-current={!demoRequested ? "page" : undefined}>My website results</Link><Link href="/overview?view=demo" aria-current={demoRequested ? "page" : undefined} onClick={() => setMode("sample")}>Demo report</Link></nav>}
           {section === "overview" && chartsDemo && <OverviewDemoNotice/>}
+          {section === "overview" && !demoRequested && <StartHere ownerId={ownerId} />}
+          {section === "overview" && !demoRequested && <WorkspaceRecords ownerId={ownerId} />}
           {usageDemo ? <TeamUsageDemo/> : analyticsDemo ? <ProductAnalyticsPanel sample/> : revenueDemo ? <RevenueGlobeDemo/> : teamDemo ? <ManusDashboardDemo actualHref={workspaceOverviewHref(query)}/> : section === "overview" && !demoRequested ? <RealOverview ownerId={ownerId} scans={scans} scansLoading={loadingScans} scansError={scanOwnerId === ownerId ? scanError : ""} onRetryScans={() => setScanRefresh(value => value + 1)} onOpenScan={openScan} /> : <>
 
           {scanOwnerId === ownerId && scanError && ["overview", "websites", "seo", "patches"].includes(section) && (
@@ -825,7 +846,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
                         </h2>
                         <p>
                           {actual
-                            ? `${actual.patches.length} suggested improvements from your latest audit.`
+                            ? `${actual.patches?.length ?? 0} suggested improvements from your latest audit.`
                             : "3 considered improvements are ready for your review."}
                         </p>
                         <Link className="button cream" href="/patches">
@@ -993,7 +1014,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
                       </h2>
                       <p>
                         {actual
-                          ? `${actual.title || new URL(actual.url).hostname} · ${actual.wordCount} readable words · ${new Date(actual.createdAt).toLocaleString()}`
+                          ? `${actual.title || safeHostname(actual.url, "This page")} · ${actual.wordCount} readable words · ${new Date(actual.createdAt).toLocaleString()}`
                           : "6 core checks passed. Explore the opportunities below."}
                       </p>
                     </div>
@@ -1020,9 +1041,11 @@ function WorkspaceDashboard({ section }: { section: string }) {
               {section === "evaluations" && (
                 <EvaluationsPanel initialTargetUrl={actual?.url} />
               )}
+              {section === "orgs" && <OrgPreview />}
               {section === "search-data" && <SeoDataPanel />}
               {section === "search-console" && <SearchConsolePanel />}
               {section === "benchmarks" && <KeywordBenchmarksPanel websiteId={query.get("website") ?? undefined} />}
+              {section === "settings" && <XStandingPanel />}
               {section === "settings" && (
                 <Settings
                   session={session}
@@ -1241,7 +1264,7 @@ function Metric({
 function AuditEvaluationBridge({ scan }: { scan: Scan }) {
   return (
     <section className="audit-evaluation-bridge" aria-label="Continue this website evaluation">
-      <div><span className="eyebrow tiny">FROM AUDIT TO EVIDENCE</span><h2>{new URL(scan.url).hostname}</h2><p>Check what an agent can verify from this page. After applying reviewed changes, capture it again and compare the evidence.</p></div>
+      <div><span className="eyebrow tiny">FROM AUDIT TO EVIDENCE</span><h2>{safeHostname(scan.url, "This website")}</h2><p>Check what an agent can verify from this page. After applying reviewed changes, capture it again and compare the evidence.</p></div>
       <div className="audit-bridge-actions">
         <Link className="button primary" href={evaluationHref({ targetUrl: scan.url })}>Evaluate this website <ArrowUpRight size={14} /></Link>
         <Link className="button secondary" href={evaluationHref({ targetUrl: scan.url }).replace("/evaluations", "/search-data")}>Search & backlinks <ArrowRight size={14} /></Link>
@@ -1303,21 +1326,28 @@ function PromptTable({ sample = true }: { sample?: boolean }) {
   );
 }
 
+/** A saved record can arrive without a parseable URL (an in-flight scan, a legacy
+ * row). One bad row must not take down the shell, so hostnames degrade. */
+function safeHostname(value: string | null | undefined, fallback = ""): string {
+  if (!value) return fallback;
+  try { return new URL(value).hostname; } catch { return fallback; }
+}
+
 function Leaderboard(_props: {onMethod:()=>void;onNotify:(s:string)=>void}) {
   const params = useSearchParams();
   const requestedView = params.get("indexView");
-  const indexView = requestedView === "html" || requestedView === "published" ? requestedView : "rankings";
+  const indexView = requestedView === "rankings" || requestedView === "html" || requestedView === "published" ? requestedView : "indexed";
   function selectView(value: string) {
     const next = new URLSearchParams(params.toString());
-    if (value === "rankings") next.delete("indexView"); else next.set("indexView", value);
+    if (value === "indexed") next.delete("indexView"); else next.set("indexView", value);
     window.history.pushState(null, "", `/leaderboard${next.size ? `?${next}` : ""}`);
   }
   return <>
     <div className="index-view-tabs" role="group" aria-label="Evaluation view">
-      {([["rankings","Search rankings"],["html","HTML page checks"],["published","Published page audits"]] as const).map(([value,label])=><button key={value} type="button" id={`index-view-${value}`} aria-pressed={indexView===value} aria-controls="index-view-panel" onClick={()=>selectView(value)}>{label}</button>)}
+      {([["indexed","Indexed domains"],["rankings","Sample rankings"],["html","HTML page checks"],["published","Published page audits"]] as const).map(([value,label])=><button key={value} type="button" id={`index-view-${value}`} aria-pressed={indexView===value} aria-controls="index-view-panel" onClick={()=>selectView(value)}>{label}</button>)}
     </div>
     <section id="index-view-panel" className="index-view-panel" role="region" aria-labelledby={`index-view-${indexView}`}>
-      {indexView==="rankings"?<LivePublicIndex><ModelLandscape/><RankedSearchTable/></LivePublicIndex>:indexView==="html"?<DeveloperToolsIndex/>:<PublishedIndex/>}
+      {indexView==="indexed"?<IndexedDomains/>:indexView==="rankings"?<LivePublicIndex><ModelLandscape/><RankedSearchTable/></LivePublicIndex>:indexView==="html"?<DeveloperToolsIndex/>:<PublishedIndex/>}
     </section>
   </>;
 }
@@ -1358,7 +1388,7 @@ function Websites({
               <button onClick={() => onOpen(s)}>
                 <Globe2 size={19} />
                 <span>
-                  <strong>{new URL(s.url).hostname}</strong>
+                  <strong>{safeHostname(s.url, "This website")}</strong>
                   <small>{new Date(s.createdAt).toLocaleString()}</small>
                 </span>
                 <span className="history-score">

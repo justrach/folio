@@ -2,6 +2,8 @@
 
 This batch applies Folio's own **`readiness-v1` HTML-page rubric** to the reviewed homepages in `src/data/developer-tools.json`. Folio captures each page, runs its evaluator, and records the resulting checks with their capture date. The directory links to official product or company references and displays these Folio observations. Audience metadata groups the examples; it does not change scoring. The retained script and schema names also support the original developer-tool batches. This evaluation does not test an API, judge product correctness, or measure how well an agent can use a product.
 
+For a separate, non-scoring read of what these companies do on their own pages (agent-ready docs, proof next to claims, migration and support as product), see [what the directory's websites do well](DEVELOPER-TOOLS-STRENGTHS.md) and, for sitemap-level inventory joined to ranking pages, [site inventory](SITE-INVENTORY-ANALYSIS.md). That review comes from public-page excerpts, not from this rubric.
+
 ## Run locally
 
 ```sh

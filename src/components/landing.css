@@ -218,7 +218,7 @@
 .landing .csw-card:nth-child(3) { background: var(--folio-art-sand); }
 .landing .csw-card:focus-visible { outline: 2px solid var(--landing-ink); outline-offset: 5px; }
 .landing-card-content { display: flex; flex-direction: column; align-items: flex-start; height: 100%; padding: 16px; pointer-events: none; }
-.landing-step-label { font-size: 11px; letter-spacing: .025em; }
+.landing-step-label { font-size: 12px; letter-spacing: .025em; }
 .landing-step-icon { margin-top: 18px; margin-bottom: auto; color: var(--folio-art-rust); }
 .landing-card-content strong { font: 500 19px/1.2 var(--folio-font-display); letter-spacing: -.025em; }
 .landing-step-body { font-size: 14px; line-height: 1.45; margin-top: 8px; }
@@ -270,3 +270,5 @@
   .landing .ranked-search-row { grid-template-columns: 18px minmax(0, 1fr); gap: 10px; }
   .landing .csw-stage { left: 6px; }
 }
+
+.landing-index-size { color: var(--folio-text-muted); font-size: 12px; margin: 10px 0 0; font-variant-numeric: tabular-nums; }

@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import { CostSummaryPanel } from "./cost-summary";
 import { useEffect, useState } from "react";
 import {
   ArrowUpRight,
@@ -16,43 +15,38 @@ import { UiBadge, UiButton, UiSurface } from "./ui/primitives";
 
 const plans = [
   {
-    id: "free",
-    name: "Explore",
-    price: 0,
-    description: "Browse sample answers and public website comparisons.",
+    id: "index",
+    name: "Index",
+    price: 1000,
+    description: "Start with the shared index.",
     features: [
-      "Sample visibility workspace",
-      "Illustrative benchmark & public page index",
-      "Evaluation methodology",
-      "No payment details",
+      "Full index access: questions, recorded answers, cited sources",
+      "Private evaluations and saved evidence",
     ],
-    footnote: "Available preview. No provider credits included.",
+    footnote: "Everyone reads the same index.",
   },
   {
-    id: "builder",
-    name: "Builder",
-    price: 49,
-    description: "Keep private evaluations and their evidence in one place.",
+    id: "enterprise",
+    name: "Enterprise",
+    price: 2000,
+    description: "The index with an organization around it.",
     features: [
-      "Proposed: 1 seat · 3 websites",
-      "Private evaluation history & evidence",
-      "Reviewable repair downloads",
-      "Proposed: 1,000 usage credits per month",
+      "Everything in Index",
+      "Up to 5 seats",
+      "Organization, roles, and audit activity",
     ],
-    footnote: "Proposed allowance: $10 of metered provider spend.",
+    footnote: "More than five seats moves to Enterprise Plus.",
   },
   {
-    id: "team",
-    name: "Team",
-    price: 199,
-    description: "A proposed shared workspace for multiple sites and teammates.",
+    id: "enterprise_plus",
+    name: "Enterprise Plus",
+    price: 5000,
+    description: "For more than five seats.",
     features: [
-      "Proposed: 5 seats · 10 websites",
-      "Private evidence & evaluation history",
-      "Proposed shared workspace and team reports",
-      "Proposed: 4,000 usage credits per month",
+      "Everything in Enterprise",
+      "More than 5 seats",
     ],
-    footnote: "Proposed allowance: $40 of metered provider spend.",
+    footnote: "Priced from $5,000 for teams past five seats.",
   },
 ];
 function Mark() {
@@ -65,6 +59,8 @@ function Mark() {
     </span>
   );
 }
+
+
 export function Pricing() {
   const { data: session, isPending } = authClient.useSession();
   const [selected, setSelected] = useState<string | null>(null);
@@ -124,15 +120,15 @@ export function Pricing() {
         </div>
       </header>
       <main>
-        {session?.user.id && <CostSummaryPanel key={session.user.id} />}
         <div className="pricing-heading">
           <span className="eyebrow">FOLIO PLANS</span>
           <h1>
-            Start with a free preview.
+            One index. Priced by seats.
           </h1>
           <p>
-            Explore public results now. Builder and Team are proposed plans for
-            private evaluations, evidence history, and reviewed improvements.
+            Everyone reads the same recorded answers and cited sources. Index starts at
+            $1,000, Enterprise from $2,000 for up to five seats, and more than five
+            seats from $5,000. Proposed pricing; billing is not active.
           </p>
           <UiBadge tone="accent" className="pricing-proposal">
             <CreditCard size={13} /> Proposed pricing · billing is not active
@@ -167,11 +163,7 @@ export function Pricing() {
                 ))}
               </ul>
               <div className="plan-action">
-                {plan.id === "free" ? (
-                  <UiButton asChild variant="secondary" className={`button ${i === 1 ? "cream" : "secondary"}`}><Link href="/overview">
-                    Explore the demo <ArrowUpRight size={14} />
-                  </Link></UiButton>
-                ) : session ? (
+                {session ? (
                   <UiButton variant="secondary"
                     className={`button ${i === 1 ? "cream" : "secondary"}`}
                     disabled={Boolean(busy)}
@@ -216,8 +208,7 @@ export function Pricing() {
           <p>
             Registering interest saves a private preference in your account. It
             does not start a subscription, reserve an allowance, charge your
-            card, or send a message. Site limits, team features, and included
-            credits are proposed.
+            card, or send a message. Team features and seat limits are proposed.
           </p>
         </div>
         <section className="pricing-details">
@@ -229,35 +220,12 @@ export function Pricing() {
               Keep the evidence honest.
             </h2>
             <p>
-              Paid plans would fund the workspace and the cost of running
-              evaluations. Payment would never change a score, buy a higher
-              rank, or make a failed test disappear.
+              Payment buys access to the index and the workspace around it. It
+              never changes a score, buys a higher rank, or makes a failed test
+              disappear.
             </p>
           </div>
           <div className="pricing-questions">
-            <details open>
-              <summary>
-                What is a usage credit?
-                <ChevronDown size={15} />
-              </summary>
-              <p>
-                Our proposal defines one credit as $0.01 of metered provider
-                spend. A run can use different amounts depending on its model,
-                tools, and input. Credits are not a promise of a fixed number of
-                evaluations.
-              </p>
-            </details>
-            <details>
-              <summary>
-                What happens when credits run out?
-                <ChevronDown size={15} />
-              </summary>
-              <p>
-                We propose pausing paid runs until you choose to add more. An
-                optional 1,000-credit pack would cost $15. No automatic top-ups
-                or overage charges are planned.
-              </p>
-            </details>
             <details>
               <summary>
                 Are private results included in the public index?

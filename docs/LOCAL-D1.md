@@ -70,3 +70,19 @@ Large HTML captures and evidence bundles are a separate storage question. A futu
 ## Production remains separate
 
 Provisioning a real D1 database, replacing the placeholder ID, applying remote migrations, configuring Worker secrets, deployment, and validating production recovery remain deployment work. A persistent Miniflare directory and a private SQL export do not perform any of those steps. See [architecture](../ARCHITECTURE.md), [Cloudflare/auth setup](cloudflare-auth.md), and [current launch work](../TODO.md).
+
+## Postgres mirror (PlanetScale)
+
+A separate PlanetScale Postgres database named `folio` (branch `main`, PostgreSQL 18.6, `ap-southeast-2`) mirrors this schema. It is **not** the application's write path and is not kept current: the newest saved session is 24 September 2026 and the newest keyword run 18 September 2026.
+
+What it is used for today:
+
+- Reading the September snapshot without touching D1.
+- A `research` schema owned by the default role, holding `research.page_embeddings` (pgvector 0.8.5, HNSW cosine index) with the 979 sampled page excerpts from the site-inventory work. Vectors themselves now live in turbopuffer (see [embeddings](EMBEDDINGS.md)); Postgres holds the marker rows.
+
+Operational facts worth knowing:
+
+- Two roles exist on the branch: `postgres.<branch>` (the near-superuser created on 7 November) and `pscale_api_z2bd3c08olj5.<branch>` (created 27 September, **owns every table**). Ownership, not grants, controls `ALTER TABLE`; a non-owner role cannot alter those tables even with `CREATEROLE`.
+- Migrations `0023_reconciliation_health.sql` and `0024_seo_report_detail.sql` were applied as the owning role, so the mirror's `d1_migrations` journal is at `0024`.
+- Credentials live only in the ignored `.dev.vars` as `PLANETSCALE_APP_URL`. Rotate them with `pscale role reset folio main z2bd3c08olj5 --org <org>`; the previous password stops working immediately.
+- No sync job exists. If the mirror becomes a read model, the direction must be one-way (D1 → Postgres) and the writer must run as the owning role; dual writes would put paid reservations and owner predicates at risk.

@@ -1,0 +1,49 @@
+.workspace-records {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0 0 16px;
+}
+
+.workspace-records-panel {
+  border: 1px solid var(--folio-edge);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.workspace-records-panel > header {
+  align-items: center;
+  border-bottom: 1px solid var(--folio-edge);
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 12px;
+}
+
+.workspace-records-panel h2 { font-size: 13px; font-weight: 600; margin: 0; }
+.workspace-records-panel > header a {
+  align-items: center; color: var(--folio-text-secondary); display: inline-flex; font-size: 12px; gap: 4px; text-decoration: none;
+}
+.workspace-records-panel > header a:hover { color: var(--folio-ink); text-decoration: underline; }
+
+.workspace-records-panel ul { list-style: none; margin: 0; padding: 0; }
+.workspace-records-panel li + li { border-top: 1px solid var(--folio-edge); }
+.workspace-records-panel li a {
+  align-items: center; color: var(--folio-ink); display: flex; gap: 8px; min-height: 40px; padding: 6px 12px;
+  text-decoration: none;
+}
+.workspace-records-panel li a:hover { background: var(--folio-surface-muted); }
+.workspace-records-panel li strong { flex: 1; font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.workspace-records-panel li small { color: var(--folio-text-muted); font-size: 12px; white-space: nowrap; }
+
+.workspace-records-empty { color: var(--folio-text-muted); font-size: 12px; margin: 0; padding: 14px 12px; }
+.workspace-records-empty a { color: var(--folio-ink); }
+
+.dot { border-radius: 50%; display: inline-block; flex: none; height: 8px; width: 8px; background: var(--folio-edge-strong); }
+.dot-done { background: var(--folio-ink); }
+.dot-running { background: var(--folio-edge-strong); }
+.dot-needs { background: var(--folio-accent); }
+.dot-failed { background: var(--folio-danger); }
+
+@media (max-width: 900px) {
+  .workspace-records { grid-template-columns: minmax(0, 1fr); }
+}

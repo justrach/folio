@@ -5,7 +5,7 @@ import { DatabaseSync, type SQLInputValue } from "node:sqlite";
 import type { D1Database } from "@cloudflare/workers-types";
 import {
   authenticateReconciliationJob, handleEvaluationReconciliationRequest,
-  runEvaluationReconciliationJob, RECONCILIATION_BATCH_SIZE, RECONCILIATION_LEASE_MS,
+  runEvaluationReconciliationJob, RECONCILIATION_BATCH_SIZE, RECONCILIATION_LEASE_MS, RECONCILIATION_STALE_MS,
 } from "../src/lib/eval-reconciliation-job";
 import { createEvaluationRun, getEvaluationRun } from "../src/lib/eval-store";
 import { createDemoEvaluationRun, DEMO_AGENT_OUTPUT } from "../src/lib/eval-verifier";
@@ -22,7 +22,7 @@ const env = {
 
 function database() {
   const sqlite = new DatabaseSync(":memory:");
-  for (const migration of ["0001_initial.sql", "0002_evaluations.sql", "0005_eval_evidence_deletion.sql", "0006_background_lease.sql"])
+  for (const migration of ["0001_initial.sql", "0002_evaluations.sql", "0005_eval_evidence_deletion.sql", "0006_background_lease.sql", "0023_reconciliation_health.sql"])
     sqlite.exec(readFileSync(new URL(`../migrations/${migration}`, import.meta.url), "utf8"));
   const db = {
     prepare(sql: string) {
@@ -105,7 +105,7 @@ test("bounded batches isolate failures and fairly rotate active live runs across
     return (await getEvaluationRun(connection, owner, id))!;
   };
   const first = await runEvaluationReconciliationJob(db, env, { now: () => 1000, reconcile });
-  assert.deepEqual(first, { status: "completed", attempted: RECONCILIATION_BATCH_SIZE, reconciled: 2, failed: 1 });
+  assert.deepEqual(first, { status: "completed", attempted: RECONCILIATION_BATCH_SIZE, reconciled: 2, failed: 1, stale: 0, lastSuccessAt: null });
   const second = await runEvaluationReconciliationJob(db, env, { now: () => 2000, reconcile });
   assert.equal(second.attempted, RECONCILIATION_BATCH_SIZE);
   assert.ok(seen.includes("d") && seen.includes("e"), "A repeated provider failure must not starve other owners");
@@ -132,7 +132,8 @@ test("overlapping scheduler invocations hold one lease and stale workers cannot 
   });
   assert.equal(second.status, "busy");
   sqlite.prepare("UPDATE background_job_leases SET token = ?, expires_at = ?").run("new-lease-owner", 9_999_999);
-  release(); await first;
+  release(); await assert.rejects(first, /lease expired/);
+  assert.equal(sqlite.prepare("SELECT last_finished_at FROM background_job_health").get()?.last_finished_at, null);
   assert.equal(sqlite.prepare("SELECT token FROM background_job_leases").get()?.token, "new-lease-owner");
 });
 
@@ -173,7 +174,9 @@ test("real job lifecycle reads the saved session and verifies results without a 
     body: JSON.stringify({ ownerId: "someone-else", runId: "arbitrary", limit: 999 }),
   }), async () => db, env);
   assert.equal(response.status, 200);
-  assert.deepEqual(await response.json(), { status: "completed", attempted: 1, reconciled: 1, failed: 0 });
+  const health = await response.json();
+  assert.equal(typeof health.lastSuccessAt, "number");
+  assert.deepEqual(health, { status: "completed", attempted: 1, reconciled: 1, failed: 0, stale: 0, lastSuccessAt: health.lastSuccessAt });
   assert.equal(requests, 3);
   const saved = await getEvaluationRun(db, owner, run.id);
   assert.equal(saved?.status, "completed");
@@ -214,7 +217,7 @@ test("cron worker has no public fetch handler and only calls its configured serv
       assert.equal(init?.method, "POST");
       assert.equal(new Headers(init?.headers).get("Authorization"), `Bearer ${secret}`);
       assert.equal(init?.redirect, "error");
-      return Response.json({ status: "completed" });
+      return Response.json({ status: "completed", attempted: 0, reconciled: 0, failed: 0, stale: 0, lastSuccessAt: 1000 });
     } },
   } as unknown as EvaluationSchedulerEnvironment;
   await triggerEvaluationReconciliation({ ...schedulerEnv, EVALUATION_RECONCILE_ENABLED: "false" });
@@ -222,4 +225,64 @@ test("cron worker has no public fetch handler and only calls its configured serv
   assert.equal(calls, 0);
   await triggerEvaluationReconciliation(schedulerEnv);
   assert.equal(calls, 1);
+});
+
+test("failed refreshes preserve last success, flag stale runs, and return unhealthy HTTP status", async t => {
+  const { db, sqlite, seed } = database(); t.after(() => sqlite.close());
+  const { run } = await seed("health");
+  const started = Date.parse(run.createdAt);
+  const successful = await runEvaluationReconciliationJob(db, env, {
+    now: () => started, reconcile: async () => run,
+  });
+  assert.equal(successful.lastSuccessAt, started);
+  assert.equal(sqlite.prepare("SELECT background_reconciled_at FROM evaluation_runs").get()?.background_reconciled_at, started);
+  const response = await handleEvaluationReconciliationRequest(new Request("https://folio.test", {
+    method: "POST", headers: { Authorization: `Bearer ${secret}` },
+  }), async () => db, env, {
+    now: () => started + RECONCILIATION_STALE_MS,
+    reconcile: async () => { throw new Error("Private provider evidence must never escape"); },
+  });
+  assert.equal(response.status, 503);
+  assert.deepEqual(await response.json(), {
+    status: "completed", attempted: 1, reconciled: 0, failed: 1, stale: 1, lastSuccessAt: started,
+  });
+  const saved = sqlite.prepare("SELECT * FROM background_job_health").get()!;
+  assert.equal(saved.last_success_at, started);
+  assert.equal(saved.last_finished_at, started + RECONCILIATION_STALE_MS);
+  assert.equal(saved.failed, 1);
+  assert.equal(saved.stale, 1);
+  assert.ok(!JSON.stringify(saved).includes("Private provider"));
+});
+
+test("stale backlog outside the batch is unhealthy until a later successful refresh", async t => {
+  const { db, sqlite, seed } = database(); t.after(() => sqlite.close());
+  for (const id of ["old-a", "old-b", "old-c", "old-d"]) {
+    await seed(id, { createdAt: new Date(1000).toISOString() });
+  }
+  const now = 1000 + RECONCILIATION_STALE_MS;
+  const reconcile = async (connection: D1Database, owner: string, id: string) => (await getEvaluationRun(connection, owner, id))!;
+  const first = await runEvaluationReconciliationJob(db, env, { now: () => now, reconcile });
+  assert.equal(first.failed, 0);
+  assert.equal(first.stale, 1);
+  assert.equal(first.lastSuccessAt, null);
+  const second = await runEvaluationReconciliationJob(db, env, { now: () => now + 1, reconcile });
+  assert.equal(second.stale, 0);
+  assert.equal(second.lastSuccessAt, now + 1);
+});
+
+test("scheduler rejects partial failures even on HTTP 200 and logs only approved aggregate fields", async t => {
+  const logs: unknown[][] = [];
+  t.mock.method(console, "info", (...values: unknown[]) => { logs.push(values); });
+  const health = { status: "completed", attempted: 2, reconciled: 1, failed: 1, stale: 0, lastSuccessAt: 1000 };
+  const schedulerEnv = {
+    ...env, FOLIO_APP: { fetch: async () => Response.json({ ...health, privateError: "Private provider evidence" }) },
+  } as unknown as EvaluationSchedulerEnvironment;
+  await assert.rejects(triggerEvaluationReconciliation(schedulerEnv), /unhealthy/);
+  assert.deepEqual(logs, [["Evaluation reconciliation health", health]]);
+  assert.ok(!JSON.stringify(logs).includes("Private provider"));
+  for (const payload of [null, { error: "Private provider evidence" }, { ...health, failed: -1 }, { ...health, attempted: 99 }]) {
+    schedulerEnv.FOLIO_APP = { fetch: async () => Response.json(payload) } as unknown as EvaluationSchedulerEnvironment["FOLIO_APP"];
+    await assert.rejects(triggerEvaluationReconciliation(schedulerEnv), /Invalid reconciliation health response/);
+  }
+  assert.equal(logs.length, 1);
 });

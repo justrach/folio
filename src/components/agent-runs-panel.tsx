@@ -10,11 +10,24 @@ import {
 import type { EvaluationRun } from "@/lib/evals";
 import { evaluationHref, readEvaluationIntent } from "@/lib/evaluation-navigation";
 import { EvaluationActivity } from "./evaluations-panel";
+import { ActivityBars } from "./activity-bars";
+import { playUiSound } from "@/lib/ui-sound";
 import {
   activeRun, announceEvaluationUpdate, evaluationDate, evaluationRequest,
   RunStatus, useEvaluationWorkspace,
 } from "./evaluation-workspace";
 import "./agent-runs-panel.css";
+
+/** The run list is grouped, not filtered: a run keeps its place when it moves
+ * from Running to Needs you to Finished, which is what operators scan for. */
+const RUN_GROUPS = [
+  { id: "running", label: "Running now", match: (status: EvaluationRun["status"]) => status === "running" },
+  { id: "needs", label: "Needs you", match: (status: EvaluationRun["status"]) => status === "requires_action" },
+  { id: "failed", label: "Failed", match: (status: EvaluationRun["status"]) => status === "failed" },
+  { id: "queued", label: "Queued", match: (status: EvaluationRun["status"]) => status === "queued" },
+  { id: "finished", label: "Finished", match: (status: EvaluationRun["status"]) => status === "completed" },
+  { id: "stopped", label: "Stopped", match: (status: EvaluationRun["status"]) => status === "cancelled" },
+] as const;
 
 export function AgentRunsPanel() {
   const workspace = useEvaluationWorkspace();
@@ -38,6 +51,9 @@ export function AgentRunsPanel() {
   const active = workspace.runs.filter(activeRun);
   const finished = workspace.runs.filter((item) => item.status === "completed");
   const needsAttention = workspace.runs.filter((item) => item.status === "failed" || item.status === "requires_action");
+  const grouped = RUN_GROUPS
+    .map(group => ({ ...group, runs: workspace.runs.filter(item => group.match(item.status)) }))
+    .filter(group => group.runs.length > 0);
   const ready = Boolean(workspace.connection?.configured && workspace.connection.canRun);
   const ownedTarget = run?.mode === "live" ? readEvaluationIntent(new URLSearchParams({ target: run.targetUrl })).targetUrl : undefined;
   const benchmarkHref = ownedTarget ? `/benchmarks?target=${encodeURIComponent(ownedTarget)}` : "/benchmarks";
@@ -72,6 +88,7 @@ export function AgentRunsPanel() {
     const safeId = readEvaluationIntent(new URLSearchParams({ run: id })).runId;
     if (!safeId) return;
     setSelectedId(safeId); setDetail(null); setFailure(null); setBusy("");
+    playUiSound("select");
     window.history.pushState(null, "", `/agents?run=${encodeURIComponent(safeId)}`);
   }
 
@@ -89,7 +106,8 @@ export function AgentRunsPanel() {
       if (nextRun.id !== runId || nextRun.publication !== "private") throw new Error("The returned session does not match this private selection.");
       setDetail({ ownerId, queryKey, run: nextRun });
       announceEvaluationUpdate();
-    } catch (failure) { if (account.current === ownerId && selection.current === runId) setFailure({ ownerId, runId, message: failure instanceof Error ? failure.message : "The session could not be refreshed." }); }
+      playUiSound("success");
+    } catch (failure) { if (account.current === ownerId && selection.current === runId) { setFailure({ ownerId, runId, message: failure instanceof Error ? failure.message : "The session could not be refreshed." }); playUiSound("error"); } }
     finally { if (account.current === ownerId && selection.current === runId) setBusy(""); }
   }
 
@@ -99,12 +117,14 @@ export function AgentRunsPanel() {
       <div className="agent-runtime-diagram" aria-label="Choose agent work"><h3>What would you like to check?</h3><p>Inspect a website’s source evidence, or record how an API agent answers the questions your customers ask.</p><Link className="button primary" href="/evaluations">Evaluate a website <ArrowRight size={14} /></Link><Link className="button secondary" href={benchmarkHref}>Open keyword suite <ArrowRight size={14} /></Link><p><LockKeyhole size={12} />Private workspace · each new run starts with your action</p></div>
     </section>
 
-    <div className="agent-counters"><div><span>In progress</span><strong>{active.length.toString().padStart(2, "0")}</strong><small>Queued or running sessions</small></div><div><span>Completed</span><strong>{finished.length.toString().padStart(2, "0")}</strong><small>Returned and recorded</small></div><div><span>Needs attention</span><strong>{needsAttention.length.toString().padStart(2, "0")}</strong><small>Failed or waiting for action</small></div><div className="agent-counter-action"><FileCheck2 size={22} /><span>Start with a website.<br />Keep the evidence.</span><Link href="/evaluations">New evaluation <ArrowRight size={13} /></Link></div></div>
+    <div className="agent-counters agent-metrics"><div><span>Running now</span><strong>{active.length.toString().padStart(2, "0")}</strong><small>Queued or running sessions</small></div><div><span>Needs you</span><strong>{needsAttention.length.toString().padStart(2, "0")}</strong><small>Waiting on your action</small></div><div><span>Finished</span><strong>{finished.length.toString().padStart(2, "0")}</strong><small>Returned and recorded</small></div></div>
+    {workspace.runs.length > 0 && <ActivityBars runs={workspace.runs} />}
     {(error || workspace.error) && <div className="eval-alert" role="alert">{error || workspace.error}</div>}
     {workspace.connection && !ready && <div className="agent-setup-note"><Bot size={17} /><p>{workspace.ownerId ? "New runs are currently unavailable for this workspace. Your saved work remains readable." : "Sign in to see your workspace availability and saved work."}</p><button type="button" onClick={workspace.refresh}><RefreshCw size={12} />Check availability</button></div>}
 
     <section className="panel agent-workbench" aria-labelledby="agent-workbench-title"><div className="eval-section-top"><div><span className="eval-eyebrow">THE WORKING NOTEBOOK</span><h2 id="agent-workbench-title">Sessions & returns</h2><p>Open a task to see its recorded progress and returned data.</p></div><Link href="/evaluations" className="button secondary"><Plus size={13} />New evaluation</Link></div>
-      {!workspace.ownerId && !workspace.isPending ? <div className="agent-empty"><LockKeyhole size={28} /><h3>Your research stays yours.</h3><p>Sign in to see private sessions. You can explore a reproducible example report without starting a paid run.</p><div><Link href="/login" className="button primary">Sign in <ArrowUpRight size={13} /></Link><Link href="/evaluations" className="button secondary">Explore evaluation demo</Link></div></div> : workspace.runs.length ? <div className="agent-workbench-grid"><div className="agent-task-list" aria-label="Saved agent sessions">{workspace.runs.map((item) => <button className={`agent-task-row ${selectedId === item.id ? "selected" : ""}`} key={item.id} type="button" onClick={() => chooseRun(item.id)} aria-pressed={selectedId === item.id}><span className="agent-task-row-icon">{activeRun(item) ? <Loader2 size={15} className="eval-spin" /> : <Bot size={16} />}</span><span className="agent-task-row-text"><strong>{item.siteName || item.targetUrl}</strong><small>{item.mode === "demo" ? "Local fixture" : "Managed session"} · {evaluationDate(item.createdAt)}</small><RunStatus status={item.status} /></span><ChevronDown size={13} /></button>)}</div><div className="agent-detail">{run && run.id === selectedId ? <><div className="agent-detail-heading"><div><span className="eval-eyebrow">{run.mode === "demo" ? "LOCAL FIXTURE" : "MANAGED SESSION"}</span><h3>{run.siteName || run.targetUrl}</h3><p>{run.suiteVersion}</p></div><RunStatus status={run.status} /></div>{run.error && <p className="eval-run-error">{run.error}</p>}<EvaluationActivity run={run} /><div className="agent-detail-actions"><button className="button secondary" type="button" onClick={() => void action("refresh")} disabled={Boolean(busy)}><RefreshCw size={12} />Refresh returns</button>{(activeRun(run) || run.status === "requires_action") && <button className="button secondary" type="button" onClick={() => void action("cancel")} disabled={Boolean(busy)}>Cancel run</button>}<Link className="button primary" href={evaluationHref({ runId: run.id })}>Open evaluation <ArrowUpRight size={12} /></Link></div></> : <p className="eval-empty-section" role="status">{error ? "The selected session is unavailable. Choose another saved session." : "Loading this session’s returned events…"}</p>}</div></div> : <div className="agent-empty"><CircleDashed size={31} /><h3>A quiet notebook. A good place to start.</h3><p>{workspace.loading || workspace.isPending ? "Loading your saved sessions…" : "Start an evaluation to create a managed session. Its saved status, tool returns and verified report will appear here."}</p><Link href="/evaluations" className="button primary">Create an evaluation <ArrowRight size={13} /></Link></div>}
+      {!workspace.ownerId && !workspace.isPending ? <div className="agent-empty"><LockKeyhole size={28} /><h3>Your research stays yours.</h3><p>Sign in to see private sessions. You can explore a reproducible example report without starting a paid run.</p><div><Link href="/login" className="button primary">Sign in <ArrowUpRight size={13} /></Link><Link href="/evaluations" className="button secondary">Explore evaluation demo</Link></div></div> : workspace.runs.length ? <div className="agent-workbench-grid"><div className="agent-task-list" aria-label="Saved agent sessions">{grouped.map(group => <div className="agent-task-group" key={group.id}><p className="agent-task-group-label"><span>{group.label}</span><b>{group.runs.length}</b></p>{group.runs.map((item) => <button className={`agent-task-row ${selectedId === item.id ? "selected" : ""}`} key={item.id} type="button" onClick={() => chooseRun(item.id)} aria-pressed={selectedId === item.id}><span className="agent-task-row-icon">{activeRun(item) ? <Loader2 size={15} className="eval-spin" /> : <Bot size={16} />}</span><span className="agent-task-row-text"><strong>{item.siteName || item.targetUrl}</strong><small>{item.mode === "demo" ? "Local fixture" : "Managed session"} · {evaluationDate(item.createdAt)}</small><RunStatus status={item.status} /></span><ChevronDown size={13} /></button>)}</div>)}</div><div className="agent-detail">{run && run.id === selectedId ? <><div className="agent-detail-heading"><div><span className="eval-eyebrow">{run.mode === "demo" ? "LOCAL FIXTURE" : "MANAGED SESSION"}</span><h3>{run.siteName || run.targetUrl}</h3><p>{run.suiteVersion}</p></div><RunStatus status={run.status} /></div>{run.error && <p className="eval-run-error">{run.error}</p>}<EvaluationActivity run={run} /><div className="agent-detail-actions"><button className="button secondary" type="button" onClick={() => void action("refresh")} disabled={Boolean(busy)}><RefreshCw size={12} />Refresh returns</button>{(activeRun(run) || run.status === "requires_action") && <button className="button secondary" type="button" onClick={() => void action("cancel")} disabled={Boolean(busy)}>Cancel run</button>}<Link className="button primary" href={evaluationHref({ runId: run.id })}>Open evaluation <ArrowUpRight size={12} /></Link></div></> : <p className="eval-empty-section" role="status">{error ? "The selected session is unavailable. Choose another saved session." : "Loading this session’s returned events…"}</p>}</div></div> : <div className="agent-empty"><CircleDashed size={31} /><h3>A quiet notebook. A good place to start.</h3><p>{workspace.loading || workspace.isPending ? "Loading your saved sessions…" : "Start an evaluation to create a managed session. Its saved status, tool returns and verified report will appear here."}</p><Link href="/evaluations" className="button primary">Create an evaluation <ArrowRight size={13} /></Link></div>}
+      {workspace.nextCursor && <button type="button" className="button secondary" disabled={workspace.refreshing || workspace.loading} onClick={workspace.loadMore}>{workspace.loadingMore ? "Loading older sessions…" : "Load older sessions"}</button>}
     </section><p className="eval-privacy"><ShieldCheck size={14} />Sessions continue in the remote agent service. Folio refreshes existing session status every 10 seconds while visible; it never creates a new run in the background.</p>
   </div>;
 }
