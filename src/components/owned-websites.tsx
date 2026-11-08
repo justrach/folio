@@ -9,6 +9,8 @@ import { authClient } from "@/lib/auth-client";
 import { evaluationHref } from "@/lib/evaluation-navigation";
 import type { SearchConsoleReportSummary } from "@/lib/search-console-types";
 import { WebsiteSeoSummary } from "./website-seo-summary";
+import { OverviewSetupGuide } from "./overview-setup-guide";
+import { CompanyFavicon } from "./company-favicon";
 import "./owned-websites.css";
 
 type Site = { id: string; name: string; url: string; isPublic: boolean; seoScore: number | null };
@@ -86,6 +88,7 @@ function OwnerWebsites({ onAudit }: { onAudit?: (url: string) => void }) {
     finally { pending.current = false; if (!signal.aborted) setBusy(false); }
   }
   return <div className="owned-websites">
+    {!loading&&!error&&!sites.length&&<OverviewSetupGuide state="ready" questions={0} answers={0} onRetry={()=>setRefresh(n=>n+1)}/>}
     <section className="panel owned-website-list" aria-label="Your websites">
       <div className="panel-heading"><h2>Your websites</h2><Globe2 size={20} /></div>
       <div className="owned-website-body">
@@ -96,18 +99,22 @@ function OwnerWebsites({ onAudit }: { onAudit?: (url: string) => void }) {
           {sites.map(site => <option key={site.id} value={site.id}>{site.name} · {new URL(site.url).hostname}</option>)}
         </UiSelect></label>}
         {selected && <>
-          <div className="owned-website-title"><h3>{new URL(selected.url).hostname}</h3><span>{selected.isPublic ? "Technical scan shared" : "Private website"}</span></div>
+          <div className="owned-website-title"><h3><CompanyFavicon url={selected.url} name={selected.name}/>{new URL(selected.url).hostname}</h3><span>{selected.isPublic ? "Technical scan shared" : "Private website"}</span></div>
+          <p>Start with your dashboard to see your next step, or choose the customer questions you want to investigate.</p>
           <p>{selected.seoScore == null ? "Technical readiness has not been measured yet." : `Latest technical readiness: ${selected.seoScore}/100.`}</p>
           <div className="owned-website-actions">
-            <Link href={`/overview?view=workspace&website=${encodeURIComponent(selected.id)}`} className="button secondary">View results <ArrowRight size={15} /></Link>
-            {onAudit && <button className="button secondary" onClick={() => onAudit(selected.url)}>Audit website</button>}
-            <Link href={evaluationHref({ targetUrl: selected.url })} className="button primary">Evaluate website <ArrowRight size={15} /></Link>
-            <Link href={`/benchmarks?website=${encodeURIComponent(selected.id)}`} className="button secondary">Keyword evaluations <ArrowRight size={15} /></Link>
-            {matchingReport && <Link href={`/search-console?report=${encodeURIComponent(matchingReport.id)}`} className="button secondary">Open search report</Link>}
+            <Link href={`/overview?view=workspace&website=${encodeURIComponent(selected.id)}`} className="button primary squishy-control">View results <ArrowRight size={15} /></Link>
+            <Link href={`/benchmarks?website=${encodeURIComponent(selected.id)}`} className="button secondary squishy-control">Choose questions <ArrowRight size={15} /></Link>
           </div>
+          <details className="owned-website-tools"><summary>More website tools</summary><p>Page audits and page-evidence evaluations are separate from your customer-question answers. Opening a tool starts no work.</p><div className="owned-website-actions">
+            {onAudit && <button className="button secondary" onClick={() => onAudit(selected.url)}>Audit website</button>}
+            <Link href={evaluationHref({ targetUrl: selected.url })} className="button secondary">Evaluate website <ArrowRight size={15} /></Link>
+            <Link href="/search-console" className="button secondary">Connect Search Console <ArrowRight size={15}/></Link>
+            {matchingReport && <Link href={`/search-console?report=${encodeURIComponent(matchingReport.id)}`} className="button secondary">Open search report</Link>}
+          </div></details>
           {matchingReport && <p className="owned-website-note">Your saved Search Console report covers {matchingReport.startDate} – {matchingReport.endDate}. Evaluations use separately captured website evidence.</p>}
         </>}
-        {!loading && !sites.length && !connected.length && <p>No saved websites yet. <Link href="/search-console">Open Search Console</Link> or run a website audit.</p>}
+        {!loading && !sites.length && !connected.length && <p>Your saved websites will appear here after setup. Sample data is available separately in the <Link href="/overview?view=demo">demo dashboard</Link>.</p>}
         {!!connected.length && <div className="owned-connected-sites"><h3>Connected through Search Console</h3><p>Open a connected website to bring its reports and evaluations together.</p>
           {connected.map(report => <div key={report.id}><span>{report.property.replace(/^sc-domain:/, "")}</span><button className="button secondary" disabled={busy} onClick={() => openConnected(report.id)}>Open website <ArrowRight size={15} /></button></div>)}
         </div>}

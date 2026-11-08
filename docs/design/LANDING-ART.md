@@ -31,3 +31,13 @@ Company favicons are static PNGs collected for existing public recommendations a
 Local verification: typecheck passed, 10 landing/report/ranking desktop/mobile cases passed, and six targeted start-flow and synthetic-layout cases passed. The synthetic renderer initially exposed a missing React import in the new favicon component; that was corrected and its desktop/mobile reruns passed. A broader grep also selected the existing published-audits test, which still expects the removed `Explore sample rankings` control; its desktop run timed out and its mobile run was interrupted. That unrelated legacy test is not claimed as passing. No product provider call or deployment was made.
 
 The plain Cloudflare build command is blocked by OpenNext's support-policy check for the base revision's Next.js 15.5.25. The final Cloudflare build passed with the explicit `--dangerouslyUseUnsupportedNextVersion` flag, without changing the Next.js version or deploying.
+
+The demo dashboard's real company tiles also use local favicons. Notion's
+`notion.so` alias resolves to the existing Notion asset. Additional icons were
+retrieved from the companies' own published icon links on 8 November 2026:
+[Linear](https://linear.app/favicon.ico?v=2),
+[Webflow](https://cdn.prod.website-files.com/686294e263eb7e215bd232f7/686d53ceda66a40cb6b6d546_favicon.png),
+and [Framer](https://framerusercontent.com/images/Io89FonxEaWg4nxvQQllVLwPUUI.png).
+They are stored as small PNGs in `public/images/favicons`; viewing the dashboard
+makes no third-party icon request. The fictional Acme sample retains its letter
+placeholder. Actual brand icons do not make the demo's scores real measurements.

@@ -157,7 +157,8 @@ test("opening an existing Search Console property adds its private website witho
   await expect(page).toHaveURL(/\/websites\?site=website-codegraff$/);
   await expect(page.getByRole("region", {name: "Your websites", exact: true})).toContainText("Private website");
   await expect(page.getByRole("region", {name: "Website search and backlinks"})).toContainText("142");
+  await expect(page.getByRole("region", {name: "Your websites", exact: true}).getByRole("link", {name: "Choose questions", exact: true})).toBeVisible();
+  await page.getByText("More website tools",{exact:true}).click();
   await expect(page.getByRole("link", {name: "Evaluate website", exact: true})).toBeVisible();
-  await expect(page.getByRole("region", {name: "Your websites", exact: true}).getByRole("link", {name: "Keyword evaluations", exact: true})).toBeVisible();
   expect(handoffs).toBe(1); expect(state.posts).toBe(0); expect(paidRequests).toEqual([]);
 });

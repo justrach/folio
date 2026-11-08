@@ -69,6 +69,8 @@ import { SeoChecks } from "./seo-checks";
 import { SearchConsolePanel } from "./search-console-panel";
 import { OwnedWebsites } from "./owned-websites";
 import { RealOverview, workspaceOverviewHref } from "./real-overview";
+import { OverviewDemoNotice, OverviewSetupGuide } from "./overview-setup-guide";
+import { CompanyFavicon } from "./company-favicon";
 import { PublicBenchmarkDashboard } from "./public-benchmark-dashboard";
 import "./public-overview-shell.css";
 import { KeywordActivitySummary } from "./keyword-activity-summary";
@@ -130,12 +132,12 @@ const titles: Record<
   overview: {
     eyebrow: "THE BIG PICTURE",
     title: "My website results",
-    description: "Saved results for your website.",
+    description: "Your website, setup, and saved answers.",
   },
   websites: {
     eyebrow: "YOUR DIGITAL FOOTPRINT",
     title: "Your websites",
-    description: "Choose a website to review its saved reports, run an audit, or prepare an evaluation.",
+    description: "Add your website, choose customer questions, and review your saved answers.",
   },
   visibility: {
     eyebrow: "BE PART OF THE ANSWER",
@@ -208,7 +210,7 @@ function Brand({ name, small = false }: { name: string; small?: boolean }) {
       className={`brand-icon ${small ? "small" : ""}`}
       style={{ color: b.color }}
     >
-      {b.letter}
+      {b.name === "Acme" ? b.letter : <CompanyFavicon url={`https://${b.domain}`} name={b.name}/>}
     </span>
   );
 }
@@ -338,8 +340,8 @@ function WorkspaceDashboard({ section }: { section: string }) {
     setScanOwnerId(ownerId);
     setScanError("");
     setMode(ownerId && !demoRequested ? "measured" : "sample");
-    setLoadingScans(!!ownerId);
-    if (!ownerId) return;
+    setLoadingScans(!!ownerId && !demoRequested);
+    if (!ownerId || demoRequested) return;
     fetch("/api/scans", { signal: controller.signal })
       .then((r) => { if (!r.ok) throw new Error("Your saved audits could not be loaded."); return r.json(); })
       .then((d) => {
@@ -376,9 +378,9 @@ function WorkspaceDashboard({ section }: { section: string }) {
     window.addEventListener("keydown", key);
     return () => window.removeEventListener("keydown", key);
   }, []);
-  const actual = mode === "measured" ? activeScan : null;
+  const actual = !demoRequested && mode === "measured" ? activeScan : null;
   async function exportReport() {
-    if (mode === "measured" && !actual) {
+    if (!demoRequested && mode === "measured" && !actual) {
       notify("Run or select an audit to export its evidence.");
       return;
     }
@@ -575,11 +577,13 @@ function WorkspaceDashboard({ section }: { section: string }) {
             </div>
             <div className="heading-actions">
               {section === "evaluations" ? null : section === "websites" ? (
-                <><Link href="/search-console" className="button secondary">Connect Search Console <ArrowRight size={14} /></Link><Button onClick={() => prepareAudit()}><Plus size={16} />Add a website</Button></>
+                <>{ownerId ? <Link href="/start?step=1" className="button secondary squishy-control">Add a website <Plus size={16}/></Link> : <Link href="/login" className="button secondary">Sign in <ArrowRight size={14}/></Link>}</>
               ) : section === "benchmarks" ? (
                 <Link href="/docs/api" className="button secondary">API reference <ArrowRight size={14} /></Link>
               ) : section === "overview" && !demoRequested ? (
-                <><Link href="/websites" className="button secondary">My websites <ArrowRight size={14} /></Link><Button onClick={() => prepareAudit()}><Plus size={16} />Run an audit</Button></>
+                <Link href="/websites" className="button secondary">My websites <ArrowRight size={14} /></Link>
+              ) : section === "overview" && demoRequested ? (
+                <><Button kind="secondary" onClick={exportReport}><ArrowDownToLine size={14}/>Export sample report</Button><Link href={workspaceOverviewHref(query)} className="button secondary">My actual results <ArrowRight size={14} /></Link></>
               ) : section === "agents" ? (
                 <Link href="/pricing" className="button secondary">
                   Plans & usage <ArrowUpRight size={14} />
@@ -607,6 +611,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
             </div>
           </div>
           {section === "overview" && <nav className="real-overview-tabs" aria-label="Overview view"><Link href={workspaceOverviewHref(query)} aria-current={!demoRequested ? "page" : undefined}>My website results</Link><Link href="/overview?view=demo" aria-current={demoRequested ? "page" : undefined} onClick={() => setMode("sample")}>Demo report</Link></nav>}
+          {section === "overview" && demoRequested && <OverviewDemoNotice/>}
           {section === "overview" && !demoRequested ? <RealOverview ownerId={ownerId} scans={scans} scansLoading={loadingScans} scansError={scanOwnerId === ownerId ? scanError : ""} onRetryScans={() => setScanRefresh(value => value + 1)} onOpenScan={openScan} /> : <>
 
           {scanOwnerId === ownerId && scanError && ["overview", "websites", "seo", "patches"].includes(section) && (
@@ -1341,46 +1346,11 @@ function Websites({
   return (
     <>
       {session && <OwnedWebsites onAudit={onScan} />}
-      {!session && <div className="websites-grid">
-        <section className="panel website-card">
-          <div className="website-card-top">
-            <Brand name="Acme" />
-            <SampleLabel />
-          </div>
-          <h2>Acme</h2>
-          <p>acme.com</p>
-          <div className="website-card-stats">
-            <span>
-              AI visibility
-              <strong>
-                72.8<small>%</small>
-              </strong>
-            </span>
-            <span>
-              SEO health
-              <strong>
-                86<small>/100</small>
-              </strong>
-            </span>
-            <span>
-              Category rank<strong>#8</strong>
-            </span>
-          </div>
-          <Link href="/overview?view=demo" className="panel-link">
-            Open demo report <ArrowRight size={15} />
-          </Link>
-        </section>
-        <button className="add-website-card" onClick={() => onScan()}>
-          <span>
-            <Plus size={24} />
-          </span>
-          <h3>Give your website a little clarity.</h3>
-          <p>Run an audit and start your first report.</p>
-          <strong>
-            Add a website <ArrowRight size={15} />
-          </strong>
-        </button>
-      </div>}
+      {!session && <>
+        <OverviewSetupGuide state="ready" questions={0} answers={0} onRetry={()=>{}} />
+        <p className="websites-signin-note">Already have saved websites? <Link href="/login">Sign in to your workspace <ArrowRight size={13}/></Link></p>
+      </>}
+      {session && <>
       <section className="panel">
         <div className="panel-heading">
           <div>
@@ -1413,10 +1383,10 @@ function Websites({
           <EmptyState
             compact
             icon={<BookOpen size={26} />}
-            title="Your story is still unwritten."
+            title="No page audits saved yet."
             text={
               session
-                ? "Run your first audit to save an evidence-backed report here."
+                ? "Page audits check technical readiness. Choose Audit website under More website tools when you want a fresh check."
                 : "Sign in to save website audits and come back to your results."
             }
             action={
@@ -1433,7 +1403,8 @@ function Websites({
           />
         )}
       </section>
-      <PublicationControls onNotify={onNotify} />
+      {scans.length>0 && <PublicationControls onNotify={onNotify} />}
+      </>}
     </>
   );
 }

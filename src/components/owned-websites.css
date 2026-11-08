@@ -10,6 +10,11 @@
 .owned-website-title > span { display: inline-flex; align-items: center; min-height: 30px; padding: 4px 10px; border: 1px solid var(--folio-edge); border-radius: 999px; background: var(--folio-canvas); font-size: 12px; }
 .owned-website-actions { padding-top: 8px; border-top: 1px solid var(--folio-edge); gap: 9px; }
 .owned-website-actions .button { min-height: 44px; }
+.owned-website-title h3{display:flex;align-items:center;gap:12px;min-width:0}
+.owned-website-tools{border-top:1px solid var(--folio-edge);padding-top:14px}
+.owned-website-tools summary{cursor:pointer;font-size:13px;padding-block:8px;color:var(--folio-text-secondary)}
+.owned-website-tools>p{margin:10px 0 16px;font-size:12px}
+.owned-website-tools .owned-website-actions{border:0;padding-top:0}
 .owned-website-note { font-size: 13px; line-height: 1.6; }
 .owned-connected-sites { gap: 16px; }
 .owned-connected-sites > div { padding: 12px 0; border-top: 1px solid var(--folio-edge); }

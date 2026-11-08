@@ -279,3 +279,85 @@ test("website history filters before paging and loads older completed answers wi
   expect(state.historyReads.every(url=>{const p=new URL(url).searchParams;return p.get("websiteId")==="site-alpha"&&p.get("model")==="fixture-model"&&p.get("searchMode")==="open-web";})).toBe(true);
   expect(state.writes).toEqual([]);
 });
+
+test("new workspace starts with a free setup action and keeps the demo separate", async ({page})=>{
+  const state=await fixture(page);
+  await page.route('**/api/sites',route=>route.fulfill({json:{sites:[]}}));
+  await page.goto('/overview?view=workspace');
+  const guide=page.getByRole('region',{name:'Website setup and next step'});
+  await expect(guide.getByRole('heading',{name:'Start with your website.'})).toBeVisible();
+  await expect(guide.getByRole('link',{name:'Set up my website'})).toHaveAttribute('href','/start');
+  await expect(guide.locator('[aria-current="step"]')).toContainText('Add your website');
+  await expect(page.getByLabel('Selected website',{exact:true})).toHaveCount(0);
+  await expect(page.getByRole('region',{name:'Overview charts'})).toHaveCount(0);
+  await guide.getByRole('link',{name:'Explore the sample demo'}).click();
+  await expect(page.getByRole('region',{name:'Sample data notice'})).toContainText('Every chart and number in this demo is illustrative');
+  await expect(page.getByRole('region',{name:'Sample data notice'}).getByRole('link',{name:'Set up my website'})).toHaveAttribute('href','/start');
+  expect(state.writes).toEqual([]);
+});
+
+test("website without questions gets a scoped next action instead of empty charts", async ({page})=>{
+  const state=await fixture(page);state.runs=[];
+  await page.route(`**/api/benchmarks/${suite.id}`,route=>route.fulfill({json:{suite:{...suite,cases:[]}}}));
+  await page.goto('/overview?view=workspace&website=site-alpha');
+  const guide=page.getByRole('region',{name:'Website setup and next step'});
+  await expect(guide.locator('[aria-current="step"]')).toContainText('Choose questions');
+  await expect(guide.getByRole('link',{name:'Choose my questions'})).toHaveAttribute('href','/benchmarks?website=site-alpha');
+  await expect(page.getByRole('heading',{name:'Your answers will appear here.'})).toBeVisible();
+  await expect(page.getByRole('region',{name:'Overview charts'})).toHaveCount(0);
+  await guide.getByRole('link',{name:'Choose my questions'}).click();
+  await expect(page).toHaveURL(/\/benchmarks\?website=site-alpha$/);
+  expect(state.writes).toEqual([]);
+});
+
+test("saved questions require explicit run confirmation and completed answers reopen directly", async({page})=>{
+  const state=await fixture(page);state.runs=[];
+  await page.goto('/overview?view=workspace&website=site-alpha');
+  const guide=page.getByRole('region',{name:'Website setup and next step'});
+  await expect(guide.getByRole('link',{name:'Review and run questions'})).toHaveAttribute('href','/benchmarks?website=site-alpha');
+  await expect(guide).toContainText('requires confirmation');
+  state.runs=[run('first-answer',0,true)];
+  await page.getByRole('button',{name:'Refresh saved overview'}).click();
+  await expect(guide.getByRole('link',{name:'Review latest answer'})).toHaveAttribute('href',/run=first-answer$/);
+  await expect(guide).toContainText('Your answers are ready to explore.');
+  await expect(guide.locator('[data-step-state="done"]')).toHaveCount(3);
+  state.runs.unshift({...run('pending-answer',0,true,'2026-09-14T08:00:00.000Z'),status:'running',answer:null});
+  await page.getByRole('button',{name:'Refresh saved overview'}).click();
+  await expect(guide.getByRole('link',{name:'View search progress'})).toHaveAttribute('href',/run=pending-answer$/);
+  state.runs[0].status='requires_action';
+  await page.getByRole('button',{name:'Refresh saved overview'}).click();
+  await expect(guide.getByRole('link',{name:'Review search attempt'})).toHaveAttribute('href',/run=pending-answer$/);
+  state.failRuns=true;
+  await page.getByRole('button',{name:'Refresh saved overview'}).click();
+  await expect(guide.getByRole('button',{name:'Retry saved setup'})).toBeVisible();
+  await expect(guide.getByRole('link',{name:'Review and run questions'})).toHaveCount(0);
+  expect(state.writes).toEqual([]);
+});
+
+test("demo stays illustrative for an owner and never substitutes their saved audit",async({page})=>{
+  const state=await fixture(page);const scanReads:string[]=[];
+  page.on('request',request=>{if(new URL(request.url()).pathname==='/api/scans')scanReads.push(request.url());});
+  await page.goto('/overview?view=demo');
+  await expect(page.getByRole('region',{name:'Sample data notice'})).toBeVisible();
+  const brands=page.locator('.mini-leaderboard img');
+  await expect(brands).toHaveCount(5);
+  await page.locator('.mini-leaderboard').scrollIntoViewIfNeeded();
+  await expect.poll(()=>brands.evaluateAll(images=>images.every(image=>(image as HTMLImageElement).complete&&(image as HTMLImageElement).naturalWidth>0))).toBe(true);
+  await expect(page.locator('.metric-card').filter({has:page.getByText('SEO health',{exact:true})})).toContainText('86');
+  await expect(page.getByRole('region',{name:'Website setup and next step'})).toHaveCount(0);
+  expect(scanReads).toEqual([]);expect(state.writes).toEqual([]);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+1)).toBe(true);
+});
+
+test("My websites gives signed-out visitors the same setup flow without pretend owned results",async({page})=>{
+  const state=await fixture(page);state.owner=null;
+  await page.goto('/websites');
+  const guide=page.getByRole('region',{name:'Website setup and next step'});
+  await expect(guide.getByRole('link',{name:'Set up my website'})).toHaveAttribute('href','/start');
+  await expect(page.getByRole('link',{name:'Sign in to your workspace'})).toHaveAttribute('href','/login');
+  await expect(page.locator('.website-card-stats')).toHaveCount(0);
+  await expect(page.getByRole('heading',{name:'Your audit history'})).toHaveCount(0);
+  await guide.getByRole('link',{name:'Explore the sample demo'}).click();
+  await expect(page.getByRole('region',{name:'Sample data notice'})).toBeVisible();
+  expect(state.writes).toEqual([]);
+});

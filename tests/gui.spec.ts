@@ -171,7 +171,7 @@ test("all navigation pages work without layout overflow or runtime errors", asyn
 test("audit, methodology, and search dialogs support keyboard dismissal and navigation", async ({
   page,
 }) => {
-  await page.goto("/overview?view=workspace");
+  await page.goto("/seo");
   await page.getByRole("button", { name: "Run an audit", exact: true }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await expect(page.getByLabel("Website URL", { exact: true })).toHaveValue(
@@ -373,7 +373,7 @@ test("overview chart controls and report export remain usable", async ({
   await expect(page.locator(".chart-legend")).toContainText("Industry average");
   const pendingDownload = page.waitForEvent("download");
   await page
-    .getByRole("button", { name: "Export report", exact: true })
+    .getByRole("button", { name: "Export sample report", exact: true })
     .click();
   const download = await pendingDownload;
   expect(download.suggestedFilename()).toBe("folio-report.json");
@@ -536,9 +536,10 @@ test("real signup, simulated scan history, and logout protect account data", asy
     .click();
   await expect(page).toHaveURL(/\/websites$/);
   await expect(page.locator(".profile")).toContainText(email);
+  await page.goto('/seo');
   await page
     .locator(".page-heading")
-    .getByRole("button", { name: "Add a website", exact: true })
+    .getByRole("button", { name: "Run an audit", exact: true })
     .click();
   await page.getByLabel("Website URL", { exact: true }).fill("https://example.com");
   await page

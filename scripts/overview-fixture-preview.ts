@@ -13,12 +13,15 @@ import { overviewFixture } from "../tests/fixtures/overview-preview-fixture";
 const upstream = new URL(process.env.FOLIO_DEV_URL ?? "http://127.0.0.1:3001");
 const port = Number(process.env.FIXTURE_PREVIEW_PORT ?? 3101);
 const fixture = overviewFixture(Date.now());
-const banner = '<div style="position:fixed;z-index:2147483647;bottom:8px;left:50%;transform:translateX(-50%);padding:4px 10px;border-radius:999px;background:#8a500e;color:#fff;font:600 11px/1.4 system-ui;pointer-events:none">TEST FIXTURE · illustrative data · not a real account</div>';
+const emptyPreview = process.env.OVERVIEW_PREVIEW_STAGE === "empty";
+const banner = '<style>body{padding-top:64px}.app-shell>.sidebar{top:64px;height:calc(100dvh - 64px)}</style><aside style="position:fixed;z-index:2147483647;top:0;left:0;right:0;height:64px;display:flex;align-items:center;justify-content:center;padding:4px 16px;background:#8a500e;color:#fff;font:500 12px/1.5 system-ui;text-align:center;pointer-events:none">SAMPLE PREVIEW · Example account and results. Actions don’t save or run searches.</aside>';
 
 const server = http.createServer((req, res) => {
   const url = new URL(req.url ?? "/", "http://fixture.local");
   if (url.pathname.startsWith("/api/")) {
-    const result = fixture.respond(req.method ?? "GET", url.pathname);
+    const result = emptyPreview && req.method === "GET" && ["/api/sites", "/api/scans", "/api/benchmarks", "/api/benchmarks/runs"].includes(url.pathname)
+      ? { status: 200, json: url.pathname === "/api/sites" ? { sites: [] } : url.pathname === "/api/scans" ? { scans: [] } : url.pathname === "/api/benchmarks" ? { suites: [] } : { runs: [], models: [], nextCursor: null } }
+      : fixture.respond(req.method ?? "GET", url.pathname);
     res.writeHead(result.status, { "content-type": "application/json", "cache-control": "no-store" });
     return res.end(JSON.stringify(result.json));
   }

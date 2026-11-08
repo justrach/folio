@@ -32,6 +32,43 @@ System is the default and follows device changes; explicit choices persist acros
 navigation/reloads and sync between tabs. The header shortcut uses the same
 preference. Theme artwork follows the resolved palette before hydration.
 
+### Overview setup and data labels
+
+`/overview?view=workspace` starts with a three-stage setup card: add your website,
+choose customer questions, and collect/review answers. It derives the next action
+from the selected website's loaded, owned records. Empty workspaces link to
+`/start` for the free page-check flow; saved websites link to the existing
+website-scoped question editor. Active searches open their saved progress,
+failed/attention attempts open for review, and completed answers reopen directly.
+Links do not start searches, reconcile runs or spend provider credits. The run
+handoff explicitly explains confirmation and possible provider costs.
+
+Loading and unavailable data never mark setup complete or imply a new search is
+needed. Missing reads offer a retry. Websites with no questions in the current
+scope get an explanatory placeholder instead of empty charts; scope/model
+selectors remain available. The private view labels its values **Your actual
+results**, identifies the selected URL, and keeps unmeasured results empty.
+
+`/overview?view=demo` has a prominent **Demo · Sample data** notice, a **Set up my
+website** link and a separate **My actual results** return link. It does not load
+or substitute the owner's technical scans into illustrative charts. Signed-out
+workspace visitors can start the free setup, sign in to existing results, or
+explicitly open the demo.
+
+The local fixture proxy is test-only, prohibits writes and displays a prominent
+sample-account notice. `OVERVIEW_PREVIEW_STAGE=empty` previews first-time setup;
+its normal mode previews a populated example. Neither mode uses a real account
+or provider. These fixture checks do not establish real customer/provider results.
+
+My websites uses the same setup card for signed-out and empty accounts, with a
+separate sign-in link for returning owners. It does not display fictional Acme
+scores as a saved website or an empty personal audit history before sign-in.
+Adding a website enters `/start?step=1`; viewing a saved website's results and
+choosing its customer questions are the two main owned-site actions. Technical
+audits, page-evidence evaluations and Search Console connections live under
+**More website tools**. Existing owned handoffs and explicit audit confirmation
+remain intact. Publication controls appear with actual saved audits.
+
 Folio connects saved technical audits, private SEO reports, and managed website evaluations through prepared forms and owned records. Moving between pages does not start a paid lookup or model task. The owner reviews the inputs and chooses the action that creates work.
 
 This guide describes the current UI. The [evaluation loop](EVALUATION-LOOP.md) explains execution and recovery; the [evaluation strategy](../EVALUATION-STRATEGY.md) defines what the checks establish.

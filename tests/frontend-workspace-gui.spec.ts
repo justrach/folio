@@ -271,6 +271,7 @@ test("a selected website opens its combined results and prefills only an explici
   const state = await fixture(page);
   await page.goto("/websites");
   await selectValue(page.getByLabel("Selected website", { exact: true }), "owned-older");
+  await page.getByText("More website tools", {exact:true}).click();
   await page.getByRole("button", { name: "Audit website", exact: true }).click();
   await expect(page.getByLabel("Website URL", { exact: true })).toHaveValue(olderUrl);
   noStartedWork(state);
