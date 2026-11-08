@@ -1,7 +1,11 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 
 type Resource = { end(): Promise<void> };
-const requests = new AsyncLocalStorage<Map<string, Resource>>();
+// OpenNext bundles application routes separately from the custom Worker entry.
+// Share the context coordinator across those module copies, never a pool/socket.
+const scopeKey = Symbol.for("folio.database-request-scope.v1");
+const coordinator = globalThis as typeof globalThis & { [scopeKey]?: AsyncLocalStorage<Map<string, Resource>> };
+const requests = coordinator[scopeKey] ??= new AsyncLocalStorage<Map<string, Resource>>();
 
 /** Share connections only within this invocation, never between Worker requests. */
 export function requestResource<T extends Resource>(key: string, create: () => T): T {
