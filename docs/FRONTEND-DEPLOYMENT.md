@@ -5,6 +5,12 @@ Worker selects PostgreSQL through Hyperdrive. Deploying the local default
 `wrangler.jsonc` would overwrite that production runtime. Use the separate
 `wrangler.frontend.jsonc` entry point for this UI release.
 
+The backend's production configuration requests Singapore placement with
+`placement.region = "aws:ap-southeast-1"`. This is a Cloudflare placement hint,
+not a database migration or a data-residency guarantee. The existing database
+is in Sydney; measure live request latency after placement changes. The frontend
+remains at the edge, with backend HTTP calls using the service binding.
+
 `folio-frontend-preview` serves the generated OpenNext UI on its Workers URL.
 The `production` environment deploys `folio-frontend` in front of the existing
 `usefolio.site` custom-domain application. It forwards `/api` and `/api/*`
