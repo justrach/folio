@@ -1,6 +1,7 @@
 "use client";
 
-import { memo, useMemo } from "react";
+import { memo, useMemo, useRef, useState } from "react";
+import { nearestIndex, scrubIndex } from "@/lib/overview-question-filters";
 import { activityGrid, appearanceBreakdown, attemptBreakdown, citedDomains, scaleY, scoreDomain, scoreTrend, sparkPath, type AttemptStatus, type Breakdown, type NamedState } from "@/lib/overview-visuals";
 import "./overview-visual-cards.css";
 
@@ -114,23 +115,46 @@ function SourcesCard({ state, answers, targetDomain }: Pick<OverviewVisualCardsP
 
 function ReadinessCard({ scans, scansState }: Pick<OverviewVisualCardsProps, "scans" | "scansState">) {
   const trend = useMemo(() => scoreTrend(scans), [scans]);
-  const width = 320, height = 84;
-  const domain = scoreDomain(trend.points.map(point => point.score), 70);
-  const line = sparkPath(trend.points.map(point => point.score), width, height, 4, domain);
+  const [picked, setPicked] = useState<number | null>(null);
+  const dragging = useRef(false);
+  const width = 320, height = 84, pad = 4;
+  const count = trend.points.length;
+  const index = picked !== null && picked < count ? picked : count - 1;
+  const point = trend.points[index] ?? null;
+  const previous = index > 0 ? trend.points[index - 1] : null;
+  const delta = point && previous ? point.score - previous.score : null;
+  const domain = scoreDomain(trend.points.map(item => item.score), 70);
+  const line = sparkPath(trend.points.map(item => item.score), width, height, pad, domain);
   const guide = scaleY(70, domain, height);
-  const low = trend.latest && trend.latest.score < 70;
-  return <Card title="Technical readiness" meta={trend.points.length ? `${trend.points.length} ${trend.points.length === 1 ? "audit" : "audits"}` : undefined}>
-    {scansState !== "ready" || !trend.latest ? <Pending state={scansState} empty="No technical audit saved for this exact URL yet." /> : <>
-      <div className="ovc-total"><strong>{trend.latest.score}<small>/100</small></strong>
-        {trend.delta !== null && <span className="ovc-chip" data-tone={trend.delta < 0 ? "warn" : trend.delta > 0 ? "good" : "neutral"}>{trend.delta > 0 ? "▲ +" : trend.delta < 0 ? "▼ " : ""}{trend.delta} vs previous</span>}
-        {low && <span className="ovc-chip" data-tone="warn">Below 70</span>}</div>
-      <p className="ovc-sub">Latest audit {shortDate(trend.latest.createdAt)}.</p>
-      {trend.points.length > 1 ? <svg className="ovc-spark" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" role="img" aria-label={`Readiness scores oldest to newest: ${trend.points.map(point => point.score).join(", ")}.`}>
-        <line x1="0" x2={width} y1={guide} y2={guide} className="ovc-guide" />
-        <polygon points={`4,${height - 4} ${line} ${width - 4},${height - 4}`} className="ovc-area" />
-        <polyline points={line} className="ovc-line" />
-      </svg> : <p className="ovc-note">Run another audit to see a trend.</p>}
-      {trend.points.length > 1 && <footer className="ovc-foot"><span>{shortDate(trend.points[0].createdAt)}</span><span>Dashed line: 70 · scale {domain[0]}–{domain[1]}</span><span>{shortDate(trend.latest.createdAt)}</span></footer>}
+  const xPercent = count > 1 ? ((pad + index * ((width - pad * 2) / (count - 1))) / width) * 100 : 50;
+  const yPercent = point ? (scaleY(point.score, domain, height, pad) / height) * 100 : 50;
+  const isLatest = index === count - 1;
+  function fromPointer(event: React.PointerEvent<HTMLDivElement>) {
+    const box = event.currentTarget.getBoundingClientRect();
+    const fraction = ((event.clientX - box.left) / box.width * width - pad) / (width - pad * 2);
+    setPicked(nearestIndex(fraction, count));
+  }
+  return <Card title="Technical readiness" meta={count ? `${count} ${count === 1 ? "audit" : "audits"}` : undefined}>
+    {scansState !== "ready" || !point ? <Pending state={scansState} empty="No technical audit saved for this exact URL yet." /> : <>
+      <div className="ovc-total" aria-live="polite"><strong>{point.score}<small>/100</small></strong>
+        {delta !== null && <span className="ovc-chip" data-tone={delta < 0 ? "warn" : delta > 0 ? "good" : "neutral"}>{delta > 0 ? "▲ +" : delta < 0 ? "▼ " : ""}{delta} vs previous audit</span>}
+        {point.score < 70 && <span className="ovc-chip" data-tone="warn">Below 70</span>}</div>
+      <p className="ovc-sub">{isLatest ? "Latest audit" : `Audit ${index + 1} of ${count}`} · {shortDate(point.createdAt)}{!isLatest && <> · <button type="button" className="ovc-reset" onClick={() => setPicked(null)}>Show latest</button></>}</p>
+      {count > 1 ? <div className="ovc-scrub" role="slider" tabIndex={0} aria-label="Technical readiness audits" aria-valuemin={1} aria-valuemax={count} aria-valuenow={index + 1}
+        aria-valuetext={`${point.score} out of 100 on ${shortDate(point.createdAt)}, audit ${index + 1} of ${count}`}
+        onKeyDown={event => { const next = scrubIndex(event.key, index, count); if (next !== null) { event.preventDefault(); setPicked(next); } }}
+        onPointerDown={event => { dragging.current = true; event.currentTarget.setPointerCapture?.(event.pointerId); fromPointer(event); }}
+        onPointerMove={event => { if (dragging.current || event.pointerType === "mouse") fromPointer(event); }}
+        onPointerUp={() => { dragging.current = false; }} onPointerCancel={() => { dragging.current = false; }}>
+        <svg className="ovc-spark" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" aria-hidden="true">
+          <line x1="0" x2={width} y1={guide} y2={guide} className="ovc-guide" />
+          <polygon points={`${pad},${height - pad} ${line} ${width - pad},${height - pad}`} className="ovc-area" />
+          <polyline points={line} className="ovc-line" />
+        </svg>
+        <span className="ovc-cursor" style={{ left: `${xPercent}%` }} aria-hidden="true" />
+        <span className="ovc-dot" style={{ left: `${xPercent}%`, top: `${yPercent}%` }} aria-hidden="true" />
+      </div> : <p className="ovc-note">Run another audit to see a trend.</p>}
+      {count > 1 && <footer className="ovc-foot"><span>{shortDate(trend.points[0].createdAt)}</span><span>Drag or use arrow keys · dashed line 70 · scale {domain[0]}–{domain[1]}</span><span>{shortDate(trend.points[count - 1].createdAt)}</span></footer>}
     </>}
   </Card>;
 }

@@ -4,7 +4,7 @@ import { UiSelect } from "./ui/select";
 import Link from "next/link";
 import { WorkspaceEmptyArt } from "./workspace-empty-art";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useDeferredValue, useEffect, useState } from "react";
 import { ArrowRight, ChevronDown, LockKeyhole, RefreshCw } from "lucide-react";
 import type { Scan } from "@/lib/demo-data";
 import type { SeoReportSummary } from "@/lib/seo-store";
@@ -15,7 +15,10 @@ import { keywordRecommendationMetrics } from "@/lib/keyword-search-mode";
 import { evaluationHref } from "@/lib/evaluation-navigation";
 import { WorkspaceEvaluationSummary } from "./workspace-evaluation-summary";
 import { OverviewVisualCards } from "./overview-visual-cards";
+import { OverviewQuestionControls } from "./overview-question-controls";
+import { filterCounts, filterQuestions, parseQuestionView, questionOutcome, QUESTION_VIEW_KEY, searchTokens, type QuestionFilter, type QuestionView } from "@/lib/overview-question-filters";
 import "./real-overview.css";
+import "./overview-question-controls.css";
 
 type Site = { id:string; name:string; url:string };
 type Load<T> = { state:"loading"|"ready"|"error"; items:T[] };
@@ -64,6 +67,11 @@ function OwnedOverview({scans,scansLoading,scansError,onRetryScans,onOpenScan}:O
   const model=selectedModel(query);
   const [data,setData]=useState<Data>(initial);
   const [refresh,setRefresh]=useState(0);
+  const [questionQuery,setQuestionQuery]=useState("");
+  const [questionFilters,setQuestionFilters]=useState<ReadonlySet<QuestionFilter>>(()=>new Set());
+  const [questionView,setQuestionView]=useState<QuestionView>("list");
+  useEffect(()=>{try{setQuestionView(parseQuestionView(localStorage.getItem(QUESTION_VIEW_KEY)));}catch{/* Storage is optional. */}},[]);
+  const deferredQuery=useDeferredValue(questionQuery);
   const [pageSelection,setPageSelection]=useState({key:"",cursor:"",retry:0});
   const [coverage,setCoverage]=useState<{key:string;next:string|null;models:string[];loading:boolean;error:boolean}>({key:"",next:null,models:[],loading:false,error:false});
   const [detail,setDetail]=useState<{key:string;state:"loading"|"ready";runs:KeywordBenchmarkRun[];failed:number}>({key:"",state:"loading",runs:[],failed:0});
@@ -155,6 +163,13 @@ function OwnedOverview({scans,scansLoading,scansError,onRetryScans,onOpenScan}:O
   }):[];
   const history=ordered(records.filter(run=>run.caseId===historyCase)).reverse();
   const comparableHistory=history.length>1&&history.every(run=>compareKeywordBenchmarkRuns(history[0],run).comparable);
+  const questionRows=[...cases.values()].map(item=>{const attempt=latest.get(item.id);const observation=observations.find(value=>value.run.caseId===item.id);
+    return {id:item.id,item,attempt,observation,query:observation?.run.case.query??attempt?.case.query??item.query,outcome:questionOutcome(observation?observation.metrics.targetNamed:null),needsReview:attempt?.status==="failed"||attempt?.status==="requires_action"};});
+  const questionTokens=searchTokens(deferredQuery);
+  const visibleQuestions=filterQuestions(questionRows,questionTokens,questionFilters);
+  function changeView(next:QuestionView){setQuestionView(next);try{localStorage.setItem(QUESTION_VIEW_KEY,next);}catch{/* The choice still works for this tab. */}}
+  function toggleFilter(key:QuestionFilter){setQuestionFilters(previous=>{const next=new Set(previous);if(!next.delete(key))next.add(key);return next;});}
+  function removeToken(token:string){setQuestionQuery(previous=>searchTokens(previous).filter(value=>value!==token).map(value=>value.includes(" ")?`"${value}"`:value).join(" "));}
   function select(website:string,nextScope=scope,nextModel=model){const params=new URLSearchParams({view:"workspace",website});if(nextScope!=="open-web")params.set("scope",nextScope);if(nextModel)params.set("model",nextModel);window.history.pushState(null,"",`/overview?${params}`);}
   return <div className="real-overview">
     <div className="real-overview-select"><label>Selected website<UiSelect aria-label="Selected website" value={selected?.id??""} disabled={data.sites.state==="loading"} onChange={event=>select(event.target.value)}><option value="" disabled>Choose your website</option>{data.sites.items.map(site=><option key={site.id} value={site.id}>{site.name||site.url} · {site.url}</option>)}</UiSelect></label><button className="button secondary" onClick={()=>setRefresh(value=>value+1)} aria-label="Refresh saved overview"><RefreshCw size={14}/>Refresh saved data</button></div>
@@ -175,10 +190,11 @@ function OwnedOverview({scans,scansLoading,scansError,onRetryScans,onOpenScan}:O
           {metricsReady&&<p className="real-overview-attempts" aria-label="Latest attempt states"><span>{pending} pending</span><span>{attention} need attention</span><span>{failed} failed</span><span>{cancelled} cancelled</span>{data.suites.state==="ready"&&<span>{unrun} {historyComplete?"not run":"with no attempt loaded"}</span>}</p>}
           {detail.key===selectionKey&&detail.failed>0&&<p role="alert" className="real-overview-loading">{detail.failed} completed {detail.failed===1?"record could":"records could"} not be read. The figures include only successfully loaded answers.</p>}
           {data.suites.state==="error"&&<p role="alert" className="real-overview-loading">Some question suites could not be loaded; unrun-question counts are unavailable.</p>}
-          <div className="real-query-list" aria-label="Search observations by question">{[...cases.values()].map(item=>{
-            const attempt=latest.get(item.id);const observation=observations.find(value=>value.run.caseId===item.id);
-            return <article key={item.id}><div><h3>{observation?.run.case.query??attempt?.case.query??item.query}</h3><p>{observation?`Last completed ${date(observation.run.createdAt)} · ${observation.run.model}`:"No completed observation loaded"}</p>{attempt&&<small>Latest attempt: {labels[attempt.status]} · {date(attempt.createdAt)} · {attempt.model}</small>}</div><dl><div><dt>Target position</dt><dd>{observation?(observation.metrics.targetNamed==="yes"?observation.metrics.targetPositions.map(position=>`#${position}`).join(", "):observation.metrics.targetNamed==="no"?"Not listed":"Unknown"):"Not measured"}</dd></div><div><dt>Target cited</dt><dd>{observation?(observation.metrics.targetCited===true?"Yes":observation.metrics.targetCited===false?"No":"Unknown"):"Not measured"}</dd></div></dl><div className="real-query-actions">{observation&&<Link href={reportHref(observation.run)} aria-label={`Open observation for ${item.query}`}>Open answer<ArrowRight size={13}/></Link>}{attempt&&attempt.id!==observation?.run.id?<Link href={reportHref(attempt)} aria-label={`Review latest attempt for ${item.query}`}>Review latest attempt<ArrowRight size={13}/></Link>:!attempt&&<Link href={`/benchmarks?suite=${encodeURIComponent(item.suiteId)}`}>{historyComplete?"Prepare this question":"Open saved question"}<ArrowRight size={13}/></Link>}</div></article>;
+          {questionRows.length>0&&<OverviewQuestionControls query={questionQuery} tokens={questionTokens} filters={questionFilters} counts={filterCounts(questionRows)} shown={visibleQuestions.length} total={questionRows.length} scopeLabel={`${scope==="open-web"?"open-web":"reviewed documentation"}, ${model||"all models"}${historyComplete?"":", partial history"}`} view={questionView} onQuery={setQuestionQuery} onRemoveToken={removeToken} onToggle={toggleFilter} onClear={()=>{setQuestionQuery("");setQuestionFilters(new Set());}} onView={changeView}/>}
+          <div className="real-query-list" data-view={questionView} key={questionView} aria-label="Search observations by question">{visibleQuestions.map(({item,attempt,observation,query:title,outcome})=>{
+            return <article key={item.id} data-outcome={outcome}><div><h3>{title}</h3><p>{observation?`Last completed ${date(observation.run.createdAt)} · ${observation.run.model}`:"No completed observation loaded"}</p>{attempt&&<small>Latest attempt: {labels[attempt.status]} · {date(attempt.createdAt)} · {attempt.model}</small>}</div><dl><div><dt>Target position</dt><dd>{observation?(observation.metrics.targetNamed==="yes"?observation.metrics.targetPositions.map(position=>`#${position}`).join(", "):observation.metrics.targetNamed==="no"?"Not listed":"Unknown"):"Not measured"}</dd></div><div><dt>Target cited</dt><dd>{observation?(observation.metrics.targetCited===true?"Yes":observation.metrics.targetCited===false?"No":"Unknown"):"Not measured"}</dd></div></dl><div className="real-query-actions">{observation&&<Link href={reportHref(observation.run)} aria-label={`Open observation for ${item.query}`}>Open answer<ArrowRight size={13}/></Link>}{attempt&&attempt.id!==observation?.run.id?<Link href={reportHref(attempt)} aria-label={`Review latest attempt for ${item.query}`}>Review latest attempt<ArrowRight size={13}/></Link>:!attempt&&<Link href={`/benchmarks?suite=${encodeURIComponent(item.suiteId)}`}>{historyComplete?"Prepare this question":"Open saved question"}<ArrowRight size={13}/></Link>}</div></article>;
           })}</div>
+          {questionRows.length>0&&!visibleQuestions.length&&<div className="oqc-empty"><p>No loaded questions match these filters.</p><button type="button" className="button secondary" onClick={()=>{setQuestionQuery("");setQuestionFilters(new Set());}}>Clear filters</button></div>}
           <p className="real-overview-loading" aria-label="Saved history coverage">{data.runs.state==="ready"&&coverage.key===selectionKey?data.runs.items.length:"No"} saved attempts loaded for this website, scope{model?", and model":""}. {currentCoverage.loading?"Loading saved history…":currentCoverage.error?"History is unavailable.":currentCoverage.next?"Older attempts remain; counts describe the loaded history only.":"All matching saved attempts loaded."}</p>
           {currentCoverage.error&&pageCursor&&<p role="alert">Older saved attempts could not be loaded. Your loaded answers remain available.</p>}
           {currentCoverage.next&&<button type="button" className="button secondary" disabled={currentCoverage.loading} onClick={()=>setPageSelection(previous=>({key:selectionKey,cursor:currentCoverage.next!,retry:previous.retry+1}))}>{currentCoverage.loading?"Loading older attempts…":"Load older attempts"}</button>}
