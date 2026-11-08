@@ -25,7 +25,7 @@ test("shared dropdowns wrap long options, fit narrow screens and retain keyboard
   await category.click(); await page.keyboard.press("Escape"); await expect(category).toBeFocused();
 
   await page.setViewportSize({ width: 320, height: 780 });
-  await page.goto("/leaderboard");
+  await page.goto("/leaderboard?indexView=rankings");
   const question = page.getByRole("combobox", { name: "Website comparison question", exact: true });
   await question.click();
   const menu = page.getByRole("listbox");
@@ -41,7 +41,7 @@ test("shared dropdowns wrap long options, fit narrow screens and retain keyboard
   await expect(question).toHaveText(longest.query);
   expect(await question.evaluate(node => node.scrollWidth <= node.clientWidth + 1)).toBe(true);
   await expect(page).toHaveURL(new RegExp(`query=${longest.id}`));
-  for (const path of ["/", "/leaderboard", "/docs/api"]) {
+  for (const path of ["/", "/leaderboard?indexView=rankings", "/docs/api"]) {
     await page.goto(path);
     await expect(page.getByRole("combobox").first()).toBeEnabled();
     expect(await page.getByRole("combobox").evaluateAll(nodes => nodes.every(node => node.tagName === "BUTTON"))).toBe(true);
