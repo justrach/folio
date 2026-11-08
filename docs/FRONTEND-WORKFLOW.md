@@ -16,6 +16,22 @@ monospace formatting. The workspace uses a quiet text navigation rail, omits
 promotional sidebar artwork and redundant heading eyebrows, and keeps essential
 evidence, account, and spending states visible.
 
+Workspace controls use rounded 16px shapes and the existing shared press feedback.
+The Index view chooser uses a segmented surface with a filled selected tab; it
+reflows to two columns on phones. Public summary cards and the question browser
+share 16px corners. The private overview places the answer-model selector beside
+its scope explanation on desktop and stacks them on mobile. Its summary values
+stay compact above the chart cards, and recommended steps and saved report types
+use separate cards. Repeated private summary values and public activity/model charts
+are collapsed behind labelled disclosures by default. Controls squash vertically
+on press and spring back; reduced-motion preferences keep them still. These presentation changes preserve the measured values,
+scope caveats, owned-record navigation and explicit run actions.
+
+The fixed bottom-right **Color theme** picker offers System, Light and Dark.
+System is the default and follows device changes; explicit choices persist across
+navigation/reloads and sync between tabs. The header shortcut uses the same
+preference. Theme artwork follows the resolved palette before hydration.
+
 Folio connects saved technical audits, private SEO reports, and managed website evaluations through prepared forms and owned records. Moving between pages does not start a paid lookup or model task. The owner reviews the inputs and chooses the action that creates work.
 
 This guide describes the current UI. The [evaluation loop](EVALUATION-LOOP.md) explains execution and recovery; the [evaluation strategy](../EVALUATION-STRATEGY.md) defines what the checks establish.
@@ -96,7 +112,7 @@ The existing 4 KB JSON request-size safeguard still applies to saving setup; thi
 
 ## Open a saved report or prepare a new run
 
-A selected evaluation opens directly into its report. Authentication loading shows no launch/demo form. A signed-out `?run=` link presents **Sign in to open this private report** and preserves its validated return context; browser back to a saved run clears the previous preparation notice. The compact **Notebook** keeps saved runs available without placing the launch form above the result. **New evaluation** opens a blank form; **Evaluate current website** prepares that form for the selected target and clears its old reference answers and SEO selection. Back/forward navigation and refresh preserve the selected saved run through validated URL context.
+A selected evaluation opens directly into its report. Authentication loading shows no launch/demo form. A signed-out `?run=` link presents **Sign in to open this private report** and preserves its validated return context; browser back to a saved run clears the previous preparation notice. The compact **Notebook** keeps saved runs available without placing the launch form above the result. **New evaluation** opens a blank form and focuses the website field after the form is mounted; **Evaluate current website** prepares that form for the selected target and clears its old reference answers and SEO selection. Back/forward navigation and refresh preserve the selected saved run through validated URL context.
 
 The form keeps optional reference answers, saved SEO evidence, and the suite explanation in disclosures. The comparison area is also collapsed until selected; **Compare this run** opens it with the current run as the baseline. Preparing inputs or opening these controls does not start work.
 

@@ -1,3 +1,4 @@
+import { openEmailLogin } from "./login-helpers";
 import { selectValue } from "./select-helpers";
 import { expect, test, type Page } from "@playwright/test";
 import { evaluateHtml } from "../src/lib/evaluation";
@@ -143,6 +144,7 @@ test("email sign-in returns to the requested evaluation composer without startin
   const state = await fixture(page, { signedIn: false });
   const destination = `/evaluations?target=${encodeURIComponent(latestUrl)}`;
   await page.goto(`/login?next=${encodeURIComponent(destination)}`);
+  await openEmailLogin(page);
   await page.getByLabel("Email address", { exact: true }).fill("workspace-gui@example.test");
   await page.getByLabel("Password", { exact: true }).fill("browser-fixture-password");
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
@@ -160,6 +162,7 @@ test("an external login return target falls back to the private websites workspa
   await page.route("https://outside.example.org/**", route => route.fulfill({ body: "Blocked external destination fixture." }));
   await page.goto("/login?next=https%3A%2F%2Foutside.example.org%2Fcollect");
   const appOrigin = new URL(page.url()).origin;
+  await openEmailLogin(page);
   await page.getByLabel("Email address", { exact: true }).fill("workspace-gui@example.test");
   await page.getByLabel("Password", { exact: true }).fill("browser-fixture-password");
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
@@ -170,8 +173,12 @@ test("an external login return target falls back to the private websites workspa
 });
 
 async function openWebsitePicker(page: Page) {
+  await expect(page.locator(".topbar")).toBeVisible();
   const menu = page.getByRole("button", { name: "Open navigation", exact: true });
-  if (await menu.isVisible()) await menu.click();
+  if (await menu.isVisible()) {
+    await menu.click();
+    await expect(page.locator(".sidebar")).toHaveClass(/\bopen\b/);
+  }
   await page.getByRole("button", { name: "Switch website", exact: true }).click();
 }
 

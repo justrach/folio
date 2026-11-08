@@ -237,8 +237,8 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
 
   if (!step) return <div className="ob"><TopBar step={1} /><p className="ob-loading" role="status">Loading your setup…</p></div>;
 
-  if (step === 1) return <Screen nav={nav} step={1} eyebrow="Free page check" title="Which website should AI recommend?" side={url.trim() ? <LivePreview input={url} checking={busy} /> : <ProofCard proof={proof} />}>
-    <p className="ob-lede">Start with your website. Review its page checks, then choose the customer questions you want to explore.</p>
+  if (step === 1) return <Screen nav={nav} step={1} eyebrow="Free page check" title="Start with your website." side={url.trim() ? <LivePreview input={url} checking={busy} /> : <ProofCard proof={proof} />}>
+    <p className="ob-lede">Get a free page check. Then choose the customer questions you want to research.</p>
     <form onSubmit={event => { event.preventDefault(); void run(async () => {
       const result = await api<{ check: Check; siteId: string | null }>("/api/onboarding/check", { method: "POST", body: { url: url.includes("://") ? url : `https://${url}` } });
       setCheck(result.check); setSiteId(result.siteId);
@@ -397,7 +397,7 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
         <p className="ob-note" style={{ marginTop: 0 }}>No saved public answers mention {check?.host ?? "your website"} yet. Name the companies you compete with, and Folio will look for them in your answers.</p>
         {ghost && <table className="ob-tbl" style={{ marginTop: 10 }}><tbody>{ghost}</tbody></table>}
       </>}
-      {fromIndex && <p className="ob-note">{allNamed ? `These public questions named all ${candidates.filter(item => item.source === "public-index").length + (target ? 1 : 0)} products, so being listed is expected. Your own questions do not name anyone.` : "Average position in the returned list. Lower is earlier."}</p>}
+      {fromIndex && <p className="ob-note">{allNamed ? `These public questions named all ${candidates.filter(item => item.source === "public-index").length + (target ? 1 : 0)} products, so being listed is expected. Your own questions do not name anyone.` : "These are public examples, not results for your website. A lower average position means an earlier place in the returned lists."}</p>}
       {adding || !candidates.length ? <form className="ob-add" onSubmit={event => { event.preventDefault(); const name = newName.trim(); if (!name || candidates.some(item => item.name.toLowerCase() === name.toLowerCase())) return;
         setCandidates(list => [...list, { name, aliases: newAliases.split(",").map(value => value.trim()).filter(Boolean), source: "manual", checked: true }]); setNewName(""); setNewAliases(""); setAdding(false); }}>
         <label className="ob-field" style={{ marginTop: 0 }}>Company name<div className="ob-input"><input autoFocus={adding} required maxLength={80} value={newName} onChange={event => setNewName(event.target.value)} placeholder="Acme" /></div></label>
@@ -572,9 +572,12 @@ function LivePreview({ input, checking }: { input: string; checking: boolean }) 
 function ProofCard({ proof }: { proof: OnboardingProof | null }) {
   if (!proof) return null;
   return <div className="ob-backdrop"><WorkspaceEmptyArt/><div className="ob-card">
-    <div className="ob-card-head"><span>Inside a Folio report</span><b>Real results</b></div>
-    <h2>{proof.category}</h2><p className="ob-hint" style={{ marginTop: 6 }}>{plural(proof.totalAnswers, "saved answer")}, {dateRange(proof.firstObservedAt, proof.lastObservedAt)}</p>
+    <div className="ob-card-head"><span>Example · saved public results</span></div>
+    <h2>Who AI recommended</h2><p className="ob-hint" style={{ marginTop: 6 }}>{proof.category} · {plural(proof.totalAnswers, "saved answer")}</p>
+    <div className="ob-proof-columns"><span>Website</span><span>Avg. position</span></div>
     <ol className="ob-rows">{proof.rows.map(row => <li key={row.name}><CompanyFavicon name={row.name} url={DEVELOPER_TOOLS.find(tool=>tool.name===row.name)?.websiteUrl ?? null}/><div className="ob-grow"><strong>{row.name}</strong><small>Listed in {row.answers} of {row.totalAnswers} answers</small></div><span className="ob-pill">{row.averagePosition.toFixed(1)}</span></li>)}</ol>
-    <p className="ob-note">Average position in the returned list. Lower is earlier.</p>
+    <p className="ob-note">These are public examples, not results for your website. A lower average position means an earlier place in the returned lists.</p>
+    <p className="ob-proof-date">Recorded {dateRange(proof.firstObservedAt, proof.lastObservedAt)}</p>
+    <Link className="ob-proof-link" href="/leaderboard?landscapeAudience=Developer+tools">Explore public results <Arrow /></Link>
   </div></div>;
 }

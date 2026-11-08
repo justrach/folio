@@ -29,7 +29,7 @@ test("standalone and workspace routes share the palette without writes or viewpo
   await page.getByRole("button", { name: "Dark appearance", exact: true }).click();
   await expect(page.locator("html")).toHaveAttribute("data-folio-theme", "dark");
   await page.goto("/privacy");
-  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(23, 29, 25)");
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(13, 23, 19)");
   await page.goto("/docs/api");
   await expect(page.getByRole("button", { name: "Dark appearance", exact: true })).toHaveAttribute("aria-pressed", "true");
   expect(writes).toEqual([]); expect(errors).toEqual([]);

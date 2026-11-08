@@ -67,7 +67,8 @@ export function PublicBenchmarkDashboard() {
         const next: unknown = await response.json();
         assertPublicDashboardData(next);
         if (disposed) return;
-        setData(next); setError(false);
+        // A fallback must not replace a newer answer the visitor is already reading.
+        setData(current => current && next.snapshotNotice ? { ...current, snapshotNotice: next.snapshotNotice } : next); setError(false);
         setInitialTaskId(current => current ?? [...next.queries].filter(task => task.latestObservation)
           .sort((a, b) => Date.parse(b.latestObservation!.observedAt) - Date.parse(a.latestObservation!.observedAt))[0]?.id
           ?? next.queries.find(task => ["running", "queued"].includes(task.collection.status))?.id ?? next.queries[0]?.id ?? null);
@@ -108,7 +109,8 @@ export function PublicBenchmarkDashboard() {
       && (status === "All tasks" || status === "Published" && state.key === "published" || status === "In progress" && inProgress || status === "Not started" && state.key === "pending" || status === "Unmeasured" && state.key === "unmeasured" || status === "Needs attention" && needsAttention);
   });
   const filteredIds = new Set(filtered.map(task => task.id));
-  const selected = filtered.find(task => task.id === (queryId ?? initialTaskId)) ?? latest.find(task => filteredIds.has(task.id)) ?? active.find(task => filteredIds.has(task.id)) ?? filtered[0];
+  const missingSnapshotQuestion = Boolean(data.snapshotNotice && queryId && !data.queries.some(task => task.id === queryId));
+  const selected = missingSnapshotQuestion ? undefined : filtered.find(task => task.id === (queryId ?? initialTaskId)) ?? latest.find(task => filteredIds.has(task.id)) ?? active.find(task => filteredIds.has(task.id)) ?? filtered[0];
   // A new selection (including back/forward) reveals its page. Snapshot refreshes
   // preserve browsing position, and filters cannot leave a now-empty page selected.
   const pageContext = JSON.stringify([queryId, model, initialTaskId, search, audience, category, status]);
@@ -147,9 +149,10 @@ export function PublicBenchmarkDashboard() {
   return <div className="public-benchmark-dashboard" role="region" aria-label="Public benchmark results">
     <div className="public-benchmark-toolbar"><p>Explore the questions and their sources{refreshedAt && <> · Last refreshed <time dateTime={refreshedAt}>{refreshedDate(refreshedAt)}</time></>}</p><div><button type="button" onClick={() => setRevision(value => value + 1)} aria-label="Refresh public results" disabled={refreshing}><RefreshCw size={14} />{refreshing ? "Refreshing" : "Refresh"}</button></div></div>
     {error && <p className="public-benchmark-refresh-error" role="alert">The latest update could not be loaded. The last saved results are still shown.</p>}
+    {data.snapshotNotice && <p className="public-benchmark-snapshot-note" role="status">{data.snapshotNotice}</p>}
     <dl className="public-benchmark-summary" aria-label="Benchmark totals">
       <div><dt>Published answers</dt><dd>{summary.publishedQueryCount}<small> / {summary.queryCount}</small></dd><p>{model === null ? "Latest answer per task, across models" : `Latest ${model} answer per task`}</p></div>
-      <div><dt>Running now</dt><dd>{model === null ? summary.collection.running : "—"}</dd><p>{model !== null ? "Run status is not reported by model" : summary.collection.queued ? `${summary.collection.queued} more queued` : summary.collection.running ? "Agent tasks in progress" : "No running task reported"}</p></div>
+      <div><dt>{data.snapshotNotice ? "Recorded running" : "Running now"}</dt><dd>{model === null ? summary.collection.running : "—"}</dd><p>{model !== null ? "Run status is not reported by model" : summary.collection.queued ? `${summary.collection.queued} more queued` : summary.collection.running ? "Agent tasks in progress" : "No running task reported"}</p></div>
       <div><dt>Websites recommended</dt><dd>{summary.publishedQueryCount ? summary.uniqueRecommendedWebsiteCount : "—"}</dd><p>Across published answers</p></div>
       <div><dt>Sources cited</dt><dd>{summary.publishedQueryCount ? summary.uniqueCitedSourceCount : "—"}</dd><p>Distinct source pages</p></div>
     </dl>
@@ -183,7 +186,7 @@ export function PublicBenchmarkDashboard() {
       {selected ? <section className="public-benchmark-result" aria-label="Selected task" key={selected.id}>
         <header><div className="public-task-detail-label"><span>{selected.audience} / {selected.category}</span><span className="public-task-detail-meta">{selected.latestObservation && <time dateTime={selected.latestObservation.observedAt}>Refreshed {refreshedDate(selected.latestObservation.observedAt)}</time>}<TaskStatus task={selected} /></span></div><h2 ref={resultHeading} tabIndex={-1}>{selected.query}</h2><p className="public-task-locale">{selected.language === "en" ? "English" : selected.language} · {selected.locale}<a href={`/overview?query=${encodeURIComponent(selected.id)}${model === null ? "" : `&model=${encodeURIComponent(model)}`}`} aria-label="Link to this task">Link to task <ArrowUpRight size={12} /></a></p></header>
         {selected.latestObservation ? <div className="ranked-search public-benchmark-published-result"><RecordedRanking query={selected} observation={selected.latestObservation} /></div> : <TaskInProgress task={selected} />}
-      </section> : <section className="public-benchmark-result"><h2>{data.queries.length ? "No matching tasks" : "No benchmark tasks yet"}</h2><p>{data.queries.length ? "Change your search or filters to see a task and its result." : "Published tasks will appear here with their questions and results."}</p></section>}
+      </section> : <section className="public-benchmark-result"><h2>{missingSnapshotQuestion ? "Question unavailable in this snapshot" : data.queries.length ? "No matching tasks" : "No benchmark tasks yet"}</h2><p>{missingSnapshotQuestion ? "Refresh public results to try the live shared updates again, or choose another saved question." : data.queries.length ? "Change your search or filters to see a task and its result." : "Published tasks will appear here with their questions and results."}</p></section>}
     </div>
     <footer className="public-benchmark-footer"><p>Public benchmark results. Open a task to see its exact question, returned order and sources.</p><Link href="/leaderboard">Browse website page checks <ArrowUpRight size={13} /></Link></footer>
   </div>;

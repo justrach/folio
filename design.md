@@ -37,6 +37,8 @@ Every application CSS file consumes these tokens. Legacy aliases (`--paper`, `--
 - [`public/images/folio-og.jpg`](public/images/folio-og.jpg) is the generated 1200 × 630 social preview used by Open Graph and Twitter metadata. It says what Folio does without implying that a sample or proposed plan is a measured outcome.
 - Retain third-party attribution and licenses when adapting vendored controls to theme tokens.
 
+The login screen uses `src/components/login.css`: a compact header, Google/email method choices, a progressively revealed email form and paired light/dark arch artwork. Keep the logo visible on mobile, inputs at 16px, pending actions named, and password visibility explicit. Preserve validated return destinations and configured-only OAuth actions. Workspace controls share press compression and spring return with reduced-motion support. See `docs/design/LOGIN-DARK-POLISH.md` for assets and prompts, and `docs/design/PAGE-STYLE-AUDIT.md` for route coverage.
+
 ## Validation
 
 Check landing, index, pricing, workspace, evaluations, website crawl, costs, and settings on desktop and narrow widths; test light and dark appearance, keyboard and pointer actions, 200% browser zoom, focus, labels, and contrast. Compilation and fixture tests prove rendering contracts, not accessibility conformance. Record actual checks separately from outstanding manual review.

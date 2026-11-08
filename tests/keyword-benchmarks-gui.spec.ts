@@ -1,3 +1,4 @@
+import { openEmailLogin } from "./login-helpers";
 import { selectValue } from "./select-helpers";
 import { buildPublicDashboard } from "../src/lib/public-dashboard";
 import { expect, test, type Page } from "@playwright/test";
@@ -206,6 +207,7 @@ test("logout clears private observations and delayed former-owner data stays hid
   await expect(report(page)).toHaveCount(0);
   state.runs = []; state.saved = false; state.holdDetail = null;
   await page.goto("/login");
+  await openEmailLogin(page);
   await page.getByLabel("Email address", { exact: true }).fill("bob@example.test");
   await page.getByLabel("Password", { exact: true }).fill("browser-fixture-password");
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
@@ -507,6 +509,7 @@ test("model selection resets when a different owner signs in", async ({ page }) 
   await page.getByRole("button", { name: "Sign out", exact: true }).click();
   await expect.poll(() => state.owner).toBeNull();
   await page.goto("/login");
+  await openEmailLogin(page);
   await page.getByLabel("Email address", { exact: true }).fill("bob@example.test");
   await page.getByLabel("Password", { exact: true }).fill("browser-fixture-password");
   await page.getByRole("button", { name: "Sign in", exact: true }).click();

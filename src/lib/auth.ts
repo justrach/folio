@@ -25,6 +25,7 @@ export async function getAuth() {
   // D1 keeps the SQLite tables. The adapter choice must match the schema.
   const engineEnv = env as unknown as { DB_ENGINE?: string; HYPERDRIVE?: { connectionString: string }; PLANETSCALE_APP_URL?: string };
   const postgres = postgresConnection(engineEnv);
+  if ((engineEnv.DB_ENGINE ?? process.env.DB_ENGINE) === "postgres" && !postgres) throw new Error("Postgres authentication is not configured.");
   // The driver must match the engine: drizzle-orm/d1 talks the D1 API and would
   // call prepare() on a pg Pool.
   const database = postgres

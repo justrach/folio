@@ -9,6 +9,9 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      CLOUDFLARE_CF_FETCH_ENABLED: "false"
+      WRANGLER_SEND_METRICS: "false"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -25,4 +28,8 @@ jobs:
       - run: bunx playwright install --with-deps chromium
       - run: bun run test:gui
       - run: bun run cf:build
+      - run: bun run backend:build
+      - run: bun run backend:smoke
+      - run: bun run frontend:build
+      - run: bun run frontend:smoke
       - run: bun run scheduler:build

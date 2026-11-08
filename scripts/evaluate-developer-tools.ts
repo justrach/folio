@@ -29,7 +29,7 @@ export async function createReadinessSandbox(directory: string) {
   await mkdir(directory, { recursive: true, mode: 0o700 });
   const runtime = new Miniflare({ host: "127.0.0.1", port: 0, cf: false, telemetry: { enabled: false },
     resourcePersistencePath: join(directory, "persist"), resourceTmpPath: join(directory, "tmp"),
-    workers: [{ config: { name: "folio-page-readiness-sandbox", type: "worker", compatibilityDate: "2026-09-13",
+    workers: [{ config: { name: "folio-page-readiness-sandbox", compatibilityDate: "2026-09-13",
       manifest: { mainModule: "worker.mjs", modules: { "worker.mjs": { type: "esm", contents } } }, env: {} },
       dev: { cacheAPI: false, outboundService: { type: "node-handler", handler(_request, response) { response.writeHead(403); response.end("Sandbox network disabled"); } } },
     }],

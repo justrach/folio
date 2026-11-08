@@ -1,0 +1,18 @@
+/* Shared control motion; chart and report content keep their own layout. */
+:root { --folio-press-return: 480ms; --folio-press-down: 100ms; --folio-press-ease: cubic-bezier(.34,1.8,.64,1); }
+.folio-workspace :is(.button, .folio-select-trigger, .dashboard-appearance, .icon-button, .workspace-switch, .website-chart-toggle, .segmented button, .index-view-tabs button, .real-search-scopes button, .real-query-actions a, [role="tab"], .public-benchmark-pagination button), .squishy-control {
+  border-radius: 16px;
+  transition-property: transform, background-color, border-color, box-shadow;
+  transition-duration: var(--folio-press-return), 150ms, 150ms, 150ms;
+  transition-timing-function: var(--folio-press-ease), ease, ease, ease;
+  transform-origin: center;
+}
+@media (hover: hover) {
+  .folio-workspace :is(.button, .folio-select-trigger, .dashboard-appearance, .icon-button, .workspace-switch, .website-chart-toggle, .segmented button, .index-view-tabs button, .real-search-scopes button, .real-query-actions a, [role="tab"], .public-benchmark-pagination button):hover:not(:disabled), .squishy-control:hover:not(:disabled) { transform: translateY(-1px) scale(1.008); }
+}
+.folio-workspace :is(.button, .folio-select-trigger, .dashboard-appearance, .icon-button, .workspace-switch, .website-chart-toggle, .segmented button, .index-view-tabs button, .real-search-scopes button, .real-query-actions a, [role="tab"], .public-benchmark-pagination button):active:not(:disabled), .squishy-control:active:not(:disabled) { transform: translateY(2px) scale(.98,.91); transition-duration: var(--folio-press-down); }
+.folio-workspace .nav-link { transition: transform var(--folio-press-return) var(--folio-press-ease), background-color 150ms ease; }
+.folio-workspace .nav-link:active { transform: scale(.97); transition-duration: var(--folio-press-down); }
+@media (prefers-reduced-motion: reduce) {
+  .folio-workspace :is(.button, .folio-select-trigger, .dashboard-appearance, .icon-button, .workspace-switch, .website-chart-toggle, .segmented button, .index-view-tabs button, .real-search-scopes button, .real-query-actions a, [role="tab"], .public-benchmark-pagination button, .nav-link), .squishy-control { transition: none !important; transform: none !important; }
+}

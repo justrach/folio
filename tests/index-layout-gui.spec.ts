@@ -1,3 +1,4 @@
+import { publicIndexFixture } from "./public-index-fixture";
 import { expect, test } from "@playwright/test";
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
@@ -41,7 +42,7 @@ test("Index has one compact view selector and does not mount the private activit
     const request = route.request();
     if (request.method() !== "GET") writes.push(request.url());
     reads.push(new URL(request.url()).pathname);
-    return route.fulfill({ status: 200, json: null });
+    return route.fulfill({ status: 200, json: new URL(request.url()).pathname === "/api/public/benchmarks" ? publicIndexFixture : null });
   });
   await page.goto("/leaderboard");
   await expect(page.getByRole("heading", { name: "The Folio Index", exact: true })).toBeVisible();

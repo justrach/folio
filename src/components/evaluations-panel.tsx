@@ -83,6 +83,7 @@ function EvaluationWorkspacePanel({ initialTargetUrl, workspace, onTargetChange 
   const searchParams = useSearchParams();
   const intent = readEvaluationIntent(searchParams);
   const selectedId = intent.runId ?? null;
+  const focusTargetWhenReady = useRef(false);
   const [domain, setDomain] = useState(intent.targetUrl ?? initialTargetUrl);
   const editedTarget = useRef(false);
   const appliedIntent = useRef("");
@@ -108,6 +109,12 @@ function EvaluationWorkspacePanel({ initialTargetUrl, workspace, onTargetChange 
   const current = busy === "start" ? null : selected?.local && !selectedId ? selected.run : selected?.ownerId === workspace.ownerId && selected?.run.id === selectedId ? selected.run : null;
   const liveReady = Boolean(workspace.ownerId && workspace.connection?.configured && workspace.connection.canRun);
   const savedRun = workspace.runs.find((run) => run.id === selectedId);
+  useEffect(() => {
+    if (!focusTargetWhenReady.current || current || selectedId) return;
+    const input = document.getElementById("eval-domain");
+    if (input) { input.focus(); focusTargetWhenReady.current = false; }
+  }, [current, selectedId]);
+
   const hasReferences = Boolean(referenceProduct.trim() || referencePricing !== "unknown");
   let targetHost = "";
   const validatedDraftTarget = readEvaluationIntent(new URLSearchParams({ target: domain.trim() })).targetUrl;
@@ -226,13 +233,14 @@ function EvaluationWorkspacePanel({ initialTargetUrl, workspace, onTargetChange 
   // Query selections are client state. Native history integrates with useSearchParams
   // without an unnecessary RSC fetch racing a newly saved evaluation.
   function prepareCurrentWebsite(run: EvaluationRun) {
+    focusTargetWhenReady.current = true;
     clearReferenceDraft();
     setDomain(run.targetUrl); editedTarget.current = true;
     appliedIntent.current = `${run.targetUrl}|`;
     setSelected(null); setError("");
     window.history.pushState(null, "", evaluationHref({ targetUrl: run.targetUrl }));
     setNotice("Fresh evaluation prepared for the current website. Reference answers and saved SEO evidence were cleared. Review the form, then explicitly start a new capture and managed run.");
-    requestAnimationFrame(() => { document.getElementById("eval-domain")?.focus(); document.getElementById("eval-launch")?.scrollIntoView({ behavior: "smooth", block: "center" }); });
+    requestAnimationFrame(() => { document.getElementById("eval-launch")?.scrollIntoView({ behavior: "smooth", block: "center" }); });
   }
 
   function compareRun(run: EvaluationRun) {
@@ -269,7 +277,7 @@ function EvaluationWorkspacePanel({ initialTargetUrl, workspace, onTargetChange 
 
   return (
     <div className={`evaluations-panel ${current || selectedId ? "has-selection" : "is-preparing"}`}>
-      {workspace.ownerId && <nav className="eval-history" aria-label="Your evaluation notebook"><div className="eval-notebook-heading"><span>Notebook <small>{workspace.runs.length}</small></span>{(current || selectedId) && <button type="button" className="button secondary" disabled={Boolean(busy)} onClick={() => { clearReferenceDraft(); setSelected(null); setDomain(""); editedTarget.current = true; setError(""); setNotice(""); window.history.pushState(null, "", "/evaluations?view=page"); requestAnimationFrame(() => document.getElementById("eval-domain")?.focus()); }}>New evaluation <ArrowRight size={13} /></button>}</div>{workspace.runs.length ? <div className="eval-history-list">{workspace.runs.map(run => <button key={run.id} type="button" className={current?.id === run.id ? "selected" : ""} aria-pressed={current?.id === run.id} onClick={() => { window.history.pushState(null, "", evaluationHref({ runId: run.id, baselineId: intent.baselineId })); setError(""); setNotice(""); }}><span><strong>{run.siteName || run.targetUrl}</strong><small>{evaluationDate(run.createdAt)} · {run.mode === "demo" ? "Local demo" : run.status === "completed" ? "Completed" : run.status === "failed" ? "Failed" : run.status === "cancelled" ? "Cancelled" : "In progress"}</small></span></button>)}</div> : <p>{workspace.loading ? "Loading saved evaluations…" : "Your saved evaluations will appear here."}</p>}{workspace.nextCursor && <button type="button" className="button secondary" disabled={workspace.refreshing || workspace.loading} onClick={workspace.loadMore}>{workspace.loadingMore ? "Loading older evaluations…" : "Load older evaluations"}</button>}</nav>}
+      {workspace.ownerId && <nav className="eval-history" aria-label="Your evaluation notebook"><div className="eval-notebook-heading"><span>Notebook <small>{workspace.runs.length}</small></span>{(current || selectedId) && <button type="button" className="button secondary" disabled={Boolean(busy)} onClick={() => { focusTargetWhenReady.current = true; clearReferenceDraft(); setSelected(null); setDomain(""); editedTarget.current = true; setError(""); setNotice(""); window.history.pushState(null, "", "/evaluations?view=page"); }}>New evaluation <ArrowRight size={13} /></button>}</div>{workspace.runs.length ? <div className="eval-history-list">{workspace.runs.map(run => <button key={run.id} type="button" className={current?.id === run.id ? "selected" : ""} aria-pressed={current?.id === run.id} onClick={() => { window.history.pushState(null, "", evaluationHref({ runId: run.id, baselineId: intent.baselineId })); setError(""); setNotice(""); }}><span><strong>{run.siteName || run.targetUrl}</strong><small>{evaluationDate(run.createdAt)} · {run.mode === "demo" ? "Local demo" : run.status === "completed" ? "Completed" : run.status === "failed" ? "Failed" : run.status === "cancelled" ? "Cancelled" : "In progress"}</small></span></button>)}</div> : <p>{workspace.loading ? "Loading saved evaluations…" : "Your saved evaluations will appear here."}</p>}</nav>}
       {(error || workspace.error) && <div className="eval-alert" role="alert"><Info size={16} />{error || workspace.error}</div>}
       {notice && <p className="eval-notice" role="status"><Check size={14} />{notice}</p>}
       {current ? <EvaluationReport key={current.id} reviewOwnerId={selected?.local ? undefined : workspace.ownerId ?? undefined} run={current} busy={busy} onRefresh={selected?.local ? undefined : () => void runAction("refresh")} onCancel={selected?.local ? undefined : () => void runAction("cancel")} onReturnSeo={selected?.local ? undefined : () => void runAction("tools")} onExport={() => void runAction("export")} onRerun={current.mode === "demo" ? () => void demo() : liveReady && !activeRunId && hasBudget ? () => void start(current) : undefined} onPrepareFresh={current.mode === "live" ? () => prepareCurrentWebsite(current) : undefined} onCompare={selected?.local || current.status !== "completed" ? undefined : () => compareRun(current)} onDeleted={selected?.local ? undefined : (id) => { setSelected((value) => value?.run.id === id ? null : value); if (selectedId === id) window.history.replaceState(null, "", pageEvaluationHref({ targetUrl: domain })); setNotice("Saved evidence deleted from Folio. Existing downloads and remote provider records are unchanged."); announceEvaluationUpdate(); }} /> : selectedId && workspace.ownerId ? <section className="eval-first-run" aria-label="Loading selected evaluation"><Loader2 className="eval-spin" size={25} /><h2>{error ? "This evaluation could not be opened." : "Opening your selected evaluation…"}</h2><p>{error ? "Choose another saved run from your notebook, or prepare a fresh evaluation." : "Loading this account’s private record. The previous run is hidden while the selection changes."}</p></section> : null}

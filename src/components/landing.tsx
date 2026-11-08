@@ -1,3 +1,4 @@
+import { LivePublicIndex } from "./live-public-index";
 import Link from "next/link";
 import Image from "next/image";
 import { LandingWorkflow, LandingSound } from "./landing-interactions";
@@ -41,7 +42,8 @@ export function Landing() {
           <LandingIndexSize />
         </div>
         <figure className="landing-art">
-          <Image src="/images/folio-dune-hero.webp" alt="A dark sculptural dune beneath a small orange sun on warm paper" width={1024} height={1280} priority sizes="(max-width: 700px) 100vw, 42vw" />
+          <Image className="theme-art-light" src="/images/folio-dune-hero.webp" alt="A dark sculptural dune beneath a small orange sun on warm paper" width={1024} height={1280} priority sizes="(max-width: 700px) 100vw, 42vw" />
+          <Image className="theme-art-dark" src="/images/folio-dune-hero-dark.webp" alt="A sculptural evergreen dune beneath a small amber sun in a forest-black sky" width={1024} height={1280} sizes="(max-width: 700px) 100vw, 42vw" />
           <figcaption><span>A little perspective.</span><span>Folio / 01</span></figcaption>
         </figure>
       </section>
@@ -57,7 +59,7 @@ export function Landing() {
         </div>
         <p className="landing-method-note">One answer per exact question. Position is the order the agent returned, not a score.</p>
         <h3 className="sr-only">Returned recommendations</h3>
-        <RankedSearchTable compact />
+        <LivePublicIndex><RankedSearchTable compact /></LivePublicIndex>
         <details className="landing-technical-report">
           <summary>HTML page checks for {reportCount} measured websites</summary>
           <p>Open a saved page report to inspect technical findings alongside the search observations.</p>

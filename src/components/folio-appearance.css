@@ -1,0 +1,7 @@
+.folio-theme-picker { position: fixed; z-index: 90; right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); display: flex; align-items: center; gap: 8px; padding: 0 0 0 14px; width: 144px; border: 1px solid var(--folio-edge); border-radius: 16px; background: var(--folio-surface); color: var(--folio-text-secondary); box-shadow: 0 4px 18px color-mix(in srgb, var(--folio-shadow) 10%, transparent); }
+.folio-theme-picker > svg { flex-shrink: 0; }
+.folio-theme-picker .folio-select-trigger { min-height: 44px; padding: 10px 12px 10px 0; border: 0; border-radius: 16px; background: transparent; font-size: 13px; }
+body:has(.folio-theme-picker) { padding-bottom: 76px; }
+.folio-theme-picker .folio-select-value { white-space: nowrap; overflow-wrap: normal; }
+body:has(.folio-theme-picker) .agent-run-dock { bottom: calc(max(16px, env(safe-area-inset-bottom)) + 60px); }
+@media (max-width: 700px) { .folio-theme-picker { right: max(12px, env(safe-area-inset-right)); bottom: max(12px, env(safe-area-inset-bottom)); width: 144px; } .folio-theme-picker .folio-select-trigger { font-size: 16px; } }

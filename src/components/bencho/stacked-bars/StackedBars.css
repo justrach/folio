@@ -211,7 +211,7 @@
   display: flex;
   justify-content: space-between;
   margin-top: -8px;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 14px;
   color: var(--stb-faint);
   font-variant-numeric: tabular-nums;}

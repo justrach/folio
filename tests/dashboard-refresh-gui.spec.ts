@@ -1,10 +1,11 @@
+import { publicIndexFixture } from "./public-index-fixture";
 import { expect, test } from "@playwright/test";
 
 test("dashboard appearance and Index view survive refresh without paid operations", async ({ page }) => {
   const writes: string[] = [];
   await page.route("**/api/**", route => {
     if (route.request().method() !== "GET") writes.push(route.request().url());
-    return route.fulfill({ json: null });
+    return route.fulfill({ json: new URL(route.request().url()).pathname === "/api/public/benchmarks" ? publicIndexFixture : null });
   });
   await page.goto("/leaderboard");
   const shell = page.locator(".folio-workspace");
@@ -26,7 +27,7 @@ test("dashboard appearance and Index view survive refresh without paid operation
 test("long question filters, website list and setup remain usable at 320 pixels", async ({ page }) => {
   const writes: string[] = [], errors: string[] = [];
   page.on("pageerror", error => errors.push(error.message));
-  await page.route("**/api/**", route => { if (route.request().method() !== "GET") writes.push(route.request().url()); return route.fulfill({ json: null }); });
+  await page.route("**/api/**", route => { if (route.request().method() !== "GET") writes.push(route.request().url()); return route.fulfill({ json: new URL(route.request().url()).pathname === "/api/public/benchmarks" ? publicIndexFixture : null }); });
   await page.setViewportSize({ width: 320, height: 780 });
   await page.goto("/leaderboard");
   await expect(page.getByRole("button", { name: "Show chart", exact: true })).toBeVisible();

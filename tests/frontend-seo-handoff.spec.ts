@@ -80,7 +80,7 @@ test("a saved SEO report hands its exact ID and website to the composer without 
   await handoff.click();
   await expect(page).toHaveURL(/\/evaluations\?/);
   await expect(page.getByLabel("Website to evaluate", { exact: true })).toHaveValue("https://example.com/");
-  await expect(page.locator("#eval-seo-report")).toHaveValue(savedReport.id);
+  await expect(page.locator("#eval-seo-report")).toHaveAttribute("data-value", savedReport.id);
   expect(state.seoLookups).toBe(0);
   expect(state.evalStarts).toBe(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(await page.evaluate(() => innerWidth + 1));

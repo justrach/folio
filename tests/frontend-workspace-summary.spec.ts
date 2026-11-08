@@ -1,3 +1,4 @@
+import { openEmailLogin } from "./login-helpers";
 import { expect, test, type Page } from "@playwright/test";
 import { createDemoEvaluationRun } from "../src/lib/eval-verifier";
 import { EVAL_SUITE, evaluationSummary, type EvaluationRun } from "../src/lib/evals";
@@ -76,9 +77,9 @@ async function fixture(page: Page, initialRuns: EvaluationRun[]) {
 async function navigate(page: Page, href: string) {
   const menu = page.getByRole("button", { name: "Open navigation", exact: true });
   if (await menu.isVisible()) await menu.click();
-  await page.locator(`.nav-link[href="${href}"]`).click();
-  await expect(page).toHaveURL(new RegExp(`${href}$`));
-  if (href === "/overview") await page.getByRole("link", { name: "My website results", exact: true }).click();
+  const destination = href === "/overview" ? "/overview?view=workspace" : href;
+  await page.locator(`.nav-link[href="${destination}"]`).click();
+  await expect(page).toHaveURL(destination);
 }
 
 test("overview shows the three recent private evaluations without requiring a technical audit", async ({ page }, testInfo) => {
@@ -161,6 +162,7 @@ test("loading and late responses cannot restore one owner's summary after logout
   await expect(page.getByText(completed.siteName, { exact: true })).toHaveCount(0);
   state.runs = [{ ...completed, id: "bob-summary", siteName: "Bob private review", targetUrl: "https://bob.example.com/" }];
   await page.goto("/login");
+  await openEmailLogin(page);
   await page.getByLabel("Email address", { exact: true }).fill("bob@example.test");
   await page.getByLabel("Password", { exact: true }).fill("browser-fixture-password");
   await page.getByRole("button", { name: "Sign in", exact: true }).click();

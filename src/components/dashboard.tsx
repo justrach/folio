@@ -1,16 +1,24 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
+import "./login.css";
+import { DashboardAppearance, DashboardNavigation } from "./dashboard-appearance";
+import { LabelInput } from "./bencho/label-input/LabelInput";
+import "./bencho/label-input/LabelInput.css";
+import "./dashboard-refresh.css";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowDown,
+  ArrowLeft,
   ArrowDownToLine,
   ArrowRight,
   ArrowUp,
   ArrowUpRight,
   BarChart3,
   BookOpen,
+  Building2,
   Bot,
   Check,
   CheckCheck,
@@ -21,6 +29,8 @@ import {
   Code2,
   Compass,
   ExternalLink,
+  Eye,
+  EyeOff,
   FileCode2,
   FileText,
   FlaskConical,
@@ -39,7 +49,6 @@ import {
   ShieldCheck,
   Sparkles,
   Trophy,
-  Building2,
   WandSparkles,
   X,
 } from "lucide-react";
@@ -61,6 +70,12 @@ import { SeoChecks } from "./seo-checks";
 import { SearchConsolePanel } from "./search-console-panel";
 import { OwnedWebsites } from "./owned-websites";
 import { RealOverview, workspaceOverviewHref } from "./real-overview";
+import { IndexedDomains } from "./indexed-domains";
+import { OrgPreview } from "./org-preview";
+import { StartHere } from "./start-here";
+import { WorkspaceRecords } from "./workspace-records";
+import { XStandingPanel } from "./x-standing";
+
 import { PublicBenchmarkDashboard } from "./public-benchmark-dashboard";
 import "./public-overview-shell.css";
 import { KeywordActivitySummary } from "./keyword-activity-summary";
@@ -68,23 +83,19 @@ import "./evaluation-page-shell.css";
 import { KeywordBenchmarksPanel } from "./keyword-benchmarks-panel";
 import { DeveloperToolsIndex } from "./developer-tools-index";
 import { ModelLandscape } from "./model-landscape";
+import { LivePublicIndex } from "./live-public-index";
 import { RankedSearchTable } from "./ranked-search-table";
 import "./index-page.css";
 import { EvaluationsPanel } from "./evaluations-panel";
 import { AgentRunsPanel, AgentRunDock } from "./agent-runs-panel";
 import { evaluationHref, readEvaluationIntent } from "@/lib/evaluation-navigation";
-import { SoundToggle } from "@/components/sound-toggle";
-import { WorkspaceRecords } from "@/components/workspace-records";
-import { StartHere } from "@/components/start-here";
-import { OrgPreview } from "@/components/org-preview";
-import { XStandingPanel } from "@/components/x-standing";
-import { IndexedDomains } from "@/components/indexed-domains";
 import { WebsiteSwitcher } from "./website-switcher";
 import { GithubConnection } from "./github-connection";
 import { WorkspaceLoader } from "./workspace-loader";
 
 type Modal = "scan" | "methodology" | "notifications" | "search" | null;
 const navigation = [
+  { label: "My workspace", href: "/overview?view=workspace", section: "overview", icon: LayoutDashboard },
   {
     label: "My websites",
     href: "/websites",
@@ -119,57 +130,41 @@ const navigation = [
     icon: WandSparkles,
   },
 ];
-/** Sidebar order is a map of jobs: what you do, then the evidence behind it. */
-const NAV_GROUPS = [
-  {
-    label: "Work",
-    items: [
-      { label: "Overview", href: "/overview", section: "overview", icon: LayoutDashboard },
-      { label: "Websites", href: "/websites", section: "websites", icon: Globe2 },
-      { label: "Evaluations", href: "/evaluations", section: "evaluations", icon: FlaskConical },
-      { label: "Agents", href: "/agents", section: "agents", icon: Bot },
-      { label: "Benchmarks", href: "/benchmarks", section: "benchmarks", icon: FlaskConical },
-    ],
-  },
-  {
-    label: "Evidence",
-    items: [
-      { label: "Checks", href: "/seo", section: "seo", icon: BarChart3 },
-      { label: "Search data", href: "/search-data", section: "search-data", icon: Search },
-      { label: "Search Console", href: "/search-console", section: "search-console", icon: Search },
-      { label: "Patches", href: "/patches", section: "patches", icon: WandSparkles },
-    ],
-  },
-] as const;
-
 const titles: Record<
   string,
   { eyebrow: string; title: string; description: string }
 > = {
-  overview: {
+  orgs: {
     eyebrow: "",
-    title: "Overview",
-    description: "Saved results for your workspace.",
+    title: "Organizations",
+    description: "Sample team workspace: seats, roles, shared records, and audit activity.",
+  },
+  overview: {
+    eyebrow: "THE BIG PICTURE",
+    title: "My website results",
+    description: "Saved results for your website.",
   },
   websites: {
-    eyebrow: "",
-    title: "Websites",
-    description: "Saved sites, audits, and publication.",
+    eyebrow: "YOUR DIGITAL FOOTPRINT",
+    title: "Your websites",
+    description: "Choose a website to review its saved reports, run an audit, or prepare an evaluation.",
   },
   visibility: {
-    eyebrow: "",
+    eyebrow: "BE PART OF THE ANSWER",
     title: "AI visibility",
-    description: "Illustrative experience until real collectors exist.",
+    description:
+      "Explore the questions, answers, and sources that shape discovery.",
   },
   seo: {
-    eyebrow: "",
-    title: "Checks",
-    description: "Technical checks for the selected page.",
+    eyebrow: "BUILT TO BE FOUND",
+    title: "SEO health",
+    description:
+      "Understand what search engines and readers can find on your page.",
   },
   patches: {
-    eyebrow: "",
-    title: "Patches",
-    description: "Reviewable repairs from saved checks.",
+    eyebrow: "SMALL CHANGES. BETTER ANSWERS.",
+    title: "Patch studio",
+    description: "Review a suggestion. Make it yours. Publish on your terms.",
   },
   leaderboard: {
     eyebrow: "",
@@ -183,19 +178,15 @@ const titles: Record<
     description:
       "Review what the agent found and the evidence behind it.",
   },
-  benchmarks: { eyebrow: "", title: "Benchmarks", description: "See where your website appears in recorded AI answers and which sites appear alongside it." },
+  benchmarks: { eyebrow: "YOUR RESEARCH QUESTIONS", title: "Search rankings", description: "See where your website appears in recorded AI answers and which sites appear alongside it." },
   agents: {
-    eyebrow: "",
-    title: "Agents",
-    description: "Saved sessions, their progress, and the evidence they returned.",
-  },
-  orgs: {
-    eyebrow: "",
-    title: "Organizations",
-    description: "Sample team workspace: seats, roles, shared records, and audit activity.",
+    eyebrow: "MEET YOUR RESEARCH TEAM",
+    title: "Your agents",
+    description:
+      "Follow your evaluations, their progress, and the evidence they return.",
   },
   "search-data": {
-    eyebrow: "",
+    eyebrow: "THE SEARCH LANDSCAPE",
     title: "The bigger picture behind your search.",
     description:
       "Explore organic coverage and the links that lead to your website.",
@@ -211,14 +202,6 @@ const titles: Record<
     description: "Manage your account and the sources behind your reports.",
   },
 };
-
-
-/** A saved record can arrive without a parseable URL (an in-flight scan, a legacy
- * row). One bad row must not take down the shell, so hostnames degrade. */
-function safeHostname(value: string | null | undefined, fallback = ""): string {
-  if (!value) return fallback;
-  try { return new URL(value).hostname; } catch { return fallback; }
-}
 
 function FolioMark({ small = false }: { small?: boolean }) {
   return (
@@ -288,14 +271,8 @@ export function Dashboard({ section }: { section: string }) {
   const views = query.getAll("view");
   const view = views.length === 1 ? views[0] : null;
   const workspace = view === "workspace" || query.has("website") || query.has("scope");
-  // A signed-in visitor belongs in their workspace. Only signed-out visitors get
-  // the public benchmark shell, and the pending state must not flash it first.
-  const { data: session, isPending } = authClient.useSession();
   if (section === "leaderboard") return <PublicOverviewShell section="leaderboard" />;
-  if (section === "overview" && view !== "demo" && !workspace) {
-    if (isPending) return <WorkspaceLoader />;
-    if (!session) return <PublicOverviewShell />;
-  }
+  if (section === "overview" && view !== "demo" && !workspace) return <PublicOverviewShell />;
   return <WorkspaceDashboard section={section} />;
 }
 
@@ -309,19 +286,20 @@ function PublicOverviewShell({ section = "overview" }: { section?: "overview" | 
     window.addEventListener("keydown", close);
     return () => window.removeEventListener("keydown", close);
   }, []);
-  return <div className="app-shell public-overview-shell">
+  return <div className="app-shell folio-workspace public-overview-shell" data-nav-compact="true">
     {mobileOpen && <button className="sidebar-scrim" onClick={() => setMobileOpen(false)} aria-label="Close navigation" />}
     <aside className={`sidebar ${mobileOpen ? "open" : ""}`}>
       <Link href="/" className="wordmark" aria-label="Folio home"><FolioMark /><span>folio<span className="wordmark-period">.</span></span></Link>
       <span className="nav-caption">PUBLIC</span>
       <nav aria-label="Public navigation">
-        <Link href="/overview" className={`nav-link ${!index ? "active" : ""}`} aria-current={!index ? "page" : undefined} onClick={() => setMobileOpen(false)}><LayoutDashboard size={17}/><span>Public dashboard</span></Link>
-        <Link href="/leaderboard" className={`nav-link ${index ? "active" : ""}`} aria-current={index ? "page" : undefined} onClick={() => setMobileOpen(false)}><Trophy size={17}/><span>The Folio Index</span></Link>
-        <Link href="/docs/api" className="nav-link" onClick={() => setMobileOpen(false)}><Code2 size={17}/><span>API reference</span></Link>
+        <Link href="/overview" title="Public dashboard" className={`nav-link ${!index ? "active" : ""}`} aria-current={!index ? "page" : undefined} onClick={() => setMobileOpen(false)}><LayoutDashboard size={17}/><span>Public dashboard</span></Link>
+        <Link href="/leaderboard" title="The Folio Index" className={`nav-link ${index ? "active" : ""}`} aria-current={index ? "page" : undefined} onClick={() => setMobileOpen(false)}><Trophy size={17}/><span>The Folio Index</span></Link>
+        <Link href="/docs/api" title="API reference" className="nav-link" onClick={() => setMobileOpen(false)}><Code2 size={17}/><span>API reference</span></Link>
       </nav>
+      <div className="public-sidebar-guide"><Compass size={20} /><strong>Your website, in perspective.</strong><p>Prepare questions and keep your own evidence in a private workspace.</p><Link href="/start">Explore your website <ArrowRight size={14} /></Link></div>
     </aside>
     <div className="main-shell">
-      <header className="topbar"><div className="breadcrumb"><button className="mobile-menu icon-button" onClick={() => setMobileOpen(true)} aria-label="Open navigation"><Menu size={21}/></button><Globe2 size={15}/><span>Public benchmarks</span></div></header>
+      <header className="topbar"><div className="breadcrumb"><DashboardNavigation/><button className="mobile-menu icon-button" onClick={() => setMobileOpen(true)} aria-label="Open navigation"><Menu size={21}/></button><Globe2 size={15}/><span>Public benchmarks</span></div><div className="topbar-actions"><Link className="public-workspace-link squishy-control" href="/overview?view=workspace" aria-label="My workspace" title="My workspace"><span>My workspace</span><LayoutDashboard size={16}/></Link><DashboardAppearance /></div></header>
       <main className={`page-content${index ? " index-page" : ""}`}>
         <div className="page-heading"><div><h1>{index ? "The Folio Index" : "Benchmark dashboard"}</h1><p>{index ? "Public search answers and website page checks." : "Recorded answers, citations and run status."}</p></div></div>
         {index ? <Leaderboard onMethod={() => setMethodOpen(true)} onNotify={setNotice} /> : <PublicBenchmarkDashboard />}
@@ -379,12 +357,9 @@ function WorkspaceDashboard({ section }: { section: string }) {
       .then((d) => {
         if (cancelled) return;
         const list: Scan[] = Array.isArray(d) ? d : (d.scans ?? []);
-        // The same audit can arrive twice (an optimistic entry plus the saved
-        // row). React keys must stay unique, so keep the first occurrence.
-        const unique = [...new Map(list.map(scan => [scan.id, scan])).values()];
-        setScans(unique);
+        setScans(list);
         const saved = sessionStorage.getItem(`folio-active-${ownerId}`);
-        setActiveScan(unique.find((s) => s.id === saved) ?? unique[0] ?? null);
+        setActiveScan(list.find((s) => s.id === saved) ?? list[0] ?? null);
       })
       .catch(() => { if (!cancelled) setScanError("Your saved audits could not be loaded."); })
       .finally(() => { if (!cancelled) setLoadingScans(false); });
@@ -445,11 +420,11 @@ function WorkspaceDashboard({ section }: { section: string }) {
       sessionStorage.setItem(`folio-active-${session.user.id}`, scan.id);
     router.push("/seo");
   }
-  if (section === "login") return <Login onNotify={notify} signedIn={Boolean(session)} />;
+  if (section === "login") return <Login onNotify={notify} />;
   if (isPending) return <WorkspaceLoader />;
   const title = section === "overview" && demoRequested ? { ...titles.overview, title: "Demo report", description: "Illustrative sample data." } : titles[section] ?? titles.overview;
   return (
-    <div className="app-shell">
+    <div className="app-shell folio-workspace" data-nav-compact="true">
       {mobileOpen && (
         <button
           className="sidebar-scrim"
@@ -480,52 +455,56 @@ function WorkspaceDashboard({ section }: { section: string }) {
           }}
           onAdd={() => { setMobileOpen(false); prepareAudit(""); }}
         />
-        {NAV_GROUPS.map(group => (
-          <div className="nav-group" key={group.label}>
-            <span className="nav-caption">{group.label}</span>
-            <nav aria-label={group.label}>
-              {group.items.map(item => (
-                <Link
-                  key={item.section}
-                  href={item.href}
-                  onClick={() => setMobileOpen(false)}
-                  className={`nav-link ${section === item.section ? "active" : ""}`}
-                  aria-current={section === item.section ? "page" : undefined}
-                >
-                  <item.icon size={17} />
-                  <span>{item.label}</span>
-                </Link>
-              ))}
-            </nav>
-          </div>
-        ))}
-        <div className="nav-group">
-          <span className="nav-caption">Explore</span>
-          <nav aria-label="Explore">
+        <span className="nav-caption">WORKSPACE</span>
+        <nav aria-label="Main navigation">
+          {navigation.map((item) => (
             <Link
-              href="/leaderboard"
-              className={`nav-link ${section === "leaderboard" ? "active" : ""}`}
-              aria-current={section === "leaderboard" ? "page" : undefined}
+              key={item.section}
+              title={item.label}
+              href={item.href}
               onClick={() => setMobileOpen(false)}
+              className={`nav-link ${section === item.section ? "active" : ""}`}
+              aria-current={section === item.section ? "page" : undefined}
             >
-              <Trophy size={17} />
-              <span>The Folio Index</span>
+              <item.icon size={17} />
+              <span>{item.label}</span>
             </Link>
-            <Link
-              href="/orgs"
-              className={`nav-link ${section === "orgs" ? "active" : ""}`}
-              aria-current={section === "orgs" ? "page" : undefined}
-              onClick={() => setMobileOpen(false)}
-            >
-              <Building2 size={17} />
-              <span>Organizations</span>
-            </Link>
-            <Link href="/docs/api" className="nav-link" onClick={() => setMobileOpen(false)}>
-              <Code2 size={17} />
-              <span>API reference</span>
-            </Link>
-          </nav>
-        </div>
+          ))}
+        </nav>
+        <span className="nav-caption explore-caption">EXPLORE</span>
+        <nav aria-label="Explore">
+          <Link
+            href="/leaderboard"
+            className={`nav-link ${section === "leaderboard" ? "active" : ""}`}
+            aria-current={section === "leaderboard" ? "page" : undefined}
+            onClick={() => setMobileOpen(false)}
+          >
+            <Trophy size={17} />
+            <span>The Folio Index</span>
+          </Link>
+          <Link
+            href="/agents"
+            className={`nav-link ${section === "agents" ? "active" : ""}`}
+            aria-current={section === "agents" ? "page" : undefined}
+            onClick={() => setMobileOpen(false)}
+          >
+            <Bot size={17} />
+            <span>Your agents</span>
+          </Link>
+          <Link
+            href="/orgs"
+            className={`nav-link ${section === "orgs" ? "active" : ""}`}
+            aria-current={section === "orgs" ? "page" : undefined}
+            onClick={() => setMobileOpen(false)}
+          >
+            <Building2 size={17} />
+            <span>Organizations</span>
+          </Link>
+          <Link href="/docs/api" title="API reference" className="nav-link" onClick={() => setMobileOpen(false)}>
+            <Code2 size={17} />
+            <span>API reference</span>
+          </Link>
+        </nav>
         <div className="sidebar-bottom">
           <Link href="/pricing" className="nav-link">
             <BookOpen size={17} />
@@ -562,6 +541,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
       <div className="main-shell">
         <header className="topbar">
           <div className="breadcrumb">
+            <DashboardNavigation/>
             <button
               className="mobile-menu icon-button"
               onClick={() => setMobileOpen(true)}
@@ -571,7 +551,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
             </button>
             <Globe2 size={15} />
             <button onClick={() => router.push("/websites")}>
-              {privateOverview ? "Your workspace" : actual ? safeHostname(actual.url, "Your workspace") : session ? "Your workspace" : "acme.com"}
+              {privateOverview ? "Your workspace" : actual ? new URL(actual.url).hostname : session ? "Your workspace" : "acme.com"}
             </button>
             <ChevronRight size={13} />
             <span>
@@ -582,7 +562,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
             </span>
           </div>
           <div className="topbar-actions">
-            <SoundToggle />
+            <DashboardAppearance />
             <button
               className="search-trigger"
               onClick={() => setModal("search")}
@@ -593,7 +573,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
             </button>
             <span className="topbar-divider" />
             <NotificationBell
-              count={actual?.patches?.length ?? (mode === "sample" && !privateOverview ? 3 : 0)}
+              count={actual?.patches.length ?? (mode === "sample" && !privateOverview ? 3 : 0)}
               size={30}
               color="green"
               onClick={() => setModal("notifications")}
@@ -647,7 +627,6 @@ function WorkspaceDashboard({ section }: { section: string }) {
               )}
             </div>
           </div>
-          {section === "orgs" && <OrgPreview />}
           {section === "overview" && <nav className="real-overview-tabs" aria-label="Overview view"><Link href={workspaceOverviewHref(query)} aria-current={!demoRequested ? "page" : undefined}>My website results</Link><Link href="/overview?view=demo" aria-current={demoRequested ? "page" : undefined} onClick={() => setMode("sample")}>Demo report</Link></nav>}
           {section === "overview" && !demoRequested && <StartHere ownerId={ownerId} />}
           {section === "overview" && !demoRequested && <WorkspaceRecords ownerId={ownerId} />}
@@ -873,7 +852,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
                         </h2>
                         <p>
                           {actual
-                            ? `${actual.patches?.length ?? 0} suggested improvements from your latest audit.`
+                            ? `${actual.patches.length} suggested improvements from your latest audit.`
                             : "3 considered improvements are ready for your review."}
                         </p>
                         <Link className="button cream" href="/patches">
@@ -1041,7 +1020,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
                       </h2>
                       <p>
                         {actual
-                          ? `${actual.title || safeHostname(actual.url, "This page")} · ${actual.wordCount} readable words · ${new Date(actual.createdAt).toLocaleString()}`
+                          ? `${actual.title || new URL(actual.url).hostname} · ${actual.wordCount} readable words · ${new Date(actual.createdAt).toLocaleString()}`
                           : "6 core checks passed. Explore the opportunities below."}
                       </p>
                     </div>
@@ -1067,6 +1046,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
               {section === "evaluations" && (
                 <EvaluationsPanel initialTargetUrl={actual?.url} />
               )}
+              {section === "orgs" && <OrgPreview />}
               {section === "search-data" && <SeoDataPanel />}
               {section === "search-console" && <SearchConsolePanel />}
               {section === "benchmarks" && <KeywordBenchmarksPanel websiteId={query.get("website") ?? undefined} />}
@@ -1113,7 +1093,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
               signedIn={!!session}
               onComplete={(scan) => {
                 setScanOwnerId(ownerId);
-                setScans((s) => [scan, ...s.filter(existing => existing.id !== scan.id)]);
+                setScans((s) => [scan, ...s]);
                 setActiveScan(scan);
                 setMode("measured");
                 if (session)
@@ -1153,15 +1133,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
           )}
           {modal === "search" && (
             <>
-              <div className="search-field">
-                <Search size={18} />
-                <input
-                  autoFocus
-                  placeholder="Search pages, tools, or reports…"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-              </div>
+              <LabelInput field="Search pages" value={search} onValueChange={setSearch} autoFocus placeholder="Search pages, tools, or reports…" corner={10} />
               <div className="search-results">
                 {[
                   ...navigation,
@@ -1297,7 +1269,7 @@ function Metric({
 function AuditEvaluationBridge({ scan }: { scan: Scan }) {
   return (
     <section className="audit-evaluation-bridge" aria-label="Continue this website evaluation">
-      <div><span className="eyebrow tiny">FROM AUDIT TO EVIDENCE</span><h2>{safeHostname(scan.url, "This website")}</h2><p>Check what an agent can verify from this page. After applying reviewed changes, capture it again and compare the evidence.</p></div>
+      <div><span className="eyebrow tiny">FROM AUDIT TO EVIDENCE</span><h2>{new URL(scan.url).hostname}</h2><p>Check what an agent can verify from this page. After applying reviewed changes, capture it again and compare the evidence.</p></div>
       <div className="audit-bridge-actions">
         <Link className="button primary" href={evaluationHref({ targetUrl: scan.url })}>Evaluate this website <ArrowUpRight size={14} /></Link>
         <Link className="button secondary" href={evaluationHref({ targetUrl: scan.url }).replace("/evaluations", "/search-data")}>Search & backlinks <ArrowRight size={14} /></Link>
@@ -1360,13 +1332,20 @@ function PromptTable({ sample = true }: { sample?: boolean }) {
 }
 
 function Leaderboard(_props: {onMethod:()=>void;onNotify:(s:string)=>void}) {
-  const [indexView,setIndexView]=useState<"rankings"|"html"|"published"|"indexed">("indexed");
+  const params = useSearchParams();
+  const requestedView = params.get("indexView");
+  const indexView = requestedView === "rankings" || requestedView === "html" || requestedView === "published" ? requestedView : "indexed";
+  function selectView(value: string) {
+    const next = new URLSearchParams(params.toString());
+    if (value === "indexed") next.delete("indexView"); else next.set("indexView", value);
+    window.history.pushState(null, "", `/leaderboard${next.size ? `?${next}` : ""}`);
+  }
   return <>
     <div className="index-view-tabs" role="group" aria-label="Evaluation view">
-      {([["indexed","Indexed domains"],["rankings","Sample rankings"],["html","HTML page checks"],["published","Published page audits"]] as const).map(([value,label])=><button key={value} type="button" id={`index-view-${value}`} aria-pressed={indexView===value} aria-controls="index-view-panel" onClick={()=>setIndexView(value)}>{label}</button>)}
+      {([["indexed","Indexed domains"],["rankings","Sample rankings"],["html","HTML page checks"],["published","Published page audits"]] as const).map(([value,label])=><button key={value} type="button" id={`index-view-${value}`} aria-pressed={indexView===value} aria-controls="index-view-panel" onClick={()=>selectView(value)}>{label}</button>)}
     </div>
     <section id="index-view-panel" className="index-view-panel" role="region" aria-labelledby={`index-view-${indexView}`}>
-      {indexView==="rankings"?<><ModelLandscape/><RankedSearchTable/></>:indexView==="html"?<DeveloperToolsIndex/>:indexView==="indexed"?<IndexedDomains/>:<PublishedIndex/>}
+      {indexView==="indexed"?<IndexedDomains/>:indexView==="rankings"?<LivePublicIndex><ModelLandscape/><RankedSearchTable/></LivePublicIndex>:indexView==="html"?<DeveloperToolsIndex/>:<PublishedIndex/>}
     </section>
   </>;
 }
@@ -1442,7 +1421,7 @@ function Websites({
               <button onClick={() => onOpen(s)}>
                 <Globe2 size={19} />
                 <span>
-                  <strong>{safeHostname(s.url, "This website")}</strong>
+                  <strong>{new URL(s.url).hostname}</strong>
                   <small>{new Date(s.createdAt).toLocaleString()}</small>
                 </span>
                 <span className="history-score">
@@ -1451,7 +1430,7 @@ function Websites({
                 </span>
                 <ArrowRight size={16} />
               </button>
-              <Link className="text-link" href={evaluationHref({ targetUrl: s.url })} aria-label={`Evaluate ${safeHostname(s.url, "This website")}`}>Evaluate <ArrowUpRight size={14} /></Link>
+              <Link className="text-link" href={evaluationHref({ targetUrl: s.url })} aria-label={`Evaluate ${new URL(s.url).hostname}`}>Evaluate <ArrowUpRight size={14} /></Link>
               </div>
             ))}
           </div>
@@ -1861,11 +1840,11 @@ function ScanForm({
   );
 }
 
-function Login({ onNotify, signedIn = false }: { onNotify: (s: string) => void; signedIn?: boolean }) {
+function Login({ onNotify }: { onNotify: (s: string) => void }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const nextValues = searchParams.getAll("next");
-  let returnTo = "/overview";
+  let returnTo = "/websites";
   if (nextValues.length === 1 && nextValues[0].length <= 4096) {
     try {
       const next = new URL(nextValues[0], "https://folio.invalid");
@@ -1905,9 +1884,13 @@ function Login({ onNotify, signedIn = false }: { onNotify: (s: string) => void; 
       }
     } catch { /* Invalid return hints fall back to the private website list. */ }
   }
+  const [emailMode, setEmailMode] = useState(false);
+  const emailInput = useRef<HTMLInputElement>(null);
+  const emailChoice = useRef<HTMLButtonElement>(null);
   const [signup, setSignup] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -1925,50 +1908,58 @@ function Login({ onNotify, signedIn = false }: { onNotify: (s: string) => void; 
       .catch(() => {});
     return () => controller.abort();
   }, []);
-  // A signed-in visitor has no reason to see the form: local pseudo auth lands
-  // here whenever a stale link points at /login.
-  useEffect(() => {
-    if (signedIn) router.replace(returnTo);
-  }, [signedIn, returnTo, router]);
-
+  function chooseEmail(createAccount = false) {
+    setSignup(createAccount); setEmailMode(true); setError("");
+    requestAnimationFrame(() => emailInput.current?.focus({ preventScroll: true }));
+  }
+  function chooseMethod() {
+    setEmailMode(false); setSignup(false); setError(""); setPassword(""); setShowPassword(false);
+    requestAnimationFrame(() => emailChoice.current?.focus({ preventScroll: true }));
+  }
   return (
-    <div className="login-page">
-      <section className="login-story">
-        <Link href="/" className="wordmark">
-          <FolioMark />
-          <span>folio.</span>
-        </Link>
-        <div>
-          <span className="eyebrow">A NEW CHAPTER IN DISCOVERY</span>
-          <h1>
-            The next search
-            <br />
-            is an answer.
-            <br />
-            <em>Be part of it.</em>
-          </h1>
+    <div className="login-screen" data-login-method={emailMode ? "email" : "choose"}>
+      <header className="login-header">
+        <Link href="/" className="wordmark" aria-label="Folio home"><FolioMark /><span>folio.</span></Link>
+        <div><Link href="/overview?view=demo">Explore the demo <ArrowUpRight size={15} aria-hidden="true" /></Link><DashboardAppearance /></div>
+      </header>
+      <main className="login-layout">
+      <section className="login-form-panel" aria-busy={busy} aria-labelledby="login-title">
+          <span className="login-kicker">Your Folio workspace</span>
+          <h1 id="login-title">{signup ? "Create your account." : "Welcome back."}</h1>
           <p>
-            Bring your search visibility and AI discovery
-            <br />
-            into one clear, considered view.
+            {signup
+              ? "Keep your websites, questions, and reports together."
+              : emailMode ? "Sign in with your email." : "Choose how you’d like to continue."}
           </p>
-          <div className="login-bars" aria-hidden="true">
-            {[25, 32, 43, 52, 68, 78, 92, 100].map((n, i) => (
-              <span key={i} style={{ height: `${n}%` }} />
-            ))}
+          <div className="login-providers" hidden={emailMode}>
+          {googleConfigured && <button className="login-choice login-choice-google" type="button" disabled={busy} onClick={async () => {
+            setBusy(true); setError("");
+            try {
+              const result = await authClient.signIn.social({ provider: "google", callbackURL: returnTo, errorCallbackURL: "/login?error=google" });
+              if (result.error) setError(result.error.message ?? "Google sign-in could not be completed.");
+            } catch { setError("Google sign-in could not be completed. Please try again."); }
+            finally { setBusy(false); }
+          }}><Image src="/images/favicons/google.com.png" alt="" loading="eager" width={20} height={20} unoptimized /><span>Sign in with Google</span><ArrowUpRight size={17} aria-hidden="true" /></button>}
+          {searchParams.get("error") === "google" && <p className="form-error" role="alert">Google sign-in could not be completed. If you already use email and password, sign in that way before linking Google in Search Console.</p>}
+          {searchParams.get("error") === "github" && <p className="form-error" role="alert">GitHub sign-in could not be completed. If you already have a Folio account, sign in with your existing method and connect GitHub in Settings.</p>}
+          <button ref={emailChoice} type="button" className="login-choice login-choice-email" disabled={busy} onClick={() => chooseEmail()}><Mail size={20} aria-hidden="true" /><span>Continue with email</span><ArrowRight size={17} aria-hidden="true" /></button>
+          {githubConfigured && <details className="login-other-method"><summary>More sign-in options</summary>          {githubConfigured && <button className="login-github" type="button" disabled={busy} onClick={async () => {
+            setBusy(true); setError("");
+            try {
+              const result = await authClient.signIn.social({ provider: "github", callbackURL: returnTo, errorCallbackURL: "/login?error=github" });
+              if (result.error) setError("GitHub sign-in could not be completed. If you already have a Folio account, sign in with your existing method and connect GitHub in Settings.");
+            } catch { setError("GitHub sign-in could not be completed. Please try again."); }
+            finally { setBusy(false); }
+          }}>Sign in with GitHub</button>}
+</details>}
+          <p className="login-account-switch">New to Folio? <button type="button" disabled={busy} onClick={() => chooseEmail(true)}>Create an account</button></p>
           </div>
-        </div>
-        <span className="login-edition">
-          FOLIO · THE VISIBILITY REPORT · EST. 2026
-        </span>
-      </section>
-      <section className="login-form-side">
-        <Link href="/overview?view=demo" className="back-demo">
-          Explore the demo <ArrowUpRight size={15} />
-        </Link>
-        <form
+        <div className="login-email-panel t-panel-slide" data-open={emailMode} hidden={!emailMode}>
+        <button type="button" className="login-back" disabled={busy} onClick={chooseMethod}><ArrowLeft size={15} aria-hidden="true" /> Other sign-in methods</button>
+        <form className="login-form" aria-busy={busy} aria-label={signup ? "Create your Folio account" : "Sign in to Folio"}
           onSubmit={async (e) => {
             e.preventDefault();
+            if (busy) return;
             setBusy(true);
             setError("");
             try {
@@ -1992,38 +1983,13 @@ function Login({ onNotify, signedIn = false }: { onNotify: (s: string) => void; 
             }
           }}
         >
-          <FolioMark />
-          <span className="eyebrow">MAKE YOURSELF AT HOME</span>
-          <h2>{signup ? "Start your next chapter." : "Welcome back."}</h2>
-          <p>
-            {signup
-              ? "A little clarity for your corner of the internet."
-              : "A clearer picture is waiting for you."}
-          </p>
-          {googleConfigured && <button className="button secondary" type="button" disabled={busy} onClick={async () => {
-            setBusy(true); setError("");
-            try {
-              const result = await authClient.signIn.social({ provider: "google", callbackURL: returnTo, errorCallbackURL: "/login?error=google" });
-              if (result.error) setError(result.error.message ?? "Google sign-in could not be completed.");
-            } catch { setError("Google sign-in could not be completed. Please try again."); }
-            finally { setBusy(false); }
-          }}>Sign in with Google</button>}
-          {searchParams.get("error") === "google" && <p className="form-error" role="alert">Google sign-in could not be completed. If you already use email and password, sign in that way before linking Google in Search Console.</p>}
-          {githubConfigured && <button className="button secondary" type="button" disabled={busy} onClick={async () => {
-            setBusy(true); setError("");
-            try {
-              const result = await authClient.signIn.social({ provider: "github", callbackURL: returnTo, errorCallbackURL: "/login?error=github" });
-              if (result.error) setError("GitHub sign-in could not be completed. If you already have a Folio account, sign in with your existing method and connect GitHub in Settings.");
-            } catch { setError("GitHub sign-in could not be completed. Please try again."); }
-            finally { setBusy(false); }
-          }}>Sign in with GitHub</button>}
-          {searchParams.get("error") === "github" && <p className="form-error" role="alert">GitHub sign-in could not be completed. If you already have a Folio account, sign in with your existing method and connect GitHub in Settings.</p>}
           {signup && (
             <label>
               Your name
               <input
                 autoComplete="name"
                 required
+                disabled={busy}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Alex Morgan"
@@ -2033,9 +1999,11 @@ function Login({ onNotify, signedIn = false }: { onNotify: (s: string) => void; 
           <label>
             Email address
             <input
+              ref={emailInput}
               type="email"
               autoComplete="email"
               required
+              disabled={busy}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@company.com"
@@ -2043,15 +2011,16 @@ function Login({ onNotify, signedIn = false }: { onNotify: (s: string) => void; 
           </label>
           <label>
             Password
-            <input
-              type="password"
+            <span className="login-password"><input
+              type={showPassword ? "text" : "password"}
               minLength={10}
               autoComplete={signup ? "new-password" : "current-password"}
               required
+              disabled={busy}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="At least 10 characters"
-            />
+              placeholder={signup ? "At least 10 characters" : "Your password"}
+            /><button type="button" className="login-password-toggle" disabled={busy} aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword} onClick={() => setShowPassword(!showPassword)}>{showPassword ? <EyeOff size={18} aria-hidden="true" /> : <Eye size={18} aria-hidden="true" />}</button></span>
           </label>
           {error && (
             <p className="form-error" role="alert">
@@ -2060,7 +2029,7 @@ function Login({ onNotify, signedIn = false }: { onNotify: (s: string) => void; 
           )}
           <Button type="submit" disabled={busy}>
             {busy ? (
-              <Loader2 className="spin" size={16} />
+              <><Loader2 className="spin" size={16} aria-hidden="true" />{signup ? "Creating account…" : "Signing in…"}</>
             ) : (
               <>
                 {signup ? "Create your account" : "Sign in"}
@@ -2068,24 +2037,33 @@ function Login({ onNotify, signedIn = false }: { onNotify: (s: string) => void; 
               </>
             )}
           </Button>
-          <p className="auth-switch">
-            {signup ? "Already have an account?" : "New around here?"}{" "}
+          <p className="login-account-switch">
+            {signup ? "Already have an account?" : "New to Folio?"}{" "}
             <button
               type="button"
+              disabled={busy}
               onClick={() => {
                 setSignup(!signup);
+                setShowPassword(false);
                 setError("");
               }}
             >
               {signup ? "Sign in" : "Create an account"}
             </button>
           </p>
-          <div className="auth-security">
-            <ShieldCheck size={14} /> Secure authentication by Better Auth
-          </div>
         </form>
-        <span className="login-bottom">A little clarity goes a long way.</span>
+        </div>
+        {!emailMode && error && <p className="form-error" role="alert">{error}</p>}
+        {busy && !emailMode && <p role="status" className="login-social-status">Opening sign-in…</p>}
+        <p className="login-privacy"><ShieldCheck size={14} aria-hidden="true" /> Your reports are private by default.</p>
       </section>
+      <aside className="login-art" aria-label="Folio artwork">
+        <Image className="theme-art-light" src="/images/folio-login-arch.webp" alt="" width={1024} height={1280} sizes="(max-width: 800px) 100vw, 40vw" loading="eager" />
+        <Image className="theme-art-dark" src="/images/folio-login-arch-dark.webp" alt="" width={1024} height={1280} sizes="(max-width: 800px) 100vw, 40vw" loading="eager" />
+        <div><span>A little perspective.</span><span>Folio / 02</span></div>
+      </aside>
+      </main>
+      <footer className="login-footer"><Link href="/privacy">Privacy</Link><span>A little clarity goes a long way.</span></footer>
     </div>
   );
 }

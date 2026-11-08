@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { LANDSCAPE_MODELS } from "@/lib/model-landscape";
 import type { PublicSearchObservation } from "@/lib/public-search-rankings";
 import { publicObservationChart } from "@/lib/public-observation-chart";
@@ -11,11 +10,9 @@ const modelLabel = (name: string) => LANDSCAPE_MODELS.find(model => model.id ===
 
 /** Counts published observations, not visits, spend, quality, or collection success. */
 export function OverviewInsights({ observations }: { observations: PublicSearchObservation[] }) {
-  const [expanded, setExpanded] = useState(false);
-  useEffect(() => { setExpanded(window.matchMedia("(min-width: 701px)").matches); }, []);
   if (!observations.length) return null;
   const { counts, groups, day, week } = publicObservationChart(observations);
-  return <details className="overview-insights-disclosure" open={expanded} onToggle={event => setExpanded(event.currentTarget.open)}><summary>Observation overview<span>{observations.length} saved records</span></summary><section className="overview-insights" aria-label="Published observation insights">
+  return <details className="overview-insights-disclosure"><summary>Activity and models<span>{observations.length} saved records</span></summary><section className="overview-insights" aria-label="Published observation insights">
     <div className="overview-activity-panel">
       <StackedBars colour="Mono" gap={8} categories={groups.map(modelLabel)} series={{ Day: day, Week: week }} />
       <p className="overview-chart-note">Recorded dates, not a live traffic feed. Each segment is one model’s published observations.</p>

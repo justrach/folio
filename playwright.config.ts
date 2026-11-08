@@ -7,7 +7,7 @@ export default defineConfig({
   testDir: "./tests",
   testMatch: "**/*.spec.ts",
   fullyParallel: false,
-  workers: 1,
+  workers: process.env.CI ? 2 : 1,
   timeout: 45_000,
   expect: { timeout: 12_000 },
   retries: process.env.CI ? 1 : 0,
@@ -30,10 +30,11 @@ export default defineConfig({
     { name: "mobile", use: { ...devices["Pixel 5"] } },
   ],
   webServer: {
-    command: `bun run dev --port ${serverPort}`,
+    command: `node node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --port ${serverPort}`,
     // Public readiness must not require credentials or a prepared local auth database.
     url: `${baseURL}/login`,
-    reuseExistingServer: true,
+    reuseExistingServer: !process.env.CI,
+    gracefulShutdown: { signal: "SIGTERM", timeout: 5_000 },
     timeout: 120_000,
   },
 });

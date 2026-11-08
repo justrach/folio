@@ -3,9 +3,9 @@
 .index-page .page-heading h1 { margin: 0; color: var(--folio-ink); font: 600 27px/1.25 var(--sans, Arial, sans-serif); letter-spacing: -.5px; }
 .index-page .page-heading p { margin: 7px 0 0; color: var(--folio-text-secondary); font-size: 14px; line-height: 1.5; }
 .index-page .heading-actions .button { min-height: 40px; padding: 9px 12px; background: transparent; border-color: var(--folio-edge-strong); color: var(--folio-ink); box-shadow: none; }
-.index-page .index-view-tabs { display: flex; gap: 25px; flex-wrap: nowrap; margin: 0; border-bottom: 1px solid var(--folio-edge); overflow-x: auto; max-width: 100%; }
-.index-page .index-view-tabs > button { flex: 0 0 auto; min-height: 45px; padding: 10px 0 11px; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; color: var(--folio-text-secondary); font-size: 13px; font-weight: 500; }
-.index-page .index-view-tabs > button[aria-pressed="true"] { color: var(--folio-ink); border-bottom-color: var(--folio-accent); font-weight: 650; }
+.index-page .index-view-tabs { display: flex; gap: 4px; flex-wrap: nowrap; width: fit-content; margin: 0; padding: 4px; border: 1px solid var(--folio-edge); border-radius: 16px; background: var(--folio-surface-muted); overflow-x: auto; max-width: 100%; }
+.index-page .index-view-tabs > button { flex: 0 0 auto; min-height: 44px; padding: 10px 16px; border: 1px solid transparent; border-radius: 12px; background: transparent; color: var(--folio-text-secondary); font-size: 13px; font-weight: 500; }
+.index-page .index-view-tabs > button[aria-pressed="true"] { color: var(--folio-ink); background: var(--folio-surface); border-color: var(--folio-edge); font-weight: 600; }
 .index-page .index-view-tabs > button:hover { color: var(--folio-ink); }
 .index-page .index-view-tabs > button:focus-visible { outline: 2px solid var(--folio-focus); outline-offset: -3px; }
 .index-page .index-view-panel { padding-top: 20px; min-width: 0; }
@@ -18,13 +18,13 @@
   .index-page .page-heading p { font-size: 13px; }
   .index-page .heading-actions { width: auto; align-self: flex-start; margin: 0; }
   .index-page .heading-actions .button { min-height: 36px; font-size: 12px; }
-  .index-page .index-view-tabs { gap: 21px; }
+  .index-page .index-view-tabs { gap: 4px; }
   .index-page .index-view-tabs > button { font-size: 12px; }
   .index-page .index-view-panel { padding-top: 16px; }
 }
 @media (max-width: 500px) {
-  .index-page .index-view-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; border: 0; overflow: visible; }
-  .index-page .index-view-tabs > button { justify-content: center; width: 100%; min-height: 44px; padding: 9px 10px; border: 1px solid var(--folio-edge); border-radius: var(--folio-radius-control); text-align: center; white-space: normal; line-height: 1.3; }
+  .index-page .index-view-tabs { display: grid; width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; overflow: visible; }
+  .index-page .index-view-tabs > button { justify-content: center; width: 100%; min-height: 44px; padding: 9px 10px; border: 1px solid transparent; border-radius: 12px; text-align: center; white-space: normal; line-height: 1.3; }
   .index-page .index-view-tabs > button:last-child { grid-column: 1 / -1; }
-  .index-page .index-view-tabs > button[aria-pressed="true"] { background: var(--folio-accent-soft); border-color: var(--folio-accent-edge); }
+  .index-page .index-view-tabs > button[aria-pressed="true"] { background: var(--folio-surface); border-color: var(--folio-edge); }
 }

@@ -1,3 +1,4 @@
+import { openEmailLogin } from "./login-helpers";
 import { expect, test, type Page } from "@playwright/test";
 import { EVAL_SUITE } from "../src/lib/evals";
 
@@ -34,6 +35,7 @@ test("GitHub sign-in is explicit and preserves the validated evaluation return",
   const state = await fixture(page);
   await page.goto("/login?next=%2Fevaluations%3Fview%3Dsearch%26suite%3Dfixture-suite");
   const button = page.getByRole("button", { name: "Sign in with GitHub", exact: true });
+  await page.getByText("More sign-in options", { exact: true }).click();
   await expect(button).toBeVisible();
   await expect(page.getByRole("button", { name: "Sign in with Google", exact: true })).toBeVisible();
   expect(state.posts).toEqual([]);
@@ -80,6 +82,7 @@ test("GitHub connected state clears on logout and another account does not inher
   await page.getByRole("main").getByRole("button", { name: "Sign out", exact: true }).click();
   await expect(page.getByText("Connected for sign-in", { exact: true })).toHaveCount(0);
   await page.goto("/login");
+  await openEmailLogin(page);
   await page.getByLabel("Email address", { exact: true }).fill("bob@example.test");
   await page.getByLabel("Password", { exact: true }).fill("fixture-password-123");
   await page.getByRole("button", { name: "Sign in", exact: true }).click();

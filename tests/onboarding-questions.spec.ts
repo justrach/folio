@@ -76,11 +76,24 @@ test("Step 5 scrolls all questions without expansion, obscured final text, layou
     await page.mouse.wheel(0, 220);
   }
   await expect.poll(() => viewport.evaluate(node => node.scrollTop)).toBeGreaterThan(0);
+  // Touch flings continue on the compositor after touchEnd. Measure rows only
+  // after that real gesture settles; the visibility assertions remain below.
+  await viewport.evaluate(node => new Promise<void>(resolve => {
+    let previous = node.scrollTop, still = 0;
+    const frame = () => {
+      const current = node.scrollTop;
+      still = Math.abs(current - previous) < 0.1 ? still + 1 : 0;
+      previous = current;
+      if (still >= 3) resolve(); else requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  }));
+
 
   // Every row can be brought wholly inside the viewport, without a permanent blur.
   for (const question of questions) {
     const row = viewport.locator("label").filter({ hasText: question });
-    await row.evaluate(node => node.scrollIntoView({ block: "center" }));
+    await row.evaluate(node => node.scrollIntoView({ block: "center", behavior: "instant" }));
     const fits = await row.evaluate(node => {
       const row = node.getBoundingClientRect(), view = node.closest(".ob-question-scroll")!.getBoundingClientRect();
       return row.top >= view.top - 1 && row.bottom <= view.bottom + 1 && getComputedStyle(node).filter === "none";
