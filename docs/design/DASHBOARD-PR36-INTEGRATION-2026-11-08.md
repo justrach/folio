@@ -22,6 +22,13 @@ do not mount these private readers. Test-only fixtures and the local preview
 proxy remain separate from the application and production deployment. The proxy
 binds to loopback and labels its data illustrative.
 
+The horizontally scrolling outcome buttons establish the containing block for
+their hidden accessible labels. Those labels no longer expand the mobile layout
+viewport or displace model-menu pointer coordinates. Open date/export panels
+observe their own size so later wrapping/style changes preserve the theme-picker
+clearance. Email-method focus settles in the layout effect rather than a deferred
+animation frame, preventing a late focus change while entering a password.
+
 The hosted CI failure reported on PR #36 was a test-loader interop issue:
 `copy.requestResource is not a function`. The replacement regression transpiles
 the actual request-scope source into two independent native ESM modules, checks
@@ -29,10 +36,39 @@ that their functions differ, and verifies that both copies plus the application
 share only the request coordinator. It retains cleanup/isolation assertions and
 does not change the working production pool implementation.
 
-Validation in progress. Focused browser checks passed 22 cases on desktop/mobile.
-Earlier focused failures remain preserved privately; selected-pill accessible
-names, future-dated fixture records and mobile viewport expansion were corrected.
-The full validation and deployment outcome will be recorded after completion.
+Validation and publication:
+
+- All 13 local CI stages pass on application commit `d10a573`: typecheck,
+  358 unit tests, 37 actual D1 integration tests, 396 desktop/mobile browser
+  tests with two existing skips and no retries, Cloudflare build, backend
+  build/runtime smoke, frontend build/runtime smoke and scheduler dry build.
+- The native Cloudflare production build passes. Twenty repeated desktop/mobile
+  cases pass for panel resizing and login focus. Earlier failures and traces are
+  retained privately; no assertions were removed to obtain these results.
+- [Hosted run 42453786376](https://github.com/justrach/folio/actions/runs/42453786376)
+  passed browser coverage (393 direct passes, three passes on retry, two skips),
+  then reached the 20-minute job deadline during the build. Commit `2cbae07`
+  changes only that deadline to 30 minutes; all validation steps remain enabled.
+  The replacement hosted run was pending at publication. Local build/runtime
+  checks completed on the identical application source.
+- PR #36 merged as `d82bd83`. The frontend-only production deployment is
+  `68f0d53a-db6f-4d86-9764-21a06fca7446`, with `FOLIO_UI_COMMIT` identifying
+  the tested application artifact `d10a573`. The merge and timeout-only change
+  do not alter that application source.
+- Production browser checks pass on desktop/mobile across six routes and
+  system/light/dark themes. Six public benchmark reads returned 200 with
+  `live-published-data` and no snapshot notice. Anonymous private reads remain
+  401; legacy Index and question-index requests succeed. No browser errors or
+  non-GET API requests were observed. The declared frontend routes are active;
+  the existing public-index route is preserved.
+- The backend remains version `bc6b7c06-4fc7-4a8a-b558-be966b7ff8c8` with its
+  existing bindings and targeted `aws:ap-southeast-1` placement. The UI release
+  did not publish the backend or scheduler.
+
+Private dashboard behavior was exercised with isolated illustrative fixtures.
+Production checks covered public/anonymous behavior, not a real owner's private
+records or a new provider evaluation. Live retrieval does not imply that the
+underlying saved observations were freshly collected.
 
 This is frontend workspace integration. The PostgreSQL backend entry point,
 Google auth configuration, Singapore placement and provider spending safeguards
