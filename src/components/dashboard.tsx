@@ -273,7 +273,13 @@ export function Dashboard({ section }: { section: string }) {
   const view = views.length === 1 ? views[0] : null;
   const workspace = view === "workspace" || query.has("website") || query.has("scope");
   if (section === "leaderboard") return <PublicOverviewShell section="leaderboard" />;
-  if (section === "overview" && view !== "demo" && !workspace) return <PublicOverviewShell />;
+  // A signed-in visitor belongs in their workspace; only signed-out visitors get
+  // the public benchmark shell, and the pending state must not flash it first.
+  const { data: session, isPending } = authClient.useSession();
+  if (section === "overview" && view !== "demo" && !workspace) {
+    if (isPending) return <WorkspaceLoader />;
+    if (!session) return <PublicOverviewShell />;
+  }
   return <WorkspaceDashboard section={section} />;
 }
 
@@ -558,7 +564,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
             </button>
             <Globe2 size={15} />
             <button onClick={() => router.push("/websites")}>
-              {privateOverview ? "Your workspace" : actual ? new URL(actual.url).hostname : session ? "Your workspace" : "acme.com"}
+              {privateOverview ? "Your workspace" : actual ? safeHostname(actual.url, "Your workspace") : session ? "Your workspace" : "acme.com"}
             </button>
             <ChevronRight size={13} />
             <span>
@@ -580,7 +586,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
             </button>
             <span className="topbar-divider" />
             <NotificationBell
-              count={actual?.patches.length ?? (mode === "sample" && !privateOverview ? 3 : 0)}
+              count={actual?.patches?.length ?? (mode === "sample" && !privateOverview ? 3 : 0)}
               size={30}
               color="green"
               onClick={() => setModal("notifications")}
@@ -859,7 +865,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
                         </h2>
                         <p>
                           {actual
-                            ? `${actual.patches.length} suggested improvements from your latest audit.`
+                            ? `${actual.patches?.length ?? 0} suggested improvements from your latest audit.`
                             : "3 considered improvements are ready for your review."}
                         </p>
                         <Link className="button cream" href="/patches">
@@ -1027,7 +1033,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
                       </h2>
                       <p>
                         {actual
-                          ? `${actual.title || new URL(actual.url).hostname} · ${actual.wordCount} readable words · ${new Date(actual.createdAt).toLocaleString()}`
+                          ? `${actual.title || safeHostname(actual.url, "This page")} · ${actual.wordCount} readable words · ${new Date(actual.createdAt).toLocaleString()}`
                           : "6 core checks passed. Explore the opportunities below."}
                       </p>
                     </div>
@@ -1276,7 +1282,7 @@ function Metric({
 function AuditEvaluationBridge({ scan }: { scan: Scan }) {
   return (
     <section className="audit-evaluation-bridge" aria-label="Continue this website evaluation">
-      <div><span className="eyebrow tiny">FROM AUDIT TO EVIDENCE</span><h2>{new URL(scan.url).hostname}</h2><p>Check what an agent can verify from this page. After applying reviewed changes, capture it again and compare the evidence.</p></div>
+      <div><span className="eyebrow tiny">FROM AUDIT TO EVIDENCE</span><h2>{safeHostname(scan.url, "This website")}</h2><p>Check what an agent can verify from this page. After applying reviewed changes, capture it again and compare the evidence.</p></div>
       <div className="audit-bridge-actions">
         <Link className="button primary" href={evaluationHref({ targetUrl: scan.url })}>Evaluate this website <ArrowUpRight size={14} /></Link>
         <Link className="button secondary" href={evaluationHref({ targetUrl: scan.url }).replace("/evaluations", "/search-data")}>Search & backlinks <ArrowRight size={14} /></Link>
@@ -1336,6 +1342,13 @@ function PromptTable({ sample = true }: { sample?: boolean }) {
       </table>
     </div>
   );
+}
+
+/** A saved record can arrive without a parseable URL (an in-flight scan, a legacy
+ * row). One bad row must not take down the shell, so hostnames degrade. */
+function safeHostname(value: string | null | undefined, fallback = ""): string {
+  if (!value) return fallback;
+  try { return new URL(value).hostname; } catch { return fallback; }
 }
 
 function Leaderboard(_props: {onMethod:()=>void;onNotify:(s:string)=>void}) {
@@ -1428,7 +1441,7 @@ function Websites({
               <button onClick={() => onOpen(s)}>
                 <Globe2 size={19} />
                 <span>
-                  <strong>{new URL(s.url).hostname}</strong>
+                  <strong>{safeHostname(s.url, "This website")}</strong>
                   <small>{new Date(s.createdAt).toLocaleString()}</small>
                 </span>
                 <span className="history-score">
