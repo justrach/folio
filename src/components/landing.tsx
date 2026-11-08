@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { LandingWorkflow, LandingSound } from "./landing-interactions";
+import { LandingIndexSize } from "./landing-index-size";
 import { ArrowUpRight } from "lucide-react";
 import { LandingPageReport } from "./landing-page-report";
 import { RankedSearchTable } from "./ranked-search-table";
@@ -37,6 +38,7 @@ export function Landing() {
             <Link href="/leaderboard">See real results</Link>
           </div>
           <p className="landing-access">You choose when to start a run.</p>
+          <LandingIndexSize />
         </div>
         <figure className="landing-art">
           <Image src="/images/folio-dune-hero.webp" alt="A dark sculptural dune beneath a small orange sun on warm paper" width={1024} height={1280} priority sizes="(max-width: 700px) 100vw, 42vw" />

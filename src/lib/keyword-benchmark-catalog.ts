@@ -77,6 +77,28 @@ const customerQuestionPacks = [
     ],
   },
   {
+    id: "ai-browsers-v1", name: "Agent products · Browsers and computer use",
+    queries: [
+      "AI agent that can use a real browser for me and show what it is doing",
+      "agent that operates a desktop computer to finish a task",
+      "browser agent that fills forms and downloads files unattended",
+      "which AI agents can log into sites I already use and take over repetitive work",
+      "agent product where I can take over the browser session at any point",
+      "which browser agents keep a recording of every action they took",
+    ],
+  },
+  {
+    id: "coding-agents-v1", name: "Developer tools · Coding agents",
+    queries: [
+      "AI coding agent that works on my existing repository from the terminal",
+      "coding agent that can run tests and prove its change works",
+      "which coding agents support more than one model provider",
+      "AI coding tool that reviews a pull request and leaves inline comments",
+      "coding agent that can work in the cloud while I am away from my laptop",
+      "which coding agents let me review and edit the plan before they start",
+    ],
+  },
+  {
     id: "agent-interface-v1", name: "Agent products · Interface and control",
     queries: [
       "AI agent where I can watch it use a browser live",

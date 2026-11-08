@@ -77,6 +77,8 @@ import { SoundToggle } from "@/components/sound-toggle";
 import { WorkspaceRecords } from "@/components/workspace-records";
 import { StartHere } from "@/components/start-here";
 import { OrgPreview } from "@/components/org-preview";
+import { XStandingPanel } from "@/components/x-standing";
+import { IndexedDomains } from "@/components/indexed-domains";
 import { WebsiteSwitcher } from "./website-switcher";
 import { GithubConnection } from "./github-connection";
 import { WorkspaceLoader } from "./workspace-loader";
@@ -1068,6 +1070,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
               {section === "search-data" && <SeoDataPanel />}
               {section === "search-console" && <SearchConsolePanel />}
               {section === "benchmarks" && <KeywordBenchmarksPanel websiteId={query.get("website") ?? undefined} />}
+              {section === "settings" && <XStandingPanel />}
               {section === "settings" && (
                 <Settings
                   session={session}
@@ -1357,13 +1360,13 @@ function PromptTable({ sample = true }: { sample?: boolean }) {
 }
 
 function Leaderboard(_props: {onMethod:()=>void;onNotify:(s:string)=>void}) {
-  const [indexView,setIndexView]=useState<"rankings"|"html"|"published">("rankings");
+  const [indexView,setIndexView]=useState<"rankings"|"html"|"published"|"indexed">("indexed");
   return <>
     <div className="index-view-tabs" role="group" aria-label="Evaluation view">
-      {([["rankings","Search rankings"],["html","HTML page checks"],["published","Published page audits"]] as const).map(([value,label])=><button key={value} type="button" id={`index-view-${value}`} aria-pressed={indexView===value} aria-controls="index-view-panel" onClick={()=>setIndexView(value)}>{label}</button>)}
+      {([["indexed","Indexed domains"],["rankings","Sample rankings"],["html","HTML page checks"],["published","Published page audits"]] as const).map(([value,label])=><button key={value} type="button" id={`index-view-${value}`} aria-pressed={indexView===value} aria-controls="index-view-panel" onClick={()=>setIndexView(value)}>{label}</button>)}
     </div>
     <section id="index-view-panel" className="index-view-panel" role="region" aria-labelledby={`index-view-${indexView}`}>
-      {indexView==="rankings"?<><ModelLandscape/><RankedSearchTable/></>:indexView==="html"?<DeveloperToolsIndex/>:<PublishedIndex/>}
+      {indexView==="rankings"?<><ModelLandscape/><RankedSearchTable/></>:indexView==="html"?<DeveloperToolsIndex/>:indexView==="indexed"?<IndexedDomains/>:<PublishedIndex/>}
     </section>
   </>;
 }

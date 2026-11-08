@@ -270,3 +270,5 @@
   .landing .ranked-search-row { grid-template-columns: 18px minmax(0, 1fr); gap: 10px; }
   .landing .csw-stage { left: 6px; }
 }
+
+.landing-index-size { color: var(--folio-text-muted); font-size: 12px; margin: 10px 0 0; font-variant-numeric: tabular-nums; }
