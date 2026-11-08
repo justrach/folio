@@ -145,7 +145,7 @@ GUI tests use a running server at `http://localhost:3001` (override with `GUI_BA
 
 `test:d1` applies migrations and tests ownership, reservations, revisions, deletion accounting, restart persistence, and store isolation through a real local Miniflare D1 binding. Its temporary fixture store is separate from development data and requires no provider credentials.
 
-The default Cloudflare configuration retains a local D1 placeholder. Production UI is deployed through the separate frontend Worker in front of the existing production backend; do not deploy the default configuration over that backend. See [frontend deployment](docs/FRONTEND-DEPLOYMENT.md) and the bounded [production UI validation record](docs/design/PRODUCTION-UI-2026-11-08.md). Avoid running a Next production build and the development server against `.next` simultaneously; stop/restart the dev server around the build.
+The default Cloudflare configuration retains a local D1 placeholder. Production UI is deployed through the separate frontend Worker in front of the existing production backend; do not deploy the default configuration over that backend. See [frontend deployment](docs/FRONTEND-DEPLOYMENT.md), [live backend reads](docs/BACKEND-LIVE-READS.md), and the bounded [backend/live-data release record](docs/design/BACKEND-LIVE-DATA-2026-11-08.md). Avoid running a Next production build and the development server against `.next` simultaneously; stop/restart the dev server around the build.
 
 ## Design references and attribution
 
