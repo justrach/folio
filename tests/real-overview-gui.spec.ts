@@ -71,6 +71,8 @@ async function login(page: Page) {
   await openEmailLogin(page);
   await page.getByLabel("Email address", { exact: true }).fill("bob@example.test");
   await page.getByLabel("Password", { exact: true }).fill("fixture-password");
+  await expect(page.getByLabel("Email address", { exact: true })).toHaveValue("bob@example.test");
+  await expect(page.getByLabel("Password", { exact: true })).toHaveValue("fixture-password");
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
 }
 
@@ -219,6 +221,9 @@ test("website overview separates models, keeps the filter through navigation and
   await expect(metric(page, "Appeared in answers").locator("dd")).toHaveText("0%");
   await expect(search(page)).toContainText("mixed-model summary");
   await expect(search(page).getByRole("link", { name: `Open observation for ${suite.cases[0].query}` })).toHaveAttribute("href", /run=luna-answer$/);
+  // Offscreen outcome chips must not expand the mobile layout viewport or move
+  // the dropdown's pointer coordinates outside the visible screen.
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
   await selectValue(picker, "gpt-6-astra");
   await expect(metric(page, "Appeared in answers").locator("dd")).toHaveText("100%");
   await expect(search(page).getByRole("link", { name: `Open observation for ${suite.cases[0].query}` })).toHaveAttribute("href", /run=astra-answer$/);

@@ -8,7 +8,7 @@ import { LabelInput } from "./bencho/label-input/LabelInput";
 import "./bencho/label-input/LabelInput.css";
 import "./dashboard-refresh.css";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   ArrowDown,
   ArrowLeft,
@@ -1862,6 +1862,7 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
   const [emailMode, setEmailMode] = useState(false);
   const emailInput = useRef<HTMLInputElement>(null);
   const emailChoice = useRef<HTMLButtonElement>(null);
+  const pendingMethodFocus = useRef<"email" | "choice" | null>(null);
   const [signup, setSignup] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -1871,6 +1872,11 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
   const [busy, setBusy] = useState(false);
   const [googleConfigured, setGoogleConfigured] = useState(false);
   const [githubConfigured, setGithubConfigured] = useState(false);
+  useLayoutEffect(() => {
+    const target = pendingMethodFocus.current;
+    pendingMethodFocus.current = null;
+    if (target) (target === "email" ? emailInput.current : emailChoice.current)?.focus({ preventScroll: true });
+  }, [emailMode, signup]);
   useEffect(() => {
     const controller = new AbortController();
     fetch("/api/search-console", { signal: controller.signal, cache: "no-store" })
@@ -1884,12 +1890,12 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
     return () => controller.abort();
   }, []);
   function chooseEmail(createAccount = false) {
+    pendingMethodFocus.current = "email";
     setSignup(createAccount); setEmailMode(true); setError("");
-    requestAnimationFrame(() => emailInput.current?.focus({ preventScroll: true }));
   }
   function chooseMethod() {
+    pendingMethodFocus.current = "choice";
     setEmailMode(false); setSignup(false); setError(""); setPassword(""); setShowPassword(false);
-    requestAnimationFrame(() => emailChoice.current?.focus({ preventScroll: true }));
   }
   return (
     <div className="login-screen" data-login-method={emailMode ? "email" : "choose"}>
