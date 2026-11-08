@@ -16,9 +16,12 @@ import { evaluationHref } from "@/lib/evaluation-navigation";
 import { WorkspaceEvaluationSummary } from "./workspace-evaluation-summary";
 import { OverviewVisualCards } from "./overview-visual-cards";
 import { OverviewQuestionControls } from "./overview-question-controls";
+import { OverviewWindowBar, type ExportFile } from "./overview-window-bar";
+import { ALL_LOADED, dailySeries, exportFilename, inWindow, toCsv, utcDay, windowBounds, windowLabel, type DateWindow } from "@/lib/overview-window";
 import { filterCounts, filterQuestions, parseQuestionView, questionOutcome, QUESTION_VIEW_KEY, searchTokens, type QuestionFilter, type QuestionView } from "@/lib/overview-question-filters";
 import "./real-overview.css";
 import "./overview-question-controls.css";
+import "./overview-window-bar.css";
 
 type Site = { id:string; name:string; url:string };
 type Load<T> = { state:"loading"|"ready"|"error"; items:T[] };
@@ -72,6 +75,8 @@ function OwnedOverview({scans,scansLoading,scansError,onRetryScans,onOpenScan}:O
   const [questionView,setQuestionView]=useState<QuestionView>("list");
   useEffect(()=>{try{setQuestionView(parseQuestionView(localStorage.getItem(QUESTION_VIEW_KEY)));}catch{/* Storage is optional. */}},[]);
   const deferredQuery=useDeferredValue(questionQuery);
+  const [dateWindow,setDateWindow]=useState<DateWindow>(ALL_LOADED);
+  const [now]=useState(()=>Date.now());
   const [pageSelection,setPageSelection]=useState({key:"",cursor:"",retry:0});
   const [coverage,setCoverage]=useState<{key:string;next:string|null;models:string[];loading:boolean;error:boolean}>({key:"",next:null,models:[],loading:false,error:false});
   const [detail,setDetail]=useState<{key:string;state:"loading"|"ready";runs:KeywordBenchmarkRun[];failed:number}>({key:"",state:"loading",runs:[],failed:0});
@@ -163,10 +168,24 @@ function OwnedOverview({scans,scansLoading,scansError,onRetryScans,onOpenScan}:O
   }):[];
   const history=ordered(records.filter(run=>run.caseId===historyCase)).reverse();
   const comparableHistory=history.length>1&&history.every(run=>compareKeywordBenchmarkRuns(history[0],run).comparable);
+  const bounds=windowBounds(dateWindow,now);
+  const windowed=dateWindow.preset!=="all";
+  const windowText=windowLabel(bounds,day=>new Date(`${day}T00:00:00Z`).toLocaleDateString(undefined,{month:"short",day:"numeric",timeZone:"UTC"}));
+  const windowAttempts=windowed?attempts.filter(run=>inWindow(run.createdAt,bounds)):attempts;
+  const windowScans=windowed?selectedScans.filter(scan=>inWindow(scan.createdAt,bounds)):selectedScans;
+  const windowCases=new Set(windowAttempts.map(run=>run.caseId));
   const questionRows=[...cases.values()].map(item=>{const attempt=latest.get(item.id);const observation=observations.find(value=>value.run.caseId===item.id);
     return {id:item.id,item,attempt,observation,query:observation?.run.case.query??attempt?.case.query??item.query,outcome:questionOutcome(observation?observation.metrics.targetNamed:null),needsReview:attempt?.status==="failed"||attempt?.status==="requires_action"};});
   const questionTokens=searchTokens(deferredQuery);
-  const visibleQuestions=filterQuestions(questionRows,questionTokens,questionFilters);
+  const windowRows=windowed?questionRows.filter(row=>windowCases.has(row.id)):questionRows;
+  const visibleQuestions=filterQuestions(windowRows,questionTokens,questionFilters);
+  const host=selected?new URL(selected.url).hostname:"website";
+  const today=utcDay(now);
+  const exports:ExportFile[]=[
+    {kind:"questions",label:"Questions shown",filename:exportFilename(host,"questions",windowed?bounds:{from:null,to:null},today),rows:visibleQuestions.length,build:()=>toCsv(["question","outcome","target_positions","target_cited","last_completed_utc","latest_attempt_status","latest_attempt_utc","model"],visibleQuestions.map(row=>[row.query,row.outcome,row.observation&&row.observation.metrics.targetNamed==="yes"?row.observation.metrics.targetPositions.join(" "):"",row.observation?(row.observation.metrics.targetCited===null?"unknown":row.observation.metrics.targetCited?"yes":"no"):"",row.observation?.run.createdAt??"",row.attempt?.status??"",row.attempt?.createdAt??"",row.observation?.run.model??row.attempt?.model??""]))},
+    {kind:"attempts",label:"Saved attempts",filename:exportFilename(host,"attempts",windowed?bounds:{from:null,to:null},today),rows:windowAttempts.length,build:()=>toCsv(["recorded_utc","question","status","model"],windowAttempts.map(run=>[run.createdAt,run.case.query,run.status,run.model]))},
+    {kind:"audits",label:"Technical audits",filename:exportFilename(host,"audits",windowed?bounds:{from:null,to:null},today),rows:windowScans.length,build:()=>toCsv(["recorded_utc","url","readiness_score"],windowScans.map(scan=>[scan.createdAt,scan.url,scan.seoScore]))},
+  ];
   function changeView(next:QuestionView){setQuestionView(next);try{localStorage.setItem(QUESTION_VIEW_KEY,next);}catch{/* The choice still works for this tab. */}}
   function toggleFilter(key:QuestionFilter){setQuestionFilters(previous=>{const next=new Set(previous);if(!next.delete(key))next.add(key);return next;});}
   function removeToken(token:string){setQuestionQuery(previous=>searchTokens(previous).filter(value=>value!==token).map(value=>value.includes(" ")?`"${value}"`:value).join(" "));}
@@ -185,16 +204,17 @@ function OwnedOverview({scans,scansLoading,scansError,onRetryScans,onOpenScan}:O
         </div>
         {data.runs.state==="error"?<p role="alert">Saved keyword history could not be loaded. No search metrics are available.</p>:<>
           {loading&&<p role="status" className="real-overview-loading">Reading saved observations…</p>}
-          <OverviewVisualCards state={metricsReady?"ready":"loading"} named={observations.map(item=>item.metrics.targetNamed)} cited={observations.map(item=>item.metrics.targetCited)} answers={observations.map(item=>({citationUrls:item.run.answer!.citations.map(citation=>citation.url)}))} targetDomain={observations[0]?.metrics.targetDomain??(target?new URL(target).hostname.replace(/^www\./,""):null)} attempts={attempts} latest={[...latest.values()].map(run=>run.status)} unrun={data.suites.state==="ready"?unrun:null} historyPartial={!historyComplete} scans={selectedScans} scansState={scansError?"error":scansLoading?"loading":"ready"}/>
+          {metricsReady&&<OverviewWindowBar window={dateWindow} bounds={bounds} label={windowText} series={dailySeries(attempts,bounds,now)} inWindow={{questions:windowed?windowRows.length:questionRows.filter(row=>row.attempt).length,attempts:windowAttempts.length,audits:windowScans.length}} exports={exports} onChange={setDateWindow}/>}
+          <OverviewVisualCards state={metricsReady?"ready":"loading"} named={observations.map(item=>item.metrics.targetNamed)} cited={observations.map(item=>item.metrics.targetCited)} answers={observations.map(item=>({citationUrls:item.run.answer!.citations.map(citation=>citation.url)}))} targetDomain={observations[0]?.metrics.targetDomain??(target?new URL(target).hostname.replace(/^www\./,""):null)} attempts={windowAttempts} latest={[...latest.values()].map(run=>run.status)} unrun={data.suites.state==="ready"?unrun:null} historyPartial={!historyComplete} windowNote={windowed?windowText:undefined} scans={windowScans} scansState={scansError?"error":scansLoading?"loading":"ready"}/>
           <details className="real-overview-metric-details"><summary>Summary details<ChevronDown size={15}/></summary><dl className="real-overview-metrics"><div><dt>Appeared in answers</dt><dd>{metricsReady&&identified.length?`${Math.round(appeared/identified.length*100)}%`:"Not measured"}</dd><p>{metricsReady?`${appeared} of ${identified.length} completed answers.`:"Waiting for saved answers."}{metricsReady&&unknown>0?` ${unknown} unknown ${unknown===1?"identity is":"identities are"} excluded.`:""}</p></div><div><dt>Questions with completed answers</dt><dd>{metricsReady?observations.length:"—"}<small>{data.suites.state==="ready"?` / ${cases.size} loaded`:""}</small></dd><p>Latest completed result per question{model?" for the selected model":" across models"}.</p></div><div><dt>Distinct cited pages</dt><dd>{metricsReady&&observations.length?sourceCount:"Not measured"}</dd><p>Distinct sources across these answers.</p></div></dl></details>
           {metricsReady&&<p className="real-overview-attempts" aria-label="Latest attempt states"><span>{pending} pending</span><span>{attention} need attention</span><span>{failed} failed</span><span>{cancelled} cancelled</span>{data.suites.state==="ready"&&<span>{unrun} {historyComplete?"not run":"with no attempt loaded"}</span>}</p>}
           {detail.key===selectionKey&&detail.failed>0&&<p role="alert" className="real-overview-loading">{detail.failed} completed {detail.failed===1?"record could":"records could"} not be read. The figures include only successfully loaded answers.</p>}
           {data.suites.state==="error"&&<p role="alert" className="real-overview-loading">Some question suites could not be loaded; unrun-question counts are unavailable.</p>}
-          {questionRows.length>0&&<OverviewQuestionControls query={questionQuery} tokens={questionTokens} filters={questionFilters} counts={filterCounts(questionRows)} shown={visibleQuestions.length} total={questionRows.length} scopeLabel={`${scope==="open-web"?"open-web":"reviewed documentation"}, ${model||"all models"}${historyComplete?"":", partial history"}`} view={questionView} onQuery={setQuestionQuery} onRemoveToken={removeToken} onToggle={toggleFilter} onClear={()=>{setQuestionQuery("");setQuestionFilters(new Set());}} onView={changeView}/>}
+          {windowRows.length>0&&<OverviewQuestionControls query={questionQuery} tokens={questionTokens} filters={questionFilters} counts={filterCounts(windowRows)} shown={visibleQuestions.length} total={windowRows.length} scopeLabel={`${scope==="open-web"?"open-web":"reviewed documentation"}, ${model||"all models"}${historyComplete?"":", partial history"}${windowed?`, ${windowText}`:""}`} view={questionView} onQuery={setQuestionQuery} onRemoveToken={removeToken} onToggle={toggleFilter} onClear={()=>{setQuestionQuery("");setQuestionFilters(new Set());}} onView={changeView}/>}
           <div className="real-query-list" data-view={questionView} key={questionView} aria-label="Search observations by question">{visibleQuestions.map(({item,attempt,observation,query:title,outcome})=>{
             return <article key={item.id} data-outcome={outcome}><div><h3>{title}</h3><p>{observation?`Last completed ${date(observation.run.createdAt)} · ${observation.run.model}`:"No completed observation loaded"}</p>{attempt&&<small>Latest attempt: {labels[attempt.status]} · {date(attempt.createdAt)} · {attempt.model}</small>}</div><dl><div><dt>Target position</dt><dd>{observation?(observation.metrics.targetNamed==="yes"?observation.metrics.targetPositions.map(position=>`#${position}`).join(", "):observation.metrics.targetNamed==="no"?"Not listed":"Unknown"):"Not measured"}</dd></div><div><dt>Target cited</dt><dd>{observation?(observation.metrics.targetCited===true?"Yes":observation.metrics.targetCited===false?"No":"Unknown"):"Not measured"}</dd></div></dl><div className="real-query-actions">{observation&&<Link href={reportHref(observation.run)} aria-label={`Open observation for ${item.query}`}>Open answer<ArrowRight size={13}/></Link>}{attempt&&attempt.id!==observation?.run.id?<Link href={reportHref(attempt)} aria-label={`Review latest attempt for ${item.query}`}>Review latest attempt<ArrowRight size={13}/></Link>:!attempt&&<Link href={`/benchmarks?suite=${encodeURIComponent(item.suiteId)}`}>{historyComplete?"Prepare this question":"Open saved question"}<ArrowRight size={13}/></Link>}</div></article>;
           })}</div>
-          {questionRows.length>0&&!visibleQuestions.length&&<div className="oqc-empty"><p>No loaded questions match these filters.</p><button type="button" className="button secondary" onClick={()=>{setQuestionQuery("");setQuestionFilters(new Set());}}>Clear filters</button></div>}
+          {questionRows.length>0&&!visibleQuestions.length&&<div className="oqc-empty"><p>{windowRows.length?"No loaded questions match these filters.":`No loaded question has a saved attempt in ${windowText}.`}</p><button type="button" className="button secondary" onClick={()=>{setQuestionQuery("");setQuestionFilters(new Set());}}>Clear filters</button></div>}
           <p className="real-overview-loading" aria-label="Saved history coverage">{data.runs.state==="ready"&&coverage.key===selectionKey?data.runs.items.length:"No"} saved attempts loaded for this website, scope{model?", and model":""}. {currentCoverage.loading?"Loading saved history…":currentCoverage.error?"History is unavailable.":currentCoverage.next?"Older attempts remain; counts describe the loaded history only.":"All matching saved attempts loaded."}</p>
           {currentCoverage.error&&pageCursor&&<p role="alert">Older saved attempts could not be loaded. Your loaded answers remain available.</p>}
           {currentCoverage.next&&<button type="button" className="button secondary" disabled={currentCoverage.loading} onClick={()=>setPageSelection(previous=>({key:selectionKey,cursor:currentCoverage.next!,retry:previous.retry+1}))}>{currentCoverage.loading?"Loading older attempts…":"Load older attempts"}</button>}

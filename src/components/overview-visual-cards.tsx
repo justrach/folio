@@ -19,6 +19,8 @@ export type OverviewVisualCardsProps = {
   historyPartial: boolean;
   scans: { createdAt: string; seoScore: number }[];
   scansState: LoadState;
+  /** Set when a date window narrows activity and audits. */
+  windowNote?: string;
   now?: Date;
 };
 
@@ -83,10 +85,10 @@ function CoverageCard({ state, latest, unrun }: Pick<OverviewVisualCardsProps, "
   </Card>;
 }
 
-function ActivityCard({ state, attempts, historyPartial, now }: Pick<OverviewVisualCardsProps, "state" | "attempts" | "historyPartial" | "now">) {
+function ActivityCard({ state, attempts, historyPartial, now, windowNote }: Pick<OverviewVisualCardsProps, "state" | "attempts" | "historyPartial" | "now" | "windowNote">) {
   const grid = useMemo(() => activityGrid(attempts.map(item => item.createdAt), now ?? new Date()), [attempts, now]);
   return <Card title="Search activity" meta="12 weeks">
-    {state !== "ready" ? <Pending state={state} empty="" /> : !grid.total ? <p className="ovc-note">No saved attempts in the last 12 weeks.</p> : <>
+    {state !== "ready" ? <Pending state={state} empty="" /> : !grid.total ? <p className="ovc-note">No saved attempts in the last 12 weeks{windowNote ? ` within ${windowNote}` : ""}.</p> : <>
       <div className="ovc-total"><strong>{grid.total}</strong><span className="ovc-chip" data-tone="neutral">{grid.activeDays} active {grid.activeDays === 1 ? "day" : "days"}</span></div>
       <p className="ovc-sub">Saved attempts recorded{historyPartial ? " (loaded history only)" : ""}.</p>
       <div className="ovc-heat" role="img" aria-label={`${grid.total} saved attempts on ${grid.activeDays} days over 12 weeks${grid.peak ? `; busiest ${day(grid.peak.date)} with ${grid.peak.count}` : ""}.`}>
@@ -113,7 +115,7 @@ function SourcesCard({ state, answers, targetDomain }: Pick<OverviewVisualCardsP
   </Card>;
 }
 
-function ReadinessCard({ scans, scansState }: Pick<OverviewVisualCardsProps, "scans" | "scansState">) {
+function ReadinessCard({ scans, scansState, windowNote }: Pick<OverviewVisualCardsProps, "scans" | "scansState" | "windowNote">) {
   const trend = useMemo(() => scoreTrend(scans), [scans]);
   const [picked, setPicked] = useState<number | null>(null);
   const dragging = useRef(false);
@@ -135,7 +137,7 @@ function ReadinessCard({ scans, scansState }: Pick<OverviewVisualCardsProps, "sc
     setPicked(nearestIndex(fraction, count));
   }
   return <Card title="Technical readiness" meta={count ? `${count} ${count === 1 ? "audit" : "audits"}` : undefined}>
-    {scansState !== "ready" || !point ? <Pending state={scansState} empty="No technical audit saved for this exact URL yet." /> : <>
+    {scansState !== "ready" || !point ? <Pending state={scansState} empty={windowNote ? `No technical audit for this exact URL in ${windowNote}.` : "No technical audit saved for this exact URL yet."} /> : <>
       <div className="ovc-total" aria-live="polite"><strong>{point.score}<small>/100</small></strong>
         {delta !== null && <span className="ovc-chip" data-tone={delta < 0 ? "warn" : delta > 0 ? "good" : "neutral"}>{delta > 0 ? "▲ +" : delta < 0 ? "▼ " : ""}{delta} vs previous audit</span>}
         {point.score < 70 && <span className="ovc-chip" data-tone="warn">Below 70</span>}</div>
@@ -165,7 +167,7 @@ export const OverviewVisualCards = memo(function OverviewVisualCards(props: Over
     <AppearanceCard state={props.state} named={props.named} cited={props.cited} />
     <CoverageCard state={props.state} latest={props.latest} unrun={props.unrun} />
     <SourcesCard state={props.state} answers={props.answers} targetDomain={props.targetDomain} />
-    <ActivityCard state={props.state} attempts={props.attempts} historyPartial={props.historyPartial} now={props.now} />
-    <ReadinessCard scans={props.scans} scansState={props.scansState} />
+    <ActivityCard state={props.state} attempts={props.attempts} historyPartial={props.historyPartial} now={props.now} windowNote={props.windowNote} />
+    <ReadinessCard scans={props.scans} scansState={props.scansState} windowNote={props.windowNote} />
   </section>;
 });
