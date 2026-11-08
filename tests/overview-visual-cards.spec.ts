@@ -80,7 +80,7 @@ test("overview chart cards summarise saved records with text equivalents", async
   await expect(readiness.locator(".ovc-total strong")).toHaveText("69/100");
   await expect(readiness).toContainText("▼ -3 vs previous");
   await expect(readiness).toContainText("Below 70");
-  await expect(readiness.getByRole("img", { name: "Readiness scores oldest to newest: 61, 66, 72, 69." })).toBeVisible();
+  await expect(readiness.getByRole("slider", { name: "Technical readiness audits" })).toHaveAttribute("aria-valuetext", /^69 out of 100 on .+, audit 4 of 4$/);
   await expect(page.getByRole("link", { name: "Open search questions" })).toBeVisible();
   if (process.env.OVERVIEW_SHOTS) {
     await page.screenshot({ path: `${process.env.OVERVIEW_SHOTS}/overview-${info.project.name}.png`, fullPage: true });
