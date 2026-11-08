@@ -62,6 +62,9 @@ bun run design:live     # full DOM scan of the running dev server (catches tiny 
 bun run design:install  # refresh the skill files; the platform binary is gitignored
 ```
 
+The landing deliberately uses the warm paper palette, so `cream-palette` is
+ignored in `.impeccable/config.json`; every other rule stays on.
+
 The DOM scan needs a running `bun run dev`. Findings are ranked failures, not
 style suggestions: a page with findings has text below the legibility floor or a
 contrast problem. The type floor is 12px for functional text; `design:live`
