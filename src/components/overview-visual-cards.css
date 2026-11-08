@@ -55,3 +55,9 @@
 .ovc-heat{max-width:420px}
 .ovc-heat{grid-template-columns:repeat(12,minmax(0,16px));max-width:none}.ovc-heat span{width:100%}
 .ovc-spark{height:96px}
+.ovc-scrub{position:relative;touch-action:pan-y;cursor:crosshair;border-radius:6px;outline:none}
+.ovc-scrub:focus-visible{box-shadow:0 0 0 3px var(--folio-accent-soft),0 0 0 4px var(--folio-focus)}
+.ovc-cursor{position:absolute;top:0;bottom:0;width:0;border-left:1px dashed var(--folio-edge-strong);pointer-events:none;transition:left .15s ease}
+.ovc-dot{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:var(--panel);border:2px solid var(--green);pointer-events:none;transition:left .15s ease,top .15s ease}
+.real-overview .ovc-reset{border:0;padding:0;background:none;color:var(--green);font:inherit;text-decoration:underline;cursor:pointer}
+@media (prefers-reduced-motion:reduce){.ovc-cursor,.ovc-dot{transition:none}}

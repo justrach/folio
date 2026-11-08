@@ -8,7 +8,9 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # The full desktop/mobile suite can take 17+ minutes on hosted runners;
+    # leave time for OpenNext and the Worker build/runtime checks that follow.
+    timeout-minutes: 30
     env:
       CLOUDFLARE_CF_FETCH_ENABLED: "false"
       WRANGLER_SEND_METRICS: "false"
