@@ -219,6 +219,9 @@ test("website overview separates models, keeps the filter through navigation and
   await expect(metric(page, "Appeared in answers").locator("dd")).toHaveText("0%");
   await expect(search(page)).toContainText("mixed-model summary");
   await expect(search(page).getByRole("link", { name: `Open observation for ${suite.cases[0].query}` })).toHaveAttribute("href", /run=luna-answer$/);
+  // Offscreen outcome chips must not expand the mobile layout viewport or move
+  // the dropdown's pointer coordinates outside the visible screen.
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
   await selectValue(picker, "gpt-6-astra");
   await expect(metric(page, "Appeared in answers").locator("dd")).toHaveText("100%");
   await expect(search(page).getByRole("link", { name: `Open observation for ${suite.cases[0].query}` })).toHaveAttribute("href", /run=astra-answer$/);

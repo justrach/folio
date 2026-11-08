@@ -8,6 +8,7 @@
 .real-overview .oqc-view button{display:inline-flex;align-items:center;gap:6px;min-height:30px;padding:0 11px;border:0;border-radius:7px;background:transparent;color:var(--folio-text-secondary);font-size:12px;cursor:pointer;transition:background-color .2s ease,color .2s ease}
 .real-overview .oqc-view button[aria-pressed="true"]{background:var(--panel);color:var(--ink);box-shadow:0 1px 2px color-mix(in srgb,var(--folio-shadow) 12%,transparent)}
 .oqc-pills{display:flex;flex-wrap:wrap;gap:6px}
+.oqc-pills button{position:relative}
 .real-overview .oqc-pills button{display:inline-flex;align-items:center;gap:6px;min-height:30px;padding:0 11px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--folio-text-secondary);font-size:12px;cursor:pointer}
 .oqc-pills button span[aria-hidden]{font-variant-numeric:tabular-nums;color:var(--muted)}
 .real-overview .oqc-pills button[aria-pressed="true"]{background:var(--folio-accent-soft);border-color:var(--folio-accent-edge);color:var(--green);font-weight:600}
