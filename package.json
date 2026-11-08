@@ -7,7 +7,10 @@
     "node": ">=22.13.0",
     "bun": ">=1.4.1"
   },
-  "trustedDependencies": ["esbuild", "workerd"],
+  "trustedDependencies": [
+    "esbuild",
+    "workerd"
+  ],
   "scripts": {
     "dev": "node scripts/dev.mjs",
     "build": "next build",
@@ -35,7 +38,10 @@
     "scheduler:build": "wrangler deploy --config wrangler.scheduler.jsonc --dry-run",
     "scheduler:deploy": "wrangler deploy --config wrangler.scheduler.jsonc",
     "backend:build": "wrangler deploy --config wrangler.production.jsonc --dry-run",
-    "backend:smoke": "FOLIO_SMOKE_ENTRY=backend node scripts/frontend-runtime-smoke.mjs"
+    "backend:smoke": "FOLIO_SMOKE_ENTRY=backend node scripts/frontend-runtime-smoke.mjs",
+    "design:check": "impeccable detect src/components src/app",
+    "design:live": "impeccable detect http://localhost:3000",
+    "design:install": "impeccable install --yes --project --no-hooks"
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "latest",
@@ -68,6 +74,7 @@
     "@types/pg": "8.15.6",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "impeccable": "^4.8.1",
     "miniflare": "5.20261104.0-beta",
     "tsx": "^4.20.0",
     "typescript": "^5.9.0",
