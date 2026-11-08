@@ -1,0 +1,17 @@
+.revenue-globe { border: 1px solid var(--folio-edge); border-radius: 10px; margin-bottom: 16px; overflow: hidden; }
+.revenue-globe > header { align-items: flex-start; border-bottom: 1px solid var(--folio-edge); display: flex; gap: 12px; justify-content: space-between; padding: 12px 16px; }
+.revenue-globe h2 { font-size: 14px; margin: 0; }
+.revenue-globe header p { color: var(--folio-text-muted); font-size: 12px; margin: 2px 0 0; }
+.revenue-badge { border: 1px solid var(--folio-edge); border-radius: 999px; color: var(--folio-text-muted); font-size: 11px; font-weight: 600; padding: 2px 8px; text-transform: uppercase; }
+.revenue-badge.connected { border-color: var(--folio-accent); color: var(--folio-accent); }
+.revenue-body { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr) 240px; padding: 12px 16px 16px; }
+.revenue-canvas { height: 300px; width: 100%; }
+.revenue-legend { display: flex; flex-direction: column; gap: 12px; justify-content: center; }
+.revenue-total span { color: var(--folio-text-muted); display: block; font-size: 12px; }
+.revenue-total strong { display: block; font-size: 26px; font-variant-numeric: tabular-nums; font-weight: 600; letter-spacing: -.6px; }
+.revenue-legend ul { list-style: none; margin: 0; padding: 0; }
+.revenue-legend li { border-top: 1px solid var(--folio-edge); display: flex; font-size: 13px; gap: 8px; justify-content: space-between; padding: 6px 0; }
+.revenue-country { color: var(--folio-text-secondary); }
+.revenue-amount { font-variant-numeric: tabular-nums; }
+.revenue-note { color: var(--folio-text-muted); font-size: 11px; margin: 0; }
+@media (max-width: 820px) { .revenue-body { grid-template-columns: minmax(0, 1fr); } .revenue-canvas { height: 240px; } }

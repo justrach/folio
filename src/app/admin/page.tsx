@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { isAdmin } from "@/lib/admin";
 import { adminOverview } from "@/lib/admin-data";
+import { revenueSummary } from "@/lib/stripe-revenue";
+import { RevenueGlobe } from "@/components/revenue-globe";
 import "./admin.css";
 
 export const dynamic = "force-dynamic";
@@ -31,7 +33,7 @@ export default async function AdminPage() {
   // advertise that it exists.
   if (!session || !isAdmin(session.user.email)) notFound();
 
-  const data = await adminOverview();
+  const [data, revenue] = await Promise.all([adminOverview(), revenueSummary(30)]);
 
   return (
     <main className="admin">
@@ -40,6 +42,8 @@ export default async function AdminPage() {
         <h1>Index operations</h1>
         <p>Signed in as {session.user.email}. This page is limited to the owner accounts and is not indexed.</p>
       </header>
+
+      <RevenueGlobe summary={revenue} />
 
       <section className="admin-grid">
         <div className="admin-card">
