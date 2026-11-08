@@ -36,23 +36,24 @@ try {
   const deadline = Date.now() + 90_000;
   while (Date.now() < deadline) {
     if (child.exitCode !== null) throw new Error(`Worker exited before readiness (${child.exitCode}); see .local/frontend-runtime-smoke.log`);
-    try { response = await fetch(`${base}/overview`, { signal: AbortSignal.timeout(2_000) }); break; }
+    try { response = await fetch(`${base}/leaderboard`, { signal: AbortSignal.timeout(2_000) }); break; }
     catch { await new Promise(resolveWait => setTimeout(resolveWait, 250)); }
   }
   if (!response) throw new Error("Built Worker did not become ready; see .local/frontend-runtime-smoke.log");
-  if (response.status !== 200) throw new Error(`Built Worker /overview returned ${response.status}; see .local/frontend-runtime-smoke.log`);
+  if (response.status !== 200) throw new Error(`Built Worker /leaderboard returned ${response.status}; see .local/frontend-runtime-smoke.log`);
   const html = await response.text();
-  if (!html.includes("Benchmark dashboard") || !html.includes("Color theme")) throw new Error("Built Worker omitted the dashboard or theme picker.");
-  for (const path of ["/login", "/leaderboard"]) {
+  if (!html.includes("The Folio Index") || !html.includes("Color theme")) throw new Error("Built Worker omitted the dashboard or theme picker.");
+  for (const path of ["/login", "/overview"]) {
     const page = await fetch(base + path, { signal: AbortSignal.timeout(15_000) });
     if (page.status !== 200) throw new Error(`Built Worker ${path} returned ${page.status}`);
-    await page.arrayBuffer();
+    const markup = await page.text();
+    if(path === "/overview" && !markup.includes("Loading your workspace") && !markup.includes("Benchmark dashboard")) throw new Error("Built Worker omitted the account gate or public overview.");
   }
   const stylesheet = /href="([^\"]+\.css(?:\?[^\"]*)?)"/.exec(html)?.[1];
   if (!stylesheet) throw new Error("Built Worker omitted its stylesheet.");
   const css = await fetch(new URL(stylesheet, base), { signal: AbortSignal.timeout(15_000) });
   if (css.status !== 200 || !(await css.text()).length) throw new Error("Built Worker stylesheet failed to load.");
-  console.log(`Built ${entry} Worker rendered dashboard, login, Index and stylesheet without database/provider bindings.`);
+  console.log(`Built ${entry} Worker rendered the public Index, account-gated overview, login and stylesheet without database/provider bindings.`);
 } finally {
   if (child.exitCode === null) {
     const exited = once(child, "exit");
