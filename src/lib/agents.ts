@@ -296,9 +296,11 @@ export function serializeWebsiteEvaluationInput(input: WebsiteEvaluationInput): 
   }
 
   const evidenceInput = JSON.stringify(input);
-  if (evidenceInput.length > 200_000) {
+  // Bound the actual UTF-8 payload, including escaping and combined evidence.
+  // Retain full captures; oversized inputs must fail before session creation.
+  if (new TextEncoder().encode(evidenceInput).byteLength > 600_000) {
     throw new AgentsIntegrationError(
-      "Evaluation evidence exceeds the 200,000 character limit.",
+      "Evaluation evidence exceeds the 600,000 byte input limit. No agent session was created. Choose a smaller page or fewer evidence inputs.",
       "INVALID_INPUT",
     );
   }

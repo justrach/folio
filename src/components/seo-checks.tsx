@@ -43,7 +43,10 @@ function CheckRow({ check }: { check: Check }) {
 }
 
 export function SeoChecks({ checks, sample }: { checks: Check[]; sample: boolean }) {
-  const [filter, setFilter] = useState<Check["status"] | null>(null);
+  const [chosenFilter, setFilter] = useState<Check["status"] | null>(null);
+  if (!checks.length) return <section className="panel seo-checks-panel seo-checks-unavailable" aria-label="SEO checks"><div className="panel-heading"><h2>Check details unavailable</h2></div><p>This saved audit has no individual check results. Check the page again to see what passed and what needs attention.</p></section>;
+  // Start with useful findings, while leaving every category available.
+  const filter = chosenFilter ?? (["fail", "warning", "pass", "optional"] as const).find(status => checks.some(check => check.status === status))!;
   const visible = checks.filter(check => check.status === filter);
   const breakdown = filters.map(item => ({ ...item, count: checks.filter(check => check.status === item.status).length }));
   return (
@@ -66,11 +69,9 @@ export function SeoChecks({ checks, sample }: { checks: Check[]; sample: boolean
             {breakdown.map(({ status, label, count }) => <button type="button" key={status} className={status} aria-pressed={filter === status} aria-controls="seo-check-results" onClick={() => setFilter(status)}>{label}<span>{count}</span></button>)}
           </div>
           <div id="seo-check-results" className="seo-check-results" key={filter}>
-            {filter === null ? <div className="seo-check-placeholder"><ChevronDown size={22} aria-hidden="true" /><strong>Choose a status to explore</strong><p>See the checks, then open a row for details.</p></div> : <>
               {filter === "optional" && <p className="seo-unscored-note">Informational only · Does not affect your score.</p>}
               {visible.map(check => <CheckRow key={check.id} check={check} />)}
               {!visible.length && <p className="seo-check-empty">{filter === "fail" ? "No failed checks." : filter === "warning" ? "No checks need improvement." : filter === "optional" ? "No optional checks." : "No passed checks yet."}</p>}
-            </>}
           </div>
         </div>
       </div>

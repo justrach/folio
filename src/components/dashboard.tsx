@@ -9,6 +9,7 @@ import { DashboardAppearance, DashboardNavigation } from "./dashboard-appearance
 import { LabelInput } from "./bencho/label-input/LabelInput";
 import "./bencho/label-input/LabelInput.css";
 import "./dashboard-refresh.css";
+import "./dashboard-soft.css";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
@@ -147,8 +148,8 @@ const titles: Record<
   analytics: {eyebrow:"INTERNAL",title:"Product analytics",description:"First-party usage and event timelines."},
   orgs: {
     eyebrow: "",
-    title: "Organizations",
-    description: "Sample team workspace: seats, roles, shared records, and audit activity.",
+    title: "Team workspace",
+    description: "See shared work, who owns it, and what needs review. Interactive preview.",
   },
   overview: {
     eyebrow: "THE BIG PICTURE",
@@ -304,9 +305,10 @@ function PublicOverviewShell({ section = "overview" }: { section?: "overview" | 
     window.addEventListener("keydown", close);
     return () => window.removeEventListener("keydown", close);
   }, []);
-  return <div className="app-shell folio-workspace public-overview-shell" data-nav-compact="true">
+  return <div className="app-shell folio-workspace public-overview-shell" data-nav-compact="true" suppressHydrationWarning>
     {mobileOpen && <button className="sidebar-scrim" onClick={() => setMobileOpen(false)} aria-label="Close navigation" />}
     <aside className={`sidebar ${mobileOpen ? "open" : ""}`}>
+      <div className="sidebar-brand-toggle"><DashboardNavigation/></div>
       <Link href="/" className="wordmark" aria-label="Folio home"><FolioMark /><span>folio<span className="wordmark-period">.</span></span></Link>
       <span className="nav-caption">PUBLIC</span>
       <nav aria-label="Public navigation">
@@ -317,7 +319,7 @@ function PublicOverviewShell({ section = "overview" }: { section?: "overview" | 
       <div className="public-sidebar-guide"><Compass size={20} /><strong>Your website, in perspective.</strong><p>Prepare questions and keep your own evidence in a private workspace.</p><Link href="/start">Explore your website <ArrowRight size={14} /></Link></div>
     </aside>
     <div className="main-shell">
-      <header className="topbar"><div className="breadcrumb"><DashboardNavigation/><button className="mobile-menu icon-button" onClick={() => setMobileOpen(true)} aria-label="Open navigation"><Menu size={21}/></button><Globe2 size={15}/><span>Public benchmarks</span></div><div className="topbar-actions"><Link className="public-workspace-link squishy-control" href="/overview?view=workspace" aria-label="My workspace" title="My workspace"><span>My workspace</span><LayoutDashboard size={16}/></Link><DashboardAppearance /></div></header>
+      <header className="topbar"><div className="breadcrumb"><button className="mobile-menu icon-button" onClick={() => setMobileOpen(true)} aria-label="Open navigation"><Menu size={21}/></button><Globe2 size={15}/><span>Public benchmarks</span></div><div className="topbar-actions"><Link className="public-workspace-link squishy-control" href="/overview?view=workspace" aria-label="My workspace" title="My workspace"><span>My workspace</span><LayoutDashboard size={16}/></Link><DashboardAppearance /></div></header>
       <main className={`page-content${index ? " index-page" : ""}`}>
         <div className="page-heading"><div><h1>{index ? "The Folio Index" : "Benchmark dashboard"}</h1><p>{index ? "Public search answers and website page checks." : "Recorded answers, citations and run status."}</p></div></div>
         {index ? <Leaderboard onMethod={() => setMethodOpen(true)} onNotify={setNotice} /> : <PublicBenchmarkDashboard />}
@@ -459,6 +461,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
         />
       )}
       <aside className={`sidebar ${mobileOpen ? "open" : ""}`}>
+      <div className="sidebar-brand-toggle"><DashboardNavigation/></div>
         <Link href="/" className="wordmark" aria-label="Folio home">
           <FolioMark />
           <span>
@@ -499,7 +502,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
         <Link href="/overview?view=demo" className={`nav-link ${teamDemo?"active":""}`} aria-current={teamDemo?"page":undefined} onClick={()=>setMobileOpen(false)} title="Content demo"><Sparkles size={17}/><span>Content demo</span></Link>
         </nav>
 
-        <details className="sidebar-more" open={!["overview","websites","evaluations","settings"].includes(section)}><summary className="nav-link" title="More tools"><MoreHorizontal size={17}/><span>More tools</span></summary><nav aria-label="More tools">{navigation.filter(item=>!["overview","websites","evaluations"].includes(item.section)).map(item=><Link key={item.section} href={item.href} title={item.label} className={`nav-link ${section===item.section?"active":""}`} aria-current={section===item.section?"page":undefined} onClick={()=>setMobileOpen(false)}><item.icon size={17}/><span>{item.label}</span></Link>)}<Link href="/leaderboard" title="The Folio Index" className="nav-link" onClick={()=>setMobileOpen(false)}><Trophy size={17}/><span>The Folio Index</span></Link><Link href="/agents" title="Your agents" className={`nav-link ${section==="agents"?"active":""}`} aria-current={section==="agents"?"page":undefined} onClick={()=>setMobileOpen(false)}><Bot size={17}/><span>Your agents</span></Link><Link href="/orgs" title="Organizations" className={`nav-link ${section==="orgs"?"active":""}`} aria-current={section==="orgs"?"page":undefined} onClick={()=>setMobileOpen(false)}><Building2 size={17}/><span>Organizations</span></Link><Link href="/docs/api" title="API reference" className="nav-link" onClick={()=>setMobileOpen(false)}><Code2 size={17}/><span>API reference</span></Link><Link href="/pricing" title="Plans & usage" className="nav-link" onClick={()=>setMobileOpen(false)}><BookOpen size={17}/><span>Plans & usage</span></Link></nav></details>
+        <details className="sidebar-more" open={!["overview","websites","evaluations","settings"].includes(section)}><summary className="nav-link" title="More tools"><MoreHorizontal size={17}/><span>More tools</span></summary><nav aria-label="More tools">{navigation.filter(item=>!["overview","websites","evaluations"].includes(item.section)).map(item=><Link key={item.section} href={item.href} title={item.label} className={`nav-link ${section===item.section?"active":""}`} aria-current={section===item.section?"page":undefined} onClick={()=>setMobileOpen(false)}><item.icon size={17}/><span>{item.label}</span></Link>)}<Link href="/leaderboard" title="The Folio Index" className="nav-link" onClick={()=>setMobileOpen(false)}><Trophy size={17}/><span>The Folio Index</span></Link><Link href="/agents" title="Your agents" className={`nav-link ${section==="agents"?"active":""}`} aria-current={section==="agents"?"page":undefined} onClick={()=>setMobileOpen(false)}><Bot size={17}/><span>Your agents</span></Link><Link href="/orgs" title="Team preview" className={`nav-link ${section==="orgs"?"active":""}`} aria-current={section==="orgs"?"page":undefined} onClick={()=>setMobileOpen(false)}><Building2 size={17}/><span>Team preview</span></Link><Link href="/docs/api" title="API reference" className="nav-link" onClick={()=>setMobileOpen(false)}><Code2 size={17}/><span>API reference</span></Link><Link href="/pricing" title="Plans & usage" className="nav-link" onClick={()=>setMobileOpen(false)}><BookOpen size={17}/><span>Plans & usage</span></Link></nav></details>
         <div className="sidebar-bottom">
           {isAdminOwner(session?.user.email) && <Link className="nav-link" href="/folio-internal/analytics" title="Product analytics"><BarChart3 size={17}/><span>Product analytics</span></Link>}
           {isAdminOwner(session?.user.email) && <Link href="/admin" title="Admin" className="nav-link" onClick={()=>setMobileOpen(false)}><ShieldCheck size={17}/><span>Admin</span></Link>}
@@ -534,7 +537,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
       <div className="main-shell">
         <header className="topbar">
           <div className="breadcrumb">
-            <DashboardNavigation/>
+
             <button
               className="mobile-menu icon-button"
               onClick={() => setMobileOpen(true)}
@@ -544,20 +547,21 @@ function WorkspaceDashboard({ section }: { section: string }) {
             </button>
             <Globe2 size={15} />
             <button onClick={() => router.push("/websites")}>
-              {usageDemo ? "Team credits · Sample" : analyticsDemo ? "Product analytics · Sample" : section==="analytics" ? "Folio operator analytics" : revenueDemo ? "Revenue · Sample" : teamDemo ? "Manus · Workflow mock" : personalWorkspace ? "Your workspace" : actual ? safeHostname(actual.url, "Your workspace") : session ? "Your workspace" : "acme.com"}
+              {section === "orgs" ? "Team workspace · Sample" : usageDemo ? "Team credits · Sample" : analyticsDemo ? "Product analytics · Sample" : section==="analytics" ? "Folio operator analytics" : revenueDemo ? "Revenue · Sample" : teamDemo ? "Manus · Workflow mock" : personalWorkspace ? "Your workspace" : actual ? safeHostname(actual.url, "Your workspace") : session ? "Your workspace" : "acme.com"}
             </button>
             <ChevronRight size={13} />
             <span>
               {section === "leaderboard"
                 ? "The Folio Index"
                 : (navigation.find((n) => n.section === section)?.label ??
-                  (section === "agents" ? "Your agents" : "Settings"))}
+                  (section === "orgs" ? "Team preview" : section === "agents" ? "Your agents" : "Settings"))}
             </span>
           </div>
           <div className="topbar-actions">
             <DashboardAppearance />
             <button
               className="search-trigger"
+              aria-label="Find anything"
               onClick={() => setModal("search")}
             >
               <Search size={15} />
@@ -588,7 +592,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
               <p>{title.description}</p>
             </div>
             <div className="heading-actions">
-              {section === "evaluations" ? null : section === "websites" ? (
+              {["evaluations", "orgs"].includes(section) ? null : section === "websites" ? (
                 <>{ownerId ? <Link href="/start?step=1" className="button secondary squishy-control">Add a website <Plus size={16}/></Link> : <Link href="/login" className="button secondary">Sign in <ArrowRight size={14}/></Link>}</>
               ) : section === "benchmarks" ? (
                 <Link href="/docs/api" className="button secondary">API reference <ArrowRight size={14} /></Link>
@@ -624,8 +628,14 @@ function WorkspaceDashboard({ section }: { section: string }) {
           </div>}
           {section === "overview" && !teamDemo && <nav className="real-overview-tabs" aria-label="Overview view"><Link href={workspaceOverviewHref(query)} aria-current={!demoRequested ? "page" : undefined}>My website results</Link><Link href="/overview?view=demo" aria-current={demoRequested ? "page" : undefined} onClick={() => setMode("sample")}>Demo report</Link></nav>}
           {section === "overview" && chartsDemo && <OverviewDemoNotice/>}
-          {section === "overview" && !demoRequested && ownerId && <details className="workspace-extras" onToggle={event=>setExtrasOpen(event.currentTarget.open)}><summary>Saved records and setup checklist</summary>{extrasOpen&&<><StartHere key={`setup:${ownerId}`} ownerId={ownerId}/><WorkspaceRecords key={`records:${ownerId}`} ownerId={ownerId}/></>}</details>}
-          {usageDemo ? <TeamUsageDemo/> : analyticsDemo ? <ProductAnalyticsPanel sample/> : revenueDemo ? <RevenueGlobeDemo/> : teamDemo ? <ManusDashboardDemo actualHref={workspaceOverviewHref(query)}/> : section === "overview" && !demoRequested ? <RealOverview ownerId={ownerId} scans={scans} scansLoading={loadingScans} scansError={scanOwnerId === ownerId ? scanError : ""} onRetryScans={() => setScanRefresh(value => value + 1)} onOpenScan={openScan} /> : <>
+
+          {usageDemo ? <TeamUsageDemo/> : analyticsDemo ? <ProductAnalyticsPanel sample/> : revenueDemo ? <RevenueGlobeDemo/> : teamDemo ? <ManusDashboardDemo actualHref={workspaceOverviewHref(query)}/> : section === "overview" && !demoRequested ? <>
+            <RealOverview ownerId={ownerId} scans={scans} scansLoading={loadingScans} scansError={scanOwnerId === ownerId ? scanError : ""} onRetryScans={() => setScanRefresh(value => value + 1)} onOpenScan={openScan} />
+            {ownerId && <details className="workspace-extras" onToggle={event => setExtrasOpen(event.currentTarget.open)}>
+              <summary>Saved records and setup checklist</summary>
+              {extrasOpen && <><StartHere key={`setup:${ownerId}`} ownerId={ownerId}/><WorkspaceRecords key={`records:${ownerId}`} ownerId={ownerId}/></>}
+            </details>}
+          </> : <>
 
           {scanOwnerId === ownerId && scanError && ["overview", "websites", "seo", "patches"].includes(section) && (
             <div className="workspace-read-error" role="alert">{scanError}<Button kind="secondary" onClick={() => setScanRefresh(n => n + 1)}>Retry audits</Button></div>
@@ -992,40 +1002,25 @@ function WorkspaceDashboard({ section }: { section: string }) {
               )}
               {section === "seo" && (
                 <>
-                  <div className="seo-summary">
-                    <div
-                      className="score-ring"
-                      style={
-                        {
-                          "--score": `${actual?.seoScore ?? 86}%`,
-                        } as React.CSSProperties
-                      }
-                    >
-                      <span>
-                        {actual?.seoScore ?? 86}
-                        <small>OUT OF 100</small>
-                      </span>
+                  <section className="seo-summary seo-audit-summary" aria-label="Technical audit summary">
+                    <div className="score-ring seo-audit-score" aria-label={`Saved technical score: ${actual?.seoScore ?? 86} out of 100`}>
+                      <span>{actual?.seoScore ?? 86}<small>/ 100</small></span>
+                      <p>{actual ? "Saved score" : "Sample score"}</p>
                     </div>
-                    <div>
-                      <span className="eyebrow">TECHNICAL SEO HEALTH</span>
-                      <h2>
-                        {(actual?.seoScore ?? 86) >= 80
-                          ? "A strong foundation. A few finishing touches."
-                          : "A few improvements can make a real difference."}
-                      </h2>
-                      <p>
-                        {actual
-                          ? `${actual.title || safeHostname(actual.url, "This page")} · ${actual.wordCount} readable words · ${new Date(actual.createdAt).toLocaleString()}`
-                          : "6 core checks passed. Explore the opportunities below."}
-                      </p>
+                    <div className="seo-audit-copy">
+                      <h2>{actual && !actual.checks.length ? "Saved technical audit" : "Your page checks"}</h2>
+                      <p>{actual
+                        ? `${actual.title || safeHostname(actual.url, "This page")} · Checked ${new Date(actual.createdAt).toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"})}`
+                        : "An example of the HTML checks in a Folio audit."}</p>
+                      <p>{actual && !actual.checks.length
+                        ? "The score was saved, but individual check details are unavailable. Check the page again to see current findings."
+                        : "Review the findings below. This technical score does not measure search rankings."}</p>
+                      {!actual && <SampleLabel />}
                     </div>
-                    <Button
-                      kind="secondary"
-                      onClick={() => router.push("/patches")}
-                    >
-                      Review improvements <ArrowRight size={14} />
+                    <Button kind="secondary" onClick={() => actual && !actual.checks.length ? prepareAudit(actual.url) : router.push("/patches")}>
+                      {actual && !actual.checks.length ? "Check this page again" : "Review improvements"} <ArrowRight size={14} />
                     </Button>
-                  </div>
+                  </section>
                   <SeoChecks key={actual?.id ?? "sample"} checks={actual?.checks ?? sampleChecks} sample={!actual} />
                 </>
               )}
@@ -1081,6 +1076,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
                   : "Find your next step."
           }
           onClose={() => setModal(null)}
+          initialFocus={modal === "search" ? ".lbi-field" : undefined}
         >
           {modal === "scan" && (
             <ScanForm
@@ -1165,7 +1161,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
           )}
         </Dialog>
       )}
-      {section !== "leaderboard" && <AgentRunDock />}
+      {section !== "leaderboard" && section !== "orgs" && !usageDemo && <AgentRunDock />}
       {toast && (
         <div className="toast" role="status">
           <CheckCheck size={18} />
@@ -2143,16 +2139,21 @@ function Dialog({
   title,
   children,
   onClose,
+  initialFocus,
 }: {
   title: string;
   children: React.ReactNode;
   onClose: () => void;
+  initialFocus?: string;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     ref.current?.showModal();
+    // Inputs mounted inside a closed native dialog cannot receive React's
+    // mount-time autofocus. Focus after showModal makes them interactive.
+    if (initialFocus) ref.current?.querySelector<HTMLElement>(initialFocus)?.focus({ preventScroll: true });
     return () => ref.current?.close();
-  }, []);
+  }, [initialFocus]);
   return (
     <dialog
       ref={ref}

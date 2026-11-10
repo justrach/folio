@@ -145,7 +145,7 @@ test("preflight keeps exhausted allowances and unsafe website inputs from launch
   await expect(preflight).toContainText("rolling 24-hour run allowance is used");
   await expect(preflight).toContainText("0 live attempts remaining");
   await expect(launch).toBeDisabled();
-  await expect(page.getByRole("button", { name: "Try reproducible demo", exact: true })).toBeEnabled();
+  await expect(page.getByRole("button", { name: "Explore example report", exact: true })).toBeEnabled();
   remaining = 1;
   await page.getByRole("button", { name: "Refresh agent connection", exact: true }).click();
   await expect(launch).toBeEnabled();

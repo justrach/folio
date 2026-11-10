@@ -23,7 +23,7 @@
 .landing h2 { font: 500 26px/1.25 var(--sans); letter-spacing: -.65px; }
 .landing .button.primary {
   min-height: 44px; padding: 11px 17px; border: 1px solid var(--landing-ink);
-  border-radius: 3px; background: var(--landing-ink); color: var(--folio-inverse-text);
+  border-radius: 16px; background: var(--landing-ink); color: var(--folio-inverse-text);
   font-size: 14px; font-weight: 500; box-shadow: none; white-space: nowrap;
   display: inline-flex; align-items: center; justify-content: center; gap: 10px;
 }
@@ -43,7 +43,7 @@
 .landing-hero h1 { font: 400 clamp(42px, 4.3vw, 62px)/1.04 var(--serif); letter-spacing: -2px; text-wrap: balance; max-width: 570px; }
 .landing .landing-hero-description { max-width: 490px; font-size: 18px; line-height: 1.55; margin-top: 23px; }
 .landing-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 22px; margin-top: 28px; }
-.landing-actions > a:last-child { font-size: 14px; text-decoration: underline; }
+.landing-actions > a:last-child { font-size: 14px; text-decoration: none; }
 .landing .landing-access { max-width: 400px; font-size: 12px; line-height: 1.6; color: var(--landing-muted); margin-top: 15px; }
 .landing-preview { min-width: 0; background: var(--landing-surface); border: 1px solid var(--folio-edge); padding: 24px 28px 20px; }
 .landing-preview-heading { display: flex; justify-content: space-between; gap: 14px; margin-bottom: 20px; font-size: 12px; color: var(--landing-muted); }
@@ -202,7 +202,7 @@
 .landing .landing-hero-description { font-size: 17px; line-height: 1.7; max-width: 320px; margin-top: 26px; }
 .landing-actions { margin-top: 30px; gap: 24px; }
 .landing .landing-access { font-size: 12px; max-width: 280px; margin-top: 19px; }
-.landing .button.primary { background: var(--folio-ink); border-color: var(--folio-ink); color: var(--folio-inverse-text); border-radius: 2px; font-weight: 500; }
+.landing .button.primary { background: var(--folio-ink); border-color: var(--folio-ink); color: var(--folio-inverse-text); border-radius: 16px; font-weight: 500; }
 .landing-art { margin: 0; min-width: 0; padding: 12px 12px 0; border: 1px solid var(--landing-rule); }
 .landing-art img { width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; display: block; }
 .landing-art figcaption { display: flex; justify-content: space-between; gap: 12px; padding: 13px 2px; font-size: 12px; color: var(--landing-muted); letter-spacing: .02em; }
@@ -272,3 +272,10 @@
 }
 
 .landing-index-size { color: var(--folio-text-muted); font-size: 12px; margin: 10px 0 0; font-variant-numeric: tabular-nums; }
+
+/* Match the workspace's soft controls while retaining landing semantics. */
+.landing .button:is(.primary,.secondary) { min-height: 48px; padding: 13px 20px; border-radius: 16px; gap: 12px; box-shadow: 0 3px 8px color-mix(in srgb, var(--folio-shadow) 12%, transparent); transition: transform 180ms cubic-bezier(.2,.8,.2,1), background-color 180ms ease, box-shadow 180ms ease; }
+.landing .button.secondary { border-color: transparent; background: var(--folio-surface); color: var(--folio-ink); }
+.landing .button.secondary:hover { background: var(--folio-surface-muted); }
+.landing .button:is(.primary,.secondary):active { transform: translateY(1px) scale(.975); box-shadow: 0 1px 3px color-mix(in srgb, var(--folio-shadow) 12%, transparent); }
+@media (prefers-reduced-motion: reduce) { .landing .button:is(.primary,.secondary) { transition: none; } .landing .button:is(.primary,.secondary):active { transform: none; } }

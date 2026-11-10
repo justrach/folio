@@ -198,3 +198,15 @@ test('TypeSafe is opt-in service MCP for each open-web model and changes harness
  }
  assert.throws(()=>buildKeywordBenchmarkRequest({...input,typesafeMcp:{url:'http://localhost/api/typesafe-mcp',authorization:'secret'}}));
 });
+
+test('provider billing failure stays failed, explains the operator action, and never echoes provider text',async()=>{
+ const seen:RequestInit[]=[];
+ const observed=await reconcileKeywordBenchmarkSession(session.id,env,{fetcher:fixture({turns:[{...turn,status:'failed',usage:null,error:{code:'usage_limit_exceeded',message:'PRIVATE_PROVIDER_TEXT'}}],items:[]},seen)});
+ assert.equal(observed.status,'failed');assert.equal(observed.answer,null);
+ assert.match(observed.error!,/organization usage or billing limit/);
+ assert.ok(!observed.error!.includes('PRIVATE_PROVIDER_TEXT'));
+ assert.equal(observed.usage.costUsd,null);
+ assert.ok(seen.every(request=>(request.method??'GET')==='GET'));
+ const other=await reconcileKeywordBenchmarkSession(session.id,env,{fetcher:fixture({turns:[{...turn,status:'failed',error:{code:'other_failure',message:'PRIVATE_PROVIDER_TEXT'}}],items:[]})});
+ assert.equal(other.error,'OpenAI reported a failed research session or turn.');
+});

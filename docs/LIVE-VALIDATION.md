@@ -137,3 +137,21 @@ The same flow was then exercised through the built Worker (the OpenNext bundle s
 The disposable account and its report were deleted afterwards; no report content, account identifier or credential is retained in the repository.
 
 Scope: this validates provider retrieval, normalization, the authenticated detail route and D1 persistence. It does not exercise the browser panel or MCP reads against live data — both keep fixture-backed coverage — and it makes no claim about backlink coverage for domains without Backlinks API access. Eight provider tasks were spent across both domains; the provider reported task costs, which remain in ignored local records.
+
+## 9 November 2026: connected customer workflow, bounded live attempts
+
+The user selected codegraff.com and approved exactly one search observation and one page evaluation for the dedicated local development account. The real application used its connected Postgres mirror, rather than a fixture API proxy. Existing additive onboarding migrations were applied to that mirror; production infrastructure was not deployed.
+
+A fresh public HTML scan saved a readiness-v1 score of **88/100**, with two of ten scored checks needing improvement. Website selection, publication settings and the matching one-question private suite reopened through authenticated routes. Browser navigation to the saved workspace, search attempt and page evaluation made no new paid starts and had no page-level horizontal overflow at the checked desktop width. The website handoff was also checked at mobile width.
+
+The authorized search created one managed provider session. Read-only session/turn retrieval confirmed a failed root turn with `usage_limit_exceeded`, identifying an OpenAI organization usage or billing limit. No completed search answer was returned; usage and cost remained unknown. The saved terminal failure is preserved. Future transitions now retain a trusted billing explanation through the storage error allowlist, without exposing arbitrary provider error text.
+
+The authorized page evaluation reserved one attempt but failed during capture: the homepage exceeded the existing 190,000-byte HTML bound. No page-evaluation agent session was created. The reservation remains in quota accounting. Future capture errors explain the limit and suggest a smaller page; the bound, full-capture semantics and retry guards were not relaxed.
+
+Neither attempt was retried. These outcomes validate access, reservation, failure persistence and saved-result navigation, **not** successful live research or a completed agent page evaluation. A usable provider allowance and a page within the capture limit remain prerequisites for a newly authorized run. Private response bodies, owner/session IDs and receipts remain in ignored local artifacts.
+
+### Larger homepage capture follow-up
+
+A subsequent read-only capture of the same homepage returned **233,174 UTF-8 bytes**. The evaluator now accepts up to 500,000 capture bytes, with a separate 600,000-byte serialized-input ceiling that measures UTF-8 rather than JavaScript character count. The real page serialized to **239,118 bytes**, and its submitted content reproduced the saved SHA-256 hash exactly. This preflight made no provider request and created no evaluation record. Larger full captures can increase model input costs. The earlier failed reservation and terminal provider failure remain unchanged; neither passing this preflight nor a configured credential establishes available provider billing or a successful live evaluation.
+
+After the user reported restored provider allowance, one fresh search was explicitly submitted through the authenticated application route. Its session receipt was saved, and reconciliation again observed `usage_limit_exceeded`; no completed answer or confirmed usage/cost was returned. The new saved failure displays the trusted billing explanation. No further search was submitted and the failed history was retained. The provider block is therefore still observed for Folio's configured project, even though the account settings were reported updated.

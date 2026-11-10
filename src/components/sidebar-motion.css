@@ -1,0 +1,91 @@
+/* Resize timing from Transitions.dev's Card resize pattern. */
+:root {
+  --resize-dur: 300ms;
+  --resize-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+.t-resize {
+  transition:
+    width  var(--resize-dur) var(--resize-ease),
+    height var(--resize-dur) var(--resize-ease);
+  will-change: width, height;
+}
+@media (prefers-reduced-motion: reduce) {
+  .t-resize { transition: none !important; }
+}
+@media (min-width: 761px) {
+  .folio-workspace[data-nav-motion="true"] .main-shell { transition: margin-left var(--resize-dur) var(--resize-ease); }
+  .app-shell.folio-workspace .sidebar .nav-link { position: relative; }
+  .app-shell.folio-workspace .sidebar .nav-link > svg { flex-shrink: 0; }
+  .app-shell.folio-workspace .sidebar .nav-link > span {
+    position: absolute; left: 39px; width: 155px; height: auto; clip-path: none;
+    white-space: nowrap; opacity: 1; transform: translateX(0);
+    transition: opacity 120ms ease, transform 180ms var(--resize-ease);
+  }
+  .app-shell.folio-workspace[data-nav-compact="true"] .sidebar .nav-link > span {
+    opacity: 0; transform: translateX(-6px); pointer-events: none;
+  }
+  .app-shell.folio-workspace .sidebar > .wordmark { height: 32px; margin-bottom: 30px; }
+  .app-shell.folio-workspace .sidebar > .wordmark > span:not(.folio-mark) { white-space: nowrap; }
+  .folio-workspace[data-nav-motion="true"] .sidebar { overflow-x: hidden; }
+  .app-shell.folio-workspace .sidebar .nav-caption { display: block; height: 18px; white-space: nowrap; transition: opacity 100ms ease; }
+  .app-shell.folio-workspace[data-nav-compact="true"] .sidebar .nav-caption { opacity: 0; pointer-events: none; }
+  .app-shell.folio-workspace .website-switcher { min-height: 80px; display: flex; align-items: center; }
+  .app-shell.folio-workspace .workspace-switch { min-height: 64px; position: relative; }
+  .app-shell.folio-workspace .workspace-switch > span:nth-child(2) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .app-shell.folio-workspace[data-nav-compact="true"] .workspace-switch { min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .folio-workspace[data-nav-motion="true"] .main-shell,
+  .app-shell.folio-workspace .sidebar .nav-link > span,
+  .app-shell.folio-workspace .sidebar .nav-caption { transition: none; }
+}
+@media (max-width: 760px) {
+  .folio-workspace .sidebar.t-resize { transition: transform 220ms var(--resize-ease); will-change: transform; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .folio-workspace .sidebar.t-resize { transition: none !important; }
+}
+.folio-toggle-art { display:block;width:24px;height:28px;overflow:hidden;flex-shrink:0; }
+.folio-toggle-art svg { display:block;width:88px;height:28px;max-width:none; }
+.folio-toggle-art[data-compact="false"] { width:88px; }
+.folio-toggle-art[data-animate="true"] { transition:width var(--resize-dur) var(--resize-ease); }
+@media(prefers-reduced-motion:reduce) { .folio-toggle-art[data-animate="true"] { transition:none; } }
+@media (min-width: 761px) {
+  /* The animated toggle occupies the original desktop brand slot.
+     It stays out of the breadcrumb and cannot shift the navigation. */
+  .app-shell.folio-workspace .sidebar > .wordmark { display: none; }
+  .app-shell.folio-workspace[data-nav-compact] .sidebar { padding-top: 92px; }
+}
+
+.sidebar-brand-toggle { display:none; }
+@media(min-width:761px) {
+ .app-shell.folio-workspace .sidebar-brand-toggle { display:block; position:absolute; top:16px; left:16px; }
+ .app-shell.folio-workspace .sidebar-brand-toggle .dashboard-nav-toggle { justify-content:flex-start; }
+}
+
+/* Owner-selected motion: steady resize, with no content fade. */
+.folio-workspace { --resize-dur:240ms; --resize-ease:linear; }
+
+@media (min-width: 761px) {
+  /* Reserve the two account lines while the rail resizes. Only their visibility
+     changes, so the email cannot wrap in from the bottom or move the avatar. */
+  .app-shell.folio-workspace .sidebar .profile {
+    position: relative; min-height: 76px; flex-shrink: 0;
+    justify-content: flex-start; padding-inline: 4px;
+  }
+  .app-shell.folio-workspace .sidebar .profile > .avatar { flex-shrink: 0; }
+  .app-shell.folio-workspace .sidebar .profile > span:nth-child(2) {
+    display: block; position: absolute; left: 44px; width: 132px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    opacity: 1; visibility: visible;
+    transition: opacity 100ms linear 100ms, visibility 0s linear;
+  }
+  .app-shell.folio-workspace .sidebar .profile small { white-space: nowrap; }
+  .app-shell.folio-workspace[data-nav-compact="true"] .sidebar .profile > span:nth-child(2) {
+    opacity: 0; visibility: hidden;
+    transition: opacity 80ms linear, visibility 0s linear 80ms;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-shell.folio-workspace .sidebar .profile > span:nth-child(2) { transition: none; }
+}

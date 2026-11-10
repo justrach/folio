@@ -8,6 +8,7 @@ const AGENT_OPINION = "Fixture-only agent opinion: the page is difficult to read
 // Every application API request is intercepted. These are layout/navigation
 // fixtures, not provider validation, and cannot start a paid evaluation.
 async function fixtureWorkspace(page: Page, runs: EvaluationRun[]) {
+  await page.addInitScript(()=>localStorage.setItem("folio-product-analytics-opt-out","1"));
   const mutations: string[] = [];
   const unexpected: string[] = [];
   const connection = {
@@ -236,7 +237,7 @@ test("private report waits for authentication and preserves its selection at sig
   await page.goto(`/evaluations?run=${run.id}&baseline=redesign-earlier`);
   await expect(page.getByRole("status").filter({ hasText: /(?:Loading|Checking) your workspace…/ }).first()).toBeVisible();
   await expect(page.getByLabel("Website to evaluate", { exact: true })).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "Try reproducible demo", exact: true })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Explore example report", exact: true })).toHaveCount(0);
   release();
   await expect(page.getByRole("heading", { name: "Sign in to open this private report", exact: true })).toBeVisible();
   const href = await page.getByRole("link", { name: "Sign in to open report", exact: true }).getAttribute("href");

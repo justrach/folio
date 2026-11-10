@@ -279,3 +279,43 @@
   .eval-history-list > button { flex-basis: 210px; }
   .eval-input-row > .button { flex-basis: 100%; }
 }
+
+/* The example is an available next step, not a small link beside a disabled run. */
+.eval-suite, .eval-launch, .eval-preflight, .eval-preflight > div, .eval-preflight > div > div { min-width: 0; }
+.eval-example-entry { display:flex; align-items:center; flex-wrap:wrap; gap:20px; margin:0 25px 24px; padding:20px; background:var(--folio-canvas); border-radius:14px; }
+.eval-example-entry > div { flex:1 1 260px; min-width:0; }
+.eval-example-entry h3 { font-size:15px; font-weight:600; line-height:1.4; }
+.eval-example-entry p { max-width:68ch; margin-top:6px; font-size:13px; line-height:1.6; color:var(--folio-text-secondary); }
+.eval-example-entry > .button { flex:0 1 auto; max-width:100%; white-space:normal; justify-content:center; }
+.evaluations-panel .eval-input-row { display:grid; grid-template-columns:minmax(0,1fr) auto; }
+.evaluations-panel .eval-input { min-width:0; border-radius:12px; }
+.evaluations-panel .eval-input > svg { flex-shrink:0; }
+.evaluations-panel .eval-input input { min-width:0; }
+.evaluations-panel .eval-input-row > .button { max-width:100%; white-space:normal; justify-content:center; }
+.eval-preflight p, .eval-advanced p, .eval-launch-note { overflow-wrap:anywhere; }
+.eval-preflight > div > span, .eval-preflight > div > button { flex-shrink:0; }
+.eval-advanced > summary { flex-wrap:wrap; }
+.eval-advanced > summary > span { min-width:0; overflow-wrap:anywhere; }
+@media (max-width:1000px) {
+ .evaluations-panel .eval-input-row { grid-template-columns:minmax(0,1fr); }
+ .evaluations-panel .eval-input-row > .button { width:100%; }
+}
+@media (max-width:760px) {
+ .eval-example-entry { margin-inline:20px; padding:16px; gap:16px; }
+ .eval-example-entry > .button { width:100%; }
+}
+.eval-example-guide { padding:20px 28px; background:var(--folio-canvas); margin-bottom:20px; }
+.eval-example-guide h3 { font-size:15px; font-weight:600; }
+.eval-example-guide p { max-width:70ch; color:var(--folio-text-secondary); font-size:13px; line-height:1.6; margin-top:6px; }
+.eval-example-guide nav { display:flex; gap:12px 24px; flex-wrap:wrap; margin-top:12px; }
+.eval-example-guide button { display:inline-flex; align-items:center; gap:8px; min-height:44px; font-size:13px; color:var(--folio-ink); text-decoration:underline; text-underline-offset:4px; }
+.eval-example-guide button:focus-visible { outline:2px solid var(--folio-focus); outline-offset:3px; }
+@media (max-width:760px) { .eval-example-guide { padding:20px; } }
+@media (min-width:761px) {
+ /* A reopened report takes priority over the surrounding workspace chrome. */
+ .app-shell.folio-workspace .page-content:has(.evaluations-panel.has-selection) { padding-top:24px; }
+ .app-shell.folio-workspace .page-content:has(.evaluations-panel.has-selection) .page-heading { margin-bottom:12px; }
+}
+@media (min-width:761px) { .evaluations-panel.has-selection .eval-history { padding-bottom:0; } }
+.eval-check > summary:has(.eval-check-indicator.fail) .eval-status { color:var(--folio-warning); background:var(--folio-warning-soft); }
+.eval-check > summary .eval-check-indicator.fail { color:var(--folio-warning); }

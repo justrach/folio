@@ -257,3 +257,9 @@ Website changes are still applied by a person. Technical repair approvals produc
 - [Session state and polling](../src/components/evaluation-workspace.tsx), [agent activity](../src/components/agent-runs-panel.tsx), and [server launch route](../src/app/api/evaluations/route.ts).
 
 Regression tests should cover direct links, back/forward navigation, owned report selection, blocked preflight states, cleared fresh-run inputs, cross-owner transitions, and the absence of paid creation/lookup/tool submissions during navigation. Routine GUI checks mock providers; this document makes no additional live-provider or deployment claim.
+
+### Page-check examples and unavailable workspaces
+
+The page-evaluation composer explains the product/price-reference and source-quote workflow, then offers **Explore example report** separately from the live run command. One preflight region describes availability, sign-in, active-session, allowance, and target requirements; an unavailable connection does not imply that a paid task started. The URL input and live action stack on narrow layouts. Advanced options retain the existing explicit references, frozen report selection, and crawl authorization.
+
+The browser-only example includes a pricing-page walkthrough and an optional **Show an incorrect price** scenario. That authored scenario returns 49 USD/month against the unchanged fictional page and fixture reference of 29 USD/month. The same deterministic verifier marks pricing accuracy failed. It remains labelled fictional, has no provider session or usage, and makes no model call or database write. It does not represent an error discovered on the customer's website. The original baseline example and existing exports retain their default behavior.

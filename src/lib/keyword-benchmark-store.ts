@@ -2,7 +2,7 @@ import "server-only";
 import type { D1Database } from "@cloudflare/workers-types";
 import type { AgentReservationGuard } from "./agent-observation-types";
 import { validateKeywordCollectionEvidence } from "./keyword-search-mode";
-import { KEYWORD_BENCHMARK_SURFACE, KEYWORD_BENCHMARK_QUERY_MAX_LENGTH, isKeywordBenchmarkId, keywordSearchMode, type KeywordBenchmarkAnswer, type KeywordBenchmarkCase,
+import { KEYWORD_PROVIDER_USAGE_LIMIT_MESSAGE, KEYWORD_BENCHMARK_SURFACE, KEYWORD_BENCHMARK_QUERY_MAX_LENGTH, isKeywordBenchmarkId, keywordSearchMode, type KeywordBenchmarkAnswer, type KeywordBenchmarkCase,
   type KeywordBenchmarkCaseInput, type KeywordBenchmarkExecution, type KeywordBenchmarkRun,
   type KeywordBenchmarkRunSummary, type KeywordBenchmarkSuite, type KeywordBenchmarkSuiteSummary,
   type KeywordBenchmarkUsage } from "./keyword-benchmark-types";
@@ -329,6 +329,7 @@ export async function markKeywordBenchmarkCreateAttempt(db: D1Database, ownerId:
   return decodeRun(row);
 }
 const safeErrors = new Set([
+  KEYWORD_PROVIDER_USAGE_LIMIT_MESSAGE,
   "Session creation could not be confirmed. Do not retry; provider cost is unknown.",
   "The provider session failed.", "The provider session was cancelled.", "The provider session requires attention.",
   "The completed provider answer could not be validated.", "The provider session could not be retrieved. Try retrieving this saved session again.",

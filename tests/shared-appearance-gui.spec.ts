@@ -8,8 +8,19 @@ test("standalone and workspace routes share the palette without writes or viewpo
     await page.goto(path);
     await expect(page.getByRole("heading").first()).toBeVisible();
     await expect(page.locator("body")).toHaveCSS("background-color", "rgb(247, 245, 238)");
+    await expect(page.locator("body")).toHaveCSS("padding-bottom", "0px");
     const width = await page.evaluate(() => ({ viewport: innerWidth, scroll: document.documentElement.scrollWidth }));
     expect(width.scroll, path).toBeLessThanOrEqual(width.viewport + 1);
+    const shell = page.locator(".app-shell.folio-workspace");
+    if (await shell.count()) {
+      await expect(page.locator("body")).toHaveCSS("padding-bottom", "0px");
+      await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
+      const edge = await shell.evaluate(el => el.getBoundingClientRect().bottom);
+      expect(edge, `${path} keeps the workspace background to the bottom`).toBeGreaterThanOrEqual((await page.evaluate(() => innerHeight))-1);
+      for (const empty of await page.locator(".empty-state").all()) {
+        await expect(empty).toHaveCSS("min-height", "0px");
+      }
+    }
   }
   await page.goto("/docs/api");
   const menu = page.getByRole("button", { name: "On this page", exact: true });

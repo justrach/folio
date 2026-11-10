@@ -7,6 +7,7 @@ import { createDemoEvaluationRun } from "../src/lib/eval-verifier";
 
 const runtimeErrors = new WeakMap<Page, string[]>();
 test.beforeEach(async ({ page }) => {
+  await page.addInitScript(()=>localStorage.setItem("folio-product-analytics-opt-out","1"));
   const errors: string[] = [];
   runtimeErrors.set(page, errors);
   page.on("pageerror", (error) => errors.push(error.message));
@@ -85,7 +86,7 @@ test("evaluation demo is explicit, verifiable, keyboard navigable, and exportabl
   await expect(page.getByRole("link", { name: /Sign in to connect your workspace/ })).toBeVisible();
   await expect(page.getByRole("link", { name: /Sign in to connect your workspace/ })).toHaveAttribute("href", "/login?next=%2Fevaluations%3Fview%3Dpage");
   await expect(page.locator(".eval-report")).toHaveCount(0);
-  await page.getByRole("button", { name: "Try reproducible demo", exact: true }).click();
+  await page.getByRole("button", { name: "Explore example report", exact: true }).click();
   const report = page.locator(".eval-report");
   await expect(report.getByRole("heading", { name: "Sable Analytics · fictional fixture", exact: true })).toBeVisible();
   await expect(page.locator(".eval-notice[role=status]")).toContainText("No agent run was started");
@@ -137,7 +138,7 @@ test("signed-in evaluation page requires configured access and never launches au
     return route.fulfill({ json: { runs: [], connection, suite: EVAL_SUITE } });
   });
   await page.goto("/evaluations?view=page");
-  await expect(page.getByText("New evaluations are currently unavailable for this workspace. You can still inspect saved evidence or try the local demo.", { exact: true })).toBeVisible();
+  await expect(page.getByText("Live checks aren’t connected for this workspace. Explore the example report above, or open a saved check to review its evidence.", { exact: true })).toBeVisible();
   await page.getByLabel("Website to evaluate", { exact: true }).fill("example.com");
   await expect(page.getByRole("button", { name: "Run website check", exact: true })).toBeDisabled();
   await page.getByRole("button", { name: "Refresh agent connection", exact: true }).click();
@@ -334,4 +335,34 @@ test("semantic review spends only on explicit action and reopens saved judgments
  await screenshot(page,testInfo,'semantic-review');
  await page.reload();await expect(region).toContainText('Review saved');expect(posts).toBe(1);
  await expect(region.getByRole('button',{name:'Run paid semantic review'})).toHaveCount(0);
+});
+
+test('unavailable live checks offer a useful example journey without clipping or provider writes',async({page},info)=>{
+ await mockAccount(page);
+ const writes:string[]=[];
+ await page.route('**/api/evaluations',route=>{if(route.request().method()!=='GET')writes.push(route.request().method());return route.fulfill({json:{runs:[],connection,suite:EVAL_SUITE}});});
+ await page.goto('/evaluations?view=page&target=example.com');
+ await expect(page.getByRole('region',{name:'Evaluation preflight'})).toContainText('Live checks aren’t connected');
+ await expect(page.locator('.eval-connection-note')).toHaveCount(0);
+ for(const theme of ['light','dark']){
+  await page.evaluate(theme=>document.documentElement.dataset.folioTheme=theme,theme);
+  for(const width of info.project.name==='mobile'?[320,393]:[900,1440]){
+   await page.setViewportSize({width,height:1000});await noOverflow(page);
+   const inside=await page.locator('.eval-input-row').evaluate(row=>{const r=row.getBoundingClientRect();return [...row.children].every(child=>{const c=child.getBoundingClientRect();return c.left>=r.left-1&&c.right<=r.right+1});});expect(inside).toBe(true);
+  }
+ }
+ await page.getByRole('button',{name:'Explore example report',exact:true}).click();
+ await expect(page.getByRole('complementary',{name:'Example report walkthrough'})).toBeVisible();
+ await page.getByRole('button',{name:'Show an incorrect price',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'Sable Analytics · incorrect-price example',exact:true})).toBeVisible();
+ const price=page.locator('.eval-check').filter({hasText:'Pricing fact accuracy'});
+ await price.locator('summary').click();
+ await expect(price.locator('dd')).toHaveText(['29 USD/month','49 USD/month']);
+ await page.getByRole('button',{name:'Read the source',exact:true}).click();
+ await expect(page.getByRole('tab',{name:/^Source evidence/})).toHaveAttribute('aria-selected','true');
+ await page.getByText('Read captured text',{exact:true}).click();
+ await expect(page.locator('.eval-evidence-card pre')).toContainText('The Starter plan costs 29 USD per month.');
+ await page.getByRole('button',{name:'Compare the answers',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'Verification checks',exact:true})).toBeVisible();
+ expect(writes).toEqual([]);
 });

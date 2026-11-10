@@ -106,7 +106,7 @@ function SourcesCard({ state, answers, targetDomain }: Pick<OverviewVisualCardsP
     {state !== "ready" || !ranked.length ? <Pending state={state} empty="No citations recorded in the completed answers." /> : <>
       <p className="ovc-sub">{targetRank >= 0 ? `Your site ranks #${targetRank + 1} among cited domains.` : "Your site is not among the top cited domains."}</p>
       <ol className="ovc-bars ovc-ranked">{ranked.map(item => <li key={item.domain} data-target={item.isTarget || undefined}>
-        <span title={item.domain}>{item.isTarget && <em className="ovc-you">Your site</em>}{item.domain}</span>
+        <span className="ovc-source-label" title={item.domain}>{item.isTarget && <em className="ovc-you">Your site</em>}<span>{item.domain}</span></span>
         <span className="ovc-bar" aria-hidden="true"><i data-tone={item.isTarget ? "target" : "source"} style={{ width: `${item.share * 100}%` }} /></span>
         <b>{pct(item.answers, answers.length)}%</b>
       </li>)}</ol>

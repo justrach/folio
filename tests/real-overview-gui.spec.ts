@@ -296,41 +296,50 @@ test("new workspace starts with a free setup action and keeps the demo separate"
   expect(state.writes).toEqual([]);
 });
 
-test("website without questions gets a scoped next action instead of empty charts", async ({page})=>{
+test("website without questions still exposes its saved audits and a clear question setup", async ({page})=>{
   const state=await fixture(page);state.runs=[];
   await page.route(`**/api/benchmarks/${suite.id}`,route=>route.fulfill({json:{suite:{...suite,cases:[]}}}));
   await page.goto('/overview?view=workspace&website=site-alpha');
-  const guide=page.getByRole('region',{name:'Your website brief'});
-  await expect(guide).toContainText('What we checked');
-  await expect(guide.getByRole('link',{name:'Choose my questions'})).toHaveAttribute('href','/benchmarks?website=site-alpha');
+  const summary=page.getByRole('region',{name:'Website check summary'});
+  await expect(summary).toContainText('What we checked');
+  await expect(summary).toContainText('What we found');
+  await expect(summary).toContainText('What to do next');
+  await expect(summary.getByRole('link',{name:'See all saved results'})).toHaveAttribute('href','#saved-results');
+  await summary.getByRole('link',{name:'See all saved results'}).click();
+  await expect(page).toHaveURL(/#saved-results$/);
+  await expect(page.getByRole('region',{name:'All saved results'})).toBeInViewport();
+  await expect(page.getByRole('region',{name:'Separate website evidence'})).toContainText('1 saved audit');
   await expect(page.getByRole('heading',{name:'Your answers will appear here.'})).toBeVisible();
   await expect(page.getByRole('region',{name:'Overview charts'})).toHaveCount(0);
-  await guide.getByRole('link',{name:'Choose my questions'}).click();
+  await page.getByRole('link',{name:'Choose my questions',exact:true}).click();
   await expect(page).toHaveURL(/\/benchmarks\?website=site-alpha$/);
   expect(state.writes).toEqual([]);
 });
 
-test("saved questions require explicit run confirmation and completed answers reopen directly", async({page})=>{
+test("saved results stay the primary next step across completed, active and incomplete histories", async({page})=>{
   const state=await fixture(page);state.runs=[];
   await page.goto('/overview?view=workspace&website=site-alpha');
-  const guide=page.getByRole('region',{name:'Your website brief'});
-  await expect(guide.getByRole('link',{name:'Review and run questions'})).toHaveAttribute('href','/benchmarks?website=site-alpha');
-  await expect(guide).toContainText('before collecting an answer');
+  const summary=page.getByRole('region',{name:'Website check summary'});
+  const action=summary.getByRole('link',{name:'See all saved results'});
+  await expect(action).toHaveAttribute('href','#saved-results');
+  await expect(summary).toContainText('Not measured');
   state.runs=[run('first-answer',0,true)];
   await page.getByRole('button',{name:'Refresh saved overview'}).click();
-  await expect(guide.getByRole('link',{name:'Review latest answer'})).toHaveAttribute('href',/run=first-answer$/);
-  await expect(guide).toContainText('Your answers are ready to review.');
-  await expect(guide).toContainText('1 of 1 identified answers named your site.');
+  await expect(summary).toContainText('1 of 1 identified answers');
+  await expect(action).toHaveAttribute('href','#saved-results');
   state.runs.unshift({...run('pending-answer',0,true,'2026-09-14T08:00:00.000Z'),status:'running',answer:null});
   await page.getByRole('button',{name:'Refresh saved overview'}).click();
-  await expect(guide.getByRole('link',{name:'View search progress'})).toHaveAttribute('href',/run=pending-answer$/);
+  await expect(summary).toContainText('1 search is still in progress');
+  await expect(action).toBeVisible();
   state.runs[0].status='requires_action';
   await page.getByRole('button',{name:'Refresh saved overview'}).click();
-  await expect(guide.getByRole('link',{name:'Review search attempt'})).toHaveAttribute('href',/run=pending-answer$/);
+  await expect(summary).toContainText('1 latest attempt needs review');
+  await expect(summary).toContainText('Earlier completed answers remain available');
+  await expect(action).toBeVisible();
   state.failRuns=true;
   await page.getByRole('button',{name:'Refresh saved overview'}).click();
-  await expect(guide.getByRole('button',{name:'Retry saved setup'})).toBeVisible();
-  await expect(guide.getByRole('link',{name:'Review and run questions'})).toHaveCount(0);
+  await expect(summary.getByRole('button',{name:'Retry saved results'})).toBeVisible();
+  await expect(action).toHaveCount(0);
   expect(state.writes).toEqual([]);
 });
 

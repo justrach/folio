@@ -91,7 +91,9 @@ export function LabelInput({
     setShow(false);
   }, [field]);
 
-  const up = focus || value.length > 0;
+  // A separate hint needs its own line even while the empty field is blurred.
+  // Otherwise the resting label and native placeholder occupy the same space.
+  const up = Boolean(placeholder) || focus || value.length > 0;
 
   /* ── where the label sits, and the gap it leaves ─────────
      Never inside the corner's curve: the notch has to open on

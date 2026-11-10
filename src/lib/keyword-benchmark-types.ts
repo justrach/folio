@@ -1,6 +1,7 @@
 /** A baseline is a saved model observation, never an answer key or ground truth. */
 export const KEYWORD_BENCHMARK_SURFACE = "openai-managed-agents" as const;
 export const KEYWORD_BENCHMARK_QUERY_MAX_LENGTH = 2000;
+export const KEYWORD_PROVIDER_USAGE_LIMIT_MESSAGE = "OpenAI reported an organization usage or billing limit. No completed search answer was returned. Ask your workspace operator to review provider billing and usage limits before starting another observation. Usage and cost remain unconfirmed unless reported.";
 export type KeywordSearchMode = "reviewed-domains" | "open-web";
 /** Missing mode belongs to the original, bounded documentation research contract. */
 export function keywordSearchMode(mode?: KeywordSearchMode): KeywordSearchMode {

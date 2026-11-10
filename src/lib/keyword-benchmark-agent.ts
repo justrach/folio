@@ -1,6 +1,7 @@
 import "server-only";
 import type { AgentsEnvironment } from "./agents";
-import { keywordSearchMode, type KeywordBenchmarkAnswer, type KeywordBenchmarkStatus, type KeywordBenchmarkUsage, type KeywordSearchMode } from "./keyword-benchmark-types";
+import { KEYWORD_PROVIDER_USAGE_LIMIT_MESSAGE, keywordSearchMode, type KeywordBenchmarkAnswer, type KeywordBenchmarkStatus, type KeywordBenchmarkUsage, type KeywordSearchMode } from "./keyword-benchmark-types";
+export { KEYWORD_PROVIDER_USAGE_LIMIT_MESSAGE } from "./keyword-benchmark-types";
 import { keywordPublicUrl, validateKeywordCollectionEvidence } from "./keyword-search-mode";
 
 /** Separate from Folio's frozen-evidence evaluator. Official contract checked 2026-09-13. */
@@ -274,7 +275,13 @@ export async function reconcileKeywordBenchmarkSession(sessionId: string, env: A
   const observation: KeywordAgentObservation = { ...result, status: "running", answer: null, error: null, observedToolCalls: toolItems.length,
     providerMetadata: { ...result.providerMetadata, turnId: root ? safeId(root.id) : null },
     usage: record(root?.usage) ? usage(root.usage) : result.usage };
-  if (result.status === "failed" || root?.status === "failed") return { ...observation, status: "failed", error: "OpenAI reported a failed research session or turn." };
+  if (result.status === "failed" || root?.status === "failed") {
+    // Whitelist a provider code, never relay its free-form error body or input.
+    const sessionValue = sessionResponse.value as Record<string, unknown>;
+    const providerError = record(root?.error) ? root.error : record(sessionValue.error) ? sessionValue.error : null;
+    return { ...observation, status: "failed", error: providerError?.code === "usage_limit_exceeded"
+      ? KEYWORD_PROVIDER_USAGE_LIMIT_MESSAGE : "OpenAI reported a failed research session or turn." };
+  }
   if (root?.status === "cancelled") return { ...observation, status: "cancelled" };
   if (result.status === "requires_action" || root?.status === "waiting") return { ...observation, status: "requires_action", error: "OpenAI requires an external action. No automatic tool submission or new task was made." };
   if (result.status === "idle" && turns.length === 0 && items.length === 0 && record(sessionResponse.value)

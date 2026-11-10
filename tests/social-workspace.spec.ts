@@ -9,3 +9,20 @@ test('social workspace stays usable at 320px in dark mode',async({page})=>{await
 test('pre-generated Ampersand starting points insert a reviewed caption without network inference',async({page})=>{const writes=await fixture(page);await page.getByRole('button',{name:'Open agent brainstorm'}).click();await page.getByRole('button',{name:'Campaign reporting',exact:true}).click();const thread=page.getByRole('region',{name:'Simulated agent discussion'});await expect(thread).toContainText('Weekly reporting');await thread.getByRole('button',{name:'Use this draft'}).click();await expect(page.getByRole('textbox',{name:'Post caption',exact:true})).toHaveValue(/Weekly reporting/);expect(writes).toEqual([]);});
 
 test('public content demo renders while the account service is still pending',async({page})=>{let release!:()=>void;const hold=new Promise<void>(resolve=>release=resolve);await page.route('**/api/auth/get-session',async route=>{await hold;await route.fulfill({json:null}).catch(()=>{});});try{await page.goto('/overview?view=demo');await expect(page.getByRole('heading',{name:'What should we post next?',exact:true})).toBeVisible();await page.getByRole('button',{name:'Create this post',exact:true}).click();await expect(page.getByRole('textbox',{name:'Post caption',exact:true})).toBeVisible();}finally{release();}});
+
+test('sidebar resize keeps the reading content visible with linear motion',async({page},info)=>{
+ test.skip(info.project.name==='mobile','Desktop sidebar changes the reading width.');
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ await fixture(page);
+ const grid=page.locator('.social-main-grid');
+ const initial=await grid.boundingBox();
+ const toggle=page.getByRole('button',{name:'Compact navigation',exact:true});
+ await toggle.click();
+ await page.waitForTimeout(100);
+ expect((await grid.boundingBox())!.width).toBeLessThan(initial!.width);
+ await expect(page.locator('.main-shell')).toHaveCSS('transition-timing-function','linear');
+ await expect(grid).toHaveCSS('opacity','1');
+ await expect(grid).not.toHaveAttribute('style',/width:\s*\d/);
+ await expect(page.getByRole('button',{name:'Create this post',exact:true})).toBeEnabled();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+});

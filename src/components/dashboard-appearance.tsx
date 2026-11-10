@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Moon, Sun, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
+import "./sidebar-motion.css";
+import {FolioToggleIcon} from "./ui/folio-toggle-icon";
 import { setThemePreference, useFolioAppearance } from "./folio-appearance";
 
 export function DashboardAppearance() {
@@ -15,6 +17,7 @@ export function DashboardAppearance() {
 
 export function DashboardNavigation() {
   const [compact, setCompact] = useState(true);
+  const [animated, setAnimated] = useState(false);
   const button = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     let next = true;
@@ -24,8 +27,15 @@ export function DashboardNavigation() {
   }, []);
   return <button ref={button} className="dashboard-appearance dashboard-nav-toggle" type="button" aria-label="Compact navigation" aria-pressed={compact} title={compact ? "Expand navigation" : "Compact navigation"} onClick={() => {
     const next = !compact;
+    setAnimated(true);
     setCompact(next);
-    button.current?.closest<HTMLElement>(".app-shell")?.setAttribute("data-nav-compact", String(next));
+    const shell = button.current?.closest<HTMLElement>(".app-shell");
+    if (shell) {
+      // Enable motion only for intentional toggles, never preference hydration.
+      shell.dataset.navMotion = "true";
+      shell.querySelector(".sidebar")?.classList.add("t-resize");
+      shell.setAttribute("data-nav-compact", String(next));
+    }
     try { localStorage.setItem("folio-dashboard-navigation", next ? "compact" : "expanded"); } catch {}
-  }}>{compact ? <PanelLeftOpen size={17}/> : <PanelLeftClose size={17}/>}</button>;
+  }}><FolioToggleIcon compact={compact} animated={animated}/></button>;
 }

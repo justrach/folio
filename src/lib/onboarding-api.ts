@@ -1,6 +1,6 @@
 import "server-only";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
-import { getAuth } from "./auth";
+import { getSession } from "./auth";
 import { getDb } from "./db";
 import { ScanError } from "./scanner";
 import { PENDING_CHECK_COOKIE, PENDING_CHECK_MAX_AGE_SECONDS, sha256Hex } from "./onboarding-store";
@@ -8,10 +8,9 @@ import { PENDING_CHECK_COOKIE, PENDING_CHECK_MAX_AGE_SECONDS, sha256Hex } from "
 export const PRIVATE_ONBOARDING_HEADERS = { "Cache-Control": "private, no-store", Vary: "Cookie" };
 
 export async function onboardingContext(request: Request, { requireSession = true } = {}) {
-  const auth = await getAuth();
-  const session = await auth.api.getSession({ headers: request.headers });
+  const session = await getSession(request.headers);
   if (requireSession && !session) throw new ScanError("Sign in to continue setting up Folio.", 401);
-  return { db: await getDb(), userId: session?.user.id ?? null, auth };
+  return { db: await getDb(), userId: session?.user.id ?? null };
 }
 
 /** A salted hash of the caller's address, used only to rate limit anonymous page checks. */

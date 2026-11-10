@@ -50,7 +50,11 @@ export async function captureEvaluationWebsite(target: string, env: AgentRunEnvi
   const allowedHosts = configuredScanHosts(env.SCAN_ALLOWED_HOSTS);
   const url = normalizeScanUrl(target);
   assertAllowedUrl(url, allowedHosts);
-  const page = await boundedFetch(url, { allowedHosts, maxBytes: 190_000 });
+  const page = await boundedFetch(url, { allowedHosts, maxBytes: 500_000 }).catch(error => {
+    if (error instanceof ScanError && error.status === 413)
+      throw new ScanError("This page exceeds the 500 KB evaluation capture size limit. Choose a smaller page on the same website. No agent session was created by this capture.", 413);
+    throw error;
+  });
   const checks = evaluateHtml(page.body, page.url, page.headers);
   return {
     id: "page-1", url: page.url, capturedAt: new Date().toISOString(),

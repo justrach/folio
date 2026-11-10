@@ -83,23 +83,33 @@ function SwapText({ text, reduced }: { text: string; reduced: boolean }) {
 export function ActionButton({ label, successLabel = "Saved", pendingLabel = "Saving", onAction, resetAfterMs = 2400, onActionError, className, disabled, ...props }: ActionButtonProps) {
   const [state, setState] = useState<"idle" | "pending" | "success">("idle");
   const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const actionPending = useRef(false);
+  const mounted = useRef(true);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const reduceMotion = useReducedMotion() ?? false;
   const text = state === "pending" ? pendingLabel : state === "success" ? successLabel : label;
 
-  useEffect(() => () => { if (resetTimer.current) clearTimeout(resetTimer.current); }, []);
+  useEffect(() => {
+    mounted.current = true;
+    return () => { mounted.current = false; if (resetTimer.current) clearTimeout(resetTimer.current); };
+  }, []);
 
   async function run() {
-    if (state === "pending") return;
+    // React state updates commit later; the ref closes same-turn repeat clicks.
+    if (disabled || actionPending.current) return;
+    actionPending.current = true;
     if (resetTimer.current) clearTimeout(resetTimer.current);
     setState("pending");
     try {
       await onAction();
+      if (!mounted.current) return;
       setState("success");
       if (resetAfterMs > 0) resetTimer.current = setTimeout(() => setState("idle"), resetAfterMs);
     } catch (error) {
-      setState("idle");
+      if (mounted.current) setState("idle");
       onActionError?.(error);
+    } finally {
+      actionPending.current = false;
     }
   }
 

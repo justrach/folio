@@ -180,7 +180,7 @@ export const DEMO_AGENT_OUTPUT: WebsiteAgentOutput = {
   publicationReady: false,
 };
 
-export async function createDemoEvaluationRun(): Promise<EvaluationRun> {
+export async function createDemoEvaluationRun(scenario: "baseline" | "pricing-mismatch" = "baseline"): Promise<EvaluationRun> {
   const startedAt = new Date().toISOString();
   const targetUrl = "https://sable.example/";
   const capture: EvidenceCapture = {
@@ -191,10 +191,14 @@ export async function createDemoEvaluationRun(): Promise<EvaluationRun> {
   };
   const expectedFacts = structuredClone(DEMO_EXPECTED_FACTS);
   const agentOutput = structuredClone(DEMO_AGENT_OUTPUT);
+  if (scenario === "pricing-mismatch") {
+    agentOutput.facts.pricing = { amount: 49, currency: "USD", interval: "month" };
+    agentOutput.summary = "Authored incorrect-price example: the canned answer returns 49 USD per month, while the frozen page and fixture reference state 29 USD. This is not a model response.";
+  }
   const result = await verifyEvaluationResult({ captures: [capture], expectedFacts }, agentOutput);
   const finishedAt = new Date().toISOString();
   return {
-    id: `demo-${crypto.randomUUID()}`, targetUrl, siteName: "Sable Analytics · fictional fixture",
+    id: `demo-${crypto.randomUUID()}`, targetUrl, siteName: scenario === "pricing-mismatch" ? "Sable Analytics · incorrect-price example" : "Sable Analytics · fictional fixture",
     suiteVersion: WEBSITE_EVAL_VERSION, mode: "demo", status: "completed",
     createdAt: startedAt, updatedAt: finishedAt, sessionId: null, model: null,
     captures: [capture], expectedFacts,

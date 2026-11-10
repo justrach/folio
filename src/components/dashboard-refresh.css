@@ -168,6 +168,8 @@
 .folio-workspace .lbi-label { display: block; font-size: 13px; }
 .folio-workspace .lbi[data-up="true"] .lbi-label { transform: translateY(-50%) translateY(var(--lbi-lift, -22px)) scale(.78); }
 .folio-workspace .lbi-label span { display: inline-block; }
+.folio-workspace .dialog .lbi-label,
+.folio-workspace .dialog .lbi-field { font-size: 16px; }
 .folio-workspace .public-benchmark-workbench { grid-template-columns: minmax(250px, .7fr) minmax(0, 1.5fr); gap: 0; margin-top: 0; border: 1px solid var(--folio-edge); border-radius: 16px; background: var(--folio-surface); }
 .folio-workspace .public-benchmark-task-browser { background: transparent; border-right: 1px solid var(--folio-edge); }
 .folio-workspace .public-benchmark-list-heading { padding: 16px 16px 8px; margin: 0; }

@@ -18,6 +18,7 @@ async function fixture(page: Page, holdAlice = false) {
   const summary = (owner: string) => ({ state: { siteId: `${owner}-site`, ...state.saved[owner], competitorsSavedAt: null, baselineRequestedAt: null }, site: { id: `${owner}-site`, url: `https://${owner}.example.test/`, name: "Fictional business" }, check: null, suite: state.saved[owner].suiteId ? { id: state.saved[owner].suiteId, cases: state.questions.map((query, i) => ({ id: `question-${i}`, query })) } : null, competitors: [] });
   await page.route("**/api/**", async route => {
     const request = route.request(), path = new URL(request.url()).pathname, owner = state.owner;
+    if (path === "/api/analytics/config" && request.method() === "GET") return route.fulfill({ json: { enabled: false } });
     if (path === "/api/auth/get-session") return route.fulfill({ json: owner ? { user: { id: owner, name: "Fixture account", email: `${owner}@example.test`, emailVerified: true, createdAt: at, updatedAt: at }, session: { id: `${owner}-session`, userId: owner, expiresAt: "2099-01-01T00:00:00Z", createdAt: at, updatedAt: at } } : null });
     if (path === "/api/search-console" || path === "/api/github") return route.fulfill({ json: { configured: false, connected: false } });
     if (path === "/api/onboarding" && owner) {

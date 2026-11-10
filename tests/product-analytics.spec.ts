@@ -46,3 +46,16 @@ test('repair bundle request is tracked as sample intent without provider writes'
  expect(state.events.find(e=>e.event==='repair_download_requested')?.properties).toMatchObject({kind:'repair_bundle',surface:'repair_demo'});
  expect(state.otherWrites).toEqual([]);
 });
+
+test('same-turn repeated action activation saves once, and changing channel invalidates the saved claim',async({page})=>{
+ const state=await routes(page);await page.goto('/overview?view=demo');
+ await page.getByRole('button',{name:'Create this post',exact:true}).click();
+ const save=page.getByRole('button',{name:'Save demo draft',exact:true});
+ await save.evaluate(button=>{(button as HTMLButtonElement).click();(button as HTMLButtonElement).click();});
+ await expect.poll(()=>state.events.filter(event=>event.event==='draft_saved').length).toBe(1);
+ const studio=page.getByRole('region',{name:'Post studio',exact:true});
+ await expect(studio.locator('.social-local-status')).toContainText('Draft saved for this visit');
+ await studio.getByRole('group',{name:'Draft channel',exact:true}).getByRole('button',{name:'X',exact:true}).click();
+ await expect(studio.locator('.social-local-status')).not.toContainText('Draft saved for this visit');
+ expect(state.otherWrites).toEqual([]);
+});

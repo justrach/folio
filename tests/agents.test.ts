@@ -120,11 +120,11 @@ test("managed create reserves its attempt before one POST containing the initial
   assert.equal(run.captures[0].content, DEMO_WEBSITE_HTML);
 });
 
-test("website captures retain a complete 182KB page, enforce 190KB bytes and preflight escaped input before a create attempt", async t => {
+test("website captures retain a complete 233KB page, enforce 500KB bytes and preflight escaped input before a create attempt", async t => {
   const prefix = "<!doctype html><html><head><title>Fixture</title></head><body><main>";
   const suffix = "</main></body></html>";
   const pageOfSize = (bytes: number, fill = "x") => prefix + fill.repeat(bytes - prefix.length - suffix.length) + suffix;
-  let html = pageOfSize(182_000), posts = 0;
+  let html = pageOfSize(233_000), posts = 0;
   t.mock.method(globalThis, "fetch", async (input: RequestInfo | URL, init?: RequestInit) => {
     if (String(input) === "https://example.com/") return new Response(html, { headers: { "Content-Type": "text/html" } });
     posts++;
@@ -133,21 +133,22 @@ test("website captures retain a complete 182KB page, enforce 190KB bytes and pre
     return Response.json(session);
   });
   const capture = await captureEvaluationWebsite("https://example.com/", env);
-  assert.equal(capture.content, html); assert.equal(new TextEncoder().encode(capture.content).byteLength, 182_000);
+  assert.equal(capture.content, html); assert.equal(new TextEncoder().encode(capture.content).byteLength, 233_000);
   const largeRun = await startEvaluationRun(memoryDb().db, "approved-user", { mode: "managed", domain: "example.com" }, env);
   assert.equal(largeRun.status, "running"); assert.equal(largeRun.captures[0].content, html); assert.equal(posts, 1);
-  html = pageOfSize(190_000);
+  html = pageOfSize(500_000);
   assert.equal((await captureEvaluationWebsite("https://example.com/", env)).content, html, "The exact capture boundary is accepted.");
-  html = pageOfSize(190_001);
+  html = pageOfSize(500_001);
   await assert.rejects(captureEvaluationWebsite("https://example.com/", env), /size limit/);
   // JSON quotes double during serialization: a page can fit its byte bound but
-  // still exceed the unchanged 200K-character provider input ceiling.
-  html = pageOfSize(120_000, '"');
+  // still exceed the bounded 600KB provider input ceiling.
+  html = pageOfSize(320_000, '"');
   const tooLarge = await startEvaluationRun(memoryDb().db, "approved-user", { mode: "managed", domain: "example.com" }, env);
   assert.equal(tooLarge.status, "failed"); assert.equal(tooLarge.sessionId, null); assert.equal(tooLarge.captures[0].content, html);
   assert.equal(tooLarge.events.some(value => value.id === "session-create-attempt"), false);
-  assert.match(tooLarge.error!, /200,000 character/); assert.equal(posts, 1);
-  assert.throws(() => serializeWebsiteEvaluationInput({ ...evaluationInput, evidence: [{ ...evaluationInput.evidence[0], content: '"'.repeat(110_000) }] }), /200,000 character/);
+  assert.match(tooLarge.error!, /600,000 byte/); assert.equal(posts, 1);
+  assert.throws(() => serializeWebsiteEvaluationInput({ ...evaluationInput, evidence: [{ ...evaluationInput.evidence[0], content: '"'.repeat(310_000) }] }), /600,000 byte/);
+  assert.throws(() => serializeWebsiteEvaluationInput({ ...evaluationInput, evidence: [{ ...evaluationInput.evidence[0], content: '界'.repeat(210_000) }] }), /600,000 byte/, "The serialized limit measures UTF-8 bytes, not JavaScript characters.");
 });
 
 test("ambiguous create remains unconfirmed and reconciliation never retries it", async (t) => {

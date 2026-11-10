@@ -35,8 +35,8 @@ export function Landing() {
           <h1>See which competitors <span>AI recommends.</span></h1>
           <p className="landing-hero-description">Your customers ask. AI answers. Find out where you stand.</p>
           <div className="landing-actions">
-            <UiButton asChild className="button primary"><Link href="/start">Evaluate your website <ArrowUpRight size={16} aria-hidden="true" /></Link></UiButton>
-            <Link href="/leaderboard">See real results</Link>
+            <UiButton asChild className="button primary squishy-control"><Link href="/start">Evaluate your website <ArrowUpRight size={16} aria-hidden="true" /></Link></UiButton>
+            <UiButton asChild variant="secondary" className="button secondary squishy-control"><Link href="/leaderboard">See real results <ArrowUpRight size={16} aria-hidden="true" /></Link></UiButton>
           </div>
           <p className="landing-access">You choose when to start a run.</p>
           <LandingIndexSize />
@@ -91,7 +91,7 @@ export function Landing() {
 
       <section className="landing-next">
         <div><h2>See your website in a new light.</h2><p>Start with one question.</p></div>
-        <UiButton asChild className="button primary"><Link href="/start">Evaluate your website <ArrowUpRight size={16} aria-hidden="true" /></Link></UiButton>
+        <UiButton asChild className="button primary squishy-control"><Link href="/start">Evaluate your website <ArrowUpRight size={16} aria-hidden="true" /></Link></UiButton>
       </section>
     </main>
 

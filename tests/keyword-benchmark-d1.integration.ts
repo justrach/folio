@@ -11,6 +11,7 @@ import { createKeywordBenchmarkSuite, getKeywordBenchmarkSuite, reserveKeywordBe
   listKeywordBenchmarkRuns, listWebsiteKeywordRunsPage, getKeywordBenchmarkUsage, updateKeywordBenchmarkCase, KeywordBenchmarkStoreError } from "../src/lib/keyword-benchmark-store";
 import { cancelKeywordBenchmark, keywordBenchmarkOverview, reconcileKeywordBenchmark, seedKeywordBenchmark, startKeywordBenchmark } from "../src/lib/keyword-benchmark-service";
 import { compareKeywordBenchmarkRuns } from "../src/lib/keyword-benchmark-types";
+import { KEYWORD_PROVIDER_USAGE_LIMIT_MESSAGE } from "../src/lib/keyword-benchmark-agent";
 import { matchesCategoryReceipt, recoverCategoryReceipt } from "../scripts/category-batch-recovery";
 
 /** Actual workerd D1, synthetic identities, isolated persistence; no local env or provider calls. */
@@ -34,6 +35,31 @@ async function setup(db: D1Database) {
 }
 const config = { model: "fixture-model", harnessVersion: "fixture-v1", environmentType: "openai_hosted", environmentFingerprint: "fixture-digest" };
 const input = { query: "Synthetic best developer tools question", targetUrl: "https://example.test/", language: "en", locale: "en-US", rubricVersion: "keyword-observation-v1", referenceFacts: [{ id: "private", statement: "Private independent fixture reference." }] };
+
+test("D1 preserves a safe provider billing failure without retrying or losing quota accounting", { timeout: 90_000 }, async () => {
+  const directory = await mkdtemp(join(tmpdir(), "folio-keyword-billing-d1-"));
+  const current = runtime(directory);
+  try {
+    const db = await current.getD1Database("DB"); await setup(db);
+    const suite = await createKeywordBenchmarkSuite(db, "alice", { name: "Billing failure", cases: [input] });
+    let run = await reserveKeywordBenchmarkRun(db, "alice", { ...config, caseId: suite.cases[0].id, kind: "baseline", allowedDomains: ["codegraff.com"] }, { maxRunsPerDay: 6, maxActiveRuns: 1 });
+    run = await markKeywordBenchmarkCreateAttempt(db, "alice", run.id, run.revision);
+    run = await updateKeywordBenchmarkRun(db, "alice", run.id, run.revision, { status: "running", sessionId: "session_billing_fixture" });
+    const options = { allowedDomains: ["codegraff.com"], fetcher: (async (url, init) => {
+      assert.equal(init?.method, "GET", "Reconciliation cannot create new work.");
+      if (String(url).includes("/turns?")) return Response.json({ data: [{ id: "turn_billing_fixture", session_id: "session_billing_fixture", status: "failed", subagent_id: null, error: { code: "usage_limit_exceeded", message: "PRIVATE_PROVIDER_TEXT" } }], has_more: false });
+      if (String(url).includes("/items?")) return Response.json({ data: [], has_more: false });
+      return Response.json({ id: "session_billing_fixture", object: "agent.session", status: "idle", required_actions: [], usage: null, environment: { type: "openai_hosted", network: { access: "restricted", allowed_domains: ["codegraff.com"] } } });
+    }) as typeof fetch };
+    const saved = await reconcileKeywordBenchmark(db, "alice", run.id, { OPENAI_API_KEY: "fixture-only", OPENAI_ALLOWED_USER_IDS: "alice" }, options);
+    assert.equal(saved.status, "failed"); assert.equal(saved.error, KEYWORD_PROVIDER_USAGE_LIMIT_MESSAGE);
+    assert.equal(saved.answer, null); assert.equal(saved.usage.costUsd, null);
+    assert.equal((await getKeywordBenchmarkRun(db, "alice", run.id))?.error, KEYWORD_PROVIDER_USAGE_LIMIT_MESSAGE);
+    assert.equal(await getKeywordBenchmarkRun(db, "bob", run.id), null);
+    assert.equal((await getKeywordBenchmarkUsage(db, "alice")).attemptsLast24Hours, 1);
+    assert.ok(!JSON.stringify(saved).includes("PRIVATE_PROVIDER_TEXT"));
+  } finally { try { await current.dispose(); } finally { await rm(directory, { recursive: true, force: true }); } }
+});
 
 test("D1 retains safe creation HTTP diagnostics after restart without retrying an unknown submission", { timeout: 90_000 }, async () => {
   const directory = await mkdtemp(join(tmpdir(), "folio-keyword-diagnostics-d1-"));

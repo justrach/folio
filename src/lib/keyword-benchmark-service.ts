@@ -6,7 +6,7 @@ import type { D1Database } from "@cloudflare/workers-types";
 import { getAgentsConnectionStatus, isAgentDailyLimitExempt, type AgentsEnvironment } from "./agents";
 import { KEYWORD_BENCHMARK_ALLOWED_DOMAINS, ALL_KEYWORD_BENCHMARK_TEMPLATES } from "./keyword-benchmark-catalog";
 import { buildKeywordBenchmarkRequest, cancelKeywordBenchmarkSession, createKeywordBenchmarkSession,
-  KEYWORD_AGENT_DEADLINE_MS, KEYWORD_OPEN_WEB_MODEL, keywordAgentHarnessVersion, KeywordAgentError, keywordAllowedDomains,
+  KEYWORD_PROVIDER_USAGE_LIMIT_MESSAGE, KEYWORD_AGENT_DEADLINE_MS, KEYWORD_OPEN_WEB_MODEL, keywordAgentHarnessVersion, KeywordAgentError, keywordAllowedDomains,
   keywordEnvironmentFingerprint, reconcileKeywordBenchmarkSession, type KeywordAgentOptions } from "./keyword-benchmark-agent";
 import { acknowledgeKeywordBenchmarkCancellation, createKeywordBenchmarkSuite, getKeywordBenchmarkRun,
   getKeywordBenchmarkSuite, getKeywordBenchmarkUsage, KeywordBenchmarkStoreError, listKeywordBenchmarkRuns,
@@ -190,7 +190,7 @@ export async function reconcileKeywordBenchmark(db: D1Database, ownerId: string,
       providerMetadata: observation.providerMetadata,
       error: observation.initialInputUnconfirmed ? observation.error
         : pendingCancel ? "Cancellation was requested. The final provider outcome is not yet confirmed."
-        : observation.status === "failed" ? "The completed provider answer could not be validated."
+        : observation.status === "failed" ? (observation.error === KEYWORD_PROVIDER_USAGE_LIMIT_MESSAGE ? KEYWORD_PROVIDER_USAGE_LIMIT_MESSAGE : "The completed provider answer could not be validated.")
           : observation.initialInputUnconfirmed ? observation.error
             : observation.status === "requires_action" ? "The provider session requires attention." : null,
     });

@@ -1,5 +1,7 @@
 # Folio architecture
 
+
+See [workflow state machines](docs/STATE-MACHINES.md) for UI, provider, persistence, and agent transition boundaries, plus the read-only `bun run state:audit` inventory.
 Folio is a Next.js application with a public search-results dashboard and private website workspaces. Technical readiness, SEO context, keyword search observations, and captured-evidence evaluations keep separate inputs, scoring, and publication rules. The application uses the **managed OpenAI Agents API** for live agent work. OpenAI runs the agent; Folio owns authentication, capture, run records, result verification, and presentation.
 
 This document describes the implementation and identifies production work still required. See [EVALUATION-STRATEGY.md](EVALUATION-STRATEGY.md) for what the results establish and [docs/MONETIZATION.md](docs/MONETIZATION.md) for proposed commercial packaging.

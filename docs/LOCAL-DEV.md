@@ -91,3 +91,11 @@ saved sites, read a report, or start an explicit run against the local app.
 
 Remove the four `DEV_AUTH*` lines and reload. The app returns to Better Auth, and
 `/api/*` answers `401` until a real sign-in.
+
+## Checking the customer workflow with captured pages
+
+Use the real app launched through `scripts/dev.mjs` for integration walkthroughs. A fixture proxy that substitutes `/api/sites`, scans, suites, or connection status is a separate sandbox and cannot establish that the connected workflow works. Keep seeded Sable records labelled as examples; capture a user-selected public website before claiming results for that website.
+
+Onboarding uses the shared `getSession()` boundary, just like sites and evaluations. With `DEV_AUTH` off this still uses Better Auth; with it on, setup saves to the same dedicated local owner as the rest of the workspace. The mirror must include the existing onboarding migrations `0023_onboarding.sql`, `0024_onboarding_customer_groups.sql`, and `0025_tracked_competitor_domain.sql`. Missing tables/columns are an environment migration problem, not an empty account. Apply reviewed additive migrations to the intended mirror schema without resetting existing records.
+
+Check the complete handoff: `/api/sites` and `/api/scans` agree on the saved score; publication settings accept the real sites response; **Choose questions** opens a suite whose case targets match that owned website. Navigation must perform reads only. Configuration of an API key does not approve the local account to spend credits: `OPENAI_ALLOWED_USER_IDS`, target access, daily allowances, and active-run guards still apply. Obtain explicit operator approval before adding a local account to that list; never use an unmetered exception to make a walkthrough pass.

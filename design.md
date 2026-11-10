@@ -69,3 +69,13 @@ The DOM scan needs a running `bun run dev`. Findings are ranked failures, not
 style suggestions: a page with findings has text below the legibility floor or a
 contrast problem. The type floor is 12px for functional text; `design:live`
 should report zero before a UI change is considered done.
+
+## Soft workspace chrome (November 2026)
+
+Reserve the floating theme picker's 76px bottom clearance inside the workspace content canvas, or the standalone page's footer/content container. Do not add it to the document body: the body uses the marketing cream palette and would expose a mismatched strip below other surfaces. Keep the shell's normal 18px desktop and 8px mobile outer gutters.
+
+Workspace content uses a column layout with a footer pushed to the bottom on short pages. Content sections retain their own natural height; empty states use content plus 32px vertical padding rather than a 430px stage. SEO check details initially show the first populated category in failure, warning, pass, optional order. Keep the source score and check counts unchanged; selecting a category is a local view change, never a new check.
+
+The owner's support-dashboard reference refines the workspace chrome in `src/components/dashboard-soft.css`: a soft cool-grey shell, an inset off-white content canvas, white selected navigation and controls with shallow offset shadows, and rounded corners. Forest green remains the action accent. The dark workspace uses layered charcoal/green neutrals and pale green actions. These overrides are scoped to `.folio-workspace`; landing and authentication retain their established palette.
+
+Keep the actual overview's checked/found/next-action summary and **See all saved results** handoff. The raised treatment signals selected navigation and actionable controls, not every content section. Preserve both compact and expanded navigation, visible keyboard focus, 44px touch targets and reduced-motion support. At narrow widths the redundant heading action is available in navigation, while refresh becomes a labelled icon control next to the website picker.

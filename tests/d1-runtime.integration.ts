@@ -11,7 +11,7 @@ import { drizzle } from "drizzle-orm/d1";
 import { Miniflare } from "miniflare";
 import { unstable_splitSqlQuery } from "wrangler";
 import * as authSchema from "../src/lib/auth-schema";
-import { createDemoEvaluationRun } from "../src/lib/eval-verifier";
+import { createDemoEvaluationRun, sha256Source } from "../src/lib/eval-verifier";
 import { createEvaluationRun, getEvaluationRun, getEvaluationUsage, listEvaluationRuns, listEvaluationRunSummaries,
   updateEvaluationRun, EvalStoreError } from "../src/lib/eval-store";
 import { deleteEvaluationEvidence } from "../src/lib/eval-deletion";
@@ -203,6 +203,14 @@ test("real D1 applies every migration and supports Better Auth, private reposito
     assert.deepEqual(await getEvaluationRun(db, alice.id, evaluation.id), evaluation);
     assert.equal(await getEvaluationRun(db, bob.id, evaluation.id), null);
     assert.deepEqual(await listEvaluationRuns(db, bob.id), []);
+    // The larger capture bound must fit the actual binding without truncation.
+    const largeSource = "<!doctype html><html><body>" + "x".repeat(499_950) + "</body></html>";
+    const largeCapture = { ...evaluation.captures[0], content: largeSource, sha256: await sha256Source(largeSource) };
+    const largeRun = await createEvaluationRun(db, alice.id, { ...evaluation, id: crypto.randomUUID(), status: "queued", result: null, agentOutput: undefined, captures: [largeCapture] });
+    const reopenedLargeRun = await getEvaluationRun(db, alice.id, largeRun.id);
+    assert.equal(reopenedLargeRun?.captures[0].content, largeSource);
+    assert.equal(await sha256Source(reopenedLargeRun!.captures[0].content), largeCapture.sha256);
+    assert.equal(await getEvaluationRun(db, bob.id, largeRun.id), null);
     await assert.rejects(updateEvaluationRun(db, bob.id, { ...evaluation, error: "Other owner's mutation" }), EvalStoreError);
     await assert.rejects(createEvaluationRun(db, "nonexistent-owner", await createDemoEvaluationRun()), /FOREIGN KEY/i);
 

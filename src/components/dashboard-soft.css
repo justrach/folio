@@ -1,0 +1,106 @@
+/* Soft operational chrome, drawn from the owner's support-dashboard reference.
+   Scoped to the workspace: the landing and authentication palette stay intact. */
+.app-shell.folio-workspace { background: var(--folio-shell); }
+.app-shell.folio-workspace .sidebar {
+  background: var(--folio-shell);
+  border-right: 0;
+  padding-top: 30px;
+}
+.app-shell.folio-workspace .main-shell { padding: 0 18px 18px 0; }
+.app-shell.folio-workspace .topbar { height: 76px; background: transparent; border-bottom: 0; padding-inline: 26px; }
+.app-shell.folio-workspace .page-content {
+  display: flex;
+  flex-direction: column;
+  background: var(--folio-canvas);
+  border-radius: 28px;
+  min-height: calc(100dvh - 94px);
+  padding: 32px 32px 76px;
+}
+.app-shell.folio-workspace .page-content > * { flex-shrink: 0; min-width: 0; }
+.app-shell.folio-workspace .page-footer { margin-top: auto; }
+/* Empty states explain the next step; they do not need a fixed-height stage. */
+.app-shell.folio-workspace .empty-state { min-height: 0; padding: 32px 24px; }
+.app-shell.folio-workspace .page-heading { margin-bottom: 26px; }
+.app-shell.folio-workspace .nav-link { min-height: 44px; border-radius: 14px; font-size: 14px; transition: background-color 180ms ease, box-shadow 180ms ease, transform 180ms cubic-bezier(.2,.8,.2,1); }
+.app-shell.folio-workspace .nav-link:is(.active,[aria-current="page"]) {
+  background: var(--folio-surface);
+  box-shadow: var(--folio-control-shadow);
+  color: var(--folio-ink);
+}
+.app-shell.folio-workspace .nav-link:hover { background: var(--folio-surface-muted); }
+.app-shell.folio-workspace .nav-link:active { transform: scale(.975); }
+.app-shell.folio-workspace .sidebar-more nav { margin-top: 6px; border-color: var(--folio-edge-strong); }
+.app-shell.folio-workspace .workspace-switch { background: var(--folio-surface-muted); border: 0; border-radius: 16px; }
+.app-shell.folio-workspace .workspace-switch:hover { background: var(--folio-surface); box-shadow: var(--folio-control-shadow); }
+.app-shell.folio-workspace .panel { border-color: var(--folio-edge); border-radius: 16px; }
+.app-shell.folio-workspace .button.secondary,
+.app-shell.folio-workspace .overview-saved-results nav a {
+  background: var(--folio-surface);
+  border-color: transparent;
+  box-shadow: var(--folio-control-shadow);
+  border-radius: 14px;
+}
+.app-shell.folio-workspace .button.secondary:hover,
+.app-shell.folio-workspace .overview-saved-results nav a:hover { background: var(--folio-surface-muted); }
+.app-shell.folio-workspace .button { transition: transform 180ms cubic-bezier(.2,.8,.2,1), background-color 180ms ease, box-shadow 180ms ease; }
+.app-shell.folio-workspace .button:active:not(:disabled) { transform: translateY(1px) scale(.975); }
+.app-shell.folio-workspace .overview-brief { border: 0; background: var(--folio-surface); border-radius: 20px; padding: 28px; }
+.app-shell.folio-workspace .overview-brief footer { border-radius: 16px; }
+.app-shell.folio-workspace .overview-brief .button { box-shadow: var(--folio-brief-button-shadow); }
+.app-shell.folio-workspace .real-overview-tabs { border-bottom: 0; gap: 4px; padding: 4px; background: var(--folio-surface-muted); border-radius: 14px; width: fit-content; max-width: 100%; }
+.app-shell.folio-workspace .real-overview-tabs a { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 9px 16px; margin: 0; border: 0; border-radius: 11px; color: var(--folio-text-secondary); font-size: 13px; }
+.app-shell.folio-workspace .real-overview-tabs a[aria-current="page"] { background: var(--folio-surface); color: var(--folio-ink); box-shadow: var(--folio-control-shadow); }
+.app-shell.folio-workspace .real-overview-metric-details,
+.app-shell.folio-workspace .workspace-extras { background: var(--folio-canvas); }
+.app-shell.folio-workspace .real-overview-metric-details { border-color: var(--folio-edge); }
+.app-shell.folio-workspace .real-query-list > article { padding-block: 22px; }
+.app-shell.folio-workspace .real-query-actions a { background: var(--folio-surface-muted); border-color: transparent; border-radius: 12px; }
+.app-shell.folio-workspace .real-query-actions a:hover { background: var(--folio-accent-soft); }
+.app-shell.folio-workspace .real-overview-select > .button { align-self: end; }
+@media (min-width: 761px) {
+  .app-shell.folio-workspace[data-nav-compact="true"] .sidebar { width: 76px; padding-inline: 14px; }
+  .app-shell.folio-workspace[data-nav-compact="true"] .main-shell { margin-left: 76px; }
+  .app-shell.folio-workspace[data-nav-compact="true"] .nav-link { min-height: 44px; }
+}
+@media (max-width: 1000px) and (min-width: 761px) {
+  .app-shell.folio-workspace .page-content { padding-inline: 24px; }
+}
+@media (max-width: 760px) {
+  .app-shell.folio-workspace .main-shell { padding: 0 8px 8px; }
+  .app-shell.folio-workspace .topbar { height: 64px; padding-inline: 10px; }
+  .app-shell.folio-workspace .page-content { padding: 24px 16px 76px; border-radius: 22px; min-height: calc(100dvh - 72px); }
+  .app-shell.folio-workspace .sidebar { border-radius: 0 24px 24px 0; }
+  .app-shell.folio-workspace .overview-brief { padding: 20px; }
+  .app-shell.folio-workspace .real-overview-tabs { margin-bottom: 22px; }
+  .app-shell.folio-workspace .real-overview-tabs a { padding-inline: 12px; font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-shell.folio-workspace .nav-link,
+  .app-shell.folio-workspace .button { transition: none; }
+  .app-shell.folio-workspace .nav-link:active,
+  .app-shell.folio-workspace .button:active:not(:disabled) { transform: none; }
+}
+@media (max-width: 760px) {
+  /* Keep the summary within reach instead of stacking duplicate page actions. */
+  .app-shell.folio-workspace .overview-page:has(.real-overview) .page-heading { margin-bottom: 18px; }
+  .app-shell.folio-workspace .overview-page:has(.real-overview) .page-heading p,
+  .app-shell.folio-workspace .overview-page:has(.real-overview) .page-heading .heading-actions { display: none; }
+  .app-shell.folio-workspace .real-overview > .real-overview-select { display: grid; grid-template-columns: minmax(0,1fr) 44px; align-items: end; gap: 10px; }
+  .app-shell.folio-workspace .real-overview > .real-overview-select > .button { width: 44px; padding: 10px; font-size: 0; }
+  .app-shell.folio-workspace .real-overview > .real-overview-select > .button svg { width: 17px; height: 17px; }
+  .app-shell.folio-workspace .overview-brief-facts { gap: 22px; }
+  .app-shell.folio-workspace .overview-brief dl > div { padding-block: 8px; }
+  .app-shell.folio-workspace .overview-brief p { font-size: 13px; }
+}
+
+/* Dark surfaces separate by tone; decorative frames should not glow. */
+html[data-folio-theme="dark"] .app-shell.folio-workspace :is(.panel,.website-ranking-chart,.real-evidence-overview article) { border-color: transparent; }
+html[data-folio-theme="dark"] .app-shell.folio-workspace .folio-select-trigger { border-color: transparent; background: var(--folio-surface); }
+html[data-folio-theme="dark"] .app-shell.folio-workspace .folio-select-trigger:hover { background: var(--folio-surface-muted); }
+html[data-folio-theme="dark"] .app-shell.folio-workspace .website-list-toolbar input { border-color: transparent; background: transparent; color: var(--folio-ink); }
+html[data-folio-theme="dark"] .app-shell.folio-workspace :is(.folio-select-trigger,.website-list-toolbar input):focus-visible { outline: 2px solid var(--folio-focus); outline-offset: 3px; }
+
+html[data-folio-theme="dark"] .app-shell.folio-workspace .website-list-toolbar .lbi-box { background: var(--folio-surface); }
+html[data-folio-theme="dark"] .app-shell.folio-workspace .website-list-toolbar .lbi-label { color: var(--folio-text-secondary); }
+html[data-folio-theme="dark"] .app-shell.folio-workspace .website-list-toolbar .lbi:not([data-focus="true"]) .lbi-ring path { stroke: transparent; }
+html[data-folio-theme="dark"] .app-shell.folio-workspace :is(.website-job,.website-job-icon) { border-color: transparent; }
