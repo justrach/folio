@@ -2,6 +2,7 @@
 import {trackProductEvent} from "@/lib/product-analytics-client";
 
 import Link from "next/link";
+import { ArrowRight, Check, ShieldCheck, X } from "lucide-react";
 import { CompanyFavicon } from "./company-favicon";
 import { WorkspaceEmptyArt } from "./workspace-empty-art";
 import { DEVELOPER_TOOLS } from "@/lib/developer-tools-source";
@@ -35,9 +36,9 @@ const STORE = "folio-onboarding-v1";
 const LANGUAGE = "English", LOCALE = "United States";
 
 function Mark() { return <span className="ob-mark" aria-hidden="true"><i /><i /><i /><i /></span>; }
-const Arrow = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>;
-const Shield = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="m9 12 2 2 4-4" /></svg>;
-export const Tick = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>;
+const Arrow = () => <ArrowRight size={16} strokeWidth={2.2} aria-hidden="true" />;
+const Shield = () => <ShieldCheck size={14} strokeWidth={2} aria-hidden="true" />;
+export const Tick = () => <Check size={13} strokeWidth={3.2} aria-hidden="true" />;
 const Trust = ({ children }: { children: ReactNode }) => <p className="ob-trust"><Shield /><span>{children}</span></p>;
 const date = (value: string | null) => value ? new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(value)) : "";
 const dateRange = (from: string | null, to: string | null) => {
@@ -346,7 +347,7 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
             {customerGroups.length > 1 && <button className="ob-group-remove" type="button" aria-label={`Remove customer group ${index + 1}`} onClick={() => {
               pendingGroupFocus.current = Math.min(index, customerGroups.length - 2);
               setCustomerGroups(values => values.filter((_, at) => at !== index));
-            }}><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="m4 4 8 8M12 4l-8 8" /></svg></button>}
+            }}><X size={14} strokeWidth={3} aria-hidden="true" /></button>}
           </div>)}</div>
           <div className="ob-group-action">{customerGroups.length < MAX_CUSTOMER_GROUPS
             ? <button type="button" className="ob-group-add" onClick={() => {

@@ -4,7 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { ButtonHTMLAttributes, RefObject } from "react";
 import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion } from "motion/react";
 import type { TargetAndTransition, Variants } from "motion/react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { motionTokens } from "../lib/motion-tokens";
 import styles from "./action-button.module.css";
 
@@ -63,9 +63,7 @@ function useMorphWidth(content: RefObject<HTMLElement | null>, key: string, redu
 
 /** The success tick draws itself from its short stroke, the way a hand would write it. */
 function DrawnCheck({ reduced }: { reduced: boolean }) {
-  return <svg className={styles.statusIcon} width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-    <motion.path d="M4 12l5 5L20 6" initial={reduced ? false : { pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 1 }} transition={{ pathLength: { duration: motionTokens.duration.standard, ease: [...motionTokens.ease.enter], delay: .05 }, opacity: { duration: .05, delay: .05 } }} />
-  </svg>;
+  return <Check className={styles.statusIcon} width={17} height={17} data-draw={reduced ? undefined : ""} />;
 }
 
 /** Swaps one label for the next with a single crossfade: the old text fades out fast, the new one fades in, and the width follows without overshoot. */
