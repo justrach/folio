@@ -43,7 +43,8 @@
     "design:live": "impeccable detect http://localhost:3000",
     "design:install": "impeccable install --yes --project --no-hooks",
     "analytics:migrate:local": "wrangler d1 migrations apply ANALYTICS_DB --local --persist-to .wrangler/state",
-    "state:audit": "node scripts/state-machine-audit.mjs"
+    "state:audit": "node scripts/state-machine-audit.mjs",
+    "proofs:check": "lake --dir proofs build --wfail"
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "latest",

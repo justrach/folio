@@ -36,3 +36,14 @@ jobs:
       - run: bun run frontend:build
       - run: bun run frontend:smoke
       - run: bun run scheduler:build
+  # Formal models in proofs/ are independent of the application build. A `sorry`
+  # is a warning, so --wfail rejects an unfinished proof.
+  proofs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          lake-package-directory: proofs
+          build-args: --wfail

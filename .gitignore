@@ -13,6 +13,7 @@ test-results/
 
 .local/
 .graff/
+proofs/.lake/
 .DS_Store
 
 # Impeccable ships a per-platform binary; source it from the npm package

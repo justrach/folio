@@ -70,6 +70,7 @@ Restart the dev server after intended `.dev.vars` changes. Obtain D1 through the
 | Background retrieval | `src/lib/eval-reconciliation-job.ts`, `src/app/api/internal/evaluations/reconcile/`, `wrangler.scheduler.jsonc` |
 | Proposed pricing | `src/components/pricing.tsx`, `src/app/api/plans/route.ts` |
 | Offline verification | `scripts/verify-evaluation.ts`, `tests/evals.test.ts` |
+| Formal models (Lean) | `proofs/Folio/`, `docs/LEAN-PROOFS.md`; `bun run proofs:check` |
 
 Component-only filenames in the map are relative to `src/components/`; adjacent library filenames are relative to `src/lib/`.
 

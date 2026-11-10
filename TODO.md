@@ -158,6 +158,12 @@ Remaining acceptance work:
 - [x] Add explicit keyword/landing-page/backlink row collection on one saved SEO report (`POST /api/seo-reports/<id>/detail`, migration `0024_seo_report_detail.sql`), an explicit browser action, and collected/not-collected MCP detail states. Local fixtures, 315 unit tests, four desktop/mobile SEO browser cases and TypeScript pass; no paid provider request was made.
 - [x] Validate live row retrieval with the real DataForSEO account, through both the adapter and the authenticated routes served from the built Worker: 50 keyword rows, 33 grouped landing pages and 30 backlink rows, persisted and reopened from D1, with a second collection refused (`409`). An invalid `mode` value was caught and fixed (provider status `40501`). Panel and MCP live reads keep fixture coverage. See [live validation](docs/LIVE-VALIDATION.md).
 
+## Lean proofs scaffold
+
+- [x] Add a Lean 4 project in `proofs/` with one proven model invariant ("navigation never spends"), `bun run proofs:check`, and a separate `proofs` CI job. See [Lean proofs](docs/LEAN-PROOFS.md).
+- [ ] Bind a model to the TypeScript through a shared artifact checked on both sides. Until then the proofs establish properties of the hand-written model only, not of the application.
+- [ ] Confirm the hosted `proofs` job on GitHub Actions; only the local build has run.
+
 ## OpenNext build tooling
 
 - [x] Upgraded off the unsupported pin: `next` **16.4.5**, `@opennextjs/cloudflare` **1.20.16**, `wrangler` **4.158.0**. `bun run cf:build` now succeeds with no `--dangerouslyUseUnsupportedNextVersion` flag, the peers (`next >=15.5.29 <16 || >=16.4.5`, `wrangler ^4.148.0`) are satisfied, and the deployment was verified live. Next 16 also updated `tsconfig.json` (`jsx: react-jsx`, `.next/dev/types` in `include`) and `dev` now runs Turbopack.
