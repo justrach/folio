@@ -1,5 +1,38 @@
 import { expect, test } from "@playwright/test";
 
+for (const signedIn of [false, true]) {
+  test(`website setup has no Search Console import link (${signedIn ? "signed in" : "signed out"})`, async ({ page }) => {
+    await page.route("**/api/**", route => {
+      const path = new URL(route.request().url()).pathname;
+      if (path === "/api/auth/get-session") return route.fulfill({ json: signedIn ? {
+        user: { id: "fixture-owner", name: "Example owner", email: "owner@example.test", emailVerified: true,
+          createdAt: "2026-01-01T00:00:00Z", updatedAt: "2026-01-01T00:00:00Z" },
+        session: { id: "fixture-session", userId: "fixture-owner", token: "non-secret-browser-fixture", expiresAt: "2099-01-01T00:00:00Z" },
+      } : null });
+      if (path === "/api/onboarding") return route.fulfill({ json: {
+        state: null, site: null, check: null, suite: null, competitors: [],
+      } });
+      if (["/api/search-console", "/api/github"].includes(path))
+        return route.fulfill({ json: { configured: false, connected: false } });
+      return route.fulfill({ status: 404, json: { error: "Unavailable in this browser fixture." } });
+    });
+
+    await page.goto("/start?step=1");
+    await expect(page.getByRole("heading", { name: "Start with your website." })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Import from Search Console" })).toHaveCount(0);
+    const actions = page.locator(".ob-actions");
+    await expect(actions.locator(":scope > *")).toHaveCount(1);
+    const check = actions.getByRole("button", { name: "Check my page" });
+    await expect(check).toBeVisible();
+    await expect(check).toBeDisabled();
+    await page.getByRole("textbox", { name: "Website address" }).fill("example.test");
+    await expect(check).toBeEnabled();
+    expect(await actions.evaluate(element => element.getBoundingClientRect().height))
+      .toBe(await check.evaluate(element => element.getBoundingClientRect().height));
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  });
+}
+
 test("customer question preview wraps long input without clipping or starting work", async ({ page, baseURL }, info) => {
   const writes: string[] = [], external: string[] = [], errors: string[] = [];
   page.on("pageerror", error => errors.push(error.message));

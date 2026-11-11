@@ -80,7 +80,7 @@ or provider. These fixture checks do not establish real customer/provider result
 My websites uses the same setup card for signed-out and empty accounts, with a
 separate sign-in link for returning owners. It does not display fictional Acme
 scores as a saved website or an empty personal audit history before sign-in.
-Adding a website enters `/start?step=1`; viewing a saved website's results and
+Adding a website enters `/start?step=1`, where the website address and **Check my page** action are the only setup path; there is no Search Console import link for signed-in or signed-out visitors. Viewing a saved website's results and
 choosing its customer questions are concrete team jobs alongside the explicit
 page-audit action. Job cards explain what each destination helps the team learn.
 Page-evidence evaluations and Search Console connections live under **More
