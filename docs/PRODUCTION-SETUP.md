@@ -149,6 +149,19 @@ On the owner's request, `natalie@manus.ai` (an existing Google sign-in account) 
 organization as a member, through the app's own invite-and-join functions; the one-off invite was revoked
 immediately, so the organization has no active invite link. She can read the shared `manus.im` report.
 
+**Add by email, and Manus in Connect your agent** (`7191a27`) followed: frontend
+`aa8704e3-035f-4d06-9363-32abac261709`, backend `29c1fd0f-3eaf-4158-b988-e8294f953829` (`--keep-vars`). Before
+deploying, migration `0029_organization_email_invites.sql` was applied to production Postgres (`public`, one new table
+of 6 columns, `CREATE … IF NOT EXISTS`). Production D1, the stale fallback, was left as it is. No secret change. The
+email flows (add, re-add, an unverified account claims nothing, a verified sign-in joins, an agent's
+`folio_organizations` read joins, cancel, delete) ran against production Postgres inside one transaction that was
+rolled back, with fake `example.test` accounts; afterwards the table held 0 rows. The Manus setup was not run: there is
+no Manus account. Validation: typecheck, 436 unit tests, the 10 D1 integration tests for these areas (one
+index-asks test failed once on timing and passed when rerun alone), 18 browser checks (one desktop page load timed out
+on the local dev server and passed on rerun), the production build and both smoke tests. After deployment, `/orgs`,
+`/agents` and `/login` returned 200. Without a session, `GET /api/organizations` and the `add_by_email` action
+returned 401, and the served `/orgs` bundle contains the email form and the Manus client.
+
 ### Vector store
 
 Page embeddings live in turbopuffer, not Postgres (see [embeddings](EMBEDDINGS.md)).
