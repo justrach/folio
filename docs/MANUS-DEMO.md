@@ -44,9 +44,9 @@ People you added by email just sign in with Google at the link you sent; the sig
 The **Connect your agent** panel on the organization page (also at `/agents#connect`) walks each person through five steps:
 
 1. **Pick your agent**: Claude Code, Codex, Cursor, VS Code (Copilot agent mode), Claude Desktop, Manus, or any MCP client.
-2. **Create a key for it** right there. It's named after the agent ("Rach's Claude Code"), has read access by default, and can optionally record changes or, deliberately, spend. The key is shown once and masked on screen; **Copy export line** copies `export FOLIO_API_KEY="…"`. Safe to do while screen-sharing.
+2. **Approve its access** on a consent card: "Connect Claude Code to Folio", who's signed in, *Read only* or *Read & record changes* (paid actions are folded away and say they charge), and which organizations' shared websites it may read (*All*, or *Select* Manus only). Approving creates a key named after the agent ("Rach's Claude Code"). The key is shown once and masked on screen; **Copy export line** copies `export FOLIO_API_KEY="…"`. Safe to do while screen-sharing.
    The step to do next is ringed, and the steps after it wait in grey until it's done.
-3. **Add Folio to it.** For Claude Code that's one command:
+3. **Add Folio to it, in one step.** Cursor gets **Add to Cursor** (the key goes straight into Cursor), VS Code **Add to VS Code** (VS Code asks for the key), Claude Desktop **Download for Claude Desktop** (open the file; Claude asks for the key), and Claude Code and Codex one command to paste with the key already in it, masked on screen. By hand, Claude Code is:
 
    ```sh
    claude mcp add --transport http --scope user folio https://usefolio.site/api/mcp \

@@ -15,6 +15,8 @@ Send `Authorization: Bearer <FOLIO_API_KEY>` on every `/api/v1` request. Browser
 | `read` | Authentication status, owned websites/cases, saved observations and run detail |
 | `evaluate` | Ensure a recent observation, reconcile an existing task, request cancellation |
 
+A key can also be limited to some of the owner's organizations: `POST /api/agent-keys` takes an optional `organizations` array of organization IDs (`[]` for the owner's own websites only; omit it for all organizations, now and later). Each ID must be an organization the owner belongs to. The owner's own websites stay readable either way, and a website shared only in other organizations answers `not_found`. The Connect your agent panel sets this from its consent card. Key summaries return the limit as `organizations` (`null` = all).
+
 Evaluate permission does not approve provider spending by itself. The owner's server approval, allowed website targets, daily allowance and active-run reservations still apply. The explicit per-account daily exception retains usage accounting and active-run limits. Keys allow 60 requests per minute. A `rate_limited` response includes `Retry-After: 60`; capacity and key-count limits do not imply a timed retry.
 
 ## Read first, then explicitly ensure freshness

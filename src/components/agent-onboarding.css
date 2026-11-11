@@ -33,29 +33,23 @@
 .ao-clients button[aria-checked="true"] { border-color: var(--folio-accent); box-shadow: inset 0 0 0 1px var(--folio-accent); background: color-mix(in srgb, var(--folio-accent) 9%, var(--folio-raised)); }
 .ao-clients button:focus-visible { outline: 2px solid var(--folio-focus); outline-offset: 2px; }
 
-.ao-key-form { display: grid; gap: 12px; padding: 16px; border-radius: var(--folio-radius-control); background: var(--folio-canvas); }
-.ao-key-fields { display: grid; grid-template-columns: minmax(0,1fr) 180px; gap: 10px; }
-.ao-key-form label, .ao-key-fields label { display: grid; gap: 6px; font-size: 13px; font-weight: 500; color: var(--folio-text-secondary); }
-.ao-key-fields input { min-height: var(--folio-control-height, 40px); padding: 0 12px; border: 1px solid var(--folio-edge-strong); border-radius: var(--folio-radius-control); background: var(--folio-raised); color: var(--folio-ink); font-size: 14px; }
+/* Step 2 is the consent card (connect-consent.css); these are the bits around it and its approved state. */
+.ao-consent { display: grid; gap: 10px; justify-items: start; }
 .ao-existing { font-size: 13px !important; }
-.ao-scopes { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; border: 0; padding: 0; margin: 0; min-width: 0; }
-.ao-scopes legend { margin-bottom: 6px; font-size: 13px; font-weight: 500; color: var(--folio-text-secondary); }
-.ao-scopes label { display: flex !important; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--folio-edge); background: var(--folio-surface); cursor: pointer; }
-.ao-scopes label.is-paid { border-style: dashed; }
-.ao-scopes input { flex: none; width: 17px; height: 17px; margin: 2px 0 0; accent-color: var(--folio-accent); cursor: pointer; }
-.ao-scopes input:disabled { cursor: default; opacity: .75; }
-.ao-scopes span { display: grid; gap: 3px; }
-.ao-scopes strong { font-size: 14px; font-weight: 600; color: var(--folio-ink); }
-.ao-scopes small { font-size: 13px; font-weight: 400; line-height: 1.5; color: var(--folio-text-secondary); }
-.ao-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 18px; }
-.ao-actions .text-link { font-size: 13px; }
-
-.ao-new-key { display: grid; gap: 10px; padding: 16px; border-radius: var(--folio-radius-control); border: 1px solid var(--folio-success); background: color-mix(in srgb, var(--folio-success) 8%, var(--folio-canvas)); }
-.ao-new-key > p:first-child { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; color: var(--folio-ink); }
-.ao-new-key > p:first-child svg { color: var(--folio-success); }
+.ao-done-sub { text-align: center; }
 .ao-secret { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
-.ao-secret code { flex: 1 1 320px; min-height: 40px; display: flex; align-items: center; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--folio-edge); background: var(--folio-surface); }
-.ao-new-key .text-link { justify-self: start; font-size: 13px; }
+.ao-secret code { flex: 1 1 260px; min-height: 40px; display: flex; align-items: center; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--folio-edge); background: var(--folio-canvas); }
+.cc-card.is-done .text-link { justify-self: center; font-size: 13px; }
+.cc-card .ao-secret code { flex-basis: 100%; }
+.ao-next { color: var(--folio-ink) !important; font-weight: 500; text-align: center; }
+
+/* The one-step setup sits above the by-hand files: a button, a download, or one command. */
+.ao-install { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; padding: 14px 16px; border-radius: var(--folio-radius-control); border: 1px solid color-mix(in srgb, var(--folio-accent) 40%, var(--folio-edge)); background: color-mix(in srgb, var(--folio-accent) 6%, var(--folio-canvas)); }
+.ao-install > .ao-code { flex: 1 1 100%; background: var(--folio-surface); }
+.ao-install-hint { flex: 1 1 260px; min-width: 0; font-size: 13px !important; line-height: 1.6 !important; }
+.ao-manual > summary { cursor: pointer; font-size: 13px; font-weight: 500; color: var(--folio-ink); }
+.ao-manual[open] { display: grid; gap: 10px; }
+.ao-manual[open] > summary { margin-bottom: 2px; }
 
 .ao-blocks { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,340px),1fr)); align-items: start; gap: 10px; }
 .ao-code { display: grid; grid-template-columns: minmax(0,1fr); align-content: start; gap: 0; margin: 0; min-width: 0; border-radius: var(--folio-radius-control); border: 1px solid var(--folio-edge); background: var(--folio-canvas); overflow: hidden; }
@@ -117,13 +111,12 @@
 .ao-trouble dt { font-size: 14px; font-weight: 600; color: var(--folio-ink); }
 .ao-trouble dd { margin: 4px 0 0; font-size: 13px; line-height: 1.6; color: var(--folio-text-secondary); }
 
-@media(max-width:900px) { .ao-check-grid, .ao-permissions, .ao-trouble, .ao-scopes, .ao-prompts { grid-template-columns: 1fr; } }
+@media(max-width:900px) { .ao-check-grid, .ao-permissions, .ao-trouble, .ao-prompts { grid-template-columns: 1fr; } }
 @media(max-width:700px) {
   .agent-onboarding { padding: 18px; }
   .ao-step { grid-template-columns: 26px minmax(0,1fr); gap: 10px; }
   .ao-number { width: 26px; height: 26px; font-size: 13px; }
   .ao-step:not(:last-child)::before { left: 12px; top: 28px; }
-  .ao-key-fields { grid-template-columns: 1fr; }
   .ao-fields > div { grid-template-columns: minmax(0,1fr); gap: 4px; }
   .ao-clients { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .ao-prompt footer { flex-direction: column; align-items: stretch; }

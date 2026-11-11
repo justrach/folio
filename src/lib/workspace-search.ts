@@ -2,6 +2,7 @@ import "server-only";
 import type { D1Database } from "@cloudflare/workers-types";
 import type { WorkspaceSearchIndex } from "./command-search";
 import { AgentApiError } from "./agent-api-key-store";
+import { keyReadsOrganization } from "./agent-observation-types";
 import { listOrganizations } from "./organizations";
 import { sequentially } from "./sequential";
 
@@ -11,9 +12,10 @@ const hostOf = (url: string) => { try { return new URL(url).hostname.toLowerCase
 /**
  * What the signed-in person can open from the search box: their websites, saved reports and
  * organizations (with the domains each one shares). Names, IDs and dates only, never report
- * contents. Reads only, one query at a time, and it never joins an organization.
+ * contents. Reads only, one query at a time, and it never joins an organization. `allowed` is an agent key's
+ * organization limit (null = all).
  */
-export async function workspaceSearchIndex(db: D1Database, userId: string): Promise<WorkspaceSearchIndex> {
+export async function workspaceSearchIndex(db: D1Database, userId: string, allowed: string[] | null = null): Promise<WorkspaceSearchIndex> {
   if (!userId) throw new AgentApiError("Sign in to search your websites and reports.", 401, "unauthorized");
   const [sites, seoReports, searchConsole, organizations, shared] = await sequentially([
     () => db.prepare("SELECT id, name, url FROM sites WHERE user_id = ? ORDER BY created_at DESC, id LIMIT 100").bind(userId)
@@ -31,7 +33,7 @@ export async function workspaceSearchIndex(db: D1Database, userId: string): Prom
     websites: sites.results.map(row => ({ id: row.id, name: row.name, url: row.url })),
     seoReports: seoReports.results.map(row => ({ id: row.id, domain: row.domain, createdAt: iso(row.created_at), complete: Number(row.complete) === 1 })),
     searchConsole: searchConsole.results.map(row => ({ id: row.id, property: row.property, createdAt: iso(row.created_at) })),
-    organizations: organizations.map(org => ({ id: org.id, name: org.name, role: org.role, members: org.members,
+    organizations: organizations.filter(org => keyReadsOrganization(allowed, org.id)).map(org => ({ id: org.id, name: org.name, role: org.role, members: org.members,
       domains: [...new Set(shared.results.filter(row => row.organization_id === org.id).map(row => hostOf(row.url)))] })),
   };
 }

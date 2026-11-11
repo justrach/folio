@@ -375,9 +375,9 @@ async function domainSearchConsole(db: D1Database, ownerId: string, domain: stri
  * For a website the reader owns or that is shared with one of their organizations. A shared
  * website shows the saved reports of the member who saved it. Reads only; never spends.
  */
-export async function loadWebsiteGaps(db: D1Database, readerId: string, websiteId: string, now = new Date()): Promise<WebsiteGapsReport> {
+export async function loadWebsiteGaps(db: D1Database, readerId: string, websiteId: string, now = new Date(), allowed: string[] | null = null): Promise<WebsiteGapsReport> {
   if (!readerId) throw new AgentApiError("Authentication required.", 401, "unauthorized");
-  const readable = await readableWebsite(db, readerId, websiteId);
+  const readable = await readableWebsite(db, readerId, websiteId, allowed);
   if (!readable) throw new AgentApiError("Website not found. List your websites with folio_targets, or shared ones with folio_organizations.", 404, "not_found");
   const { site, ownerId } = readable, domain = hostOf(site.url);
   // One read at a time: each in-flight query can hold one of the database's few connections.

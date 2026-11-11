@@ -4,7 +4,7 @@ Folio serves authenticated Streamable HTTP at `/api/mcp` in its existing Next.js
 
 ## Connect a coding client
 
-The **Connect your agent** panel (on `/agents#connect` and every organization page) does this step by step: pick a client, create a key for it inline (shown once, masked on screen), copy that client's setup, watch a status box turn green when the key makes its first call, then paste a starter prompt. The step to do next is highlighted (`onboardingProgress`). Setups for clients that can't read `FOLIO_API_KEY` show a `<your Folio key>` placeholder; once a key is created on the page, their copy buttons fill it in (`withKey`), while the screen keeps the placeholder or a masked key. Its snippets, permission guide and troubleshooting come from `src/lib/agent-onboarding.ts`; a unit test keeps the permission guide in step with each tool's scope here.
+The **Connect your agent** panel (on `/agents#connect` and every organization page) does this step by step: pick a client, approve its access on a consent card (`src/components/connect-consent.tsx`), add Folio to the client in one step where the client allows it, watch a status box turn green when the key makes its first call, then paste a starter prompt. Approving creates the key (shown once, masked on screen). The step to do next is highlighted (`onboardingProgress`). Setups for clients that can't read `FOLIO_API_KEY` show a `<your Folio key>` placeholder; once a key is created on the page, their copy buttons fill it in (`withKey`), while the screen keeps the placeholder or a masked key. Its snippets, permission guide and troubleshooting come from `src/lib/agent-onboarding.ts`; a unit test keeps the permission guide in step with each tool's scope here.
 
 Setups shown there, each checked on 11 November 2026 against production with a temporary read key (since deleted):
 
@@ -20,7 +20,28 @@ Setups shown there, each checked on 11 November 2026 against production with a t
 
 Manus runs in the cloud, so its URL is always a public `https://` address: when the panel is open on `localhost` or plain `http`, it shows `https://usefolio.site` instead (`reachableOrigin`). If Manus's servers send an `Origin` header, the MCP route's origin check will refuse it with 403 `Untrusted MCP origin`; that has not been observed, because the setup has not been run.
 
-Claude.ai and ChatGPT web connectors need OAuth sign-in, which Folio does not offer yet.
+### Approving access
+
+The consent card shows who is asking ("Connect Cursor to Folio"), the signed-in account (with **Switch account**), and two choices:
+
+- **Permissions**: *Read only* or *Read & record changes*. Paid actions (start evaluations, paid search lookups) are folded away and say they charge.
+- **Organizations**: *All* (every organization the person is in, now and later) or *Select* (only the ones picked). The person's own websites are always readable. The choice is stored on the key as `organization_ids_json` (migration `0030`; NULL means all, which every older key keeps). `folio_organizations`, `folio_find` and `folio_website_gaps` apply it. A shared website outside the chosen organizations answers `not_found`, so a limited key can't tell what the others share. `POST /api/agent-keys` takes the same choice as an optional `organizations` array of IDs, each checked against the person's memberships.
+
+### One-step install
+
+After approval, step 3 offers the quickest way each client supports (`installAction` in `src/lib/agent-onboarding.ts`). Manual setup stays under **Or set it up by hand**.
+
+| Client | One step | Holds the key? | How it was checked |
+| --- | --- | --- | --- |
+| Cursor | **Add to Cursor**: `cursor://anysphere.cursor-deeplink/mcp/install?name=folio&config=<base64 JSON>` | Yes, so it waits for the key and opens from a button (never shown as a link) | Cursor's documented format; read back from Cursor 3.27's handler (`atob` then `JSON.parse`); not clicked in Cursor |
+| VS Code | **Add to VS Code**: `vscode:mcp/install?<JSON>` with a `promptString` input; VS Code asks for the key and stores it | No | VS Code 1.138's handler parses `name`, `type`, `url`, `headers` and `inputs`; not clicked in VS Code |
+| Claude Desktop | **Download for Claude Desktop**: `/api/agent-setup/claude-desktop` serves `folio.mcpb`, an extension (manifest 0.3) whose only setting is the key (`sensitive`, so Claude masks it) | No, it is the same file for everyone | `mcpb validate` passes; its stdio bridge ran against production (initialize, the 167 KB tool list, `folio_organizations`, prompts; an unknown key gets a readable error); not installed in Claude Desktop yet |
+| Claude Code | One command to paste: `claude mcp remove --scope user folio`, then `claude mcp add … --header "Authorization: Bearer <key>"` | Yes, masked on screen | Run twice in a throwaway home with the real CLI: replaces cleanly |
+| Codex | One command to paste: exports `FOLIO_API_KEY`, appends it to the shell profile, then `codex mcp add folio --url … --bearer-token-env-var FOLIO_API_KEY` | Yes, masked on screen | Run twice in a throwaway home with the real CLI |
+
+Claude Code and Codex have no install links, so a single command is their one step. The Claude Desktop bridge (`BRIDGE_SCRIPT` in `src/lib/claude-desktop-extension.ts`) needs nothing installed: Claude Desktop runs it with its own Node.js. It sends `initialize` first and then the rest side by side, carrying the session and protocol version. A connection that fails before anything is sent is tried once more; it never logs the key.
+
+Claude.ai and ChatGPT web connectors need OAuth sign-in, which Folio does not offer yet. It is the next step: the same consent card behind an OAuth authorize page.
 
 Manual setup: create a revocable Folio key in `/docs/api#api-keys`. Store it in the client environment as `FOLIO_API_KEY`, never in a committed configuration. Keys inherit the exact issuing account's record ownership. Select `read` for saved evidence, optionally `evaluate` for paid evaluations, `seo` for paid DataForSEO lookups and `changes` to record website changes (no charges). Existing evaluation keys do not acquire SEO permission. Account provider access and quotas still apply.
 

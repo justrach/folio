@@ -4,11 +4,16 @@ import type { EvaluationRun } from "./evals";
 /** `changes` records owner-visible website changes; it never spends or edits the website. */
 export type AgentApiScope = "read" | "evaluate" | "seo" | "changes";
 export const AGENT_API_SCOPES: readonly AgentApiScope[] = ["read", "evaluate", "seo", "changes"];
-export type AgentApiPrincipal = { ownerId: string; keyId: string; scopes: AgentApiScope[] };
+/** `organizations`: the organizations whose shared websites the key may read; null or absent means all of the owner's. */
+export type AgentApiPrincipal = { ownerId: string; keyId: string; scopes: AgentApiScope[]; organizations?: string[] | null };
 export type AgentApiKeySummary = {
   id: string; name: string; prefix: string; scopes: AgentApiScope[];
+  /** Organization IDs the key is limited to; null means all of the owner's organizations. Own websites are always readable. */
+  organizations?: string[] | null;
   createdAt: string; expiresAt: string; lastUsedAt: string | null; revokedAt: string | null;
 };
+/** Whether a key limited to `allowed` (null = all) may read what is shared in `organizationId`. */
+export const keyReadsOrganization = (allowed: string[] | null | undefined, organizationId: string) => !allowed || allowed.includes(organizationId);
 export type AgentObservationKind = "website" | "keyword";
 export type AgentObservationInput =
   | { kind: "website"; websiteId: string; maxAgeSeconds?: number }

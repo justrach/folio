@@ -6,13 +6,18 @@ type Key = { id: string; name: string; prefix: string; scopes: string[]; created
 const key = (id: string, name: string, lastUsedAt: string | null, scopes = ["read"]): Key =>
   ({ id, name, prefix: "folio_v1_cccccccc", scopes, createdAt: at, expiresAt: "2099-01-01T00:00:00.000Z", revokedAt: null, lastUsedAt });
 
-async function setup(page: Page, options: { signedIn?: boolean; keys?: Key[] } = {}) {
+const organizations = [{ id: "org-manus", name: "Manus", role: "member", members: 4, websites: 2, createdAt: at }, { id: "org-other", name: "Other client", role: "owner", members: 2, websites: 1, createdAt: at }];
+
+async function setup(page: Page, options: { signedIn?: boolean; keys?: Key[]; organizations?: typeof organizations } = {}) {
   const state = { keys: options.keys ?? [], posts: [] as { path: string; body: Record<string, unknown> }[], keyReads: 0 };
-  // Record what the copy buttons put on the clipboard.
+  // Record what the copy buttons put on the clipboard, and the app links (cursor:, vscode:) the install buttons open.
   await page.addInitScript(() => {
-    const copied: string[] = [];
+    const copied: string[] = [], opened: string[] = [];
     Object.defineProperty(window, "__copied", { value: copied });
+    Object.defineProperty(window, "__opened", { value: opened });
     Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: async (text: string) => { copied.push(text); } } });
+    const click = HTMLAnchorElement.prototype.click;
+    HTMLAnchorElement.prototype.click = function (this: HTMLAnchorElement) { if (/^https?:/.test(this.href)) return click.call(this); opened.push(this.href); };
   });
   await page.route("**/api/**", async route => {
     const url = new URL(route.request().url()), method = route.request().method();
@@ -26,6 +31,8 @@ async function setup(page: Page, options: { signedIn?: boolean; keys?: Key[] } =
       return route.fulfill({ status: 201, json: { key: created, token } });
     }
     if (url.pathname === "/api/sites") return route.fulfill({ json: { sites: [{ id: "site-manus", name: "manus.im", url: "https://manus.im/", createdAt: at, isPublic: false }] } });
+    if (url.pathname === "/api/organizations" && method === "GET") return route.fulfill({ json: { organizations: options.organizations ?? organizations, joined: [] } });
+    if (url.pathname === "/api/auth/sign-out") return route.fulfill({ json: { success: true } });
     if (method !== "GET") return route.fulfill({ status: 403, json: { error: { message: "Unplanned write in a browser fixture." } } });
     return route.fulfill({ json: {} });
   });
@@ -33,32 +40,58 @@ async function setup(page: Page, options: { signedIn?: boolean; keys?: Key[] } =
 }
 const keyPosts = (state: { posts: { path: string; body: Record<string, unknown> }[] }) => state.posts.filter(post => post.path === "/api/agent-keys");
 const copied = (page: Page) => page.evaluate(() => (window as unknown as { __copied: string[] }).__copied.at(-1) ?? null);
+const opened = (page: Page) => page.evaluate(() => (window as unknown as { __opened: string[] }).__opened);
 const currentStep = (page: Page) => page.locator('.ao-step[aria-current="step"] h3');
+const card = (page: Page, client: string) => page.getByRole("form", { name: `Connect ${client} to Folio` });
 
-test("a person picks their agent, creates its key without seeing it on screen, and sees it connect", async ({ page }) => {
+test("a person picks their agent, approves it on the consent card, adds it in one step, and sees it connect", async ({ page }) => {
   const state = await setup(page);
   await page.goto("/agents#connect");
+  const origin = new URL(page.url()).origin;
   const panel = page.getByRole("region", { name: "Connect your agent" });
   await expect(panel).toContainText("It reads your saved websites");
-  // Claude Code is the default: one command, plus a .mcp.json the team can commit.
-  await expect(panel.locator("pre").first()).toContainText('claude mcp add --transport http --scope user folio');
-  await expect(panel.locator("pre").first()).toContainText('Authorization: Bearer $FOLIO_API_KEY');
+  // Claude Code is the default. Its one-paste command waits for a key; by hand, one command plus a .mcp.json the team can commit.
+  await expect(panel.getByRole("button", { name: "Copy command" })).toBeDisabled();
+  await expect(panel).toContainText("This becomes one command with the key already in it.");
+  const byHand = panel.locator("details.ao-manual");
+  await expect(byHand.locator("pre").first()).toContainText("claude mcp add --transport http --scope user folio");
+  await expect(byHand.locator("pre").first()).toContainText("Authorization: Bearer $FOLIO_API_KEY");
   await expect(panel).toContainText("/mcp__folio__improve_aeo");
 
   await panel.getByRole("radio", { name: /Cursor/ }).click();
   await expect(panel.getByRole("heading", { name: "Add Folio to Cursor" })).toBeVisible();
-  await expect(panel.locator("figcaption").filter({ hasText: ".cursor/mcp.json" })).toHaveCount(1);
+  await expect(panel.getByRole("button", { name: "Add to Cursor" })).toBeDisabled();
+  await expect(byHand.locator("figcaption").filter({ hasText: ".cursor/mcp.json" })).toHaveCount(1);
   await expect(panel).toContainText("Bearer ${env:FOLIO_API_KEY}");
   await expect(panel).toContainText("cursor-agent mcp list-tools folio");
-  await expect(panel.getByLabel("Key name")).toHaveValue("Rach’s Cursor");
-  await expect(panel.getByRole("checkbox", { name: /Read · always included/ })).toBeDisabled();
-  await panel.getByRole("checkbox", { name: /Record changes/ }).check();
-  await expect(panel.getByText("Connection status")).toBeVisible();
-  await expect(currentStep(page)).toHaveText("Create a key for Cursor");
-  await panel.getByRole("button", { name: "Create key" }).click();
-  await expect(currentStep(page)).toHaveText("Add Folio to Cursor");
 
-  expect(keyPosts(state).map(post => post.body)).toEqual([{ name: "Rach’s Cursor", scopes: ["read", "changes"], expiresInDays: 30 }]);
+  // The consent card: who is asking, which account, what it may do, which organizations' websites.
+  const consent = card(page, "Cursor");
+  await expect(consent).toContainText("Signed in as Rach Pradhan");
+  await expect(consent.getByLabel("Key name")).toHaveValue("Rach’s Cursor");
+  await expect(consent.getByRole("radio", { name: "Read only" })).toHaveAttribute("aria-checked", "true");
+  await expect(consent).toContainText("Nothing in Folio or on your websites is changed");
+  await consent.getByRole("radio", { name: "Read & record changes" }).click();
+  await expect(consent).toContainText("Save what it changed on your websites");
+  await expect(consent).not.toContainText("Nothing in Folio or on your websites is changed");
+  await expect(consent).toContainText("Websites shared in every organization you’re in, now and later, plus your own.");
+  await consent.getByRole("radio", { name: "Select" }).click();
+  await expect(consent).toContainText("Only your own websites.");
+  const manus = consent.getByRole("button", { name: "Manus", exact: true });
+  await manus.click();
+  await expect(manus).toHaveAttribute("aria-pressed", "true");
+  await expect(consent.getByRole("button", { name: "Other client", exact: true })).toHaveAttribute("aria-pressed", "false");
+  await expect(consent).toContainText("Websites shared in the ones you picked, plus your own.");
+  await expect(panel.getByText("Connection status")).toBeVisible();
+  await expect(currentStep(page)).toHaveText("Approve access for Cursor");
+  await consent.getByRole("button", { name: "Approve" }).click();
+  await expect(currentStep(page)).toHaveText("Add Folio to Cursor");
+  expect(keyPosts(state).map(post => post.body)).toEqual([{ name: "Rach’s Cursor", scopes: ["read", "changes"], expiresInDays: 30, organizations: ["org-manus"] }]);
+
+  // Approved: the card says what's next, and the key stays masked unless asked for.
+  const done = panel.locator(".cc-card.is-done");
+  await expect(done).toContainText("Rach’s Cursor is approved");
+  await expect(done).toContainText("Next, press Add to Cursor in step 3.");
   const secret = panel.getByLabel("Your new key");
   await expect(secret).toContainText('export FOLIO_API_KEY="folio_v1_cccc');
   await expect(secret).not.toContainText(token);
@@ -68,12 +101,23 @@ test("a person picks their agent, creates its key without seeing it on screen, a
   await expect(secret).not.toContainText(token);
   await expect(panel.getByRole("button", { name: "Copy export line" })).toBeVisible();
 
+  // Add to Cursor hands Cursor the server and the key in one link; the page itself never shows the key.
+  await panel.getByRole("button", { name: "Add to Cursor" }).click();
+  const links = await opened(page);
+  expect(links).toHaveLength(1);
+  expect(links[0].startsWith("cursor://anysphere.cursor-deeplink/mcp/install?name=folio&config=")).toBe(true);
+  expect(JSON.parse(Buffer.from(new URL(links[0]).searchParams.get("config")!, "base64").toString("utf8")))
+    .toEqual({ url: `${origin}/api/mcp`, headers: { Authorization: `Bearer ${token}` } });
+  await expect(panel).not.toContainText(token);
+
   // The status waits for the first call and turns green by itself when the key is used.
   await expect(panel.getByText("Waiting for Rach’s Cursor")).toBeVisible();
   state.keys = state.keys.map(item => item.id === "new-key" ? { ...item, lastUsedAt: new Date().toISOString() } : item);
   await expect(panel.locator(".ao-status")).toContainText("Connected", { timeout: 12_000 });
   await expect(panel.locator(".ao-status")).toContainText("Rach’s Cursor");
   await expect(panel.locator(".ao-status")).toContainText("used just now");
+  await expect(done).toContainText("Cursor is connected");
+  await expect(done).toContainText("It can now read your websites through Folio.");
   await expect(currentStep(page)).toHaveText("Ask it something");
 
   // Prompts adapt to the first saved website, and the references open.
@@ -88,22 +132,62 @@ test("a person picks their agent, creates its key without seeing it on screen, a
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(await page.evaluate(() => innerWidth + 1));
 });
 
-test("clients that ignore shell variables say where to paste the key", async ({ page }) => {
+test("Claude Code gets one command with the key in it, paid actions are opt-in, and VS Code's link holds no key", async ({ page }) => {
+  const state = await setup(page, { organizations: [] });
+  await page.goto("/agents");
+  const origin = new URL(page.url()).origin;
+  const panel = page.getByRole("region", { name: "Connect your agent" });
+  const consent = card(page, "Claude Code");
+  // Someone in no organization reads their own websites; there's nothing to pick.
+  await expect(consent).toContainText("You’re not in an organization yet");
+  await expect(consent.getByRole("radio", { name: "Select" })).toHaveCount(0);
+  // Paid actions stay folded away, and say they charge when chosen.
+  await consent.getByText("Paid actions").click();
+  await consent.getByRole("checkbox", { name: /Paid search lookups · can charge/ }).check();
+  await expect(consent).toContainText("Can spend: paid search lookups.");
+  await consent.getByRole("checkbox", { name: /Paid search lookups · can charge/ }).uncheck();
+  await expect(consent).not.toContainText("Can spend");
+  await consent.getByRole("button", { name: "Approve" }).click();
+
+  const install = panel.locator(".ao-install");
+  await expect(install.locator("pre")).toContainText("claude mcp add --transport http --scope user folio");
+  await expect(install.locator("pre")).toContainText("folio_v1_cccc•");
+  await expect(install.locator("pre")).not.toContainText(token);
+  await install.getByRole("button", { name: "Copy command" }).click();
+  expect(await copied(page)).toBe(`claude mcp remove --scope user folio 2>/dev/null\nclaude mcp add --transport http --scope user folio ${origin}/api/mcp \\\n  --header "Authorization: Bearer ${token}"`);
+  expect(keyPosts(state).map(post => post.body)).toEqual([{ name: "Rach’s Claude Code", scopes: ["read"], expiresInDays: 30 }]);
+
+  // VS Code asks for the key itself, so its button works before any key and its link carries none.
+  await panel.getByRole("radio", { name: /VS Code/ }).click();
+  const href = await panel.getByRole("link", { name: "Add to VS Code" }).getAttribute("href");
+  expect(href!.startsWith("vscode:mcp/install?")).toBe(true);
+  expect(href).not.toContain("folio_v1_");
+  expect(JSON.parse(decodeURIComponent(href!.slice("vscode:mcp/install?".length))).url).toBe(`${origin}/api/mcp`);
+});
+
+test("Claude Desktop downloads an extension that asks for the key; by hand, the config's copy carries it", async ({ page }) => {
   const state = await setup(page);
   await page.goto("/agents");
   const panel = page.getByRole("region", { name: "Connect your agent" });
   await panel.getByRole("radio", { name: /Claude Desktop/ }).click();
+  const download = panel.getByRole("link", { name: "Download for Claude Desktop" });
+  await expect(download).toHaveAttribute("href", /\/api\/agent-setup\/claude-desktop$/);
+  await expect(download).toHaveAttribute("download", "");
+  await expect(panel).toContainText("Claude asks for it when you install");
+  await panel.getByText("Or set it up by hand").click();
   await expect(panel).toContainText("mcp-remote");
   await expect(panel).toContainText("Bearer <your Folio key>");
   await expect(panel).toContainText("Replace <your Folio key> with your key.");
-  await panel.getByRole("button", { name: "Create key" }).click();
-  await expect(panel.getByRole("button", { name: "Copy key" })).toBeVisible();
+  await card(page, "Claude Desktop").getByRole("button", { name: "Approve" }).click();
+  const done = panel.locator(".cc-card.is-done");
+  await expect(done.getByRole("button", { name: "Copy key" })).toBeVisible();
+  await expect(done).toContainText("Next, download the extension in step 3 and paste this key when Claude asks for it.");
   await expect(panel).toContainText("Claude Desktop doesn’t read your terminal’s variables");
   // The config on screen keeps the placeholder; its copy carries the new key, ready to paste.
   await expect(panel.locator("pre").filter({ hasText: "mcp-remote" })).not.toContainText(token);
   await panel.getByRole("button", { name: "Copy with your key" }).click();
   expect(JSON.parse((await copied(page))!).mcpServers.folio.env.FOLIO_AUTH).toBe(`Bearer ${token}`);
-  expect(keyPosts(state)).toHaveLength(1);
+  expect(keyPosts(state).map(post => post.body)).toEqual([{ name: "Rach’s Claude Desktop", scopes: ["read"], expiresInDays: 30 }]);
 });
 
 test("Manus, a cloud agent, gets the public address, a Bearer token to paste, and a prompt to check it", async ({ page }) => {
@@ -121,9 +205,10 @@ test("Manus, a cloud agent, gets the public address, a Bearer token to paste, an
   await expect(panel).toContainText("not the address this page is open on");
   await expect(panel).toContainText("hasn’t run them in a Manus account yet");
   await expect(panel.locator("figure").filter({ hasText: "Ask it in Manus" })).toContainText("call folio_organizations");
-  await expect(panel.getByLabel("Key name")).toHaveValue("Rach’s Manus");
-  await panel.getByRole("button", { name: "Create key" }).click();
-  await expect(panel.locator(".ao-new-key").getByRole("button", { name: "Copy key" })).toBeVisible();
+  const consent = card(page, "Manus");
+  await expect(consent.getByLabel("Key name")).toHaveValue("Rach’s Manus");
+  await consent.getByRole("button", { name: "Approve" }).click();
+  await expect(panel.locator(".cc-card.is-done").getByRole("button", { name: "Copy key" })).toBeVisible();
   await expect(panel).toContainText("Manus doesn’t read your terminal’s variables");
   // The token row now offers the key itself, masked on screen and whole in the copy.
   const tokenRow = fields.locator("div").filter({ hasText: "Bearer token" });
@@ -137,7 +222,7 @@ test("Manus, a cloud agent, gets the public address, a Bearer token to paste, an
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(await page.evaluate(() => innerWidth + 1));
 });
 
-test("someone with a connected agent sees a compact entry; signed-out visitors still see the setup", async ({ page }) => {
+test("someone with a connected agent sees a compact entry; signed-out visitors still see the setup; Switch account signs out", async ({ page }) => {
   await setup(page, { keys: [key("k1", "Rach’s Claude Code", new Date().toISOString())] });
   await page.goto("/agents");
   const compact = page.locator("details.agent-onboarding");
@@ -150,8 +235,17 @@ test("someone with a connected agent sees a compact entry; signed-out visitors s
   const state = await setup(visitor, { signedIn: false });
   await visitor.goto("/agents");
   const panel = visitor.getByRole("region", { name: "Connect your agent" });
-  await expect(panel.getByRole("link", { name: "Sign in to create one" })).toHaveAttribute("href", "/login?next=%2Fagents");
+  await expect(panel.getByRole("link", { name: "Sign in to approve one" })).toHaveAttribute("href", "/login?next=%2Fagents");
   await expect(panel.locator("pre").first()).toContainText("/api/mcp");
   expect(state.keyReads).toBe(0);
   await visitor.close();
+
+  // Switch account signs out and returns to sign-in, coming back here afterwards.
+  const other = await page.context().newPage();
+  const signedIn = await setup(other);
+  await other.goto("/agents");
+  await Promise.all([other.waitForURL(/\/login\?next=%2Fagents/), card(other, "Claude Code").getByRole("button", { name: "Switch account" }).click()]);
+  expect(signedIn.posts.map(post => post.path)).toContain("/api/auth/sign-out");
+  expect(keyPosts(signedIn)).toHaveLength(0);
+  await other.close();
 });

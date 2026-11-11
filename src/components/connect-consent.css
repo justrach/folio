@@ -1,0 +1,72 @@
+/* The consent card: who is asking, which account, what it may do, which organizations. Theme tokens only. */
+.cc-card { display: grid; gap: 14px; width: 100%; max-width: 480px; padding: 26px 18px 16px; border-radius: var(--folio-radius-card); border: 1px solid var(--folio-edge);
+  background: var(--folio-surface); color: var(--folio-ink); box-shadow: 0 1px 2px color-mix(in srgb, var(--folio-shadow) 6%, transparent), 0 12px 32px color-mix(in srgb, var(--folio-shadow) 7%, transparent); }
+.cc-head { display: grid; justify-items: center; gap: 6px; text-align: center; }
+.cc-tiles { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.cc-tile { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--folio-edge); background: var(--folio-canvas); color: var(--folio-ink); }
+.cc-tile.is-folio { background: var(--folio-accent); border-color: var(--folio-accent); color: var(--folio-on-accent); }
+.cc-tile .folio-mark { width: 24px; height: 24px; }
+.cc-arrows { color: var(--folio-text-muted); }
+.cc-joined { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 999px; background: var(--folio-success); color: var(--folio-surface); }
+.cc-card .cc-title { margin: 0; font-size: 17px; font-weight: 600; letter-spacing: -.2px; color: var(--folio-ink); }
+.cc-card .cc-sub { margin: 0; font-size: 14px; color: var(--folio-text-secondary); }
+.cc-card .cc-account { display: inline-flex; align-items: center; flex-wrap: wrap; justify-content: center; gap: 4px 8px; margin: 6px 0 0; padding: 4px 12px 4px 4px; border-radius: 999px;
+  border: 1px solid var(--folio-edge); font-size: 13px; color: var(--folio-text-secondary); }
+.cc-account b { font-weight: 600; color: var(--folio-ink); }
+.cc-avatar { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 999px; background: var(--folio-surface-muted); font-size: 11px; font-weight: 600; color: var(--folio-text-secondary); }
+.cc-link { padding: 0 0 0 8px; border: 0; border-left: 1px solid var(--folio-edge); background: none; font: inherit; font-weight: 500; color: var(--folio-accent-text); cursor: pointer; }
+.cc-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+.cc-panel { display: grid; padding: 4px 14px; border-radius: calc(var(--folio-radius-card) - 4px); border: 1px solid var(--folio-edge); background: var(--folio-raised); }
+.cc-section { display: grid; gap: 10px; padding: 12px 0; }
+.cc-section + .cc-section, .cc-panel > :not(.cc-section):not(:first-child) { border-top: 1px solid var(--folio-edge); }
+.cc-section-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.cc-section-head h4, .cc-card .cc-label { margin: 0; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--folio-text-muted); }
+.cc-segmented { display: inline-flex; gap: 2px; padding: 2px; border-radius: 9px; background: var(--folio-surface-muted); }
+.cc-segmented button { min-height: 28px; padding: 0 10px; border: 0; border-radius: 7px; background: none; font: inherit; font-size: 13px; font-weight: 500; color: var(--folio-text-secondary); white-space: nowrap; cursor: pointer; }
+.cc-segmented button[aria-checked="true"] { background: var(--folio-surface); color: var(--folio-ink); box-shadow: 0 1px 2px color-mix(in srgb, var(--folio-shadow) 12%, transparent); }
+.cc-segmented button:focus-visible, .cc-chip:focus-visible, .cc-link:focus-visible { outline: 2px solid var(--folio-focus); outline-offset: 2px; }
+.cc-lines { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.cc-lines li { display: grid; grid-template-columns: 22px minmax(0,1fr); align-items: start; gap: 8px; font-size: 14px; line-height: 1.5; color: var(--folio-ink); }
+.cc-lines svg { box-sizing: content-box; padding: 2px; margin-top: 1px; border-radius: 6px; color: var(--folio-accent-text); background: var(--folio-accent-soft); }
+.cc-lines li.is-check svg { color: var(--folio-success); background: color-mix(in srgb, var(--folio-success) 12%, transparent); }
+.cc-lines li.is-paid svg { color: var(--folio-ink); background: var(--folio-warning-soft); }
+.cc-paid > summary { cursor: pointer; font-size: 13px; font-weight: 500; color: var(--folio-text-secondary); }
+.cc-paid[open] { display: grid; gap: 8px; }
+.cc-paid label { display: flex; align-items: flex-start; gap: 10px; padding: 9px 11px; border-radius: 10px; border: 1px dashed var(--folio-edge-strong); cursor: pointer; }
+.cc-paid input { flex: none; width: 16px; height: 16px; margin: 2px 0 0; accent-color: var(--folio-accent); }
+.cc-paid span { display: grid; gap: 2px; }
+.cc-paid strong { font-size: 13px; font-weight: 600; }
+.cc-paid small { font-size: 13px; line-height: 1.5; color: var(--folio-text-secondary); }
+.cc-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.cc-chip { display: inline-flex; align-items: center; gap: 7px; min-height: 30px; padding: 0 10px 0 4px; border-radius: 9px; border: 1px solid var(--folio-edge); background: var(--folio-surface);
+  font: inherit; font-size: 13px; font-weight: 500; color: var(--folio-ink); }
+button.cc-chip { cursor: pointer; }
+.cc-chip[aria-pressed="true"] { border-color: var(--folio-accent-edge); background: var(--folio-accent-soft); }
+.cc-chip > svg { color: var(--folio-accent-text); }
+.cc-chip-mark { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; background: var(--folio-inverse-surface); color: var(--folio-inverse-text); font-size: 10px; font-weight: 700; }
+.cc-card .cc-note { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 13px; color: var(--folio-text-muted); }
+
+.cc-details { display: grid; grid-template-columns: minmax(0,1fr) 140px; gap: 10px; padding: 12px 0; }
+.cc-details label { display: grid; gap: 6px; }
+.cc-details input { min-height: var(--folio-control-height, 40px); padding: 0 12px; border: 1px solid var(--folio-edge-strong); border-radius: var(--folio-radius-control); background: var(--folio-surface); color: var(--folio-ink); font-size: 14px; }
+
+.cc-actions { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0,1fr); gap: 10px; }
+.cc-actions .button { justify-content: center; }
+.cc-card .cc-error { margin: 0; font-size: 13px; color: var(--folio-danger); }
+.cc-card .cc-footer { margin: 0; text-align: center; font-size: 13px; color: var(--folio-text-muted); }
+
+/* After approval. */
+.cc-card.is-done { gap: 12px; }
+.cc-card.is-connected { border-color: var(--folio-success); }
+
+@media(max-width:520px) {
+  .cc-card { padding: 20px 12px 14px; }
+  .cc-panel { padding: 2px 12px; }
+  .cc-details { grid-template-columns: 1fr; }
+  /* The account line wraps to two rows, so it drops the pill and the divider. */
+  .cc-card .cc-account { border-radius: 12px; padding: 6px 10px; }
+  .cc-link { padding-left: 0; border-left: 0; }
+  .cc-section-head .cc-segmented { flex: 1 1 100%; }
+  .cc-section-head .cc-segmented button { flex: 1; }
+}

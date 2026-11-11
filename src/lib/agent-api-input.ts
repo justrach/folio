@@ -44,9 +44,12 @@ export function parseAgentQuery(url: string): Record<string, unknown> {
   }
   return input;
 }
-export function parseAgentKeyInput(input: Record<string, unknown>): { name: string; scopes: AgentApiScope[]; expiresInDays?: number } {
-  onlyFields(input, ["name", "scopes", "expiresInDays"]);
+export function parseAgentKeyInput(input: Record<string, unknown>): { name: string; scopes: AgentApiScope[]; expiresInDays?: number; organizations?: string[] | null } {
+  onlyFields(input, ["name", "scopes", "expiresInDays", "organizations"]);
   if (typeof input.name !== "string" || !Array.isArray(input.scopes) || input.scopes.some(scope => !AGENT_API_SCOPES.includes(scope)) ||
-    (input.expiresInDays !== undefined && typeof input.expiresInDays !== "number")) throw new AgentApiError("Use a name, read/evaluate/seo/changes scopes, and an optional key lifetime.");
-  return { name: input.name, scopes: input.scopes as AgentApiScope[], ...(input.expiresInDays === undefined ? {} : { expiresInDays: input.expiresInDays as number }) };
+    (input.expiresInDays !== undefined && typeof input.expiresInDays !== "number") ||
+    (input.organizations !== undefined && input.organizations !== null && !Array.isArray(input.organizations)))
+    throw new AgentApiError("Use a name, read/evaluate/seo/changes scopes, an optional key lifetime, and optionally the organization IDs the key may read.");
+  return { name: input.name, scopes: input.scopes as AgentApiScope[], ...(input.expiresInDays === undefined ? {} : { expiresInDays: input.expiresInDays as number }),
+    ...(input.organizations === undefined ? {} : { organizations: input.organizations as string[] | null }) };
 }

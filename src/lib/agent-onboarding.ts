@@ -19,6 +19,8 @@ export const FOLIO_KEY_ENV = "FOLIO_API_KEY";
 export const KEY_PLACEHOLDER = "<your Folio key>";
 /** The snippet with the person's new key in place of the placeholder. For the clipboard only. */
 export const withKey = (code: string, token: string) => code.split(KEY_PLACEHOLDER).join(token);
+/** What the screen shows of a new key: enough to recognise it, never enough to use it. */
+export const maskedKey = (token: string) => `${token.slice(0, 13)}${"•".repeat(16)}`;
 /** A one-line text block is a value typed into a form (Manus, any client), not a file or command. */
 export const isFormField = (block: SetupBlock) => block.language === "text" && !block.code.includes("\n");
 /** Where cloud agents reach Folio when this page is open on a computer the internet can't reach. */
@@ -38,7 +40,7 @@ export function agentClients(origin: string): AgentClientSetup[] {
   const url = mcpEndpoint(origin), cloud = reachableOrigin(origin), cloudUrl = mcpEndpoint(cloud);
   return [
     { id: "claude-code", label: "Claude Code", kind: "Terminal", readsShellEnvironment: true,
-      intro: "One command adds Folio for every project on this computer. Run it in a terminal where FOLIO_API_KEY is set.",
+      intro: "One command adds Folio for every project on this computer.",
       blocks: [
         { label: "Add Folio", language: "shell", code: `claude mcp add --transport http --scope user folio ${url} \\\n  --header "Authorization: Bearer $${FOLIO_KEY_ENV}"` },
         { label: "Or share it with your team in the repository", file: ".mcp.json", language: "json",
@@ -46,30 +48,30 @@ export function agentClients(origin: string): AgentClientSetup[] {
       ],
       check: { label: "Check it", code: "claude mcp list", expect: "folio: … ✔ Connected" },
       notes: [
-        "The command stores your key in Claude Code’s own settings, not in the repository.",
+        "Either command stores your key in Claude Code’s own settings, not in the repository.",
         "The .mcp.json version can be committed: it holds no key, and each teammate sets FOLIO_API_KEY to their own. Claude Code asks each person once to approve it.",
         "Folio’s guided workflows appear as slash commands: /mcp__folio__improve_aeo and /mcp__folio__review_aeo_changes.",
       ] },
     { id: "codex", label: "Codex", kind: "Terminal", readsShellEnvironment: true,
-      intro: "Codex reads the key from FOLIO_API_KEY each time it starts, so the key never goes into its config.",
+      intro: "One command adds Folio to Codex. Codex reads the key from FOLIO_API_KEY each time it starts, so the key never goes into its config.",
       blocks: [
         { label: "Add Folio", language: "shell", code: `codex mcp add folio --url ${url} --bearer-token-env-var ${FOLIO_KEY_ENV}` },
         { label: "Or edit the config yourself", file: "~/.codex/config.toml", language: "toml",
           code: `[mcp_servers.folio]\nurl = "${url}"\nbearer_token_env_var = "${FOLIO_KEY_ENV}"` },
       ],
       check: { label: "Check it", code: "codex mcp list", expect: "folio … enabled" },
-      notes: ["Start Codex from a terminal where FOLIO_API_KEY is set."] },
+      notes: ["Start Codex from a terminal where FOLIO_API_KEY is set: a new terminal after the one-paste command, or the same one."] },
     { id: "cursor", label: "Cursor", kind: "Editor", readsShellEnvironment: true,
-      intro: "Add Folio to the project’s .cursor/mcp.json (or ~/.cursor/mcp.json for every project).",
+      intro: "Add to Cursor puts Folio and your key into Cursor’s MCP settings in one step.",
       blocks: [
         { label: "Add Folio", file: ".cursor/mcp.json", language: "json",
           code: json({ mcpServers: { folio: { url, headers: { Authorization: `Bearer \${env:${FOLIO_KEY_ENV}}` } } } }) },
       ],
       check: { label: "Check it", code: "cursor-agent mcp list-tools folio", expect: "Tools for folio (…), then the folio_ tools your key allows" },
-      notes: ["Cursor reads FOLIO_API_KEY from the environment it was opened from. Open Cursor from that terminal (cursor .), or set the variable for your login session.",
+      notes: ["Set up by hand, Cursor reads FOLIO_API_KEY from the environment it was opened from: open Cursor from that terminal (cursor .), or set the variable for your login session.",
         "In the editor, Settings → MCP shows folio with a green dot once it connects."] },
     { id: "vscode", label: "VS Code", kind: "Editor", readsShellEnvironment: false,
-      intro: "For GitHub Copilot’s agent mode. VS Code asks for the key the first time and stores it securely.",
+      intro: "For GitHub Copilot’s agent mode. Add to VS Code adds Folio to your user settings; VS Code asks for the key the first time and stores it securely.",
       blocks: [
         { label: "Add Folio", file: ".vscode/mcp.json", language: "json",
           code: json({ inputs: [{ type: "promptString", id: "folio-key", description: "Folio API key", password: true }],
@@ -78,14 +80,14 @@ export function agentClients(origin: string): AgentClientSetup[] {
       check: { label: "Check it", code: "Command palette → MCP: List Servers", expect: "folio · Running" },
       notes: ["Paste your key when VS Code prompts for “Folio API key”."] },
     { id: "claude-desktop", label: "Claude Desktop", kind: "Desktop app", readsShellEnvironment: false,
-      intro: "Claude Desktop reaches Folio through the small mcp-remote bridge, which needs Node.js. Open Settings → Developer → Edit Config.",
+      intro: "Add Folio as a Claude Desktop extension: download it, open the file, and Claude asks for your key. Claude Desktop runs it with its own Node.js, so there’s nothing else to install.",
       blocks: [
-        { label: "Add Folio", file: "claude_desktop_config.json", language: "json",
+        { label: "Or add it to the config (Settings → Developer → Edit Config; needs Node.js)", file: "claude_desktop_config.json", language: "json",
           code: json({ mcpServers: { folio: { command: "npx", args: ["-y", "mcp-remote", url, "--header", "Authorization:${FOLIO_AUTH}"],
             env: { FOLIO_AUTH: `Bearer ${KEY_PLACEHOLDER}` } } } }) },
       ],
       check: { label: "Check it", code: "Quit and reopen Claude Desktop, then open the tools menu in a new chat", expect: "folio listed with its tools" },
-      notes: ["Desktop apps don’t see your terminal’s variables, so the key goes in this file.",
+      notes: ["The extension file holds no key: Claude asks for it when you install, masks it, and lets you change it later in its extension settings.",
         "Claude.ai and ChatGPT web connectors need OAuth sign-in, which Folio doesn’t offer yet."] },
     // From Manus's documentation (Connectors → Create → custom MCP server by URL); not yet run in a Manus account.
     { id: "manus", label: "Manus", kind: "Cloud agent", readsShellEnvironment: false,
@@ -112,6 +114,65 @@ export function agentClients(origin: string): AgentClientSetup[] {
       check: null,
       notes: ["Each request is independent: no session to keep alive, and GET streams aren’t needed.", "Browser-based clients must run on this Folio site’s own origin."] },
   ];
+}
+
+/** Claude Desktop's extension (.mcpb) for this Folio. It holds no key, so it is the same file for everyone. */
+export const CLAUDE_DESKTOP_EXTENSION_PATH = "/api/agent-setup/claude-desktop";
+// btoa takes Latin-1 only; install links carry URLs and folio_v1_ keys, which are ASCII.
+const base64 = (text: string) => btoa(text);
+const WAIT_FOR_KEY = "Create a key in step 2 first.";
+/**
+ * Cursor's install link (cursor.com/docs/context/mcp/install-links): the mcp.json entry as base64 JSON. Holds the key.
+ * Cursor reads a bare "+" in the query as a space, so the base64 is percent-encoded ("+" becomes "%2B").
+ */
+export function cursorInstallLink(origin: string, token: string) {
+  const config = { url: mcpEndpoint(origin), headers: { Authorization: `Bearer ${token}` } };
+  return `cursor://anysphere.cursor-deeplink/mcp/install?name=folio&config=${encodeURIComponent(base64(JSON.stringify(config)))}`;
+}
+/** VS Code's install link (vscode:mcp/install). The key is an input VS Code asks for and stores itself, so the link holds none. */
+export function vscodeInstallLink(origin: string) {
+  return `vscode:mcp/install?${encodeURIComponent(JSON.stringify({ name: "folio", type: "http", url: mcpEndpoint(origin),
+    headers: { Authorization: "Bearer ${input:folio-key}" }, inputs: [{ type: "promptString", id: "folio-key", description: "Folio API key", password: true }] }))}`;
+}
+
+/**
+ * The one-step way to add Folio to a client, where there is one: an install link, a file to open, or one command
+ * to paste. `token` is the key just made on the page; actions that carry the key wait for it (`needsKey`).
+ * Claude Code and Codex have no install links, so theirs is a single command with the key in it.
+ */
+export type InstallAction = { kind: "link" | "download" | "command"; label: string; needsKey: boolean;
+  /** For links and downloads; null until the key it needs exists. */
+  href: string | null;
+  /** For commands; null until the key it needs exists. */
+  code: string | null;
+  hint: string;
+  /** Shown with the new key: what to do with it next. */
+  next: string };
+export function installAction(client: AgentClientId, origin: string, token: string | null): InstallAction | null {
+  const url = mcpEndpoint(origin);
+  switch (client) {
+    case "cursor": return { kind: "link", label: "Add to Cursor", needsKey: true, href: token ? cursorInstallLink(origin, token) : null, code: null,
+      hint: token ? "Opens Cursor, which asks you to confirm. Folio and your key go into Cursor’s own settings, so there’s nothing else to set up."
+        : `${WAIT_FOR_KEY} This button then puts Folio and the key into Cursor in one step.`,
+      next: "Next, press Add to Cursor in step 3." };
+    case "vscode": return { kind: "link", label: "Add to VS Code", needsKey: false, href: vscodeInstallLink(origin), code: null,
+      hint: "Opens VS Code, which adds Folio to your user settings. The first time Folio starts, VS Code asks for the “Folio API key”: paste the key from step 2.",
+      next: "Next, press Add to VS Code in step 3, and paste this key when VS Code asks for it." };
+    case "claude-desktop": return { kind: "download", label: "Download for Claude Desktop", needsKey: false, href: `${origin.replace(/\/$/, "")}${CLAUDE_DESKTOP_EXTENSION_PATH}`, code: null,
+      hint: "Open the downloaded folio.mcpb. Claude Desktop shows Folio and asks for your Folio API key: paste the key from step 2.",
+      next: "Next, download the extension in step 3 and paste this key when Claude asks for it." };
+    case "claude-code": return { kind: "command", label: "Copy command", needsKey: true, href: null,
+      code: token ? `claude mcp remove --scope user folio 2>/dev/null\nclaude mcp add --transport http --scope user folio ${url} \\\n  --header "Authorization: Bearer ${token}"` : null,
+      hint: token ? "Paste it into a terminal. It replaces any earlier folio entry and saves Folio, with this key, in Claude Code’s settings for every project on this computer."
+        : `${WAIT_FOR_KEY} This becomes one command with the key already in it.`,
+      next: "Next, copy the command in step 3: it already has this key in it." };
+    case "codex": return { kind: "command", label: "Copy command", needsKey: true, href: null,
+      code: token ? `export ${FOLIO_KEY_ENV}="${token}"\necho 'export ${FOLIO_KEY_ENV}="${token}"' >> "$HOME/.\${SHELL##*/}rc"\ncodex mcp add folio --url ${url} --bearer-token-env-var ${FOLIO_KEY_ENV}` : null,
+      hint: token ? "Paste it into a terminal. It saves the key in your shell profile (~/.zshrc or ~/.bashrc) so Codex finds it in new terminals, then adds Folio to Codex."
+        : `${WAIT_FOR_KEY} This becomes one command with the key already in it.`,
+      next: "Next, copy the command in step 3: it already has this key in it." };
+    default: return null;
+  }
 }
 
 /**

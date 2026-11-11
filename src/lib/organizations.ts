@@ -1,6 +1,7 @@
 import "server-only";
 import type { D1Database } from "@cloudflare/workers-types";
 import { AgentApiError, agentApiHash } from "./agent-api-key-store";
+import { keyReadsOrganization } from "./agent-observation-types";
 import { sequentially } from "./sequential";
 
 /**
@@ -288,8 +289,11 @@ export async function unshareWebsite(db: D1Database, userId: string, organizatio
   await db.prepare("DELETE FROM organization_websites WHERE organization_id = ? AND site_id = ?").bind(organizationId, id).run();
 }
 
-/** A website the reader owns, or one shared with an organization they belong to. Never a write. */
-export async function readableWebsite(db: D1Database, userId: string, websiteId: string) {
+/**
+ * A website the reader owns, or one shared with an organization they belong to. Never a write. `allowed` is an agent key's
+ * organization limit (null = all): a shared website is readable only through an organization the key may read.
+ */
+export async function readableWebsite(db: D1Database, userId: string, websiteId: string, allowed: string[] | null = null) {
   signedIn(userId);
   const site = await db.prepare(`SELECT s.id, s.name, s.url, s.user_id FROM sites s WHERE s.id = ? AND (s.user_id = ? OR EXISTS(
       SELECT 1 FROM organization_websites w JOIN organization_members m ON m.organization_id = w.organization_id WHERE w.site_id = s.id AND m.user_id = ?))`)
@@ -298,18 +302,23 @@ export async function readableWebsite(db: D1Database, userId: string, websiteId:
   const { results } = await db.prepare(`SELECT o.id, o.name FROM organization_websites w JOIN organizations o ON o.id = w.organization_id
       JOIN organization_members m ON m.organization_id = w.organization_id AND m.user_id = ? WHERE w.site_id = ? ORDER BY o.name, o.id`)
     .bind(userId, site.id).all<{ id: string; name: string }>();
-  return { site: { id: site.id, name: site.name, url: site.url }, ownerId: site.user_id, access: site.user_id === userId ? "owner" as const : "organization" as const, organizations: results };
+  const organizations = results.filter(item => keyReadsOrganization(allowed, item.id));
+  const owner = site.user_id === userId;
+  // Not found, rather than forbidden, so a limited key can't tell which websites its other organizations share.
+  if (!owner && !organizations.length) return null;
+  return { site: { id: site.id, name: site.name, url: site.url }, ownerId: site.user_id, access: owner ? "owner" as const : "organization" as const, organizations };
 }
 
-/** For agents: the caller's organizations, teammates (names and roles only) and shared website IDs. */
-export async function agentOrganizations(db: D1Database, userId: string, now = Date.now()) {
+/** For agents: the caller's organizations, teammates (names and roles only) and shared website IDs. `allowed` is the key's organization limit. */
+export async function agentOrganizations(db: D1Database, userId: string, now = Date.now(), allowed: string[] | null = null) {
   await claimEmailInvites(db, userId, now);
   const items = [];
-  for (const summary of await listOrganizations(db, userId)) {
+  for (const summary of (await listOrganizations(db, userId)).filter(item => keyReadsOrganization(allowed, item.id))) {
     const detail = await getOrganization(db, userId, summary.id, now);
     items.push({ id: detail.id, name: detail.name, role: detail.yourRole,
       members: detail.members.map(member => ({ name: member.name, role: member.role, agents: member.agents.length, you: member.you })),
       websites: detail.websites.map(site => ({ websiteId: site.websiteId, name: site.name, domain: site.domain, sharedBy: site.sharedBy.name })) });
   }
-  return { items, note: "Pass a websiteId to folio_website_gaps to read what that website is missing. Shared websites show the saved reports of the member who shared them." };
+  return { items, note: "Pass a websiteId to folio_website_gaps to read what that website is missing. Shared websites show the saved reports of the member who shared them."
+    + (allowed ? ` This key was approved for ${allowed.length ? "some of the person's organizations" : "their own websites only"}; for others, they can approve a new key in Folio.` : "") };
 }

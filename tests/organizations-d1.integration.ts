@@ -8,7 +8,8 @@ import { Miniflare } from "miniflare";
 import { unstable_splitSqlQuery } from "wrangler";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
-import { AgentApiError, authenticateAgentApiKey, createAgentApiKey } from "../src/lib/agent-api-key-store";
+import { AgentApiError, authenticateAgentApiKey, createAgentApiKey, listAgentApiKeys } from "../src/lib/agent-api-key-store";
+import { workspaceSearchIndex } from "../src/lib/workspace-search";
 import { serveFolioMcp } from "../src/lib/folio-mcp";
 import { acceptInvite, addMemberByEmail, agentOrganizations, cancelEmailInvite, claimEmailInvites, createInvite, createOrganization, getOrganization, leaveOrganization,
   listOrganizations, previewInvite, readableWebsite, removeMember, revokeInvite, setMemberRole, shareWebsite, unshareWebsite } from "../src/lib/organizations";
@@ -188,6 +189,63 @@ test("D1: an owner adds someone by email before they have an account; they join 
     for (const id of ["avery", "natalie", "sam"]) await leaveOrganization(db, id, org.id);
     assert.deepEqual(await leaveOrganization(db, "rach", org.id), { deleted: true });
     assert.equal((await db.prepare("SELECT COUNT(*) AS n FROM organization_email_invites").first<{ n: number }>())!.n, 0);
+    assert.equal(provider.mock.callCount(), 0);
+  } finally { await current.dispose(); await rm(directory, { recursive: true, force: true }); }
+});
+
+test("D1: a key approved for some organizations reads only what they share, plus the person's own websites", { timeout: 120_000 }, async t => {
+  const directory = await mkdtemp(join(tmpdir(), "folio-organizations-limit-")), current = runtime(directory);
+  const provider = t.mock.method(globalThis, "fetch", async () => { throw new Error("No provider calls permitted"); });
+  try {
+    const db = await current.getD1Database("DB"); await setup(db);
+    const manus = await createOrganization(db, "rach", { name: "Manus" }), other = await createOrganization(db, "rach", { name: "Other client" });
+    const elsewhere = await createOrganization(db, "sam", { name: "Sam's team" });
+    for (const org of [manus, other]) await acceptInvite(db, "avery", (await createInvite(db, "rach", org.id)).token);
+    await shareWebsite(db, "rach", manus.id, "site-manus");
+    await shareWebsite(db, "rach", other.id, "site-private");
+
+    // The limit is checked when the key is approved: only organizations the person belongs to, no repeats.
+    await rejects(createAgentApiKey(db, "avery", { name: "x", scopes: ["read"], organizations: [elsewhere.id] }), 403);
+    await rejects(createAgentApiKey(db, "avery", { name: "x", scopes: ["read"], organizations: [manus.id, manus.id] }), 400);
+    await rejects(createAgentApiKey(db, "avery", { name: "x", scopes: ["read"], organizations: "all" as never }), 400);
+    const limited = await createAgentApiKey(db, "avery", { name: "Avery's Cursor", scopes: ["read"], organizations: [manus.id] });
+    const own = await createAgentApiKey(db, "avery", { name: "Avery's Codex", scopes: ["read"], organizations: [] });
+    const all = await createAgentApiKey(db, "avery", { name: "Avery's Claude Code", scopes: ["read"] });
+    assert.deepEqual((await listAgentApiKeys(db, "avery")).map(key => [key.name, key.organizations]).sort(),
+      [["Avery's Claude Code", null], ["Avery's Codex", []], ["Avery's Cursor", [manus.id]]]);
+    assert.deepEqual((await authenticateAgentApiKey(db, limited.token, "read")).organizations, [manus.id]);
+
+    const connect = async (token: string) => {
+      const client = new Client({ name: "limited-agent", version: "1" });
+      await client.connect(new StreamableHTTPClientTransport(new URL("https://folio.example/api/mcp"), { fetch: async (url, init) => serveFolioMcp(new Request(url, init), { db, principal: await authenticateAgentApiKey(db, token, "read"), env: {} }) }));
+      return client;
+    };
+    type Listed = { result: { items: { name: string }[]; note: string } };
+    const reads = async (token: string) => {
+      const client = await connect(token);
+      try {
+        const listed = (await client.callTool({ name: "folio_organizations", arguments: {} })).structuredContent as Listed;
+        const gap = async (websiteId: string) => { const result = (await client.callTool({ name: "folio_website_gaps", arguments: { websiteId } })).structuredContent as { result?: WebsiteGapsReport; error?: { code: string } };
+          return result.result ? result.result.website.organizations.map(org => org.name).join("+") || result.result.website.access : result.error!.code; };
+        return { organizations: listed.result.items.map(item => item.name), note: listed.result.note,
+          manus: await gap("site-manus"), other: await gap("site-private"), mine: await gap("site-avery") };
+      } finally { await client.close(); }
+    };
+    // Limited to Manus: Manus's shared website and Avery's own; the other organization's is not found, as if it didn't exist.
+    const manusOnly = await reads(limited.token);
+    assert.deepEqual([manusOnly.organizations, manusOnly.manus, manusOnly.other, manusOnly.mine], [["Manus"], "Manus", "not_found", "owner"]);
+    assert.match(manusOnly.note, /approved for some of the person's organizations/);
+    // No organizations: own websites only.
+    const ownOnly = await reads(own.token);
+    assert.deepEqual([ownOnly.organizations, ownOnly.manus, ownOnly.other, ownOnly.mine], [[], "not_found", "not_found", "owner"]);
+    assert.match(ownOnly.note, /their own websites only/);
+    // Unlimited (every key made before this): everything the person can read.
+    const everything = await reads(all.token);
+    assert.deepEqual([everything.organizations, everything.manus, everything.other, everything.mine], [["Manus", "Other client"], "Manus", "Other client", "owner"]);
+    assert.doesNotMatch(everything.note, /approved for/);
+    // Search follows the same limit.
+    assert.deepEqual((await workspaceSearchIndex(db, "avery", [manus.id])).organizations.map(org => [org.name, org.domains]), [["Manus", ["manusfixture.com"]]]);
+    assert.deepEqual((await workspaceSearchIndex(db, "avery")).organizations.map(org => org.name), ["Manus", "Other client"]);
     assert.equal(provider.mock.callCount(), 0);
   } finally { await current.dispose(); await rm(directory, { recursive: true, force: true }); }
 });

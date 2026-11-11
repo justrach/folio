@@ -1,28 +1,31 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Bot, Check, CircleCheck, Copy, Eye, EyeOff, KeyRound, Loader2, MessageSquareText, PlugZap, ShieldCheck, Terminal, Wrench } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Bot, Check, CircleCheck, Cloud, Code2, Copy, Download, ExternalLink, Eye, EyeOff, KeyRound, Loader2, MessageSquareText, Monitor, MousePointer2, Plug, PlugZap, ShieldCheck, SquareTerminal, Terminal, Wrench,
+  type LucideIcon } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
-import type { AgentApiKeySummary, AgentApiScope } from "@/lib/agent-observation-types";
-import { AGENT_PERMISSIONS, CONNECTION_TROUBLESHOOTING, KEY_PLACEHOLDER, agentClients, connectionTestCommand, exportLine, isFormField, onboardingProgress, publicIndexEndpoint, reachableOrigin, starterPrompts,
-  withKey, type AgentClientId, type SetupBlock } from "@/lib/agent-onboarding";
+import type { AgentApiKeySummary } from "@/lib/agent-observation-types";
+import { AGENT_PERMISSIONS, CONNECTION_TROUBLESHOOTING, KEY_PLACEHOLDER, agentClients, connectionTestCommand, exportLine, installAction, isFormField, maskedKey, onboardingProgress, publicIndexEndpoint,
+  reachableOrigin, starterPrompts, withKey, type AgentClientId, type InstallAction, type SetupBlock } from "@/lib/agent-onboarding";
 import { UiSelect } from "./ui/select";
+import { ConnectConsent, ConsentDone, type ConsentChoice, type ConsentOrganization } from "./connect-consent";
 import "./agent-onboarding.css";
+
+/** Plain icons for each client, not their logos. */
+const CLIENT_ICONS: Record<AgentClientId, LucideIcon> = { "claude-code": SquareTerminal, codex: Terminal, cursor: MousePointer2, vscode: Code2, "claude-desktop": Monitor, manus: Cloud, other: Plug };
 
 const WATCH_MS = 15 * 60_000, POLL_MS = 4_000;
 const active = (key: AgentApiKeySummary, now: number) => !key.revokedAt && Date.parse(key.expiresAt) > now;
-/** What the screen shows of a new key: enough to recognise it, never enough to use it. */
-const masked = (token: string) => `${token.slice(0, 13)}${"•".repeat(16)}`;
 function used(iso: string | null, now: number) {
   if (!iso) return "not used yet";
   const seconds = Math.max(0, (now - Date.parse(iso)) / 1000);
   return seconds < 60 ? "used just now" : seconds < 3600 ? `used ${Math.round(seconds / 60)} min ago` : seconds < 86_400 ? `used ${Math.round(seconds / 3600)} h ago` : `used ${Math.round(seconds / 86_400)} d ago`;
 }
 
-export function CopyButton({ text, label = "Copy", className = "" }: { text: string; label?: string; className?: string }) {
+export function CopyButton({ text, label = "Copy", className = "", primary = false }: { text: string; label?: string; className?: string; primary?: boolean }) {
   const [copied, setCopied] = useState(false);
-  return <button type="button" className={`button secondary ao-copy ${className}`} onClick={async () => {
+  return <button type="button" className={`button ${primary ? "primary" : "secondary"} ao-copy ${className}`} onClick={async () => {
     try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1600); } catch { /* The text stays selectable. */ }
   }}>{copied ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}{copied ? "Copied" : label}</button>;
 }
@@ -42,11 +45,32 @@ function Fields({ blocks, token }: { blocks: SetupBlock[]; token: string | null 
     const keyOnly = block.code === KEY_PLACEHOLDER, keyed = block.code.includes(KEY_PLACEHOLDER);
     return <div key={block.label}>
       <dt>{block.label}</dt>
-      <dd><code>{keyOnly && token ? masked(token) : block.code}</code>
+      <dd><code>{keyOnly && token ? maskedKey(token) : block.code}</code>
         {keyed && token ? <CopyButton text={withKey(block.code, token)} label={keyOnly ? "Copy key" : "Copy with your key"} />
           : keyOnly ? <span className="ao-field-hint">Paste the key from step 2</span> : <CopyButton text={block.code} />}</dd>
     </div>;
   })}</dl>;
+}
+
+/** Opens an install link from a button, so a link that carries the key never shows in the browser’s status bar. */
+function openLink(href: string) {
+  const link = document.createElement("a");
+  link.href = href; link.click();
+}
+/** The one-step way to add Folio: a button that opens the app, a file to open, or one command with the new key in it (masked on screen). */
+function Install({ action, token }: { action: InstallAction; token: string | null }) {
+  const ready = Boolean(action.kind === "command" ? action.code : action.href);
+  const shown = action.code && token ? action.code.split(token).join(maskedKey(token)) : action.code;
+  return <div className="ao-install">
+    {action.kind === "command" ? ready
+      ? <figure className="ao-code"><figcaption><span>One command, with your new key</span><CopyButton text={action.code!} label={action.label} primary /></figcaption>
+        <pre data-language="shell">{shown}</pre></figure>
+      : <button type="button" className="button primary" disabled><Copy size={15} aria-hidden="true" />{action.label}</button>
+    : action.kind === "download" ? <a className="button primary" href={action.href!} download><Download size={15} aria-hidden="true" />{action.label}</a>
+    : action.needsKey ? <button type="button" className="button primary" disabled={!ready} onClick={() => action.href && openLink(action.href)}><ExternalLink size={15} aria-hidden="true" />{action.label}</button>
+    : <a className="button primary" href={action.href!}><ExternalLink size={15} aria-hidden="true" />{action.label}</a>}
+    <p className="ao-install-hint">{action.hint}</p>
+  </div>;
 }
 
 /** The signed-in person's keys, with a light poll while a new key waits for its first call. Reads only. */
@@ -76,6 +100,21 @@ export function AgentOnboarding({ domain = null, organization = null, onKeysChan
   const [clientId, setClientId] = useState<AgentClientId>("claude-code");
   const client = clients.find(item => item.id === clientId) ?? clients[0];
   const { keys, setKeys, error: keysError, reload } = useAgentKeys(signedIn);
+  // The person's organizations, for the consent card's picker. Joining by email is claimed here too, as on /orgs.
+  const [organizations, setOrganizations] = useState<ConsentOrganization[] | null>(null);
+  useEffect(() => {
+    if (!signedIn) return;
+    const controller = new AbortController();
+    fetch("/api/organizations", { cache: "no-store", signal: controller.signal }).then(async response => {
+      const body = response.ok ? await response.json() as { organizations?: ConsentOrganization[] } : {};
+      setOrganizations((body.organizations ?? []).map(org => ({ id: org.id, name: org.name })));
+    }).catch(() => { if (!controller.signal.aborted) setOrganizations([]); });
+    return () => controller.abort();
+  }, [signedIn]);
+  const switchAccount = async () => {
+    await authClient.signOut().catch(() => undefined);
+    window.location.assign(`/login?next=${encodeURIComponent(organization ? "/orgs" : "/agents")}`);
+  };
   const [now, setNow] = useState(() => Date.now());
   const [watch, setWatch] = useState<{ id: string; token: string; since: number } | null>(null);
   const watched = watch ? keys?.find(key => key.id === watch.id) ?? null : null;
@@ -104,6 +143,11 @@ export function AgentOnboarding({ domain = null, organization = null, onKeysChan
     "aria-current": n === progress.current ? "step" as const : undefined });
   const number = (n: number) => <span className={`ao-number ${done(n) ? "is-done" : ""}`}>{done(n) ? <Check size={14} aria-label="Done" /> : n}</span>;
   const fields = client.blocks.filter(isFormField), files = client.blocks.filter(block => !isFormField(block));
+  const action = installAction(client.id, origin, fresh);
+  const manual = <>
+    {fields.length > 0 && <Fields blocks={fields} token={fresh} />}
+    {files.length > 0 && <div className="ao-blocks">{files.map(block => <Code key={block.label} block={block} token={fresh} />)}</div>}
+  </>;
 
   const body = <>
     <ol className="ao-steps">
@@ -115,19 +159,20 @@ export function AgentOnboarding({ domain = null, organization = null, onKeysChan
       </div></li>
 
       <li {...step(2)}>{number(2)}<div className="ao-step-body">
-        <h3><KeyRound size={16} aria-hidden="true" />Create a key for {client.label}</h3>
+        <h3><KeyRound size={16} aria-hidden="true" />Approve access for {client.label}</h3>
         {isPending ? <p role="status">Checking your sign-in…</p> : !signedIn
-          ? <p>Each person uses their own key. <Link href={`/login?next=${encodeURIComponent(organization ? "/orgs" : "/agents")}`}>Sign in to create one</Link>.</p>
-          : <KeyForm key={client.id} clientLabel={client.label} firstName={firstName} organization={organization} readsShell={client.readsShellEnvironment}
-            existing={live} now={now} error={keysError}
+          ? <p>Each person approves their own agent with their own key. <Link href={`/login?next=${encodeURIComponent(organization ? "/orgs" : "/agents")}`}>Sign in to approve one</Link>.</p>
+          : <KeyForm key={client.id} client={{ label: client.label, icon: (() => { const Icon = CLIENT_ICONS[client.id]; return <Icon size={20} />; })() }}
+            account={{ name: session?.user.name || session?.user.email || "you" }} onSwitchAccount={() => void switchAccount()} organizations={organizations}
+            firstName={firstName} organization={organization} readsShell={client.readsShellEnvironment} connected={Boolean(watched?.lastUsedAt)}
+            next={action?.next ?? null} existing={live} now={now} error={keysError}
             onCreated={(key, token) => { setKeys(previous => [key, ...(previous ?? [])]); setWatch({ id: key.id, token, since: Date.now() }); setNow(Date.now()); onKeysChanged?.(); }} />}
       </div></li>
 
       <li {...step(3)}>{number(3)}<div className="ao-step-body">
         <h3><PlugZap size={16} aria-hidden="true" />Add Folio to {client.label}</h3>
         <p>{client.intro}</p>
-        {fields.length > 0 && <Fields blocks={fields} token={fresh} />}
-        {files.length > 0 && <div className="ao-blocks">{files.map(block => <Code key={block.label} block={block} token={fresh} />)}</div>}
+        {action ? <><Install action={action} token={fresh} /><details className="ao-manual"><summary>Or set it up by hand</summary>{manual}</details></> : manual}
         {client.notes.length > 0 && <ul className="ao-notes">{client.notes.map(note => <li key={note}>{note}</li>)}</ul>}
         <p className="ao-aside">Just looking around? <code>{publicIndexEndpoint(client.id === "manus" ? reachableOrigin(origin) : origin)}</code> needs no key and reads Folio’s published AI answers only.</p>
       </div></li>
@@ -187,18 +232,22 @@ export function AgentOnboarding({ domain = null, organization = null, onKeysChan
   </section>;
 }
 
-function KeyForm({ clientLabel, firstName, organization, readsShell, existing, now, error, onCreated }: { clientLabel: string; firstName: string; organization: string | null; readsShell: boolean;
-  existing: AgentApiKeySummary[]; now: number; error: string; onCreated: (key: AgentApiKeySummary, token: string) => void }) {
+/** Step 2: the consent card. Approving creates the key with the chosen permissions and organizations; then the card says what's next. */
+function KeyForm({ client, account, onSwitchAccount, organizations, firstName, organization, readsShell, connected, next, existing, now, error, onCreated }: {
+  client: { label: string; icon: ReactNode }; account: { name: string }; onSwitchAccount: () => void; organizations: ConsentOrganization[] | null;
+  firstName: string; organization: string | null; readsShell: boolean; connected: boolean;
+  next: string | null; existing: AgentApiKeySummary[]; now: number; error: string; onCreated: (key: AgentApiKeySummary, token: string) => void }) {
+  const clientLabel = client.label;
   const [name, setName] = useState(`${firstName}’s ${clientLabel}`.slice(0, 100));
-  const [scopes, setScopes] = useState<AgentApiScope[]>(["read"]);
   const [days, setDays] = useState(30);
   const [busy, setBusy] = useState(false), [failure, setFailure] = useState("");
   const [created, setCreated] = useState<{ name: string; token: string } | null>(null), [revealed, setRevealed] = useState(false);
-  const toggle = (scope: AgentApiScope) => setScopes(previous => previous.includes(scope) ? previous.filter(item => item !== scope) : [...previous, scope]);
-  async function create() {
+  async function create(choice: ConsentChoice) {
+    if (!name.trim()) { setFailure("Give the key a name, so you can tell your agents apart."); return; }
     setBusy(true); setFailure("");
     try {
-      const response = await fetch("/api/agent-keys", { method: "POST", cache: "no-store", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name.trim(), scopes, expiresInDays: days }) });
+      const response = await fetch("/api/agent-keys", { method: "POST", cache: "no-store", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name.trim(), scopes: choice.scopes, expiresInDays: days, ...(choice.organizations ? { organizations: choice.organizations } : {}) }) });
       const payload = await response.json().catch(() => null) as { key?: AgentApiKeySummary; token?: string; error?: { message?: string } } | null;
       if (!response.ok || !payload?.key || !payload.token) throw new Error(payload?.error?.message ?? "The key couldn’t be created.");
       setCreated({ name: payload.key.name, token: payload.token }); setRevealed(false); onCreated(payload.key, payload.token);
@@ -206,32 +255,27 @@ function KeyForm({ clientLabel, firstName, organization, readsShell, existing, n
   }
   if (created) {
     const line = exportLine(created.token);
-    return <div className="ao-new-key" role="status">
-      <p><CircleCheck size={16} aria-hidden="true" /><strong>{created.name} is ready.</strong> The key is shown only now; copy it before you leave this page.</p>
-      <div className="ao-secret"><code aria-label="Your new key">{revealed ? line : `export FOLIO_API_KEY="${masked(created.token)}"`}</code>
+    return <ConsentDone icon={client.icon} connected={connected} title={connected ? `${clientLabel} is connected` : `${created.name} is approved`}>
+      <p className="ao-done-sub">{connected ? "It can now read your websites through Folio. Try a prompt in step 5." : "The key is shown only now; copy it before you leave this page."}</p>
+      {next && !connected && <p className="ao-next">{next}</p>}
+      <div className="ao-secret"><code aria-label="Your new key">{revealed ? line : `export FOLIO_API_KEY="${maskedKey(created.token)}"`}</code>
         <button type="button" className="button secondary ao-copy" onClick={() => setRevealed(value => !value)}>{revealed ? <EyeOff size={14} aria-hidden="true" /> : <Eye size={14} aria-hidden="true" />}{revealed ? "Hide" : "Show"}</button>
         <CopyButton text={readsShell ? line : created.token} label={readsShell ? "Copy export line" : "Copy key"} /></div>
-      <p className="ao-aside">{readsShell ? `Paste it into the terminal you start ${clientLabel} from. To keep it for new terminals, add the same line to ~/.zshrc (or your shell’s profile).`
-        : `${clientLabel} doesn’t read your terminal’s variables. In step 3, the copy buttons that mention your key put it in for you.`}{organization ? ` Teammates in ${organization} see this agent’s name and when it was last used, never the key.` : ""}</p>
-      <button type="button" className="text-link" onClick={() => setCreated(null)}>Create another key</button>
-    </div>;
+      <p className="ao-aside">{readsShell ? `${next ? "To set it up by hand instead, paste the export line" : "Paste it"} into the terminal you start ${clientLabel} from. To keep it for new terminals, add the same line to ~/.zshrc (or your shell’s profile).`
+        : `${clientLabel} doesn’t read your terminal’s variables.${next ? "" : " In step 3, the copy buttons that mention your key put it in for you."}`}{organization ? ` Teammates in ${organization} see this agent’s name and when it was last used, never the key.` : ""}</p>
+      <button type="button" className="text-link" onClick={() => setCreated(null)}>Approve another key</button>
+    </ConsentDone>;
   }
-  return <form className="ao-key-form" onSubmit={event => { event.preventDefault(); void create(); }}>
+  return <div className="ao-consent">
     {existing.length > 0 && <p className="ao-existing">You have {existing.length} active key{existing.length === 1 ? "" : "s"}: {existing.slice(0, 3).map(key => `${key.name} (${used(key.lastUsedAt, now)})`).join(", ")}{existing.length > 3 ? ", …" : ""}. If {existing.length === 1 ? "it’s" : "one is"} already set up in {clientLabel}, skip to step 4.</p>}
-    <div className="ao-key-fields">
-      <label>Key name<input value={name} maxLength={100} required onChange={event => setName(event.target.value)} /></label>
-      <label>Expires after<UiSelect aria-label="Expires after" value={days} onChange={event => setDays(Number(event.target.value))}><option value={7}>7 days</option><option value={30}>30 days</option><option value={90}>90 days</option></UiSelect></label>
-    </div>
-    <fieldset className="ao-scopes"><legend>What it can do</legend>
-      {AGENT_PERMISSIONS.map(group => <label key={group.scope} className={group.charges ? "is-paid" : ""}>
-        <input type="checkbox" checked={scopes.includes(group.scope)} disabled={group.scope === "read"} onChange={() => toggle(group.scope)} />
-        <span><strong>{group.label}{group.scope === "read" ? " · always included" : group.charges ? " · can charge" : " · no charges"}</strong><small>{group.summary}</small></span>
-      </label>)}
-    </fieldset>
-    <div className="ao-actions"><button className="button primary" disabled={busy || !name.trim()}>{busy ? <Loader2 size={15} className="spin" aria-hidden="true" /> : <KeyRound size={15} aria-hidden="true" />}Create key</button>
-      <Link href="/docs/api#api-keys" className="text-link">Manage or revoke keys</Link></div>
-    {(failure || error) && <p role="alert">{failure || error}</p>}
-  </form>;
+    <ConnectConsent client={client} account={account} onSwitchAccount={onSwitchAccount} organizations={organizations} busy={busy} error={failure || error} onApprove={choice => void create(choice)}
+      details={<div className="cc-details">
+        <label><span className="cc-label">Key name</span><input value={name} maxLength={100} required onChange={event => setName(event.target.value)} /></label>
+        <label><span className="cc-label">Expires after</span><UiSelect aria-label="Expires after" value={days} onChange={event => setDays(Number(event.target.value))}>
+          <option value={7}>7 days</option><option value={30}>30 days</option><option value={90}>90 days</option></UiSelect></label>
+      </div>}
+      footer={<>Change the access or disconnect any time: <Link href="/docs/api#api-keys">manage or revoke keys</Link>.</>} />
+  </div>;
 }
 
 function ConnectionStatus({ signedIn, keys, live, connected, watched, waiting, now, organization, onRefresh }: { signedIn: boolean; keys: AgentApiKeySummary[] | null; live: AgentApiKeySummary[];

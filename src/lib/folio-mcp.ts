@@ -132,10 +132,11 @@ export async function invokeFolioTool(name: string, args: Record<string, unknown
           : `${result.domain} is not named in any of ${plural(result.publishedQuestions, "published answer")}${result.citedIn ? `; it is cited in ${result.citedIn}` : ""}.` }) };
     }
     case "folio_targets": return pagedTargets(db, principal.ownerId, input);
-    case "folio_organizations": return agentOrganizations(db, principal.ownerId);
+    // A key approved for some organizations reads only what those share (plus the person's own websites).
+    case "folio_organizations": return agentOrganizations(db, principal.ownerId, Date.now(), principal.organizations ?? null);
     case "folio_find": {
       const query = ((input.q as string | undefined) ?? "").trim(), origin = (context.origin ?? "https://usefolio.site").replace(/\/$/, "");
-      const found = workspaceMatches(query, await workspaceSearchIndex(db, principal.ownerId), { date: utcDate });
+      const found = workspaceMatches(query, await workspaceSearchIndex(db, principal.ownerId, principal.organizations ?? null), { date: utcDate });
       const idOf = (key: string) => key.slice(key.indexOf(":") + 1);
       // workspaceMatches returns only the person's records, never pages or audits.
       const result: FolioFindResult = { query: query || null, truncated: found.truncated, items: found.items.map(item => ({ kind: item.kind as FolioFindResult["items"][number]["kind"], title: item.title, detail: item.detail, url: `${origin}${item.href}`,
@@ -145,7 +146,7 @@ export async function invokeFolioTool(name: string, args: Record<string, unknown
       return result;
     }
     case "folio_website_gaps": {
-      const report = await loadWebsiteGaps(db, principal.ownerId, input.websiteId as string);
+      const report = await loadWebsiteGaps(db, principal.ownerId, input.websiteId as string, new Date(), principal.organizations ?? null);
       // Recording is activity, not part of the answer: a failed save never fails the read.
       const recorded = await Promise.resolve().then(() => note({ tool: "website", question: null, domain: report.website.domain, queryId: null, resultCount: report.gaps.length,
         summary: `Read what ${report.website.domain} is missing: ${plural(report.gaps.length, "gap")}, ${report.notChecked.length} not checked yet.` })).catch(() => false);
