@@ -33,7 +33,8 @@ For local coding clients use `http://localhost:3001/api/mcp`. Remote sandboxes r
 | Tool | Permission | Behavior |
 | --- | --- | --- |
 | `folio_targets` | read | Owned website and question IDs |
-| `folio_website_gaps` | read | One owned website: where it shows up on Google and in AI answers, what it is missing, and what has not been checked |
+| `folio_organizations` | read | Your organizations, teammates (names and roles), how many agents each has connected, and the websites shared with each |
+| `folio_website_gaps` | read | One website you saved or that is shared with your organization: where it shows up on Google and in AI answers, what it is missing, and what has not been checked |
 | `folio_index` | read | The complete published dataset in one response (about 5 MB); prefer the four tools below |
 | `folio_index_overview`, `folio_index_search`, `folio_index_answer`, `folio_index_website` | read, or no key at `/api/index-mcp` | Compact, paged reads over published answers |
 | `folio_index_pages` | read (key required) | Semantic search over the pages Folio has crawled, with a labelled word-match fallback |
@@ -50,7 +51,7 @@ Only permitted tools are advertised. Paid calls require `confirmSpend: true` and
 
 ## What a website is missing
 
-`folio_website_gaps` takes one owned `websiteId` (from `folio_targets`) and returns the same report the owner sees on `/websites` under **Where it shows up**, also served to the signed-in owner at `GET /api/sites/{id}/visibility`. It reads saved data only (`src/lib/website-gaps.ts`); it never calls a provider, charges, or records an ask.
+`folio_website_gaps` takes one `websiteId`: one of yours (from `folio_targets`) or one shared with an organization you belong to (from `folio_organizations`). It returns the same report shown on `/websites` and on the organization page under **Where it shows up**, also served to the signed-in reader at `GET /api/sites/{id}/visibility`. A shared website shows the saved reports of the member who shared it, and `website.access` says `organization`. It reads saved data only (`src/lib/website-gaps.ts`) and never calls a provider or charges. Each call is saved as one line of the caller's agent activity (`agent_index_asks`), which teammates see for shared websites.
 
 - `summary`: one plain-English sentence per source.
 - `search`: the latest saved DataForSEO lookup that returned data. A newer lookup that returned nothing does not hide it. Each count is `value`, `none` (the provider has no data for the domain, which is not a failure) or `missing`.
@@ -61,6 +62,12 @@ Only permitted tools are advertised. Paid calls require `confirmSpend: true` and
 - `notChecked`: unknowns kept apart from findings, such as indexed questions that were never answered, no saved lookup, or a small share of pages read. An agent should treat these as unmeasured, not as problems.
 
 The `improve_aeo` prompt now starts with this tool.
+
+## Organizations
+
+Anyone signed in can create an organization at `/orgs` or join one with an invite link (`src/lib/organizations.ts`, migration `0028_organizations.sql`). Owners create links (14 days, up to 25 uses, revocable; only a hash is stored, and the secret travels in the URL fragment and request bodies, never a logged path), remove members and promote or demote owners; an organization always keeps an owner, and the last member leaving deletes it. Any member can share a website they saved; it stays theirs, and members read its saved reports. A member who leaves or is removed takes their shared websites with them.
+
+Each member connects their own agent with their own key. `folio_organizations` lists the caller's organizations, teammates' names and roles (not emails), how many agents each has connected, and the shared websites' `websiteId`s; `folio_website_gaps` then reads any of them. The organization page shows each member's active keys by name and last use, and the agent reads of shared websites; asks about other websites stay private. Other tools (`folio_visibility`, `folio_page_evidence`, paid tools) still act only on the caller's own records. There are no per-member credit budgets yet. A walkthrough for presenting this is in [Manus demo](MANUS-DEMO.md).
 
 ## Ask the published index
 

@@ -2,6 +2,7 @@
 .website-visibility h2 { font-family: var(--serif); font-size: 26px; font-weight: 400; letter-spacing: -.4px; }
 .website-visibility p { color: var(--folio-text-secondary); font-size: 14px; line-height: 1.65; }
 .website-visibility > p { margin-top: 14px; }
+.wv-shared { margin-top: 8px; font-size: 13px !important; color: var(--folio-text-muted) !important; }
 .wv-summary { max-width: 860px; margin-top: 10px; color: var(--folio-ink) !important; font-size: 17px !important; line-height: 1.6 !important; }
 
 .wv-lanes { display: grid; grid-template-columns: 1.25fr 1fr 1fr; gap: 12px; margin-top: 22px; }

@@ -28,7 +28,7 @@ async function setup(db: D1Database) {
   for (const id of ["alice", "bob"]) await db.prepare("INSERT INTO user(id,name,email,created_at,updated_at) VALUES(?,?,?,?,?)").bind(id, id, `${id}@example.test`, Date.now(), Date.now()).run();
 }
 
-test("D1: an agent reads one owned website's gaps over MCP from saved data only", { timeout: 120_000 }, async t => {
+test("D1: an agent reads one owned website's gaps over MCP from saved data, recording only its own activity", { timeout: 120_000 }, async t => {
   const directory = await mkdtemp(join(tmpdir(), "folio-website-gaps-")), current = runtime(directory);
   const provider = t.mock.method(globalThis, "fetch", async () => { throw new Error("No provider calls permitted"); });
   try {
@@ -69,7 +69,9 @@ test("D1: an agent reads one owned website's gaps over MCP from saved data only"
       // Another owner cannot read it, and an unknown ID is a clear error.
       const denied = await bob.callTool({ name: "folio_website_gaps", arguments: { websiteId: "site-a" } });
       assert.equal((denied.structuredContent as { error: { code: string } }).error.code, "not_found");
-      assert.equal(await counts(), before, "reading gaps writes nothing");
+      // The read changes no saved record; it adds one line to the owner's agent activity.
+      assert.equal(await counts(), before.replace('"a":0', '"a":1'), "reading gaps records one agent ask and nothing else");
+      assert.equal((report as WebsiteGapsReport & { recorded: boolean }).recorded, true);
       assert.equal(provider.mock.callCount(), 0);
     } finally { await alice.close(); await bob.close(); }
   } finally { await current.dispose(); await rm(directory, { recursive: true, force: true }); }

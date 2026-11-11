@@ -26,6 +26,7 @@ import { crawlStats, crawlWebsite, searchCrawledPages, type SemanticPageSearch }
 import { createIndexClient, IndexClientError } from "./index-client";
 import { directPageSearch } from "./page-vectors";
 import { loadWebsiteGaps } from "./website-gaps";
+import { agentOrganizations } from "./organizations";
 
 /** `publicIndex` is the no-key endpoint: only `public` tools, no owner, nothing recorded. */
 export type FolioToolContext = { db: D1Database; principal: AgentApiPrincipal; env: AgentRunEnvironment; sandbox?: SandboxSeoPrincipal; publicIndex?: boolean };
@@ -34,12 +35,13 @@ const paging = { limit:z.number().int().min(1).max(100).optional(), cursor:z.str
 const requestKey = z.string().regex(/^[A-Za-z0-9._:-]{8,128}$/);
 /** `write` tools save private workspace state. They never spend, edit or publish the website. */
 type Definition = { name: string; title: string; description: string; scope: AgentApiScope; paid?: boolean; write?: boolean; public?: boolean; schema: Record<string, z.ZodType> };
-const FOLIO_MCP_VERSION = "1.6.0";
+const FOLIO_MCP_VERSION = "1.7.0";
 const indexPaging = { limit:z.number().int().min(1).max(25).optional(), cursor:z.string().max(64).optional() };
 const INDEX_RECORDING = " With a Folio key, the first page of each ask is saved to the key owner's activity in Folio; the no-key endpoint saves nothing.";
 export const folioTools: Definition[] = [
   { name: "folio_targets", title: "Websites and questions", description: "List your saved websites and question IDs. Start here before selecting an owned record. No provider calls.", scope: "read", schema: { kind:z.enum(["website","keyword"]).default("website"), websiteId:id.optional(), suiteId:id.optional(), searchMode:z.enum(["open-web","reviewed-domains"]).optional(), ...paging } },
-  { name: "folio_website_gaps", title: "What a website is missing", description: "One saved website's visibility in one read: the Google searches that show it and at what position, its saved backlink and search counts, whether Folio's published AI answers name it (and which indexed questions mention it), how much of it Folio has read, then a list of gaps, each with evidence and a next step, and a separate list of what has not been checked yet. Start here for a website, then use folio_visibility, folio_index_answer or folio_index_pages for detail. Saved data only; no provider calls or charges.", scope: "read", schema: { websiteId: id } },
+  { name: "folio_organizations", title: "Your organizations", description: "The organizations you belong to: teammates (names and roles), how many agents each has connected, and the websites shared with each organization, with their websiteIds. Use a websiteId with folio_website_gaps. No provider calls.", scope: "read", schema: {} },
+  { name: "folio_website_gaps", title: "What a website is missing", description: "One website you saved, or one shared with your organization, in one read: the Google searches that show it and at what position, its saved backlink and search counts, whether Folio's published AI answers name it (and which indexed questions mention it), how much of it Folio has read, then a list of gaps, each with evidence and a next step, and a separate list of what has not been checked yet. Start here for a website, then use folio_visibility, folio_index_answer or folio_index_pages for detail (those read only your own websites). Saved data only; no provider calls or charges. The read is saved to your agent activity, which teammates see for shared websites.", scope: "read", schema: { websiteId: id } },
   { name: "folio_index", title: "Public benchmark index", description: "The complete published dataset in one response (several megabytes). Prefer folio_index_search, folio_index_answer and folio_index_website. Returned order is query-specific, not a general quality score.", scope: "read", schema: {} },
   { name:"folio_index_overview",title:"Published index overview",description:"Size, freshness and categories of Folio's published index: saved AI answers to buyer questions. Start here. No provider calls.",scope:"read",public:true,schema:{} },
   { name:"folio_index_search",title:"Search published answers",description:"Find published questions and their top recommendations by words (q), category, audience or a website domain. Compact and paged; word match, not semantic search. No provider calls."+INDEX_RECORDING,scope:"read",public:true,schema:{q:z.string().min(1).max(200).optional(),category:z.string().min(1).max(100).optional(),audience:z.string().min(1).max(100).optional(),domain:z.string().min(1).max(253).optional(),status:z.enum(["published","all"]).optional(),...indexPaging} },
@@ -120,11 +122,18 @@ export async function invokeFolioTool(name: string, args: Record<string, unknown
           : `${result.domain} is not named in any of ${plural(result.publishedQuestions, "published answer")}${result.citedIn ? `; it is cited in ${result.citedIn}` : ""}.` }) };
     }
     case "folio_targets": return pagedTargets(db, principal.ownerId, input);
-    case "folio_website_gaps": return loadWebsiteGaps(db, principal.ownerId, input.websiteId as string);
+    case "folio_organizations": return agentOrganizations(db, principal.ownerId);
+    case "folio_website_gaps": {
+      const report = await loadWebsiteGaps(db, principal.ownerId, input.websiteId as string);
+      // Recording is activity, not part of the answer: a failed save never fails the read.
+      const recorded = await Promise.resolve().then(() => note({ tool: "website", question: null, domain: report.website.domain, queryId: null, resultCount: report.gaps.length,
+        summary: `Read what ${report.website.domain} is missing: ${plural(report.gaps.length, "gap")}, ${report.notChecked.length} not checked yet.` })).catch(() => false);
+      return { ...report, recorded };
+    }
     case "folio_changes": return listWebsiteChanges(db,principal.ownerId,input as Parameters<typeof listWebsiteChanges>[2]);
     case "folio_change_record": return recordWebsiteChange(db,{ownerId:principal.ownerId,keyId:principal.keyId},input as RecordWebsiteChangeInput);
     case "folio_change_update": {const {changeId,...update}=input;return updateWebsiteChange(db,principal.ownerId,changeId as string,update as UpdateWebsiteChangeInput,"agent");}
-    case "folio_capabilities": return {version:FOLIO_MCP_VERSION,supportedFeatures:["saved-observations","saved-run-history","batch-observations","saved-page-evidence","matched-visibility-comparison","structured-errors","website-change-records","guided-prompts","published-index-search","crawled-page-search","website-gaps"],prompts:AEO_PROMPTS.map(p=>p.name),allowedScopes:principal.scopes,tools:folioTools.map(t=>({name:t.name,requiredScope:t.scope,allowed:principal.scopes.includes(t.scope),paid:Boolean(t.paid),requirements:t.paid?["Explicit user spending authorization","Approved account","Stable requestKey","confirmSpend=true"]:t.write?["Saves private workspace state; does not edit or publish the website",...(t.name==="folio_change_update"?["Owner confirmation that the change is live"]:["Stable requestKey"])]:[],conditionalScopes:t.name==="folio_evaluate"?[{when:"useSeoTools=true",requiredScope:"seo",allowed:principal.scopes.includes("seo")}]:[]})),observationTargets:{website:{kind:"website",websiteId:"saved website ID"},keyword:{kind:"keyword",caseId:"saved question ID"}}};
+    case "folio_capabilities": return {version:FOLIO_MCP_VERSION,supportedFeatures:["saved-observations","saved-run-history","batch-observations","saved-page-evidence","matched-visibility-comparison","structured-errors","website-change-records","guided-prompts","published-index-search","crawled-page-search","website-gaps","organizations"],prompts:AEO_PROMPTS.map(p=>p.name),allowedScopes:principal.scopes,tools:folioTools.map(t=>({name:t.name,requiredScope:t.scope,allowed:principal.scopes.includes(t.scope),paid:Boolean(t.paid),requirements:t.paid?["Explicit user spending authorization","Approved account","Stable requestKey","confirmSpend=true"]:t.write?["Saves private workspace state; does not edit or publish the website",...(t.name==="folio_change_update"?["Owner confirmation that the change is live"]:["Stable requestKey"])]:[],conditionalScopes:t.name==="folio_evaluate"?[{when:"useSeoTools=true",requiredScope:"seo",allowed:principal.scopes.includes("seo")}]:[]})),observationTargets:{website:{kind:"website",websiteId:"saved website ID"},keyword:{kind:"keyword",caseId:"saved question ID"}}};
     case "folio_run_history": return savedRunHistory(db,principal.ownerId,input as Parameters<typeof savedRunHistory>[2]);
     case "folio_page_evidence": return savedPageEvidence(db,principal.ownerId,input as Parameters<typeof savedPageEvidence>[2]);
     case "folio_visibility_compare": return savedVisibilityComparison(db,principal.ownerId,input as Parameters<typeof savedVisibilityComparison>[2]);

@@ -80,6 +80,7 @@ import {ProductAnalyticsPanel} from "./product-analytics-panel";
 import { ManusDashboardDemo } from "./manus-dashboard-demo";
 import { IndexedDomains } from "./indexed-domains";
 import { OrgPreview } from "./org-preview";
+import { Organizations } from "./organizations";
 import { StartHere } from "./start-here";
 import { WorkspaceRecords } from "./workspace-records";
 import { XStandingPanel } from "./x-standing";
@@ -150,8 +151,8 @@ const titles: Record<
   analytics: {eyebrow:"INTERNAL",title:"Product analytics",description:"First-party usage and event timelines."},
   orgs: {
     eyebrow: "",
-    title: "Team workspace",
-    description: "See shared work, who owns it, and what needs review. Interactive preview.",
+    title: "Organizations",
+    description: "Create or join an organization to share websites and connect each member’s agents.",
   },
   overview: {
     eyebrow: "THE BIG PICTURE",
@@ -342,6 +343,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
   const analyticsDemo = section === "overview" && demoRequested && query.getAll("demo").length===1 && query.get("demo")==="analytics";
   const revenueDemo = section === "overview" && demoRequested && query.get("demo") === "revenue";
   const teamDemo = section === "overview" && demoRequested && !chartsDemo;
+  const orgPreview = section === "orgs" && query.getAll("view").length === 1 && query.get("view") === "preview";
   const privateOverview = section === "overview" && !demoRequested;
   const personalWorkspace = privateOverview || section === "websites";
   const { data: session, isPending } = authClient.useSession();
@@ -504,7 +506,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
         <Link href="/overview?view=demo" className={`nav-link ${teamDemo?"active":""}`} aria-current={teamDemo?"page":undefined} onClick={()=>setMobileOpen(false)} title="Content demo"><Sparkles size={17}/><span>Content demo</span></Link>
         </nav>
 
-        <details className="sidebar-more" open={!["overview","websites","evaluations","settings"].includes(section)}><summary className="nav-link" title="More tools"><MoreHorizontal size={17}/><span>More tools</span></summary><nav aria-label="More tools">{navigation.filter(item=>!["overview","websites","evaluations"].includes(item.section)).map(item=><Link key={item.section} href={item.href} title={item.label} className={`nav-link ${section===item.section?"active":""}`} aria-current={section===item.section?"page":undefined} onClick={()=>setMobileOpen(false)}><item.icon size={17}/><span>{item.label}</span></Link>)}<Link href="/leaderboard" title="The Folio Index" className="nav-link" onClick={()=>setMobileOpen(false)}><Trophy size={17}/><span>The Folio Index</span></Link><Link href="/agents" title="Your agents" className={`nav-link ${section==="agents"?"active":""}`} aria-current={section==="agents"?"page":undefined} onClick={()=>setMobileOpen(false)}><Bot size={17}/><span>Your agents</span></Link><Link href="/orgs" title="Team preview" className={`nav-link ${section==="orgs"?"active":""}`} aria-current={section==="orgs"?"page":undefined} onClick={()=>setMobileOpen(false)}><Building2 size={17}/><span>Team preview</span></Link><Link href="/docs/api" title="API reference" className="nav-link" onClick={()=>setMobileOpen(false)}><Code2 size={17}/><span>API reference</span></Link><Link href="/pricing" title="Plans & usage" className="nav-link" onClick={()=>setMobileOpen(false)}><BookOpen size={17}/><span>Plans & usage</span></Link></nav></details>
+        <details className="sidebar-more" open={!["overview","websites","evaluations","settings"].includes(section)}><summary className="nav-link" title="More tools"><MoreHorizontal size={17}/><span>More tools</span></summary><nav aria-label="More tools">{navigation.filter(item=>!["overview","websites","evaluations"].includes(item.section)).map(item=><Link key={item.section} href={item.href} title={item.label} className={`nav-link ${section===item.section?"active":""}`} aria-current={section===item.section?"page":undefined} onClick={()=>setMobileOpen(false)}><item.icon size={17}/><span>{item.label}</span></Link>)}<Link href="/leaderboard" title="The Folio Index" className="nav-link" onClick={()=>setMobileOpen(false)}><Trophy size={17}/><span>The Folio Index</span></Link><Link href="/agents" title="Your agents" className={`nav-link ${section==="agents"?"active":""}`} aria-current={section==="agents"?"page":undefined} onClick={()=>setMobileOpen(false)}><Bot size={17}/><span>Your agents</span></Link><Link href="/orgs" title="Organizations" className={`nav-link ${section==="orgs"?"active":""}`} aria-current={section==="orgs"?"page":undefined} onClick={()=>setMobileOpen(false)}><Building2 size={17}/><span>Organizations</span></Link><Link href="/docs/api" title="API reference" className="nav-link" onClick={()=>setMobileOpen(false)}><Code2 size={17}/><span>API reference</span></Link><Link href="/pricing" title="Plans & usage" className="nav-link" onClick={()=>setMobileOpen(false)}><BookOpen size={17}/><span>Plans & usage</span></Link></nav></details>
         <div className="sidebar-bottom">
           {isAdminOwner(session?.user.email) && <Link className="nav-link" href="/folio-internal/analytics" title="Product analytics"><BarChart3 size={17}/><span>Product analytics</span></Link>}
           {isAdminOwner(session?.user.email) && <Link href="/admin" title="Admin" className="nav-link" onClick={()=>setMobileOpen(false)}><ShieldCheck size={17}/><span>Admin</span></Link>}
@@ -549,14 +551,14 @@ function WorkspaceDashboard({ section }: { section: string }) {
             </button>
             <Globe2 size={15} />
             <button onClick={() => router.push("/websites")}>
-              {section === "orgs" ? "Team workspace · Sample" : usageDemo ? "Team credits · Sample" : analyticsDemo ? "Product analytics · Sample" : section==="analytics" ? "Folio operator analytics" : revenueDemo ? "Revenue · Sample" : teamDemo ? "Manus · Workflow mock" : personalWorkspace ? "Your workspace" : actual ? safeHostname(actual.url, "Your workspace") : session ? "Your workspace" : "acme.com"}
+              {section === "orgs" ? (orgPreview ? "Team workspace · Sample" : "Organizations") : usageDemo ? "Team credits · Sample" : analyticsDemo ? "Product analytics · Sample" : section==="analytics" ? "Folio operator analytics" : revenueDemo ? "Revenue · Sample" : teamDemo ? "Manus · Workflow mock" : personalWorkspace ? "Your workspace" : actual ? safeHostname(actual.url, "Your workspace") : session ? "Your workspace" : "acme.com"}
             </button>
             <ChevronRight size={13} />
             <span>
               {section === "leaderboard"
                 ? "The Folio Index"
                 : (navigation.find((n) => n.section === section)?.label ??
-                  (section === "orgs" ? "Team preview" : section === "agents" ? "Your agents" : "Settings"))}
+                  (section === "orgs" ? (orgPreview ? "Team preview" : "Your organizations") : section === "agents" ? "Your agents" : "Settings"))}
             </span>
           </div>
           <div className="topbar-actions">
@@ -1039,7 +1041,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
               {section === "evaluations" && (
                 <EvaluationsPanel initialTargetUrl={actual?.url} />
               )}
-              {section === "orgs" && <OrgPreview />}
+              {section === "orgs" && (orgPreview ? <OrgPreview /> : <Organizations />)}
               {section === "search-data" && <SeoDataPanel />}
               {section === "search-console" && <SearchConsolePanel />}
               {section === "benchmarks" && <KeywordBenchmarksPanel websiteId={query.get("website") ?? undefined} />}
@@ -1838,6 +1840,8 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
       }
       if (next.origin === "https://folio.invalid" && next.pathname === "/folio-internal/analytics") returnTo = "/folio-internal/analytics";
       if (next.origin === "https://folio.invalid" && next.pathname === "/docs/api") returnTo = "/docs/api";
+      // An invite link's secret stays in this tab's storage, so returning to /orgs resumes joining.
+      if (next.origin === "https://folio.invalid" && next.pathname === "/orgs") returnTo = "/orgs";
       if (next.origin === "https://folio.invalid" && ["/evaluations", "/agents"].includes(next.pathname)) {
         const views = next.searchParams.getAll("view");
         const view = views.length === 1 && ["search", "page"].includes(views[0]) ? views[0] : null;

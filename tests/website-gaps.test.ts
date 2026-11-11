@@ -63,6 +63,7 @@ test("a new site with no rankings and few links leads with those gaps", () => {
   assert.equal(report.summary, "Google doesn’t show usefolio.site for any US search yet. Only 3 websites link to it. No AI answer in Folio’s index names it yet, and none of the indexed questions is about what it does.");
   assert.deepEqual(report.notChecked.map(item => item.id), ["ai-answers", "crawl"]);
   assert.equal(report.notChecked[0].link?.url, "/benchmarks?website=site-folio");
+  assert.deepEqual([report.website.access, report.website.organizations], ["owner", []]);
 });
 
 test("answered questions that leave the site out, and its own saved answers, become AI-answer gaps", () => {
@@ -72,7 +73,12 @@ test("answered questions that leave the site out, and its own saved answers, bec
   assert.ok(ids.includes("ai-answers-left-out") && ids.includes("ai-answers-your-questions"));
   const left = report.gaps.find(gap => gap.id === "ai-answers-left-out")!;
   assert.equal(left.evidence.length, 3); assert.ok(left.evidence.every(item => item.url.startsWith("/overview?query=")));
-  assert.equal(report.gaps.find(gap => gap.id === "ai-answers-your-questions")!.title, "Named in 1 of 4 answers to your questions");
+  assert.equal(report.gaps.find(gap => gap.id === "ai-answers-your-questions")!.title, "Named in 1 of 4 answers to its saved questions");
+  assert.equal(report.gaps.find(gap => gap.id === "ai-answers-your-questions")!.evidence[0].url, "/benchmarks?website=site-manus");
+  // A teammate reading a shared website gets the same findings, without links to the owner's private pages.
+  const shared = buildWebsiteGaps({ ...manus, website: { ...manus.website, access: "organization", organizations: [{ id: "org", name: "Manus" }] }, index: { ...manus.index, questions: answered }, yourQuestions: { completed: 4, named: 1 } });
+  assert.deepEqual([shared.website.access, shared.website.organizations], ["organization", [{ id: "org", name: "Manus" }]]);
+  assert.deepEqual(shared.gaps.find(gap => gap.id === "ai-answers-your-questions")!.evidence, []);
   assert.ok(!report.notChecked.some(item => item.id === "ai-answers"));
 });
 

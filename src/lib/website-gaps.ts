@@ -5,6 +5,7 @@ import { indexWebsite, publishedIndex, type IndexSource } from "./index-answers"
 import { crawlWebsite } from "./index-pages";
 import { registrableDomain } from "./index-stats";
 import { getOwnedSeoReport, listOwnedSeoReports } from "./seo-store";
+import { readableWebsite } from "./organizations";
 import { savedVisibility, visibilityFilters } from "./visibility-service";
 
 /**
@@ -26,8 +27,10 @@ export type WebsiteSearchSummary = { state: "measured" | "failed" | "not_measure
 type IndexAnswerRow = { queryId: string; query: string; category: string; position: number | null; cited: boolean; page: string };
 type IndexQuestionRow = { queryId: string; query: string; category: string; published: boolean; page: string };
 
+export type WebsiteAccess = { access: "owner" | "organization"; organizations: { id: string; name: string }[] };
 export type WebsiteGapsReport = {
-  website: { id: string; name: string; url: string; domain: string };
+  /** `organization`: shared with the reader; the saved data is the sharing member's. */
+  website: { id: string; name: string; url: string; domain: string } & WebsiteAccess;
   generatedAt: string;
   summary: string;
   search: WebsiteSearchSummary;
@@ -43,7 +46,7 @@ export type WebsiteGapsReport = {
 };
 
 export type WebsiteGapsInput = {
-  website: { id: string; name: string; url: string };
+  website: { id: string; name: string; url: string } & Partial<WebsiteAccess>;
   now: Date;
   search: WebsiteSearchSummary;
   rankings: { available: boolean; rows: { keyword: string; position: number; searchVolume: number | null; estimatedTraffic: number | null; landingPage: string | null; capturedAt: string | null }[] };
@@ -77,6 +80,8 @@ function brandTerms(domain: string, profileName: string | null): string[] {
 /** Pure: the same input always yields the same report. Rules, thresholds and wording live here. */
 export function buildWebsiteGaps(input: WebsiteGapsInput): WebsiteGapsReport {
   const domain = hostOf(input.website.url), siteId = input.website.id;
+  const access: WebsiteAccess = { access: input.website.access ?? "owner", organizations: input.website.organizations ?? [] };
+  const owner = access.access === "owner";
   const brands = brandTerms(domain, input.crawl.profileName);
   const isBrand = (keyword: string) => brands.some(term => keyword.toLowerCase().includes(term));
   const rows = input.rankings.rows.filter(row => row.keyword.trim() && Number.isFinite(row.position) && row.position >= 1)
@@ -158,10 +163,10 @@ export function buildWebsiteGaps(input: WebsiteGapsInput): WebsiteGapsReport {
   // AI answers
   const yours = input.yourQuestions;
   if (yours && yours.completed > 0 && yours.named < yours.completed)
-    gaps.push({ id: "ai-answers-your-questions", area: "ai_answers", severity: "high", title: `Named in ${yours.named} of ${plural(yours.completed, "answer")} to your questions`,
-      finding: `In your saved questions for ${domain}, the AI answer left it out ${yours.completed - yours.named} time${yours.completed - yours.named === 1 ? "" : "s"}.`,
+    gaps.push({ id: "ai-answers-your-questions", area: "ai_answers", severity: "high", title: `Named in ${yours.named} of ${plural(yours.completed, "answer")} to its saved questions`,
+      finding: `In the saved questions for ${domain}, the AI answer left it out ${yours.completed - yours.named} time${yours.completed - yours.named === 1 ? "" : "s"}.`,
       nextStep: "Open each answer that left it out, see which pages were cited instead, and make its own page answer that question as directly.",
-      evidence: [{ label: "Your questions", url: `/benchmarks?website=${encodeURIComponent(siteId)}` }] });
+      evidence: owner ? [{ label: "Saved questions", url: `/benchmarks?website=${encodeURIComponent(siteId)}` }] : [] });
   if (input.index.namedIn === 0 && relatedPublished.length)
     gaps.push({ id: "ai-answers-left-out", area: "ai_answers", severity: "high", title: `Left out of ${plural(relatedPublished.length, "published answer")} on its topics`,
       finding: `Folio’s index has published AI answers to questions about ${quoteList([...matched].slice(0, 3).map(item => `“${item}”`))}, and none of them names ${domain}.`,
@@ -189,9 +194,9 @@ export function buildWebsiteGaps(input: WebsiteGapsInput): WebsiteGapsReport {
   } else if (input.index.namedIn === 0 && !relatedPublished.length && !(yours && yours.completed > 0)) {
     const examples = nonBrand.slice(0, 2).map(row => `“${row.keyword}”`);
     notChecked.push({ id: "ai-answers", area: "ai_answers", title: "No AI answers checked for it yet",
-      detail: `None of Folio’s ${input.index.publishedQuestions === null ? "" : `${plural(input.index.publishedQuestions, "published answer")} `}names ${domain}, but none of those questions is about what it does${examples.length ? ` (its Google searches include ${quoteList(examples)})` : ""}. That is unmeasured, not absent. No saved question of yours targets it with a completed answer either.`,
-      nextStep: `Add 5–10 questions people ask before choosing a product like it${examples.length ? " (its Google searches are a good start)" : ""} and run them. Each run is a paid step you start.`,
-      link: { label: "Add questions", url: `/benchmarks?website=${encodeURIComponent(siteId)}` } });
+      detail: `None of Folio’s ${input.index.publishedQuestions === null ? "" : `${plural(input.index.publishedQuestions, "published answer")} `}names ${domain}, but none of those questions is about what it does${examples.length ? ` (its Google searches include ${quoteList(examples)})` : ""}. That is unmeasured, not absent. No saved question for it has a completed answer either.`,
+      nextStep: `Add 5–10 questions people ask before choosing a product like it${examples.length ? " (its Google searches are a good start)" : ""} and run them. Each run is a paid step someone starts.`,
+      link: owner ? { label: "Add questions", url: `/benchmarks?website=${encodeURIComponent(siteId)}` } : null });
   }
   const { crawl } = input;
   if (crawl.state === "not_in_index")
@@ -220,7 +225,7 @@ export function buildWebsiteGaps(input: WebsiteGapsInput): WebsiteGapsReport {
   else if (waiting > 0) sentences.push(`Folio’s index has ${plural(waiting, "question")} that mention it, but none has been answered yet, so its place in AI answers is still unmeasured.`);
   else if (input.index.available) sentences.push("No AI answer in Folio’s index names it yet, and none of the indexed questions is about what it does.");
 
-  return { website: { ...input.website, domain }, generatedAt: input.now.toISOString(), summary: sentences.join(" ") || `Folio has no usable saved data about ${domain} yet.`,
+  return { website: { id: input.website.id, name: input.website.name, url: input.website.url, domain, ...access }, generatedAt: input.now.toISOString(), summary: sentences.join(" ") || `Folio has no usable saved data about ${domain} yet.`,
     search, google, aiAnswers, crawl: { state: crawl.state, pagesCrawled: crawl.pagesCrawled, inventoryPages: crawl.inventoryPages, lastFetchedAt: crawl.lastFetchedAt, topSections: crawl.topSections.slice(0, 6) },
     gaps, notChecked, howToRead: WEBSITE_GAPS_HOW_TO_READ };
 }
@@ -266,12 +271,15 @@ async function googleRankings(db: D1Database, domain: string): Promise<WebsiteGa
   } catch { return { available: false, rows: [] }; }
 }
 
-/** Owner-scoped. Reads saved records only; never contacts a provider or spends. */
-export async function loadWebsiteGaps(db: D1Database, ownerId: string, websiteId: string, now = new Date()): Promise<WebsiteGapsReport> {
-  if (!ownerId) throw new AgentApiError("Authentication required.", 401, "unauthorized");
-  const site = await db.prepare("SELECT id, name, url FROM sites WHERE user_id = ? AND id = ?").bind(ownerId, websiteId).first<{ id: string; name: string; url: string }>();
-  if (!site) throw new AgentApiError("Website not found. List your websites with folio_targets.", 404, "not_found");
-  const domain = hostOf(site.url);
+/**
+ * For a website the reader owns or that is shared with one of their organizations. A shared
+ * website shows the saved reports of the member who saved it. Reads only; never spends.
+ */
+export async function loadWebsiteGaps(db: D1Database, readerId: string, websiteId: string, now = new Date()): Promise<WebsiteGapsReport> {
+  if (!readerId) throw new AgentApiError("Authentication required.", 401, "unauthorized");
+  const readable = await readableWebsite(db, readerId, websiteId);
+  if (!readable) throw new AgentApiError("Website not found. List your websites with folio_targets, or shared ones with folio_organizations.", 404, "not_found");
+  const { site, ownerId } = readable, domain = hostOf(site.url);
   const [search, rankings, published, crawl, yourQuestions] = await Promise.all([
     savedSearch(db, ownerId, domain).catch(() => null),
     googleRankings(db, domain),
@@ -290,7 +298,7 @@ export async function loadWebsiteGaps(db: D1Database, ownerId: string, websiteId
           page: `/overview?query=${encodeURIComponent(query.id)}${query.latestObservation ? `&model=${encodeURIComponent(query.latestObservation.model)}` : ""}` })) };
     } catch { /* A private or unusual host cannot be matched against the public index. */ }
   }
-  return buildWebsiteGaps({ website: site, now, rankings, index, yourQuestions,
+  return buildWebsiteGaps({ website: { ...site, access: readable.access, organizations: readable.organizations }, now, rankings, index, yourQuestions,
     search: search ?? { state: "not_measured", reportId: null, fetchedAt: null, backlinks: MISSING, referringDomains: MISSING, brokenBacklinks: null, rankingKeywords: MISSING, estimatedMonthlyVisits: MISSING },
     crawl: { state: crawl.available ? crawl.state === "in_index" ? "in_index" : "not_in_index" : "unavailable", pagesCrawled: crawl.pagesCrawled, inventoryPages: crawl.profile?.inventoryPages ?? null,
       lastFetchedAt: crawl.lastFetchedAt, profileName: crawl.profile?.name ?? null, topSections: crawl.topSections.map(item => ({ path: item.path, pages: item.pages })) } });

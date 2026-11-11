@@ -4,8 +4,9 @@ import { selectValue } from "./select-helpers";
 test("team preview connects assignment, teammate handoff, manager review and sample usage without writes", async ({ page }) => {
   const writes: string[] = [];
   await page.route("**/api/**", route => { if (route.request().method() !== "GET") writes.push(new URL(route.request().url()).pathname); return route.fulfill({ json: null }); });
-  await page.goto("/orgs");
-  await expect(page.getByRole("heading", { name: "Team workspace", exact: true })).toBeVisible();
+  // /orgs is now real organizations; the sample preview keeps its own address.
+  await page.goto("/orgs?view=preview");
+  await expect(page.getByRole("heading", { name: "Organizations", exact: true })).toBeVisible();
   await expect(page.getByText("Interactive team preview.", { exact: true })).toBeVisible();
   await selectValue(page.getByLabel("Task owner", { exact: true }), "leo");
   await expect(page.getByRole("status", { name: "Team preview feedback" })).toContainText("No notification was sent");

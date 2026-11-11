@@ -47,6 +47,7 @@ export function WebsiteVisibility({ websiteId, refresh = 0 }: { websiteId: strin
   return <section className="panel website-visibility" aria-label={`Where ${website.domain} shows up`}>
     <header className="wv-head">
       <h2>Where it shows up</h2>
+      {website.access === "organization" && <p className="wv-shared">Shared with you through {website.organizations.map(item => item.name).join(", ")}. Reports are the sharing member’s saved data.</p>}
       <p className="wv-summary">{report.summary}</p>
     </header>
 
@@ -89,8 +90,8 @@ export function WebsiteVisibility({ websiteId, refresh = 0 }: { websiteId: strin
           <ul className="wv-chips">{aiAnswers.related.categories.map(item => <li key={item.category}>{item.category}<span>{item.published}/{item.total} answered</span></li>)}</ul>
           {aiAnswers.related.items[0] && <Link className="wv-inline-link" href={aiAnswers.related.items[0].page}>See an example question<ArrowUpRight size={13} aria-hidden="true" /></Link>}
         </div>}
-        <p className="wv-yours">{aiAnswers.yourQuestions === null ? "Your saved questions couldn’t be read." : aiAnswers.yourQuestions.completed === 0
-          ? "None of your saved questions targets it with an answer yet." : `Your questions: named in ${aiAnswers.yourQuestions.named} of ${aiAnswers.yourQuestions.completed} answers.`}</p>
+        <p className="wv-yours">{aiAnswers.yourQuestions === null ? "Saved questions for it couldn’t be read." : aiAnswers.yourQuestions.completed === 0
+          ? "No saved question for it has an answer yet." : `Saved questions: named in ${aiAnswers.yourQuestions.named} of ${aiAnswers.yourQuestions.completed} answers.`}</p>
       </section>
 
       <section className="wv-lane" aria-labelledby="wv-crawl-title">
