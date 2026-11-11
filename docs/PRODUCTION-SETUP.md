@@ -351,6 +351,24 @@ and no secret change. Rollback targets: frontend `14ff8f62-190d-4219-b767-41fb5e
   served HTML uses the `folio-icon` class and contains no `lucide` class.
 - Not measured: the signed-in report on production. The 500 ms to 300 ms figure is from the local Postgres mirror.
 
+**Hand-drawn landing, workspace and onboarding** (`fd0d8b5`, `c9ef20a`, `2eb2403`) followed on 12 November 2026: frontend
+`dd8d27c7-73d2-45f5-9993-c458c0ba1f10`, backend `ad8d6d23-7a22-4dd1-a96b-11785ae940b1` (`--keep-vars`). No migration,
+no secret change and no API change. Rollback targets: frontend `57d01953-30b6-4038-86fe-1c55355e6b4c`, backend
+`585a0830-a517-4dfc-b4d0-1c50e39972d6`.
+- The landing's artwork, the icon set, the workspace's empty states and loader, and the `/start` onboarding are drawn
+  by the pen in `src/lib/sketch.ts`, with a motion layer that is off under reduced motion
+  ([landing art](design/LANDING-ART.md), [onboarding art](design/ONBOARDING-ART.md)). The same build was reviewed on
+  `staging.usefolio.site` first ([frontend deployment](FRONTEND-DEPLOYMENT.md)).
+- Validation: typecheck, 472 unit tests, the production build and both smoke tests. The full browser suite, run with
+  the analytics opt-out that CI applies, passed 524 cases and failed 15; all 15 are in the 29 that already failed on
+  `04acc66` and its parent.
+- After deployment `/`, `/start`, `/orgs`, `/websites`, `/login`, `/leaderboard`, `/agents` and `/pricing` returned
+  200, the site, organization and onboarding APIs returned 401 without a session, and the public benchmarks read
+  returned 200. In a browser, `/` showed the drawn poster and three storyboard frames and no dune image, `/start`
+  showed the seven-step trail, `/orgs` showed its spot sketch, and no page raised an error or used a CSS filter.
+- Not checked on production: the signed-in workspace and onboarding steps 3 to 8, which were checked locally and
+  with mocked browser fixtures only. Safari and Firefox were not tested.
+
 ### Vector store
 
 Page embeddings live in turbopuffer, not Postgres (see [embeddings](EMBEDDINGS.md)).
