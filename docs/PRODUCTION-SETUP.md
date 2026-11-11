@@ -124,7 +124,8 @@ It reads saved data only; no migration, secret or paid work. Typecheck, 431 unit
 returned 200, the new route returned 401 without a session, the no-key MCP endpoint still listed only its four
 index tools, and the served stylesheet includes the new panel.
 
-**Organizations** (`7847b24` plus a layout fix) followed. Migration `0028_organizations.sql` was applied to the
+**Organizations** (`7847b24` plus a layout fix, `0344823`) followed: frontend `1ba50951-3ec9-4ddd-b90f-5e4c54be85b5`,
+backend `e61bf4c8-573e-4e0d-b14f-fac392e7ba57` (`--keep-vars`). Migration `0028_organizations.sql` was applied to the
 production Postgres `public` schema through the `scripts/pg-schema.ts` translation (`CREATE TABLE IF NOT EXISTS`;
 four empty tables, 21 columns); the D1 rollback engine does not have it, like `0023`–`0027`. Before that, the same
 flows (create, invite, join, share, a teammate's gap read, roles, remove, leave) ran on production Postgres inside
