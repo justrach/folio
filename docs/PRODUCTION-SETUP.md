@@ -116,6 +116,14 @@ lookups of a website update); they were replaced with the working account creden
 redesigned: a lookup that returned nothing shows one explanation and falls back to the last report
 with numbers, a domain without ranking data reads "None found", and large counts are shortened.
 
+Then **Where it shows up** (`c0cce9d`) was deployed: frontend `d425fc60-a8fb-4236-b8e2-65c4d46d51e1`, backend
+`ffa78b7d-551c-40ae-a627-e387ce6d4dbd` (`--keep-vars`). It adds the per-website visibility and gaps report on
+`/websites`, the owner route `GET /api/sites/{id}/visibility` and the keyed MCP tool `folio_website_gaps` (MCP 1.6.0).
+It reads saved data only; no migration, secret or paid work. Typecheck, 431 unit tests, the real-D1 MCP test,
+20 desktop/mobile browser checks, the production build and both smoke tests passed. After deployment pages
+returned 200, the new route returned 401 without a session, the no-key MCP endpoint still listed only its four
+index tools, and the served stylesheet includes the new panel.
+
 ### Vector store
 
 Page embeddings live in turbopuffer, not Postgres (see [embeddings](EMBEDDINGS.md)).
