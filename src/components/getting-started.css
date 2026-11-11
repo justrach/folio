@@ -1,0 +1,55 @@
+/* Getting started: a pill at the bottom of the sidebar and the checklist it opens. Theme tokens only. */
+.gs { margin: 0 0 10px; }
+.gs-pill { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 0 10px 0 12px; border: 0; border-radius: 14px;
+  background: var(--folio-inverse-surface); color: var(--folio-inverse-text); font: inherit; font-size: 14px; font-weight: 600; text-align: left; cursor: pointer;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--folio-shadow) 18%, transparent), 0 6px 16px color-mix(in srgb, var(--folio-shadow) 12%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--folio-inverse-text) 10%, transparent);
+  transition: transform .16s ease, box-shadow .16s ease; }
+.gs-pill:hover { box-shadow: 0 1px 2px color-mix(in srgb, var(--folio-shadow) 18%, transparent), 0 10px 22px color-mix(in srgb, var(--folio-shadow) 16%, transparent),
+  inset 0 1px 0 color-mix(in srgb, var(--folio-inverse-text) 10%, transparent); }
+.gs-pill:active { transform: scale(.985); }
+.gs-pill:focus-visible { outline: 2px solid var(--folio-focus); outline-offset: 2px; }
+.gs-pill .gs-ring { flex: none; }
+.gs-pill .gs-ring-track { stroke: color-mix(in srgb, var(--folio-inverse-text) 22%, transparent); }
+.gs-pill .gs-ring-value { stroke: var(--folio-inverse-text); }
+.gs-pill-label { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gs-pill-count { font-size: 13px; font-weight: 500; font-variant-numeric: tabular-nums; opacity: .7; }
+.gs-pill-chevron { flex: none; opacity: .8; }
+.gs-ring-value { transition: stroke-dashoffset .5s cubic-bezier(.2, .8, .2, 1); }
+
+/* The checklist, in the browser's top layer beside the sidebar. */
+.gs-card[popover] { inset: auto; margin: 0; padding: 22px 14px 14px; overflow: auto; border: 1px solid var(--folio-edge); border-radius: 22px;
+  background: var(--folio-surface); color: var(--folio-ink); font-family: var(--folio-font-body);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--folio-shadow) 6%, transparent), 0 18px 48px color-mix(in srgb, var(--folio-shadow) 16%, transparent); }
+.gs-card:popover-open { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; }
+.gs-card > .gs-ring { margin: 0 0 14px 8px; }
+.gs-card .gs-ring-track { stroke: var(--folio-accent-soft); }
+.gs-card .gs-ring-value { stroke: var(--folio-accent); }
+.gs-title { margin: 0 8px; font-size: 19px; font-weight: 650; letter-spacing: -.3px; line-height: 1.2; }
+.gs-sub { margin: 4px 8px 14px; font-size: 14px; color: var(--folio-text-secondary); font-variant-numeric: tabular-nums; }
+.gs-steps { display: grid; gap: 2px; margin: 0 0 14px; padding: 0; list-style: none; }
+.gs-step { display: flex; align-items: flex-start; gap: 12px; min-height: 44px; padding: 11px 12px; border: 1px solid transparent; border-radius: 13px;
+  color: var(--folio-ink); font-size: 15px; font-weight: 500; line-height: 1.35; text-decoration: none; }
+.gs-step > svg { flex: none; margin-top: 1px; color: var(--folio-text-secondary); }
+.gs-step:hover { background: var(--folio-surface-muted); }
+.gs-step:focus-visible { outline: 2px solid var(--folio-focus); outline-offset: 1px; }
+.gs-step-text { display: grid; gap: 3px; min-width: 0; }
+.gs-step-text small { font-size: 13px; font-weight: 400; line-height: 1.45; color: var(--folio-text-secondary); }
+.gs-step.is-done { background: var(--folio-accent-soft); border-color: var(--folio-accent-edge); }
+.gs-step.is-done .gs-step-text { color: var(--folio-ink); }
+.gs-step.is-next { font-weight: 600; }
+.gs-check { display: grid; place-items: center; flex: none; width: 20px; height: 20px; margin-top: 0; border-radius: 999px; background: var(--folio-accent); color: var(--folio-on-accent); }
+.gs-finish { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 16px; border: 0; border-radius: 15px;
+  background: var(--folio-inverse-surface); color: var(--folio-inverse-text); font: inherit; font-size: 15px; font-weight: 600; text-decoration: none; cursor: pointer;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--folio-shadow) 18%, transparent), inset 0 1px 0 color-mix(in srgb, var(--folio-inverse-text) 10%, transparent); }
+.gs-finish:focus-visible, .gs-hide:focus-visible { outline: 2px solid var(--folio-focus); outline-offset: 2px; }
+.gs-hide { margin: 10px auto 0; padding: 4px 8px; border: 0; background: none; font: inherit; font-size: 13px; color: var(--folio-text-secondary); cursor: pointer; }
+.gs-hide span { color: var(--folio-text-muted); }
+.gs-hide:hover { color: var(--folio-ink); }
+
+/* The compact rail keeps only the ring. */
+@media (min-width: 761px) {
+  .folio-workspace[data-nav-compact="true"] .gs-pill { justify-content: center; width: 44px; padding: 0; margin-inline: auto; }
+  .folio-workspace[data-nav-compact="true"] .gs-pill > :not(.gs-ring) { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .gs-pill, .gs-ring-value { transition: none; } }

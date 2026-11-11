@@ -81,12 +81,14 @@ test("a historical date window reads its own completed answer instead of a newer
   await expect(rows.first()).not.toContainText("Nov 4");
 });
 
-test("mobile date and export panels stay above the theme picker with touch-sized controls",async({page})=>{
+test("mobile date and export panels stay on screen with touch-sized controls",async({page})=>{
   await page.setViewportSize({width:320,height:740});
   await open(page);
   await bar(page).getByRole("button",{name:"All loaded history"}).click();
   const datePanel=page.getByRole("dialog",{name:"Choose date window"});
-  const theme=await page.locator('.folio-theme-picker').boundingBox();
+  // In the workspace the theme is in the account menu, so the floating picker is hidden; panels keep an 18px margin instead.
+  await expect(page.locator('.folio-theme-picker')).toBeHidden();
+  const theme={y:740-18};
   const bounds=await datePanel.boundingBox();
   expect(bounds!.x).toBeGreaterThanOrEqual(0);expect(bounds!.x+bounds!.width).toBeLessThanOrEqual(320);
   expect(bounds!.y+bounds!.height).toBeLessThanOrEqual(theme!.y);

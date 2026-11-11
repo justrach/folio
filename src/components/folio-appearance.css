@@ -4,7 +4,7 @@
 /* Reserve fixed-control clearance inside each surface, never outside its
    background on the document body. Short screens stay within one viewport. */
 body:has(.folio-theme-picker) { padding-bottom: 0; }
-body:has(.folio-theme-picker) :is(.login-footer,.pricing-footer,.api-docs-main,.ob-main),
+body:has(.folio-theme-picker) :is(.login-footer,.pricing-footer,.api-docs-main,.ob-main,.cc-page),
 body:has(.folio-theme-picker) .landing > footer {
   padding-bottom: max(76px, calc(env(safe-area-inset-bottom) + 60px));
 }
@@ -12,3 +12,6 @@ body:has(.folio-theme-picker) .landing > footer {
 body:has(.folio-theme-picker) .agent-run-dock { bottom: calc(max(16px, env(safe-area-inset-bottom)) + 60px); }
 @media (max-width: 700px) { .folio-theme-picker { right: max(12px, env(safe-area-inset-right)); bottom: max(12px, env(safe-area-inset-bottom)); width: 144px; } .folio-theme-picker .folio-select-trigger { font-size: 16px; } }
 html[data-folio-theme="dark"] .folio-theme-picker { border-color: transparent; }
+/* In the workspace the theme lives in the account menu, so the floating picker would only cover content. */
+body:has(.account-menu-trigger) .folio-theme-picker { display: none; }
+body:has(.account-menu-trigger) .agent-run-dock { bottom: max(16px, env(safe-area-inset-bottom)); }

@@ -1,0 +1,46 @@
+/* The account menu at the bottom of the sidebar. The trigger keeps the sidebar's .profile layout; the panel sits in the
+   browser's top layer. Theme tokens only. */
+.account-menu-trigger { appearance: none; width: 100%; border: 0; border-top: 1px solid var(--line, var(--folio-edge)); background: none;
+  font: inherit; color: inherit; text-align: left; cursor: pointer; border-radius: 0; }
+.account-menu-trigger:hover > span:nth-child(2) { color: var(--folio-ink); }
+.app-shell .account-menu .account-menu-trigger > svg { display: block; flex: none; color: var(--folio-text-muted); }
+.account-menu-trigger[aria-expanded="true"] > svg { color: var(--folio-ink); }
+@media (min-width: 761px) { .folio-workspace[data-nav-compact="true"] .account-menu .account-menu-trigger > svg { display: none; } }
+/* On phones the open navigation drawer (and its scrim) sits above the floating agent notebook (z-index 45), which
+   otherwise covered the account row at the bottom of the drawer. */
+@media (max-width: 760px) {
+  .app-shell .sidebar.open { z-index: 47; }
+  .app-shell .sidebar-scrim { z-index: 46; }
+}
+
+.am-panel[popover] { inset: auto; margin: 0; padding: 8px; overflow: auto; border: 1px solid var(--folio-edge); border-radius: 22px;
+  background: var(--folio-surface); color: var(--folio-ink); font-family: var(--folio-font-body);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--folio-shadow) 6%, transparent), 0 18px 48px color-mix(in srgb, var(--folio-shadow) 16%, transparent); }
+.am-panel:popover-open { display: grid; grid-template-columns: minmax(0, 1fr); }
+.am-head { display: flex; align-items: center; gap: 12px; padding: 10px 10px 12px; }
+.am-tile { display: grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: 12px; background: var(--folio-inverse-surface); color: var(--folio-inverse-text);
+  font-size: 17px; font-weight: 650; box-shadow: inset 0 1px 0 color-mix(in srgb, var(--folio-inverse-text) 14%, transparent), 0 2px 6px color-mix(in srgb, var(--folio-shadow) 18%, transparent); }
+.am-who { display: grid; gap: 2px; min-width: 0; }
+.am-who strong { font-size: 16px; font-weight: 650; letter-spacing: -.2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.am-who small { font-size: 13px; color: var(--folio-text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.am-items { display: grid; gap: 1px; }
+.am-item { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 40px; padding: 0 10px; border: 0; border-radius: 11px; background: none;
+  color: var(--folio-ink); font: inherit; font-size: 15px; font-weight: 500; text-align: left; text-decoration: none; cursor: pointer; }
+.am-item > svg { flex: none; color: var(--folio-text-secondary); stroke-width: 1.6; }
+.am-item:is(a, button):hover { background: var(--folio-surface-muted); }
+.am-item:focus-visible, .am-segmented button:focus-visible { outline: 2px solid var(--folio-focus); outline-offset: 1px; }
+.am-appearance { flex-wrap: wrap; row-gap: 6px; padding-block: 4px; cursor: default; }
+.am-appearance > span { flex: 1; white-space: nowrap; }
+.am-appearance .am-segmented { margin-left: auto; }
+.am-segmented { display: inline-flex; gap: 2px; padding: 3px; border-radius: 999px; background: var(--folio-surface-muted); }
+.am-segmented button { min-height: 28px; padding: 0 9px; border: 0; border-radius: 999px; background: none; font: inherit; font-size: 13px; font-weight: 500;
+  color: var(--folio-text-secondary); cursor: pointer; }
+.am-segmented button[aria-checked="true"] { background: var(--folio-surface); color: var(--folio-ink); box-shadow: 0 1px 3px color-mix(in srgb, var(--folio-shadow) 14%, transparent); }
+.am-orgs { display: grid; gap: 1px; margin-top: 8px; padding-top: 10px; border-top: 1px solid var(--folio-edge); }
+.am-caption { margin: 2px 10px 6px; font-size: 13px; font-weight: 500; color: var(--folio-text-secondary); }
+.am-note { margin: 0 10px 8px; font-size: 13px; color: var(--folio-text-muted); }
+.am-org-mark { display: grid; place-items: center; flex: none; width: 24px; height: 24px; border-radius: 7px; background: var(--folio-inverse-surface); color: var(--folio-inverse-text);
+  font-size: 10px; font-weight: 700; }
+.am-org-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.am-role { font-size: 13px; font-weight: 400; color: var(--folio-text-muted); }
+.am-current { display: grid; place-items: center; flex: none; width: 20px; height: 20px; border-radius: 999px; background: var(--folio-accent); color: var(--folio-on-accent); }

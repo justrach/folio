@@ -37,7 +37,9 @@ function usePopover() {
       const box=element.getBoundingClientRect();
       if(window.matchMedia("(max-width:700px)").matches){
         element.style.left=`${leftEdge+18}px`;
-        const themeTop=document.querySelector(".folio-theme-picker")?.getBoundingClientRect().top;
+        // The floating theme picker is hidden in the workspace (the account menu has the theme); only a visible one counts.
+        const picker=document.querySelector(".folio-theme-picker")?.getBoundingClientRect();
+        const themeTop=picker&&picker.height>0?picker.top:undefined;
         const bottom=Math.min(topEdge+height-18,themeTop===undefined?topEdge+height-82:themeTop-12);
         element.style.top=`${Math.max(topEdge+18,bottom-box.height)}px`;
       }else{

@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   allowedDevOrigins: ["127.0.0.1"],
   outputFileTracingRoot: process.cwd(),
+  // The idle "N" badge sits in the bottom-left corner, on top of the sidebar's account menu. Errors still open the overlay.
+  devIndicators: false,
 };
 
 export default function config(phase: string): NextConfig {

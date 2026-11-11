@@ -101,6 +101,8 @@ import { EvaluationsPanel } from "./evaluations-panel";
 import { AgentRunsPanel, AgentRunDock } from "./agent-runs-panel";
 import { evaluationHref, readEvaluationIntent } from "@/lib/evaluation-navigation";
 import { WebsiteSwitcher } from "./website-switcher";
+import { AccountMenu } from "./account-menu";
+import { GettingStarted } from "./getting-started";
 import { GithubConnection } from "./github-connection";
 import { WorkspaceLoader } from "./workspace-loader";
 
@@ -508,6 +510,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
 
         <details className="sidebar-more" open={!["overview","websites","evaluations","settings"].includes(section)}><summary className="nav-link" title="More tools"><MoreHorizontal size={17}/><span>More tools</span></summary><nav aria-label="More tools">{navigation.filter(item=>!["overview","websites","evaluations"].includes(item.section)).map(item=><Link key={item.section} href={item.href} title={item.label} className={`nav-link ${section===item.section?"active":""}`} aria-current={section===item.section?"page":undefined} onClick={()=>setMobileOpen(false)}><item.icon size={17}/><span>{item.label}</span></Link>)}<Link href="/leaderboard" title="The Folio Index" className="nav-link" onClick={()=>setMobileOpen(false)}><Trophy size={17}/><span>The Folio Index</span></Link><Link href="/agents" title="Your agents" className={`nav-link ${section==="agents"?"active":""}`} aria-current={section==="agents"?"page":undefined} onClick={()=>setMobileOpen(false)}><Bot size={17}/><span>Your agents</span></Link><Link href="/orgs" title="Organizations" className={`nav-link ${section==="orgs"?"active":""}`} aria-current={section==="orgs"?"page":undefined} onClick={()=>setMobileOpen(false)}><Building2 size={17}/><span>Organizations</span></Link><Link href="/docs/api" title="API reference" className="nav-link" onClick={()=>setMobileOpen(false)}><Code2 size={17}/><span>API reference</span></Link><Link href="/pricing" title="Plans & usage" className="nav-link" onClick={()=>setMobileOpen(false)}><BookOpen size={17}/><span>Plans & usage</span></Link></nav></details>
         <div className="sidebar-bottom">
+          <GettingStarted userId={session?.user.id ?? null} page={section} onNavigate={() => setMobileOpen(false)} />
           {isAdminOwner(session?.user.email) && <Link className="nav-link" href="/folio-internal/analytics" title="Product analytics"><BarChart3 size={17}/><span>Product analytics</span></Link>}
           {isAdminOwner(session?.user.email) && <Link href="/admin" title="Admin" className="nav-link" onClick={()=>setMobileOpen(false)}><ShieldCheck size={17}/><span>Admin</span></Link>}
           <Link
@@ -526,16 +529,10 @@ function WorkspaceDashboard({ section }: { section: string }) {
             <CircleHelp size={17} />
             <span>A little guidance</span>
           </button>
-          <Link href={session ? "/settings" : "/login"} className="profile">
-            <span className="avatar">
-              {session?.user.name?.slice(0, 1) ?? (teamDemo ? "M" : personalWorkspace ? "—" : "A")}
-            </span>
-            <span>
-              {session?.user.name ?? (teamDemo ? "Demo teammate" : personalWorkspace ? "Sign in" : "Alex Morgan")}
-              <small>{session?.user.email ?? (teamDemo ? "Hypothetical marketer workflow" : personalWorkspace ? "Your private workspace" : "Exploring the demo")}</small>
-            </span>
-            <MoreHorizontal size={17} />
-          </Link>
+          <AccountMenu userId={session?.user.id ?? null} onNavigate={() => setMobileOpen(false)}
+            initial={session?.user.name?.slice(0, 1) ?? (teamDemo ? "M" : personalWorkspace ? "—" : "A")}
+            label={session?.user.name ?? (teamDemo ? "Demo teammate" : personalWorkspace ? "Sign in" : "Alex Morgan")}
+            detail={session?.user.email ?? (teamDemo ? "Hypothetical marketer workflow" : personalWorkspace ? "Your private workspace" : "Exploring the demo")} />
         </div>
       </aside>
       <div className="main-shell">
