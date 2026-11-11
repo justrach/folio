@@ -6,12 +6,14 @@
  */
 import type { AgentApiScope } from "./agent-observation-types";
 
-export type AgentClientId = "claude-code" | "codex" | "cursor" | "vscode" | "claude-desktop" | "manus" | "other";
+export type AgentClientId = "claude-code" | "codex" | "harness" | "cursor" | "vscode" | "claude-desktop" | "manus" | "other";
 export type SetupBlock = { label: string; file?: string; language: "shell" | "json" | "toml" | "text"; code: string };
 export type AgentClientSetup = {
   id: AgentClientId; label: string; kind: string;
   /** Whether the client reads FOLIO_API_KEY from the shell; if not, the key is pasted where the snippet says. */
   readsShellEnvironment: boolean;
+  /** The client signs in with Folio itself (OAuth): the person approves it on Folio's consent page as it connects, so no key is made here. */
+  signsIn?: boolean;
   intro: string; blocks: SetupBlock[]; check: { label: string; code: string; expect: string } | null; notes: string[];
 };
 
@@ -61,6 +63,19 @@ export function agentClients(origin: string): AgentClientSetup[] {
       ],
       check: { label: "Check it", code: "codex mcp list", expect: "folio … enabled" },
       notes: ["Start Codex from a terminal where FOLIO_API_KEY is set: a new terminal after the one-paste command, or the same one."] },
+    // Harness's graff CLI does MCP OAuth (graff mcp login), so it needs no key; checked against production on 11 November 2026.
+    { id: "harness", label: "Harness", kind: "Terminal & app", readsShellEnvironment: false, signsIn: true,
+      intro: "Harness signs in to Folio itself, so there’s no key to copy. One command adds Folio for every project, then opens Folio in your browser, where you approve it on the same card as step 2.",
+      blocks: [
+        { label: "Or add it with a key (Harness keeps it in ~/.codegraff/mcp.json)", language: "shell",
+          code: `graff mcp add folio --url ${url} --everywhere \\\n  --header "Authorization=Bearer ${KEY_PLACEHOLDER}"` },
+      ],
+      check: { label: "Check it", code: "graff mcp reconnect folio", expect: "folio connected, with the folio_ tools your approval allows" },
+      notes: [
+        "--everywhere saves Folio in ~/.codegraff/mcp.json for every project, never in a repository’s .mcp.json.",
+        "You can also ask Harness to run the command for you; approve Folio in the browser tab it opens.",
+        ...(cloud === origin.replace(/\/$/, "") ? [] : [`Signing in needs https, so the command uses ${cloud}, not the address this page is open on.`]),
+      ] },
     { id: "cursor", label: "Cursor", kind: "Editor", readsShellEnvironment: true,
       intro: "Add to Cursor puts Folio and your key into Cursor’s MCP settings in one step.",
       blocks: [
@@ -167,6 +182,11 @@ export function installAction(client: AgentClientId, origin: string, token: stri
       hint: token ? "Paste it into a terminal. It replaces any earlier folio entry and saves Folio, with this key, in Claude Code’s settings for every project on this computer."
         : `${WAIT_FOR_KEY} This becomes one command with the key already in it.`,
       next: "Next, copy the command in step 3: it already has this key in it." };
+    // Sign-in needs https (graff refuses OAuth over plain http), so this always uses the public address.
+    case "harness": return { kind: "command", label: "Copy command", needsKey: false, href: null,
+      code: `graff mcp add folio --url ${mcpEndpoint(reachableOrigin(origin))} --everywhere && \\\n  graff mcp login folio`,
+      hint: "Paste it into a terminal, or ask Harness to run it. graff opens Folio in your browser: choose what Harness may read and approve. It never sees a key, and you can disconnect it any time.",
+      next: "Next, open “Or set it up by hand” in step 3 and copy that command: the copy fills in this key." };
     case "codex": return { kind: "command", label: "Copy command", needsKey: true, href: null,
       code: token ? `export ${FOLIO_KEY_ENV}="${token}"\necho 'export ${FOLIO_KEY_ENV}="${token}"' >> "$HOME/.\${SHELL##*/}rc"\ncodex mcp add folio --url ${url} --bearer-token-env-var ${FOLIO_KEY_ENV}` : null,
       hint: token ? "Paste it into a terminal. It saves the key in your shell profile (~/.zshrc or ~/.bashrc) so Codex finds it in new terminals, then adds Folio to Codex."
@@ -180,10 +200,11 @@ export function installAction(client: AgentClientId, origin: string, token: stri
  * Which step the person is on. A key made on this page is tracked until its first call; otherwise any
  * active key that has been used counts as connected (someone adding a second agent can skip ahead).
  */
-export function onboardingProgress(input: { signedIn: boolean; activeKeys: number; usedKeys: number; newKey: { used: boolean } | null }) {
+export function onboardingProgress(input: { signedIn: boolean; activeKeys: number; usedKeys: number; newKey: { used: boolean } | null; signsIn?: boolean }) {
   const keyReady = input.signedIn && input.activeKeys > 0;
   const connected = keyReady && (input.newKey ? input.newKey.used : input.usedKeys > 0);
-  return { keyReady, connected, current: !keyReady ? 2 : !connected ? 3 : 5 } as const;
+  // A client that signs in is approved during step 3, so there's nothing to do in step 2 first.
+  return { keyReady, connected, current: !keyReady ? (input.signsIn && input.signedIn ? 3 : 2) : !connected ? 3 : 5 } as const;
 }
 
 /** A terminal check that needs no agent: lists the websites the key can read. Uses the env variable, never the key itself. */

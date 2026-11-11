@@ -49,7 +49,20 @@ test("Claude Code and Codex get one command with the new key in it, safe to run 
   assert.equal(installAction("manus", origin, token), null);
   assert.equal(installAction("other", origin, token), null);
   assert.deepEqual(agentClients(origin).filter(client => installAction(client.id, origin, token)).map(client => client.id),
-    ["claude-code", "codex", "cursor", "vscode", "claude-desktop"]);
+    ["claude-code", "codex", "harness", "cursor", "vscode", "claude-desktop"]);
+});
+
+test("Harness signs in with OAuth: one command, no key, always the public https address", () => {
+  const command = "graff mcp add folio --url https://usefolio.site/api/mcp --everywhere && \\\n  graff mcp login folio";
+  for (const page of [origin, "http://localhost:3012", "http://127.0.0.1:3012"]) {
+    const action = installAction("harness", page, null)!;
+    // Ready before any key exists, and the same with one: the key isn't part of it.
+    assert.deepEqual([action.kind, action.needsKey, action.code], ["command", false, command], page);
+    assert.equal(installAction("harness", page, token)!.code, command);
+  }
+  // graff refuses OAuth over plain http, so a page opened locally says why the command uses the public address.
+  assert.ok(agentClients("http://localhost:3012").find(client => client.id === "harness")!.notes.some(note => note.includes("Signing in needs https")));
+  assert.ok(!agentClients(origin).find(client => client.id === "harness")!.notes.some(note => note.includes("Signing in needs https")));
 });
 
 test("the Claude Desktop extension asks for the key, holds none, and points at the site it came from", async () => {

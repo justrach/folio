@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { Bot, Check, CircleCheck, Cloud, Code2, Copy, Download, ExternalLink, Eye, EyeOff, KeyRound, Loader2, MessageSquareText, Monitor, MousePointer2, Plug, PlugZap, ShieldCheck, SquareTerminal, Terminal, Wrench,
+import { AppWindow, Bot, Check, CircleCheck, Cloud, Code2, Copy, Download, ExternalLink, Eye, EyeOff, KeyRound, Loader2, MessageSquareText, Monitor, MousePointer2, Plug, PlugZap, ShieldCheck, SquareTerminal, Terminal, Wrench,
   type LucideIcon } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import type { AgentApiKeySummary } from "@/lib/agent-observation-types";
@@ -13,7 +13,7 @@ import { ConnectConsent, ConsentDone, type ConsentChoice, type ConsentOrganizati
 import "./agent-onboarding.css";
 
 /** Plain icons for each client, not their logos. */
-const CLIENT_ICONS: Record<AgentClientId, LucideIcon> = { "claude-code": SquareTerminal, codex: Terminal, cursor: MousePointer2, vscode: Code2, "claude-desktop": Monitor, manus: Cloud, other: Plug };
+const CLIENT_ICONS: Record<AgentClientId, LucideIcon> = { "claude-code": SquareTerminal, codex: Terminal, harness: AppWindow, cursor: MousePointer2, vscode: Code2, "claude-desktop": Monitor, manus: Cloud, other: Plug };
 
 const WATCH_MS = 15 * 60_000, POLL_MS = 4_000;
 const active = (key: AgentApiKeySummary, now: number) => !key.revokedAt && Date.parse(key.expiresAt) > now;
@@ -63,7 +63,7 @@ function Install({ action, token }: { action: InstallAction; token: string | nul
   const shown = action.code && token ? action.code.split(token).join(maskedKey(token)) : action.code;
   return <div className="ao-install">
     {action.kind === "command" ? ready
-      ? <figure className="ao-code"><figcaption><span>One command, with your new key</span><CopyButton text={action.code!} label={action.label} primary /></figcaption>
+      ? <figure className="ao-code"><figcaption><span>{action.needsKey ? "One command, with your new key" : "One command, no key in it"}</span><CopyButton text={action.code!} label={action.label} primary /></figcaption>
         <pre data-language="shell">{shown}</pre></figure>
       : <button type="button" className="button primary" disabled><Copy size={15} aria-hidden="true" />{action.label}</button>
     : action.kind === "download" ? <a className="button primary" href={action.href!} download><Download size={15} aria-hidden="true" />{action.label}</a>
@@ -130,6 +130,13 @@ export function AgentOnboarding({ domain = null, organization = null, onKeysChan
   useEffect(() => {
     if (watched?.lastUsedAt && announced.current !== watched.id) { announced.current = watched.id; onKeysChanged?.(); }
   }, [watched, onKeysChanged]);
+  // Coming back to this tab (after approving an app in the browser, or setting one up in a terminal) shows its connection.
+  useEffect(() => {
+    if (!signedIn) return;
+    const back = () => { if (document.visibilityState === "visible") { setNow(Date.now()); void reload(); } };
+    document.addEventListener("visibilitychange", back);
+    return () => document.removeEventListener("visibilitychange", back);
+  }, [signedIn, reload]);
 
   const live = (keys ?? []).filter(key => active(key, now));
   const connected = live.filter(key => key.lastUsedAt).sort((a, b) => Date.parse(b.lastUsedAt!) - Date.parse(a.lastUsedAt!));
@@ -137,13 +144,18 @@ export function AgentOnboarding({ domain = null, organization = null, onKeysChan
   const firstName = session?.user.name?.split(/\s+/)[0] ?? "My";
   // The key made on this page, for the copy buttons in step 3. It lives only in this tab’s memory.
   const fresh = watch && watched && !watched.revokedAt ? watch.token : null;
-  const progress = onboardingProgress({ signedIn, activeKeys: live.length, usedKeys: connected.length, newKey: watch && watched ? { used: Boolean(watched.lastUsedAt) } : null });
+  const progress = onboardingProgress({ signedIn, activeKeys: live.length, usedKeys: connected.length, newKey: watch && watched ? { used: Boolean(watched.lastUsedAt) } : null, signsIn: client.signsIn });
   const done = (n: number) => (n === 2 && progress.keyReady) || ((n === 3 || n === 4) && progress.connected);
   const step = (n: number) => ({ className: `ao-step ${n === progress.current ? "is-current" : done(n) ? "is-done" : n > progress.current ? "is-later" : ""}`,
     "aria-current": n === progress.current ? "step" as const : undefined });
   const number = (n: number) => <span className={`ao-number ${done(n) ? "is-done" : ""}`}>{done(n) ? <Check size={14} aria-label="Done" /> : n}</span>;
   const fields = client.blocks.filter(isFormField), files = client.blocks.filter(block => !isFormField(block));
   const action = installAction(client.id, origin, fresh);
+  const keyForm = <KeyForm key={client.id} client={{ label: client.label, icon: (() => { const Icon = CLIENT_ICONS[client.id]; return <Icon size={20} />; })() }}
+    account={{ name: session?.user.name || session?.user.email || "you" }} onSwitchAccount={() => void switchAccount()} organizations={organizations}
+    firstName={firstName} organization={organization} readsShell={client.readsShellEnvironment} connected={Boolean(watched?.lastUsedAt)}
+    next={action?.next ?? null} existing={live} now={now} error={keysError}
+    onCreated={(key, token) => { setKeys(previous => [key, ...(previous ?? [])]); setWatch({ id: key.id, token, since: Date.now() }); setNow(Date.now()); onKeysChanged?.(); }} />;
   const manual = <>
     {fields.length > 0 && <Fields blocks={fields} token={fresh} />}
     {files.length > 0 && <div className="ao-blocks">{files.map(block => <Code key={block.label} block={block} token={fresh} />)}</div>}
@@ -162,11 +174,13 @@ export function AgentOnboarding({ domain = null, organization = null, onKeysChan
         <h3><KeyRound size={16} aria-hidden="true" />Approve access for {client.label}</h3>
         {isPending ? <p role="status">Checking your sign-in…</p> : !signedIn
           ? <p>Each person approves their own agent with their own key. <Link href={`/login?next=${encodeURIComponent(organization ? "/orgs" : "/agents")}`}>Sign in to approve one</Link>.</p>
-          : <KeyForm key={client.id} client={{ label: client.label, icon: (() => { const Icon = CLIENT_ICONS[client.id]; return <Icon size={20} />; })() }}
-            account={{ name: session?.user.name || session?.user.email || "you" }} onSwitchAccount={() => void switchAccount()} organizations={organizations}
-            firstName={firstName} organization={organization} readsShell={client.readsShellEnvironment} connected={Boolean(watched?.lastUsedAt)}
-            next={action?.next ?? null} existing={live} now={now} error={keysError}
-            onCreated={(key, token) => { setKeys(previous => [key, ...(previous ?? [])]); setWatch({ id: key.id, token, since: Date.now() }); setNow(Date.now()); onKeysChanged?.(); }} />}
+          : client.signsIn ? <div className="ao-signs-in">
+            <p><ShieldCheck size={16} aria-hidden="true" /><span>{client.label} asks for your approval itself. When you run the command in step 3, Folio opens in your browser on this same card:
+              choose what it may read, then Approve. Nothing to create here, and no key to copy.</span></p>
+            {/* The form stays inside the fold, so a key made here keeps its "approved" card; the fold opens to show it. */}
+            <details className="ao-manual" open={watch ? true : undefined}><summary>Use a key instead</summary>{keyForm}</details>
+          </div>
+          : keyForm}
       </div></li>
 
       <li {...step(3)}>{number(3)}<div className="ao-step-body">

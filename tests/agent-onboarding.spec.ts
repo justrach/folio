@@ -190,6 +190,40 @@ test("Claude Desktop downloads an extension that asks for the key; by hand, the 
   expect(keyPosts(state).map(post => post.body)).toEqual([{ name: "Rach’s Claude Desktop", scopes: ["read"], expiresInDays: 30 }]);
 });
 
+test("Harness signs in itself: one command with no key, always the public https address; a key stays available by hand", async ({ page }) => {
+  const state = await setup(page);
+  await page.goto("/agents");
+  const panel = page.getByRole("region", { name: "Connect your agent" });
+  await panel.getByRole("radio", { name: /Harness/ }).click();
+  const origin = new URL(page.url()).origin;
+  // Approval happens on Folio's page when graff signs in, so step 2 only explains and the person starts at step 3.
+  await expect(currentStep(page)).toHaveText("Add Folio to Harness");
+  await expect(panel.locator(".ao-signs-in")).toContainText("Harness asks for your approval itself");
+  await expect(card(page, "Harness")).toBeHidden();
+  // The command is ready before any key exists, and holds none. The page runs locally, so it says why the address is the public one.
+  const command = panel.locator(".ao-install pre");
+  await expect(command).toHaveText("graff mcp add folio --url https://usefolio.site/api/mcp --everywhere && \\\n  graff mcp login folio");
+  await expect(panel.locator(".ao-install figcaption")).toContainText("One command, no key in it");
+  await panel.getByRole("button", { name: "Copy command" }).click();
+  expect(await copied(page)).toBe("graff mcp add folio --url https://usefolio.site/api/mcp --everywhere && \\\n  graff mcp login folio");
+  await expect(panel).toContainText("Signing in needs https, so the command uses https://usefolio.site");
+  expect(keyPosts(state)).toEqual([]);
+  // A key, if the person prefers one: the same consent card, folded away. The fold stays open on the approved card.
+  await panel.getByText("Use a key instead").click();
+  await card(page, "Harness").getByRole("button", { name: "Approve" }).click();
+  const done = panel.locator(".ao-signs-in .cc-card.is-done");
+  await expect(done.getByRole("button", { name: "Copy key" })).toBeVisible();
+  await expect(done).toContainText("Next, open “Or set it up by hand” in step 3 and copy that command: the copy fills in this key.");
+  // graff takes headers as KEY=VALUE. The screen keeps the placeholder; the copy carries the key. The one-step command still has none.
+  // A key needs no https, so by hand it's this page's own address, like every other client's setup.
+  await panel.getByText("Or set it up by hand", { exact: true }).click();
+  await expect(panel.locator("pre").filter({ hasText: "--header" })).toContainText("Authorization=Bearer <your Folio key>");
+  await expect(command).not.toContainText("folio_v1_");
+  await panel.getByRole("button", { name: "Copy with your key" }).click();
+  expect(await copied(page)).toBe(`graff mcp add folio --url ${origin}/api/mcp --everywhere \\\n  --header "Authorization=Bearer ${token}"`);
+  expect(keyPosts(state).map(post => post.body)).toEqual([{ name: "Rach’s Harness", scopes: ["read"], expiresInDays: 30 }]);
+});
+
 test("Manus, a cloud agent, gets the public address, a Bearer token to paste, and a prompt to check it", async ({ page }) => {
   const state = await setup(page);
   await page.goto("/agents");

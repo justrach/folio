@@ -9,7 +9,7 @@ const origin = "https://usefolio.site";
 
 test("every client's setup points at this Folio's MCP endpoint and never contains a key", () => {
   const clients = agentClients(origin);
-  assert.deepEqual(clients.map(client => client.id), ["claude-code", "codex", "cursor", "vscode", "claude-desktop", "manus", "other"]);
+  assert.deepEqual(clients.map(client => client.id), ["claude-code", "codex", "harness", "cursor", "vscode", "claude-desktop", "manus", "other"]);
   for (const client of clients) {
     const text = client.blocks.map(block => block.code).join("\n");
     assert.ok(text.includes("https://usefolio.site/api/mcp"), client.id);
@@ -27,7 +27,10 @@ test("every client's setup points at this Folio's MCP endpoint and never contain
   assert.equal(vscode.inputs[0].password, true);
   assert.deepEqual(JSON.parse(byId["claude-desktop"].blocks[0].code).mcpServers.folio.args, ["-y", "mcp-remote", "https://usefolio.site/api/mcp", "--header", "Authorization:${FOLIO_AUTH}"]);
   // Clients that ignore shell variables are flagged so the page says where to paste the key.
-  assert.deepEqual(clients.filter(client => !client.readsShellEnvironment).map(client => client.id), ["vscode", "claude-desktop", "manus", "other"]);
+  assert.deepEqual(clients.filter(client => !client.readsShellEnvironment).map(client => client.id), ["harness", "vscode", "claude-desktop", "manus", "other"]);
+  // Harness signs in with OAuth; by hand it takes the key as graff's KEY=VALUE header, saved for every project.
+  assert.deepEqual(clients.filter(client => client.signsIn).map(client => client.id), ["harness"]);
+  assert.equal(byId.harness.blocks[0].code, 'graff mcp add folio --url https://usefolio.site/api/mcp --everywhere \\\n  --header "Authorization=Bearer <your Folio key>"');
   assert.equal(mcpEndpoint("http://localhost:3012/"), "http://localhost:3012/api/mcp");
 });
 
@@ -73,6 +76,10 @@ test("the panel points at the next step: key, then setup until the key is used, 
   // A key made on the page is followed until its own first call, even if older keys were used.
   assert.deepEqual(at({ activeKeys: 2, usedKeys: 1, newKey: { used: false } }), { keyReady: true, connected: false, current: 3 });
   assert.deepEqual(at({ activeKeys: 2, usedKeys: 2, newKey: { used: true } }), { keyReady: true, connected: true, current: 5 });
+  // A client that signs in (Harness) is approved during step 3, so it starts there; signed out, sign-in comes first.
+  assert.deepEqual(at({ signsIn: true }), { keyReady: false, connected: false, current: 3 });
+  assert.deepEqual(at({ signsIn: true, signedIn: false }), { keyReady: false, connected: false, current: 2 });
+  assert.deepEqual(at({ signsIn: true, activeKeys: 1, usedKeys: 1 }), { keyReady: true, connected: true, current: 5 });
 });
 
 test("the note an owner sends says which email to sign in with and links to /orgs", () => {

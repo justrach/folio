@@ -35,6 +35,11 @@
 
 /* Step 2 is the consent card (connect-consent.css); these are the bits around it and its approved state. */
 .ao-consent { display: grid; gap: 10px; justify-items: start; }
+/* Clients that sign in themselves (Harness): approval happens on Folio's page during step 3, so step 2 only explains. */
+.ao-signs-in { display: grid; gap: 10px; padding: 14px 16px; border-radius: var(--folio-radius-control); border: 1px solid var(--folio-edge); background: var(--folio-canvas); }
+.ao-signs-in > p { display: flex; align-items: flex-start; gap: 10px; color: var(--folio-ink); }
+.ao-signs-in > p > svg { flex: none; margin-top: 3px; color: var(--folio-success); }
+.ao-signs-in .ao-manual[open] { justify-items: start; }
 .ao-existing { font-size: 13px !important; }
 .ao-done-sub { text-align: center; }
 .ao-secret { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
