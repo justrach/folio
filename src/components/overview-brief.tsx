@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowDown, CheckCheck, ScanSearch } from "lucide-react";
+import { ArrowDown, CheckCheck, ScanSearch } from "@/components/icons";
 import "./overview-brief.css";
 
 type Fact = {label: string; value: string};

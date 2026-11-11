@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useId, useMemo, useRef, useState } from "react";
-import { CalendarRange, Check, ChevronDown, Download, FileSpreadsheet } from "lucide-react";
+import { CalendarRange, Check, ChevronDown, Download, FileSpreadsheet } from "@/components/icons";
 import { scrubIndex } from "@/lib/overview-question-filters";
 import { byteSize, formatBytes, WINDOW_PRESETS, type DailyPoint, type DateWindow } from "@/lib/overview-window";
 

@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowRight, Bot, Check, ChevronRight, Globe2, MessageSquareText, SearchCheck, Users, type LucideIcon } from "lucide-react";
+import { ArrowRight, Bot, Check, ChevronRight, Globe2, MessageSquareText, SearchCheck, Users, type FolioIcon } from "@/components/icons";
 import { gettingStartedSummary, type GettingStartedProgress, type GettingStartedStepId } from "@/lib/getting-started";
 import { besideSidebar, useSidebarPopover } from "./sidebar-popover";
 import "./getting-started.css";
 
-const ICONS: Record<GettingStartedStepId, LucideIcon> = { website: Globe2, "search-console": SearchCheck, agent: Bot, ask: MessageSquareText, team: Users };
+const ICONS: Record<GettingStartedStepId, FolioIcon> = { website: Globe2, "search-console": SearchCheck, agent: Bot, ask: MessageSquareText, team: Users };
 
 /** Whether the person hid the checklist ("hidden", can be shown again from the account menu) or finished it ("finished"). */
 export type GettingStartedVisibility = "shown" | "hidden" | "finished";

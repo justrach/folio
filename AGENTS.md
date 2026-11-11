@@ -80,6 +80,8 @@ Restart the dev server after intended `.dev.vars` changes. Obtain D1 through the
 | Proposed pricing | `src/components/pricing.tsx`, `src/app/api/plans/route.ts` |
 | Offline verification | `scripts/verify-evaluation.ts`, `tests/evals.test.ts` |
 | Formal models (Lean) | `proofs/Folio/`, `docs/LEAN-PROOFS.md`; `bun run proofs:check` |
+| Read plan (how many database reads run at once) | `src/data/read-plan.json`, `withLimit` and `batches` in `src/lib/sequential.ts`, `proofs/Folio/ReadPlan.lean`, `tests/read-plan.test.ts`. Change the JSON and the Lean constants together. |
+| Icons (Folio's own set; no icon library) | `src/components/icons.tsx`, `tests/icons.test.ts`; review sheet with `node --import tsx scripts/icon-sheet.ts` |
 
 Component-only filenames in the map are relative to `src/components/`; adjacent library filenames are relative to `src/lib/`.
 

@@ -7,7 +7,7 @@ import { LabelInput } from "./bencho/label-input/LabelInput";
 import "./bencho/label-input/LabelInput.css";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, Check, ChevronRight, RefreshCw, Search } from "lucide-react";
+import { ArrowUpRight, Check, ChevronRight, RefreshCw, Search } from "@/components/icons";
 import { assertPublicDashboardData, type PublicDashboardData } from "@/lib/public-dashboard";
 import { publicModelView, type PublicModelTask } from "@/lib/public-model-view";
 import { RecordedRanking } from "./recorded-ranking";

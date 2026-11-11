@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, RefreshCw } from "lucide-react";
+import { ArrowUpRight, RefreshCw } from "@/components/icons";
 import { useSession } from "@/lib/auth-client";
 import type { IndexAsk } from "@/lib/index-asks";
 import "./index-asks-panel.css";

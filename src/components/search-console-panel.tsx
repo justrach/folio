@@ -5,7 +5,7 @@ import { UiSelect } from "./ui/select";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, type RefObject } from "react";
-import { ArrowDownToLine, ArrowRight, Check, Globe, Loader2, Search, ShieldCheck } from "lucide-react";
+import { ArrowDownToLine, ArrowRight, Check, Globe, Loader2, Search, ShieldCheck } from "@/components/icons";
 import { authClient } from "@/lib/auth-client";
 import type { SearchConsoleProperty, SearchConsoleReport, SearchConsoleReportSummary, SearchConsoleRow } from "@/lib/search-console-types";
 import "./search-console.css";

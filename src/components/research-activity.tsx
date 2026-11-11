@@ -1,6 +1,6 @@
 "use client";
 import {useEffect,useRef,useState} from "react";
-import {Check,ChevronDown,CircleDashed,Pause,Play,TriangleAlert} from "lucide-react";
+import {Check,ChevronDown,CircleDashed,Pause,Play,TriangleAlert} from "@/components/icons";
 import type {KeywordBenchmarkRun} from "@/lib/keyword-benchmark-types";
 
 /** Presentation only: never polls, launches work, or invents intermediate tool activity. */

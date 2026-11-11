@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check as CheckIcon, ChevronDown, Minus, X } from "lucide-react";
+import { Check as CheckIcon, ChevronDown, Minus, X } from "@/components/icons";
 import type { Check } from "@/lib/demo-data";
 import "./seo-checks.css";
 

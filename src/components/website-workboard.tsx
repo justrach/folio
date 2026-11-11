@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useId } from "react";
-import { ArrowRight, MessageCircle, ScanLine, Search } from "lucide-react";
+import { ArrowRight, MessageCircle, ScanLine, Search } from "@/components/icons";
 
 /** Real website handoffs: a team chooses a job, then reviews the destination. */
 export function WebsiteWorkboard({ websiteId, onAudit }: { websiteId: string; onAudit?: () => void }) {

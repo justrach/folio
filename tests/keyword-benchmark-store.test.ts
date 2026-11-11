@@ -5,7 +5,7 @@ import { DatabaseSync, type SQLInputValue } from "node:sqlite";
 import type { D1Database } from "@cloudflare/workers-types";
 import { createKeywordBenchmarkSuite, getKeywordBenchmarkSuite, listKeywordBenchmarkSuites,
   updateKeywordBenchmarkCase, reserveKeywordBenchmarkRun, markKeywordBenchmarkCreateAttempt,
-  updateKeywordBenchmarkRun, getKeywordBenchmarkRun, listKeywordBenchmarkRuns, getKeywordBenchmarkUsage,
+  updateKeywordBenchmarkRun, getKeywordBenchmarkRun, getKeywordBenchmarkRuns, listKeywordBenchmarkRuns, getKeywordBenchmarkUsage,
   validateKeywordBenchmarkAnswer, validateKeywordBenchmarkCase, sanitizeKeywordBenchmarkError,
   KeywordBenchmarkStoreError } from "../src/lib/keyword-benchmark-store";
 import { compareKeywordBenchmarkRuns, type KeywordBenchmarkAnswer, type KeywordBenchmarkCaseInput } from "../src/lib/keyword-benchmark-types";
@@ -80,6 +80,12 @@ test("benchmark reservations freeze private inputs, guard creation and retain fa
     assert.equal((await getKeywordBenchmarkRun(db, "alice", run.id))?.case.query, fixture.query);
     assert.deepEqual(await getKeywordBenchmarkUsage(db, "alice"), { attemptsLast24Hours: 1, remainingRuns: 0, activeRuns: 1, remainingActiveRuns: 0 });
     assert.equal(await getKeywordBenchmarkRun(db, "bob", run.id), null);
+    // The batched read is the same owner-scoped read: asked order, and nothing for another owner or an unknown ID.
+    assert.deepEqual((await getKeywordBenchmarkRuns(db, "alice", ["missing-run", run.id])).map(item => item.id), [run.id]);
+    assert.deepEqual((await getKeywordBenchmarkRuns(db, "alice", [run.id]))[0], await getKeywordBenchmarkRun(db, "alice", run.id));
+    assert.deepEqual(await getKeywordBenchmarkRuns(db, "bob", [run.id]), []);
+    assert.deepEqual(await getKeywordBenchmarkRuns(db, "alice", []), []);
+    await assert.rejects(getKeywordBenchmarkRuns(db, "alice", Array.from({ length: 51 }, (_, index) => `run-${index}`)), error => error instanceof KeywordBenchmarkStoreError && error.status === 400);
     await assert.rejects(updateKeywordBenchmarkRun(db, "bob", run.id, uncertain.revision, { status: "failed" }), KeywordBenchmarkStoreError);
     const failed = await updateKeywordBenchmarkRun(db, "alice", run.id, uncertain.revision, { status: "failed", error: "secret raw provider failure" });
     assert.ok(!failed.error?.includes("secret"));

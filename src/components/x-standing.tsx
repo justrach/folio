@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, Search } from "lucide-react";
+import { Loader2, Search } from "@/components/icons";
 import type { XStanding } from "@/lib/x-standing";
 import "./x-standing.css";
 

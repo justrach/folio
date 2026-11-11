@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "@/components/icons";
 import { RankedSearchTable } from "@/components/ranked-search-table";
 import "@/components/landing.css";
 import styles from "./page.module.css";

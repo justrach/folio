@@ -6,7 +6,8 @@ import { crawlWebsite } from "./index-pages";
 import { registrableDomain } from "./index-stats";
 import { getOwnedSeoReport, listOwnedSeoReports } from "./seo-store";
 import { readableWebsite } from "./organizations";
-import { sequentially } from "./sequential";
+import { withLimit } from "./sequential";
+import READ_PLAN from "../data/read-plan.json";
 import { savedVisibility, visibilityFilters } from "./visibility-service";
 import { listSavedSearchConsoleReports } from "./search-console-store";
 
@@ -380,8 +381,9 @@ export async function loadWebsiteGaps(db: D1Database, readerId: string, websiteI
   const readable = await readableWebsite(db, readerId, websiteId, allowed);
   if (!readable) throw new AgentApiError("Website not found. List your websites with folio_targets, or shared ones with folio_organizations.", 404, "not_found");
   const { site, ownerId } = readable, domain = hostOf(site.url);
-  // One read at a time: each in-flight query can hold one of the database's few connections.
-  const [search, rankings, published, crawl, yourQuestions, searchConsole] = await sequentially([
+  // Independent reads, a few at a time: each in-flight query can hold one of the database's few connections,
+  // so the limit comes from the connection budget in read-plan.json (proved to fit in proofs/Folio/ReadPlan.lean).
+  const [search, rankings, published, crawl, yourQuestions, searchConsole] = await withLimit(READ_PLAN.readLimit, [
     () => savedSearch(db, ownerId, domain).catch(() => null),
     () => googleRankings(db, domain),
     () => publishedIndex(db).catch(() => null),

@@ -5,6 +5,7 @@ import type { D1Database } from "@cloudflare/workers-types";
 import { Pool, types } from "pg";
 import { createPostgresDatabase, type PgExecutor } from "./pg/database";
 import { requestResource } from "./pg/request-scope";
+import READ_PLAN from "../data/read-plan.json";
 
 types.setTypeParser(20, value => Number(value));
 type EngineEnv = { DB?: D1Database; DB_ENGINE?: string; HYPERDRIVE?: { connectionString: string }; PLANETSCALE_APP_URL?: string };
@@ -22,7 +23,8 @@ export function getPgPool(connectionString: string, viaHyperdrive = false): Pool
   return requestResource(`${viaHyperdrive}:${clean}`, () => new Pool({
     connectionString: clean,
     ssl: viaHyperdrive ? undefined : { rejectUnauthorized: true },
-    max: 5,
+    // Shared with the read planner: no request may hold more connections than this (src/data/read-plan.json).
+    max: READ_PLAN.requestPoolMax,
     // Also release sockets when called by a local Next route outside the Worker wrapper.
     maxUses: 1,
     idleTimeoutMillis: 1_000,

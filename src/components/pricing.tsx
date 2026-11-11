@@ -8,7 +8,7 @@ import {
   CreditCard,
   LockKeyhole,
   Loader2,
-} from "lucide-react";
+} from "@/components/icons";
 import { authClient } from "@/lib/auth-client";
 import "./pricing.css";
 import { UiBadge, UiButton, UiSurface } from "./ui/primitives";

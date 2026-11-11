@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ArrowUpRight, Bot } from "lucide-react";
+import { ArrowUpRight, Bot } from "@/components/icons";
 import type { DataSourceKind, GoogleBand, WebsiteGapsReport } from "@/lib/website-gaps";
 import "./website-visibility.css";
 
@@ -66,8 +66,10 @@ export function WebsiteVisibility({ websiteId, refresh = 0 }: { websiteId: strin
   }, [key, websiteId]);
   const report = state.key === key ? state.report : state.report?.website.id === websiteId ? state.report : null;
   const error = state.key === key ? state.error : null;
-  if (!report) return <section className="panel website-visibility" aria-label="Where this website shows up">
-    <h2>Where it shows up</h2>{error ? <p role="alert">{error}</p> : <p role="status">Loading where this website shows up…</p>}
+  // The placeholder holds the report's shape, so the page below doesn't jump when the report arrives.
+  if (!report) return <section className="panel website-visibility" aria-label="Where this website shows up" aria-busy={!error}>
+    <h2>Where it shows up</h2>{error ? <p role="alert">{error}</p> : <><p role="status">Loading where this website shows up…</p>
+      <div className="wv-skeleton" aria-hidden="true"><span /><span /><span /></div></>}
   </section>;
 
   const { google, aiAnswers, crawl, website } = report;
@@ -82,8 +84,8 @@ export function WebsiteVisibility({ websiteId, refresh = 0 }: { websiteId: strin
       <p className="wv-summary">{report.summary}</p>
     </header>
 
-    <div className="wv-lanes">
-      <section className="wv-lane" aria-labelledby="wv-google-title">
+    <div className={google.state === "tracked" ? "wv-lanes" : "wv-lanes is-even"}>
+      <section className="wv-lane is-google" aria-labelledby="wv-google-title">
         <h3 id="wv-google-title">Google search</h3>
         {google.state === "tracked" ? <>
           <p className="wv-meta">{google.tracked} searches tracked{day(google.capturedAt) ? ` · ${day(google.capturedAt)}` : ""} · US</p>
@@ -109,7 +111,7 @@ export function WebsiteVisibility({ websiteId, refresh = 0 }: { websiteId: strin
           : google.state === "unavailable" ? "Recorded Google positions couldn’t be read right now." : "Folio hasn’t recorded any Google positions for it."}</p>}
       </section>
 
-      <section className="wv-lane" aria-labelledby="wv-ai-title">
+      <section className="wv-lane is-ai" aria-labelledby="wv-ai-title">
         <h3 id="wv-ai-title">AI answers</h3>
         <p className="wv-meta">Folio’s published index{aiAnswers.publishedQuestions !== null ? ` · ${count(aiAnswers.publishedQuestions)} answers` : ""}</p>
         <div className="wv-stat"><strong>{aiAnswers.namedIn}</strong><span>published answer{aiAnswers.namedIn === 1 ? "" : "s"} name it{aiAnswers.citedIn ? ` · cited in ${aiAnswers.citedIn}` : ""}</span></div>
@@ -125,7 +127,7 @@ export function WebsiteVisibility({ websiteId, refresh = 0 }: { websiteId: strin
           ? "No saved question for it has an answer yet." : `Saved questions: named in ${aiAnswers.yourQuestions.named} of ${aiAnswers.yourQuestions.completed} answers.`}</p>
       </section>
 
-      <section className="wv-lane" aria-labelledby="wv-crawl-title">
+      <section className="wv-lane is-crawl" aria-labelledby="wv-crawl-title">
         <h3 id="wv-crawl-title">What Folio has read</h3>
         {crawl.state === "in_index" ? <>
           <p className="wv-meta">Pages saved from the site{day(crawl.lastFetchedAt) ? ` · last read ${day(crawl.lastFetchedAt)}` : ""}</p>

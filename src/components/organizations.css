@@ -31,20 +31,30 @@
 .org-join-details summary { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; cursor: pointer; font-size: 14px; color: var(--folio-text-secondary); }
 .org-join-details[open] { flex-basis: 100%; }
 
-.org-head { display: flex; align-items: center; gap: 16px; }
-.org-head h2 { font-family: var(--serif); font-size: 30px; font-weight: 400; letter-spacing: -.5px; }
+.org-head { display: flex; align-items: center; flex-wrap: wrap; gap: 16px 20px; }
+.org-head-text { flex: 1 1 220px; min-width: 0; }
+.org-stats { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
+.org-stats > div { display: grid; gap: 2px; min-width: 124px; padding: 10px 16px; border-radius: var(--folio-radius-control); background: var(--folio-canvas); }
+.org-stats dt { font-size: 13px; color: var(--folio-text-secondary); white-space: nowrap; }
+.org-stats dd { margin: 0; font-family: var(--folio-font-display); font-size: 24px; font-weight: 500; letter-spacing: -.4px; line-height: 1.15; font-variant-numeric: tabular-nums; color: var(--folio-ink); }
+.org-head h2 { font-family: var(--serif); font-size: 30px; font-weight: 400; letter-spacing: -.5px; overflow-wrap: anywhere; }
 .org-head p { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin-top: 4px; }
 .org-mark { display: grid; place-items: center; width: 54px; height: 54px; flex: none; border-radius: 14px; background: var(--folio-ink); color: var(--folio-surface); font-size: 19px; font-weight: 600; }
 .org-role { display: inline-flex; padding: 1px 9px; border-radius: 999px; background: var(--folio-surface-muted); color: var(--folio-ink); font-size: 13px; font-weight: 500; white-space: nowrap; }
 
 
 .org-websites > header, .org-members > header, .org-invites > header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-.org-share { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.org-share { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.org-share .folio-select-trigger { width: 260px; max-width: 100%; }
+.org-share .button { flex: none; }
 .org-site-list { display: grid; gap: 12px; margin-top: 14px; list-style: none; }
 .org-site-list > li { display: grid; gap: 12px; }
 .org-site-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 14px 16px; border-radius: var(--folio-radius-control); background: var(--folio-canvas); }
 .org-site-row strong { font-family: var(--folio-font-mono); font-size: 15px; font-weight: 500; }
-.org-site-row span { display: block; margin-top: 2px; font-size: 13px; color: var(--folio-text-muted); }
+.org-site-name { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.org-site-name > div { min-width: 0; }
+.org-site-name strong { overflow-wrap: anywhere; }
+.org-site-row .org-site-name > div > span { display: block; margin-top: 2px; font-size: 13px; color: var(--folio-text-muted); }
 .org-site-list .website-visibility { border: 1px solid var(--folio-edge); box-shadow: none; }
 
 .org-members > ul, .org-activity > ul { margin-top: 12px; list-style: none; }
@@ -106,6 +116,11 @@
   .org-start-grid, .org-invite-ways { grid-template-columns: 1fr; }
   .org-join { grid-template-columns: 1fr; }
   .org-head h2 { font-size: 24px; }
+  .org-stats { width: 100%; }
+  .org-stats > div { flex: 1 1 0; min-width: 0; padding: 10px 12px; }
+  .org-stats dt { white-space: normal; }
+  .org-share { flex-wrap: wrap; width: 100%; }
+  .org-share .folio-select-trigger { width: 100%; }
   .org-activity > ul > li { grid-template-columns: 30px minmax(0,1fr); }
   .org-activity time { grid-column: 2; }
 }

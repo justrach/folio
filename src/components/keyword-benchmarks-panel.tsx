@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ResearchActivity } from "./research-activity";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { ArrowDownToLine, ArrowRight, ChevronDown, Loader2, RefreshCw } from "lucide-react";
+import { ArrowDownToLine, ArrowRight, ChevronDown, Loader2, RefreshCw } from "@/components/icons";
 import { useSession } from "@/lib/auth-client";
 import { isKeywordBenchmarkBlocking, isKeywordBenchmarkId, type KeywordBenchmarkRun, type KeywordBenchmarkRunSummary, type KeywordBenchmarkSuite, type KeywordBenchmarkSuiteSummary } from "@/lib/keyword-benchmark-types";
 import { KeywordObservationReport } from "./keyword-observation-report";

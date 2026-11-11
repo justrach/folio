@@ -3,7 +3,7 @@
 import { UiSelect } from "./ui/select";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ExternalLink, Search } from "lucide-react";
+import { ExternalLink, Search } from "@/components/icons";
 import { DEVELOPER_TOOLS, WEBSITE_AUDIENCES, type DeveloperTool } from "@/lib/developer-tools-source";
 import evaluationBatch from "@/data/developer-tool-evaluations.json";
 import { DataTable, type DataTableColumn } from "./ui/spectrum-data-table";

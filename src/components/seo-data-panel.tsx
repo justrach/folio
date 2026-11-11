@@ -15,7 +15,7 @@ import {
   Loader2,
   RefreshCw,
   ShieldCheck,
-} from "lucide-react";
+} from "@/components/icons";
 import { useSession } from "@/lib/auth-client";
 import type {
   BacklinksOverview,

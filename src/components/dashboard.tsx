@@ -53,7 +53,7 @@ import {
   Trophy,
   WandSparkles,
   X,
-} from "lucide-react";
+} from "@/components/icons";
 import { AnimatedCounter } from "@/components/ui/rare-animated-counter";
 import { NotificationBell } from "@/components/ui/rare-notification-bell";
 import { authClient } from "@/lib/auth-client";

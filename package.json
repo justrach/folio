@@ -61,7 +61,6 @@
     "cuelume": "0.2.8",
     "drizzle-orm": "latest",
     "jszip": "^3.10.1",
-    "lucide-react": "latest",
     "motion": "latest",
     "next": "16.4.5",
     "pg": "8.16.3",

@@ -2,7 +2,7 @@
 
 // Bencho Label Input, Lorenzo Cabra (MIT). See ../LICENSE and ../UPSTREAM.md.
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "@/components/icons";
 
 /* ══ Label input ══════════════════════════════════════════
    A field whose label is its placeholder until you are in it.

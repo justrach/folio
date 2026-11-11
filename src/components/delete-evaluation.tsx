@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { Loader2, Trash2, X } from "lucide-react";
+import { Loader2, Trash2, X } from "@/components/icons";
 import { useSession } from "@/lib/auth-client";
 import type { EvaluationRun } from "@/lib/evals";
 import { evaluationRequest } from "./evaluation-workspace";

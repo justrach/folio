@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowRight, Bot, Globe2, Link2, LogOut, Mail, Plus, Send, Share2, UserPlus, Users } from "lucide-react";
+import { ArrowRight, Bot, Globe2, Link2, LogOut, Mail, Plus, Send, Share2, UserPlus, Users } from "@/components/icons";
 import { authClient } from "@/lib/auth-client";
 import type { InvitePreview, JoinedByEmail, OrganizationDetail, OrganizationSummary } from "@/lib/organizations";
 import { UiSelect } from "./ui/select";
 import { WebsiteVisibility } from "./website-visibility";
+import { CompanyFavicon } from "./company-favicon";
 import { AgentOnboarding, CopyButton } from "./agent-onboarding";
 import { inviteMailto, inviteMessage } from "@/lib/organization-invite-message";
 import "./organizations.css";
@@ -166,8 +167,14 @@ function OrganizationView({ id, onLeft, onChanged, welcome, onDismissWelcome }: 
   const [link, setLink] = useState<string | null>(null), [open, setOpen] = useState<string | null>(null), [share, setShare] = useState("");
   const [confirm, setConfirm] = useState<string | null>(null);
   const [email, setEmail] = useState(""), [origin, setOrigin] = useState("https://usefolio.site");
+  // Decided once, when the organization first loads: someone with no agent yet gets the setup first; everyone else gets the
+  // team's websites first. It never moves afterwards, so connecting a key midway doesn't restart the setup steps.
+  const [setupFirst, setSetupFirst] = useState(true);
   useEffect(() => setOrigin(window.location.origin), []);
-  useEffect(() => { call<{ organization: OrganizationDetail }>(`/api/organizations/${encodeURIComponent(id)}`).then(result => { setDetail(result.organization); setOpen(result.organization.websites[0]?.websiteId ?? null); }, failure => setError(failure.message)); }, [id]);
+  useEffect(() => { call<{ organization: OrganizationDetail }>(`/api/organizations/${encodeURIComponent(id)}`).then(result => {
+    setSetupFirst(!result.organization.members.some(member => member.you && member.agents.length > 0));
+    setDetail(result.organization); setOpen(result.organization.websites[0]?.websiteId ?? null);
+  }, failure => setError(failure.message)); }, [id]);
   // A new or newly connected key changes the member list; re-read it.
   const reload = useCallback(() => { call<{ organization: OrganizationDetail }>(`/api/organizations/${encodeURIComponent(id)}`).then(result => setDetail(result.organization), () => undefined); }, [id]);
   async function act(body: Record<string, unknown>, done?: string): Promise<boolean> {
@@ -184,10 +191,17 @@ function OrganizationView({ id, onLeft, onChanged, welcome, onDismissWelcome }: 
   if (!detail) return error ? <p role="alert">{error}</p> : <p role="status">Loading the organization…</p>;
   const owner = detail.yourRole === "owner", waiting = detail.pending ?? [], firstSite = detail.websites[0] ?? null;
   const from = session?.user.name?.split(/\s+/)[0] ?? null;
+  const agents = detail.members.reduce((total, member) => total + member.agents.length, 0);
+  const setup = <AgentOnboarding domain={detail.websites[0]?.domain ?? null} organization={detail.name} onKeysChanged={reload} />;
   return <div className="org-detail">
     <header className="panel org-head">
       <div className="org-mark" aria-hidden="true">{initials(detail.name)}</div>
-      <div><h2>{detail.name}</h2><p><span className="org-role">{owner ? "Owner" : "Member"}</span>{detail.members.length} member{detail.members.length === 1 ? "" : "s"} · {detail.websites.length} shared website{detail.websites.length === 1 ? "" : "s"} · since {day(detail.createdAt)}</p></div>
+      <div className="org-head-text"><h2>{detail.name}</h2><p><span className="org-role">{owner ? "Owner" : "Member"}</span>Since {day(detail.createdAt)}</p></div>
+      <dl className="org-stats">
+        <div><dt>{detail.members.length === 1 ? "Member" : "Members"}</dt><dd>{detail.members.length}</dd></div>
+        <div><dt>Shared website{detail.websites.length === 1 ? "" : "s"}</dt><dd>{detail.websites.length}</dd></div>
+        <div><dt>Agent{agents === 1 ? "" : "s"} connected</dt><dd>{agents}</dd></div>
+      </dl>
     </header>
     {welcome && <section className="panel org-welcome" aria-labelledby="org-welcome-title">
       <div>
@@ -205,7 +219,7 @@ function OrganizationView({ id, onLeft, onChanged, welcome, onDismissWelcome }: 
     {notice && <p role="status" className="org-notice">{notice}</p>}
     {error && <p role="alert" className="org-notice is-error">{error}</p>}
 
-    <AgentOnboarding domain={detail.websites[0]?.domain ?? null} organization={detail.name} onKeysChanged={reload} />
+    {setupFirst && setup}
 
     <section className="panel org-websites" aria-labelledby="org-websites-title">
       <header><h2 id="org-websites-title"><Globe2 size={19} aria-hidden="true" />Shared websites</h2>
@@ -216,7 +230,8 @@ function OrganizationView({ id, onLeft, onChanged, welcome, onDismissWelcome }: 
       </header>
       {detail.websites.length === 0 ? <p className="org-empty">No website is shared yet. {detail.shareable.length ? "Share one of yours above; it stays yours, and members read its saved reports." : <>Save a website on the <Link href="/websites">Websites</Link> page, then share it here.</>}</p>
         : <ul className="org-site-list">{detail.websites.map(site => <li key={site.websiteId}>
-          <div className="org-site-row"><div><strong>{site.domain}</strong><span>Shared by {site.sharedBy.userId === session?.user.id ? "you" : site.sharedBy.name} · {day(site.sharedAt)}</span></div>
+          <div className="org-site-row"><div className="org-site-name"><CompanyFavicon url={site.url} name={site.domain} />
+            <div><strong>{site.domain}</strong><span>Shared by {site.sharedBy.userId === session?.user.id ? "you" : site.sharedBy.name} · {day(site.sharedAt)}</span></div></div>
             <div className="org-actions">
               <button type="button" className="button secondary" aria-expanded={open === site.websiteId} onClick={() => setOpen(value => value === site.websiteId ? null : site.websiteId)}>{open === site.websiteId ? "Hide report" : "What it’s missing"}</button>
               {site.canUnshare && <button type="button" className="text-link" disabled={busy} onClick={() => void act({ action: "unshare_website", websiteId: site.websiteId }, `${site.domain} is no longer shared.`)}>Stop sharing</button>}
@@ -284,6 +299,8 @@ function OrganizationView({ id, onLeft, onChanged, welcome, onDismissWelcome }: 
         <div><strong>{item.memberName}{item.agentName ? ` · ${item.agentName}` : ""}</strong><p>{item.summary}</p></div><time dateTime={item.at}>{new Date(item.at).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}</time></li>)}</ul>
         : <p className="org-empty">When a member’s agent reads a shared website, it appears here. Asks about other websites stay private to that member.</p>}
     </section>
+
+    {!setupFirst && setup}
 
     <footer className="org-leave">{confirm === "leave" ? <><span>{detail.members.length === 1 ? "You’re the only member, so leaving deletes the organization." : "You’ll lose access to its shared websites, and websites you shared stop being shared."}</span>
       <button type="button" className="button secondary is-danger" disabled={busy} onClick={async () => {

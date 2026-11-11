@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, Check, ChevronDown, Globe2, Plus } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, Globe2, Plus } from "@/components/icons";
 import type { Scan } from "@/lib/demo-data";
 import "./website-switcher.css";
 

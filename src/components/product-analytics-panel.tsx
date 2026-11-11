@@ -5,7 +5,7 @@ import {ProductFunnel} from './product-funnel';
 import {JOURNEYS,journeyStages,type Journey} from '@/lib/product-funnels';
 import {useSearchParams} from 'next/navigation';
 import {useEffect,useState} from 'react';
-import {ArrowRight,ChartNoAxesCombined,Download,RefreshCw} from 'lucide-react';
+import {ArrowRight,ChartNoAxesCombined,Download,RefreshCw} from "@/components/icons";
 import {demoProductEvents} from '@/lib/product-analytics-demo';
 import {productUsageSummary,type UsageEvent} from '@/lib/product-analytics-store';
 import {UiSelect} from './ui/select';

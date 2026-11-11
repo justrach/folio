@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, Globe2, Loader2, RefreshCw } from "lucide-react";
+import { ArrowUpRight, Globe2, Loader2, RefreshCw } from "@/components/icons";
 import { authClient } from "@/lib/auth-client";
 import "./published-index.css";
 

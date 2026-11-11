@@ -9,7 +9,7 @@ import {
   ArrowDownToLine, ArrowRight, ArrowUpRight, Bot, Check, ChevronDown,
   CircleDashed, Clock3, Code2, ExternalLink, FileCheck2, Fingerprint,
   FlaskConical, Globe2, Info, Loader2, LockKeyhole, Play, RefreshCw, ShieldCheck,
-} from "lucide-react";
+} from "@/components/icons";
 import { EVAL_SUITE, type EvaluationRun, type EvidenceCapture } from "@/lib/evals";
 import { createDemoEvaluationRun } from "@/lib/eval-verifier";
 import { MAX_REFERENCE_PRICE, parseOwnerConfirmedExpectedFacts, REFERENCE_PRICE_INTERVALS } from "@/lib/expected-facts";

@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { LandingWorkflow, LandingSound } from "./landing-interactions";
 import { LandingIndexSize } from "./landing-index-size";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "@/components/icons";
 import { LandingPageReport } from "./landing-page-report";
 import { RankedSearchTable } from "./ranked-search-table";
 import evaluationBatch from "@/data/developer-tool-evaluations.json";

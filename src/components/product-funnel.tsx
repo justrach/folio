@@ -1,7 +1,7 @@
 "use client";
 
 import {useId, useRef, useState} from 'react';
-import {ArrowDownRight, ChevronDown} from 'lucide-react';
+import {ArrowDownRight, ChevronDown} from "@/components/icons";
 import {funnelRates, type FunnelStage} from '@/lib/product-funnels';
 import './product-funnel.css';
 

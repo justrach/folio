@@ -2,7 +2,7 @@
 
 import { UiSelect } from "./ui/select";
 import { useEffect, useState } from "react";
-import { ArrowRight, Fingerprint, GitCompareArrows, Info, Loader2, LockKeyhole } from "lucide-react";
+import { ArrowRight, Fingerprint, GitCompareArrows, Info, Loader2, LockKeyhole } from "@/components/icons";
 import { compareEvaluationRuns } from "@/lib/eval-comparison";
 import type { EvaluationRun } from "@/lib/evals";
 import { readEvaluationIntent } from "@/lib/evaluation-navigation";

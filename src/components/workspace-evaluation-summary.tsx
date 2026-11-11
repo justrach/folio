@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, FileCheck2, Loader2, Plus, RefreshCw, ShieldCheck } from "lucide-react";
+import { ArrowUpRight, FileCheck2, Loader2, Plus, RefreshCw, ShieldCheck } from "@/components/icons";
 import { useSession } from "@/lib/auth-client";
 import type { EvaluationRun } from "@/lib/evals";
 import { evaluationHref } from "@/lib/evaluation-navigation";

@@ -3,7 +3,7 @@ import { UiSelect } from "./ui/select";
 import { useRef, useState } from "react";
 import Link from "next/link";
 import { DashboardAppearance } from "./dashboard-appearance";
-import { ArrowDown, ArrowRight, ChevronDown, Copy, FileCode2 } from "lucide-react";
+import { ArrowDown, ArrowRight, ChevronDown, Copy, FileCode2 } from "@/components/icons";
 import { AGENT_API_ENDPOINTS } from "@/lib/agent-api-reference";
 import { AgentApiKeys } from "./agent-api-keys";
 import "./agent-api-reference.css";

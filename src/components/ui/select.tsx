@@ -2,7 +2,7 @@
 
 import { Children, Fragment, forwardRef, isValidElement, useCallback, useEffect, useId, useRef, useState, type ReactNode, type ButtonHTMLAttributes } from "react";
 import * as Select from "@radix-ui/react-select";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown } from "@/components/icons";
 import "./select.css";
 
 type Choice = { value: string; label: string; disabled: boolean; group?: string };

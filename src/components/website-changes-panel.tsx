@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, Check, Loader2, RefreshCw } from "lucide-react";
+import { ArrowUpRight, Check, Loader2, RefreshCw } from "@/components/icons";
 import { useSession } from "@/lib/auth-client";
 import { CHANGE_MOVEMENT_LABELS, CHANGE_STATE_LABELS, changeAnswerLabel, type ChangeQuestion, type WebsiteChange } from "@/lib/website-change-outcome";
 import "./website-changes-panel.css";

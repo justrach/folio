@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { AlertTriangle, ArrowUpRight, Loader2, RefreshCw } from "lucide-react";
+import { AlertTriangle, ArrowUpRight, Loader2, RefreshCw } from "@/components/icons";
 import { useSession } from "@/lib/auth-client";
 import "./website-seo-summary.css";
 

@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight, ArrowUpRight, Bot, ChevronDown, CircleDashed, FileCheck2,
   Loader2, LockKeyhole, Plus, RefreshCw, ShieldCheck, X,
-} from "lucide-react";
+} from "@/components/icons";
 import type { EvaluationRun } from "@/lib/evals";
 import { evaluationHref, readEvaluationIntent } from "@/lib/evaluation-navigation";
 import { EvaluationActivity } from "./evaluations-panel";

@@ -2,7 +2,7 @@
 import { KeywordPublication } from "./keyword-publication";
 
 import { ResearchActivity } from "./research-activity";
-import { ArrowDownToLine, ArrowRight, ChevronDown, ExternalLink } from "lucide-react";
+import { ArrowDownToLine, ArrowRight, ChevronDown, ExternalLink } from "@/components/icons";
 import { compareKeywordBenchmarkRuns, type KeywordBenchmarkRun } from "@/lib/keyword-benchmark-types";
 import { keywordRecommendationMetrics } from "@/lib/keyword-search-mode";
 

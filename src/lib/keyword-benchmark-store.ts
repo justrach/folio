@@ -187,6 +187,17 @@ export async function getKeywordBenchmarkRun(db: D1Database, ownerId: string, id
   const row = await db.prepare(`SELECT ${runColumns},answer_json FROM keyword_benchmark_runs WHERE user_id=? AND id=?`).bind(ownerId, id).first<RunRow>();
   return row ? decodeRun(row) : null;
 }
+/** Several owned runs in one read, in the order asked for; IDs that are not this owner's are left out. At most 50 IDs. */
+export async function getKeywordBenchmarkRuns(db: D1Database, ownerId: string, ids: string[]): Promise<KeywordBenchmarkRun[]> {
+  requireOwner(ownerId);
+  if (ids.length > 50) throw new KeywordBenchmarkStoreError("Too many run IDs in one read.", 400);
+  for (const id of ids) benchmarkId(id, "run ID");
+  if (!ids.length) return [];
+  const { results } = await db.prepare(`SELECT ${runColumns},answer_json FROM keyword_benchmark_runs WHERE user_id=? AND id IN (${ids.map(() => "?").join(",")})`)
+    .bind(ownerId, ...ids).all<RunRow>();
+  const found = new Map(results.map(row => [row.id, row]));
+  return ids.flatMap(id => { const row = found.get(id); return row ? [decodeRun(row)] : []; });
+}
 export async function listKeywordBenchmarkRuns(db: D1Database, ownerId: string, options: { suiteId?: string; caseId?: string } = {}): Promise<KeywordBenchmarkRunSummary[]> {
   requireOwner(ownerId);
   if (options.suiteId !== undefined) benchmarkId(options.suiteId, "suite ID");

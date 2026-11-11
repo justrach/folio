@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, Search, ScanLine, Compass, Volume2, VolumeX } from "lucide-react";
+import { ArrowRight, Search, ScanLine, Compass, Volume2, VolumeX } from "@/components/icons";
 import { play } from "cuelume";
 import { CardSwap } from "./bencho/card-swap/CardSwap";
 import "./bencho/card-swap/CardSwap.css";

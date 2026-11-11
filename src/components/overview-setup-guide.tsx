@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Check, ShieldCheck } from "lucide-react";
+import { ArrowRight, Check, ShieldCheck } from "@/components/icons";
 import "./overview-setup-guide.css";
 
 type Props = {

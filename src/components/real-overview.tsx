@@ -5,7 +5,7 @@ import Link from "next/link";
 import { WorkspaceEmptyArt } from "./workspace-empty-art";
 import { useSearchParams } from "next/navigation";
 import { useDeferredValue, useEffect, useState } from "react";
-import { ArrowDown, ArrowRight, ChevronDown, LockKeyhole, RefreshCw } from "lucide-react";
+import { ArrowDown, ArrowRight, ChevronDown, LockKeyhole, RefreshCw } from "@/components/icons";
 import type { Scan } from "@/lib/demo-data";
 import type { SeoReportSummary } from "@/lib/seo-store";
 import type { SearchConsoleReportSummary } from "@/lib/search-console-types";

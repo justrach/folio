@@ -2,7 +2,7 @@
 import {trackProductEvent} from "@/lib/product-analytics-client";
 import Link from "next/link";
 import { useEffect, useRef, useState, useReducer } from "react";
-import { ArrowRight, Check, Eye, Heart, MessageCircle, Users, X } from "lucide-react";
+import { ArrowRight, Check, Eye, Heart, MessageCircle, Users, X } from "@/components/icons";
 import { CompanyFavicon } from "./company-favicon";
 import { ActionButton } from "./arc/action-button/action-button";
 import ideas from "@/data/ampersand-social-ideas.json";

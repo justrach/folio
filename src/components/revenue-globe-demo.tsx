@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Pause, Play, RotateCcw, X } from "lucide-react";
+import { Pause, Play, RotateCcw, X } from "@/components/icons";
 import points from "@/data/globe-points.json";
 import { CITIES, PAYMENT_HISTOGRAM, SAMPLE_NOW, globeClock, globeSnapshot } from "@/lib/revenue-globe-demo";
 import "./revenue-globe-demo.css";

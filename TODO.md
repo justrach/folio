@@ -211,7 +211,8 @@ Remaining acceptance work:
 ## Lean proofs scaffold
 
 - [x] Add a Lean 4 project in `proofs/` with one proven model invariant ("navigation never spends"), `bun run proofs:check`, and a separate `proofs` CI job. See [Lean proofs](docs/LEAN-PROOFS.md).
-- [ ] Bind a model to the TypeScript through a shared artifact checked on both sides. Until then the proofs establish properties of the hand-written model only, not of the application.
+- [x] Bind a model to the TypeScript through a shared artifact checked on both sides: `src/data/read-plan.json` is imported by the report reads and `#guard`ed by `proofs/Folio/ReadPlan.lean`, which proves the parallel website report stays inside the connection budget. Unit, D1 and browser fixtures pass locally; the production effect on `/websites` and `/orgs` is not measured yet. `Navigation.lean` is still a hand-written model only.
+- [ ] Measure the website report on production after deploying the read plan (local Postgres mirror: about 500 ms before, about 300 ms after, for a website with no saved question runs).
 - [x] Confirm the hosted `proofs` job on GitHub Actions. It passed on `82754f5` on 11 November 2026 ([run](https://github.com/justrach/folio/actions/runs/42866642224)). The `validate` job in that run failed on the same seven GUI cases that already failed on `b3727a7`; see the open item below.
 - [ ] Fix the seven GUI cases failing in hosted `validate` since before `b3727a7`: three in `evaluations-redesign.spec.ts`, `index-layout-gui.spec.ts:36`, `real-overview-gui.spec.ts:283` (desktop and mobile), and mobile `product-funnel.spec.ts:4`.
 

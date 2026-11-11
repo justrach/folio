@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun } from "@/components/icons";
 import "./sidebar-motion.css";
 import {FolioToggleIcon} from "./ui/folio-toggle-icon";
 import { setThemePreference, useFolioAppearance } from "./folio-appearance";

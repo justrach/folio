@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Check, ChevronsUpDown, CircleDashed, Layers, LogIn, LogOut, Plus, Settings2, SunMoon, UserPlus } from "lucide-react";
+import { Check, ChevronsUpDown, CircleDashed, Layers, LogIn, LogOut, Plus, Settings2, SunMoon, UserPlus } from "@/components/icons";
 import { authClient } from "@/lib/auth-client";
 import { setThemePreference, useFolioAppearance } from "./folio-appearance";
 import { setGettingStartedVisibility, useGettingStartedVisibility } from "./getting-started";

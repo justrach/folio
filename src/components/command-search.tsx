@@ -4,11 +4,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { ArrowRight, BarChart3, BookOpen, Bot, CreditCard, Eye, FlaskConical, Globe2, LayoutDashboard, Link2, ListChecks, PlugZap, Plus, Search, Settings,
-  ShieldCheck, Sparkles, Trophy, Users, WandSparkles, type LucideIcon } from "lucide-react";
+  ShieldCheck, Sparkles, Trophy, Users, WandSparkles, type FolioIcon } from "@/components/icons";
 import { commandResults, type CommandResult, type SearchableAudit, type WorkspaceSearchIndex } from "@/lib/command-search";
 import "./command-search.css";
 
-const ICONS: Record<string, LucideIcon> = { workspace: LayoutDashboard, websites: Globe2, website: Globe2, "add-website": Plus, orgs: Users, "org-preview": Users, connect: PlugZap,
+const ICONS: Record<string, FolioIcon> = { workspace: LayoutDashboard, websites: Globe2, website: Globe2, "add-website": Plus, orgs: Users, "org-preview": Users, connect: PlugZap,
   agents: Bot, visibility: Sparkles, seo: BarChart3, "search-data": Link2, evaluations: FlaskConical, benchmarks: ListChecks, "search-console": Search, patches: WandSparkles,
   index: Trophy, "api-docs": BookOpen, settings: Settings, pricing: CreditCard, demo: Eye, privacy: ShieldCheck };
 

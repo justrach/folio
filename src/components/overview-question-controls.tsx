@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, LayoutGrid, List, Search, X } from "lucide-react";
+import { Check, LayoutGrid, List, Search, X } from "@/components/icons";
 import { QUESTION_FILTERS, type QuestionFilter, type QuestionView } from "@/lib/overview-question-filters";
 
 export type QuestionControlsProps = {

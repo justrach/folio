@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Check, CircleDashed, Clock3, Loader2, OctagonAlert, X } from "lucide-react";
+import { Check, CircleDashed, Clock3, Loader2, OctagonAlert, X } from "@/components/icons";
 import { useSession } from "@/lib/auth-client";
 import type { EvaluationRun } from "@/lib/evals";
 

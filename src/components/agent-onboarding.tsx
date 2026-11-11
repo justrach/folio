@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { AppWindow, Bot, Check, CircleCheck, Cloud, Code2, Copy, Download, ExternalLink, Eye, EyeOff, KeyRound, Loader2, MessageSquareText, Monitor, MousePointer2, Plug, PlugZap, ShieldCheck, SquareTerminal, Terminal, Wrench,
-  type LucideIcon } from "lucide-react";
+  type FolioIcon } from "@/components/icons";
 import { authClient } from "@/lib/auth-client";
 import type { AgentApiKeySummary } from "@/lib/agent-observation-types";
 import { AGENT_PERMISSIONS, CONNECTION_TROUBLESHOOTING, KEY_PLACEHOLDER, agentClients, connectionTestCommand, exportLine, installAction, isFormField, maskedKey, onboardingProgress, publicIndexEndpoint,
@@ -13,7 +13,7 @@ import { ConnectConsent, ConsentDone, type ConsentChoice, type ConsentOrganizati
 import "./agent-onboarding.css";
 
 /** Plain icons for each client, not their logos. */
-const CLIENT_ICONS: Record<AgentClientId, LucideIcon> = { "claude-code": SquareTerminal, codex: Terminal, harness: AppWindow, cursor: MousePointer2, vscode: Code2, "claude-desktop": Monitor, manus: Cloud, other: Plug };
+const CLIENT_ICONS: Record<AgentClientId, FolioIcon> = { "claude-code": SquareTerminal, codex: Terminal, harness: AppWindow, cursor: MousePointer2, vscode: Code2, "claude-desktop": Monitor, manus: Cloud, other: Plug };
 
 const WATCH_MS = 15 * 60_000, POLL_MS = 4_000;
 const active = (key: AgentApiKeySummary, now: number) => !key.revokedAt && Date.parse(key.expiresAt) > now;

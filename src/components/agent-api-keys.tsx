@@ -2,7 +2,7 @@
 import { UiSelect } from "./ui/select";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Copy, KeyRound, Loader2 } from "lucide-react";
+import { Copy, KeyRound, Loader2 } from "@/components/icons";
 import { authClient } from "@/lib/auth-client";
 import type { AgentApiKeySummary } from "@/lib/agent-observation-types";
 

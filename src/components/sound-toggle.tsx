@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Volume2, VolumeX } from "lucide-react";
+import { Volume2, VolumeX } from "@/components/icons";
 import { playUiSound, setSoundEnabled, soundEnabled } from "@/lib/ui-sound";
 
 /** One control, one preference: interface sounds on or off. */

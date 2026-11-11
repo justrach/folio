@@ -4,7 +4,7 @@ import { UiSelect } from "./ui/select";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, Globe2 } from "lucide-react";
+import { ArrowRight, Globe2 } from "@/components/icons";
 import { authClient } from "@/lib/auth-client";
 import { evaluationHref } from "@/lib/evaluation-navigation";
 import type { SearchConsoleReportSummary } from "@/lib/search-console-types";
@@ -74,6 +74,7 @@ function OwnerWebsites({ onAudit }: { onAudit?: (url: string) => void }) {
     const url = propertyUrl(report.property);
     return url && (report.property.startsWith("sc-domain:") ? new URL(selected.url).hostname === new URL(url).hostname : selected.url.startsWith(url));
   }) : null;
+  const visibilityId = selected?.id ?? (loading && selectedId && /^[A-Za-z0-9_-]{1,128}$/.test(selectedId) ? selectedId : null);
   function select(id: string) {
     const url = new URL(window.location.href); url.searchParams.set("site", id);
     window.history.pushState(null, "", url.pathname + url.search);
@@ -118,7 +119,8 @@ function OwnerWebsites({ onAudit }: { onAudit?: (url: string) => void }) {
         </div>}
       </div>
     </section>
-    {selected && <WebsiteVisibility key={`visibility-${selected.id}`} websiteId={selected.id} refresh={searchUpdates} />}
+    {/* A ?site= link starts reading its report alongside the website list instead of after it; the report route checks access itself. */}
+    {visibilityId && <WebsiteVisibility key={`visibility-${visibilityId}`} websiteId={visibilityId} refresh={searchUpdates} />}
     {selected && <WebsiteSeoSummary key={selected.id} targetUrl={selected.url} onUpdated={() => setSearchUpdates(n => n + 1)} />}
   </div>;
 }

@@ -4,7 +4,7 @@
 
 `src/components/ui/spectrum-data-table.tsx` adapts the column/value contract, stable blank-last sorting and pagination patterns from [Spectrum UI DataTable](https://github.com/arihantcodes/spectrum-ui/blob/main/components/spectrumui/data-table.tsx), by Arihant and contributors, accessed 13 September 2026.
 
-Licensed under [Apache License 2.0](LICENSES/spectrum-ui.txt). Folio retains a focused table subset with native controls, Lucide icons, explicit unavailable states and its existing cream/green styling. Selection, clipboard actions, deletion, resizing and animation were omitted. These modifications are Folio's, not upstream behavior.
+Licensed under [Apache License 2.0](LICENSES/spectrum-ui.txt). Folio retains a focused table subset with native controls, Folio's own icons, explicit unavailable states and its existing cream/green styling. Selection, clipboard actions, deletion, resizing and animation were omitted. These modifications are Folio's, not upstream behavior.
 
 ## MCP Apps page
 

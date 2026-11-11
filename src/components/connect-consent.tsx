@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { ArrowLeftRight, Check, Coins, Eye, Loader2, PencilLine } from "lucide-react";
+import { ArrowLeftRight, Check, Coins, Eye, Loader2, PencilLine } from "@/components/icons";
 import { AGENT_PERMISSIONS } from "@/lib/agent-onboarding";
 import type { AgentApiScope } from "@/lib/agent-observation-types";
 import "./connect-consent.css";

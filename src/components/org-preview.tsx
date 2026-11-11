@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowRight, Check, RotateCcw, Users } from "lucide-react";
+import { ArrowRight, Check, RotateCcw, Users } from "@/components/icons";
 import { UiSelect } from "./ui/select";
 import { DEMO_EMPLOYEES, demoUsageEntries, employeeUsage } from "@/lib/team-usage-demo";
 import "./org-preview.css";

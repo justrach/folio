@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { ArrowRight, Globe, Loader2, ShieldAlert, ShieldCheck, TriangleAlert } from "lucide-react";
+import { ArrowRight, Globe, Loader2, ShieldAlert, ShieldCheck, TriangleAlert } from "@/components/icons";
 import { authClient } from "@/lib/auth-client";
 import { ConnectConsent, ConsentDone, FolioTile, type ConsentChoice, type ConsentOrganization } from "./connect-consent";
 import { UiSelect } from "./ui/select";

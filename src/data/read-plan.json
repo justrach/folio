@@ -1,0 +1,6 @@
+{
+  "connectionBudget": 22,
+  "requestPoolMax": 5,
+  "readLimit": 3,
+  "savedRuns": { "batch": 20, "limit": 100 }
+}

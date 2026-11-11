@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Code2 } from "lucide-react";
+import { Code2 } from "@/components/icons";
 import { authClient } from "@/lib/auth-client";
 
 /** Mount with an owner key so account status and errors cannot cross a session change. */

@@ -6,7 +6,7 @@
 // use native table controls and Folio styling, without selection or animations.
 // License and attribution: THIRD-PARTY-NOTICES.md and LICENSES/spectrum-ui.txt.
 import { useId, useMemo, useState, type ReactNode } from "react";
-import { ArrowDown, ArrowUp, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, ChevronLeft, ChevronRight } from "@/components/icons";
 import "./spectrum-data-table.css";
 
 export type DataTableValue = string | number | boolean | Date | null | undefined;

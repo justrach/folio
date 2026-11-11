@@ -5,7 +5,21 @@
 .wv-shared { margin-top: 8px; font-size: 13px !important; color: var(--folio-text-muted) !important; }
 .wv-summary { max-width: 860px; margin-top: 10px; color: var(--folio-ink) !important; font-size: 17px !important; line-height: 1.6 !important; }
 
-.wv-lanes { display: grid; grid-template-columns: 1.25fr 1fr 1fr; gap: 12px; margin-top: 22px; }
+/* Google's list is the long lane, so it takes the left column and the two short lanes stack beside it. */
+.wv-lanes { display: grid; grid-template-columns: minmax(0,1.3fr) minmax(0,1fr); grid-template-rows: auto 1fr; gap: 12px; margin-top: 22px; }
+.wv-lane.is-google { grid-row: 1 / -1; }
+/* Without a list of searches no lane is long, so the three sit side by side. */
+.wv-lanes.is-even { grid-template-columns: repeat(3, minmax(0,1fr)); grid-template-rows: auto; }
+.wv-lanes.is-even .wv-lane.is-google { grid-row: auto; }
+.wv-skeleton { display: grid; grid-template-columns: minmax(0,1.3fr) minmax(0,1fr); grid-template-rows: 1fr 1fr; gap: 12px; height: 440px; margin-top: 22px; }
+.wv-skeleton span { border-radius: var(--folio-radius-control); background: var(--folio-canvas); }
+.wv-skeleton span:first-child { grid-row: 1 / -1; }
+@media (prefers-reduced-motion: no-preference) {
+  .wv-skeleton span { animation: wv-wait 1.4s ease-in-out infinite alternate; }
+  .wv-skeleton span:nth-child(2) { animation-delay: .15s; }
+  .wv-skeleton span:nth-child(3) { animation-delay: .3s; }
+}
+@keyframes wv-wait { from { opacity: 1; } to { opacity: .55; } }
 .wv-lane { min-width: 0; padding: 18px; border-radius: var(--folio-radius-control); background: var(--folio-canvas); }
 .wv-lane h3, .wv-gaps h3, .wv-unknowns h3 { font-size: 15px; font-weight: 600; color: var(--folio-ink); }
 .wv-meta { margin-top: 2px; font-size: 13px !important; color: var(--folio-text-muted) !important; }
@@ -113,11 +127,14 @@
 .wv-foot p { font-size: 13px !important; }
 .wv-foot code { font-family: var(--folio-font-mono); font-size: 13px; color: var(--folio-ink); }
 
-@media(max-width:1100px) { .wv-lanes { grid-template-columns: 1fr 1fr; } .wv-lanes > .wv-lane:first-child { grid-column: 1 / -1; } }
+@media(max-width:1100px) { .wv-lanes, .wv-lanes.is-even { grid-template-columns: 1fr 1fr; grid-template-rows: auto; } .wv-lane.is-google { grid-column: 1 / -1; grid-row: auto; } }
 @media(max-width:700px) {
   .website-visibility { padding: 19px; }
   .wv-summary { font-size: 16px !important; }
-  .wv-lanes { grid-template-columns: 1fr; gap: 10px; }
+  .wv-lanes, .wv-lanes.is-even { grid-template-columns: 1fr; gap: 10px; }
+  .wv-lane.is-google { grid-column: auto; }
+  .wv-skeleton { grid-template-columns: 1fr; height: 320px; }
+  .wv-skeleton span:first-child { grid-row: auto; }
   .wv-lane { padding: 15px 14px; }
   .wv-searches li { grid-template-columns: 42px minmax(0,1fr); }
   .wv-searches-count { grid-column: 2; }

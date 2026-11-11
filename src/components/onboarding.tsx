@@ -2,7 +2,7 @@
 import {trackProductEvent} from "@/lib/product-analytics-client";
 
 import Link from "next/link";
-import { ArrowRight, Check, ShieldCheck, X } from "lucide-react";
+import { ArrowRight, Check, ShieldCheck, X } from "@/components/icons";
 import { CompanyFavicon } from "./company-favicon";
 import { WorkspaceEmptyArt } from "./workspace-empty-art";
 import { DEVELOPER_TOOLS } from "@/lib/developer-tools-source";
