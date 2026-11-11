@@ -336,6 +336,21 @@ After deployment, `/agents`, `/oauth/authorize` and the authorization-server met
 contain the Harness command (`graff mcp login folio`), the https note, "One command, no key in it" and
 "Use a key instead". It has not been run from inside the Harness app yet.
 
+**Website report read plan, /orgs layout and Folio's own icons** (`04acc66`) followed on 12 November 2026: frontend
+`57d01953-30b6-4038-86fe-1c55355e6b4c`, backend `585a0830-a517-4dfc-b4d0-1c50e39972d6` (`--keep-vars`). No migration
+and no secret change. Rollback targets: frontend `14ff8f62-190d-4219-b767-41fb5e914d2c`, backend
+`261f4ecb-9a53-4305-940f-03198b2a48cd`.
+- The backend now builds the website report with up to three reads in flight and reads saved question runs 20 per
+  round trip ([Lean proofs](LEAN-PROOFS.md#read-plan)). The frontend carries the `/orgs` and visibility-panel layout
+  and `src/components/icons.tsx` in place of `lucide-react`.
+- Validation: typecheck, 463 unit tests, 17 D1 integration tests for the touched stores, `proofs:check`, the
+  production build and both smoke tests. The organization and visibility browser specs passed on desktop and mobile.
+  The full browser suite has 29 failing cases under CI settings on `04acc66` and the same 29 on its parent `39140e1`.
+- After deployment `/`, `/orgs`, `/websites`, `/login`, `/leaderboard` and `/agents` returned 200, the site,
+  organization and visibility APIs returned 401 without a session, and the public benchmarks read returned 200. The
+  served HTML uses the `folio-icon` class and contains no `lucide` class.
+- Not measured: the signed-in report on production. The 500 ms to 300 ms figure is from the local Postgres mirror.
+
 ### Vector store
 
 Page embeddings live in turbopuffer, not Postgres (see [embeddings](EMBEDDINGS.md)).
