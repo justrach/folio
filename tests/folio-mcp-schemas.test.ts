@@ -9,6 +9,7 @@ import { visibilityReport } from "../src/lib/visibility";
 import { compareVisibility } from "../src/lib/visibility-comparison";
 import { evaluateHtml } from "../src/lib/evaluation";
 import { fetchSeoOverview } from "../src/lib/dataforseo";
+import { buildWebsiteGaps } from "../src/lib/website-gaps";
 
 const at="2026-09-13T00:00:00.000Z";
 const context={db:{},principal:{keyId:"fixture",ownerId:"alice",scopes:["read","evaluate","seo","changes"]},env:{}} as FolioToolContext;
@@ -25,7 +26,14 @@ const change={id:"change",website:{id:"site",name:"Example",url:"https://example
   publication:{at,reportedBy:"owner",provenance:"Reported by the caller"},
   questions:[{caseId:"case",query:"Which tool?",state:"retested",baseline:changeAnswer,retest:{...changeAnswer,runId:"later",targetNamed:"yes",position:2},movement:"newly_named",reasons:[]},{caseId:"other",query:"Which plan?",state:"baseline_unmeasured",baseline:null,retest:null,movement:null,reasons:["No completed answer"]}],
   outcome:{targeted:2,retested:1,improved:1,declined:0,unchanged:0,unknown:0,awaitingRetest:0,unmeasured:1},nextStep:"Report the differences",caveat:"Observations only"};
+const measured=(value:number)=>({state:"value" as const,value});
+const websiteGaps=buildWebsiteGaps({website:{id:"site",name:"Example",url:"https://example.com/"},now:new Date(at),
+  search:{state:"measured",reportId:"seo",fetchedAt:at,backlinks:measured(4),referringDomains:measured(2),brokenBacklinks:12,rankingKeywords:measured(40),estimatedMonthlyVisits:measured(90)},
+  rankings:{available:true,rows:[{keyword:"example",position:1,searchVolume:5000,estimatedTraffic:900,landingPage:"https://example.com/",capturedAt:at},{keyword:"website checker",position:14,searchVolume:12000,estimatedTraffic:80,landingPage:"https://example.com/check",capturedAt:at}]},
+  index:{available:true,source:"live-published-data",publishedQuestions:10,namedIn:0,citedIn:0,bestPosition:null,answers:[],questions:[{queryId:"q",query:"Which website checker should I use?",category:"Tools",published:true,page:"/overview?query=q"}]},
+  yourQuestions:{completed:2,named:1},crawl:{state:"in_index",pagesCrawled:3,inventoryPages:100,lastFetchedAt:at,profileName:"Example",topSections:[{path:"/docs",pages:60}]}});
 const fixtures:Record<string,unknown>={
+  folio_website_gaps:websiteGaps,
   folio_changes:{...page,items:[change]},folio_change_record:{change:{...change,status:"proposed",publication:null},replayed:false},folio_change_update:{change},
   folio_targets:{...page,kind:"keyword",items:[{id:"case",suiteId:"suite",createdAt:at,query:"Which tool?",targetUrl:null,language:"en",locale:"en-US",searchMode:"open-web"}]},
   folio_observation:saved,folio_run:observation,folio_evaluate:observation,folio_reconcile:observation,
@@ -38,7 +46,7 @@ const fixtures:Record<string,unknown>={
   folio_visibility:{website:{id:"site",name:"Example",url:"https://example.com"},platform:"openai",surface:"openai-managed-agents",searchMode:"open-web",dateRange:{startDate:null,endDate:null,timeZone:"UTC"},coverage:{attemptsLoaded:1,limit:100,truncated:false,nextCursor:null,unresolvedAttempts:0},methodology:"Saved answer",...report,daily:[{date:"2026-09-13",...report.current}],platforms:[{platform:"openai",models:["fixture"],...report.current}]},
   folio_visibility_compare:{...compareVisibility([rawRun],[{...rawRun,id:"later"}]),coverage:{baseline:{nextCursor:null,truncated:false},comparison:{nextCursor:null,truncated:false},scope:"Current pages"}},
 };
-const args:Record<string,Record<string,unknown>>={folio_index_pages:{q:"cron jobs",limit:3},folio_index_search:{q:"project tools",limit:3},folio_index_website:{domain:"notion.com",limit:3},folio_change_record:{websiteId:"site",title:"Answer the pricing question",summary:"Illustrative summary",caseIds:["case"],requestKey:"fixture-key"},folio_change_update:{changeId:"change",status:"published"},folio_keyword_research:{domain:"example.com",seed:"website checker",requestKey:"fixture-key",confirmSpend:true},folio_targets:{kind:"keyword"},folio_observation:{kind:"keyword",caseId:"case"},folio_run:{kind:"keyword",runId:"run"},folio_evaluate:{kind:"keyword",caseId:"case",requestKey:"fixture-key",confirmSpend:true},folio_reconcile:{kind:"keyword",runId:"run"},folio_run_history:{kind:"keyword"},folio_observations:{targets:[{kind:"keyword",caseId:"case"}]},folio_seo_lookup:{domain:"example.com",requestKey:"fixture-key",confirmSpend:true},folio_page_evidence:{websiteId:"site"},folio_visibility:{websiteId:"site"},folio_visibility_compare:{websiteId:"site",baselineStart:"2026-09-01T00:00:00Z",baselineEnd:"2026-09-05T00:00:00Z",comparisonStart:"2026-09-06T00:00:00Z",comparisonEnd:"2026-09-14T00:00:00Z"}};
+const args:Record<string,Record<string,unknown>>={folio_website_gaps:{websiteId:"site"},folio_index_pages:{q:"cron jobs",limit:3},folio_index_search:{q:"project tools",limit:3},folio_index_website:{domain:"notion.com",limit:3},folio_change_record:{websiteId:"site",title:"Answer the pricing question",summary:"Illustrative summary",caseIds:["case"],requestKey:"fixture-key"},folio_change_update:{changeId:"change",status:"published"},folio_keyword_research:{domain:"example.com",seed:"website checker",requestKey:"fixture-key",confirmSpend:true},folio_targets:{kind:"keyword"},folio_observation:{kind:"keyword",caseId:"case"},folio_run:{kind:"keyword",runId:"run"},folio_evaluate:{kind:"keyword",caseId:"case",requestKey:"fixture-key",confirmSpend:true},folio_reconcile:{kind:"keyword",runId:"run"},folio_run_history:{kind:"keyword"},folio_observations:{targets:[{kind:"keyword",caseId:"case"}]},folio_seo_lookup:{domain:"example.com",requestKey:"fixture-key",confirmSpend:true},folio_page_evidence:{websiteId:"site"},folio_visibility:{websiteId:"site"},folio_visibility_compare:{websiteId:"site",baselineStart:"2026-09-01T00:00:00Z",baselineEnd:"2026-09-05T00:00:00Z",comparisonStart:"2026-09-06T00:00:00Z",comparisonEnd:"2026-09-14T00:00:00Z"}};
 
 async function clientFor(execute:typeof invokeFolioTool, sandbox=false){
   const client=new Client({name:"all-output-fixtures",version:"1"});

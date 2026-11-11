@@ -47,12 +47,13 @@ function readSummary(value: unknown, domain: string, saved: boolean): Summary {
     !["success", "empty", "error"].includes(String(backlinks.status))) throw new Error("Invalid report");
   const o = organic.status === "success" ? record(organic.data) : null;
   const b = backlinks.status === "success" ? record(backlinks.data) : null;
-  const broken = number(b?.brokenBacklinks), mainDomains = number(b?.referringMainDomains), trafficValue = number(o?.estimatedTrafficValueUsd);
+  const broken = number(b?.brokenBacklinks), trafficValue = number(o?.estimatedTrafficValueUsd);
+  // Plain labels with what each number means; the exact provider terms stay in the saved report.
   const metrics = [
-    metric("Backlinks", b?.backlinks, String(backlinks.status), { value: broken ? `${formatCount(broken)} broken` : "Live links to this site", none: "No links found yet" }),
-    metric("Referring domains", b?.referringDomains, String(backlinks.status), { value: mainDomains !== null ? `${formatCount(mainDomains)} main domains` : "Sites linking here", none: "No linking sites found yet" }),
-    metric("Ranking keywords", o?.organicKeywords, String(organic.status), { value: "Google · United States", none: "Not in Google US rankings yet" }),
-    metric("Estimated monthly visits", o?.estimatedMonthlyTraffic, String(organic.status), { value: trafficValue ? `About $${formatCount(Math.round(trafficValue))} a month in ad value` : "Estimated from rankings", none: "No ranking traffic yet" }),
+    metric("Backlinks", b?.backlinks, String(backlinks.status), { value: broken ? `Links from other websites · ${formatCount(broken)} broken` : "Links from other websites", none: "No links found yet" }),
+    metric("Linking websites", b?.referringDomains, String(backlinks.status), { value: "Separate websites those links come from", none: "No website links here yet" }),
+    metric("Google searches", o?.organicKeywords, String(organic.status), { value: "US searches that show it in the results", none: "Not shown for any US search yet" }),
+    metric("Visits from Google", o?.estimatedMonthlyTraffic, String(organic.status), { value: trafficValue ? `Estimated a month · worth about $${formatCount(Math.round(trafficValue))} in ads` : "Estimated clicks a month", none: "No clicks from Google yet" }),
   ];
   const failed = metrics.every(item => item.state === "missing");
   return { domain, fetchedAt: result.fetchedAt, saved, result, failed, partial: !failed && metrics.some(item => item.state === "missing"), metrics };
@@ -60,7 +61,7 @@ function readSummary(value: unknown, domain: string, saved: boolean): Summary {
 function emptyView(key: string): View { return { key, loading: true, ready: false, updating: false, summary: null, notice: null, error: null }; }
 
 /** Saved website context only. A lookup starts solely from the labelled update button. */
-export function WebsiteSeoSummary({ targetUrl }: { targetUrl?: string }) {
+export function WebsiteSeoSummary({ targetUrl, onUpdated }: { targetUrl?: string; onUpdated?: () => void }) {
   const { data: session, isPending } = useSession();
   const ownerId = session?.user.id ?? null;
   const domain = hostname(targetUrl);
@@ -131,6 +132,8 @@ export function WebsiteSeoSummary({ targetUrl }: { targetUrl?: string }) {
         return { ...previous, summary, updating: false,
           notice: summary.saved ? null : "This result was not saved. Download it before leaving; another update can charge again." };
       });
+      // A saved lookup changes the visibility report; it re-reads saved data only.
+      if (summary.saved) onUpdated?.();
     } catch (error) {
       if (!controller.signal.aborted && currentKey.current === requestedKey) setState(previous => previous.key === requestedKey ? { ...previous, updating: false,
         error: error instanceof Error && /^(You’ve|Website data updates|The update could)/.test(error.message) ? error.message

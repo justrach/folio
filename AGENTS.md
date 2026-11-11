@@ -57,7 +57,7 @@ Restart the dev server after intended `.dev.vars` changes. Obtain D1 through the
 | Product story and charts | `landing.tsx`, `charts.tsx`, `published-index.tsx`, their adjacent styles |
 | Managed provider transport | `src/lib/agents.ts` (OpenAI website evaluations), `codegraff-agent.ts` + `codegraff-keyword-agent.ts` (Folio's own Graff agent for keyword runs), `docs/CODEGRAFF-AGENT.md` |
 | Run orchestration and access | `src/lib/agent-runs.ts`, `eval-api.ts`, `src/app/api/evaluations/` |
-| Agent MCP, change records, guided prompts | `src/lib/folio-mcp.ts`, `website-changes.ts`, `website-change-outcome.ts`, `aeo-prompts.ts`, `src/app/api/changes/`, `src/components/website-changes-panel.tsx`, `docs/AEO-DEMO.md` |
+| Agent MCP, change records, guided prompts | `src/lib/folio-mcp.ts`, `website-gaps.ts` (`folio_website_gaps` and the **Where it shows up** panel), `website-changes.ts`, `website-change-outcome.ts`, `aeo-prompts.ts`, `src/app/api/changes/`, `src/components/website-changes-panel.tsx`, `docs/AEO-DEMO.md` |
 | Published and crawled index for agents (no-key MCP, ask feed) | `src/lib/index-answers.ts`, `index-pages.ts` (Postgres `research` schema, keyed), `index-asks.ts`, `src/app/api/index-mcp/`, `src/app/api/index-asks/`, `src/components/index-asks-panel.tsx`, `docs/MCP.md` |
 | Browser evaluation state | `src/components/evaluation-workspace.tsx`, `evaluations-panel.tsx`, `agent-runs-panel.tsx` |
 | Navigation and overview summary | `src/lib/evaluation-navigation.ts`, `src/components/workspace-evaluation-summary.tsx` |

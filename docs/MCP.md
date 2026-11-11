@@ -33,6 +33,7 @@ For local coding clients use `http://localhost:3001/api/mcp`. Remote sandboxes r
 | Tool | Permission | Behavior |
 | --- | --- | --- |
 | `folio_targets` | read | Owned website and question IDs |
+| `folio_website_gaps` | read | One owned website: where it shows up on Google and in AI answers, what it is missing, and what has not been checked |
 | `folio_index` | read | The complete published dataset in one response (about 5 MB); prefer the four tools below |
 | `folio_index_overview`, `folio_index_search`, `folio_index_answer`, `folio_index_website` | read, or no key at `/api/index-mcp` | Compact, paged reads over published answers |
 | `folio_index_pages` | read (key required) | Semantic search over the pages Folio has crawled, with a labelled word-match fallback |
@@ -46,6 +47,20 @@ For local coding clients use `http://localhost:3001/api/mcp`. Remote sandboxes r
 | `folio_reconcile` | evaluate | Retrieve an existing remote run; enforce its deadline |
 
 Only permitted tools are advertised. Paid calls require `confirmSpend: true` and a stable `requestKey`. A useful coding-client request is: “Inspect my website's saved SEO and visibility evidence with Folio, then propose and test changes in this repository.” Folio supplies evidence; the coding client's own tools perform local edits. No tool claims to publish or improve search position automatically. Fresh SEO may query a public domain without saving a website first.
+
+## What a website is missing
+
+`folio_website_gaps` takes one owned `websiteId` (from `folio_targets`) and returns the same report the owner sees on `/websites` under **Where it shows up**, also served to the signed-in owner at `GET /api/sites/{id}/visibility`. It reads saved data only (`src/lib/website-gaps.ts`); it never calls a provider, charges, or records an ask.
+
+- `summary`: one plain-English sentence per source.
+- `search`: the latest saved DataForSEO lookup that returned data. A newer lookup that returned nothing does not hide it. Each count is `value`, `none` (the provider has no data for the domain, which is not a failure) or `missing`.
+- `google`: the latest recorded US Google positions for the searches Folio tracks (`research.rankings_latest`), with position bands, which searches contain the brand name, and the brand's share of their estimated visits. `unavailable` on a database without the `research` schema.
+- `aiAnswers`: where Folio's published answers name or cite it, the indexed questions that mention its brand or a phrase it ranks for (answered or not), and the owner's own saved questions for this website.
+- `crawl`: pages Folio has read against the sitemap inventory, and its largest sections.
+- `gaps`: rules applied to those numbers, each with `severity`, a `finding`, a `nextStep` and `evidence` links: no Google rankings, big searches just off page one, most visits coming from the brand name, few linking websites, many broken backlinks, published answers on its topics that leave it out, and the owner's answers that leave it out.
+- `notChecked`: unknowns kept apart from findings, such as indexed questions that were never answered, no saved lookup, or a small share of pages read. An agent should treat these as unmeasured, not as problems.
+
+The `improve_aeo` prompt now starts with this tool.
 
 ## Ask the published index
 

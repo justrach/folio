@@ -170,7 +170,8 @@ test("a domain without ranking data reads as none found, large counts are shorte
   await expect(summary.locator("dd").filter({hasText: /^None found$/})).toHaveCount(2);
   await expect(summary.locator("dd").filter({hasText: /^1\.47M$/})).toHaveAttribute("title", "1,474,900");
   await expect(summary).toContainText("14,634");
-  await expect(summary).toContainText("12,001 main domains");
+  await expect(summary.locator("dt").filter({hasText: "Linking websites"})).toHaveCount(1);
+  await expect(summary).toContainText("Separate websites those links come from");
   await expect(summary).not.toContainText("Some data is unavailable");
 });
 

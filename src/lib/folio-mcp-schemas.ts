@@ -64,7 +64,21 @@ const crawlSite = obj({available:b,reason:sn,domain:s,state:z.enum(["in_index","
   profile:obj({name:sn,profiledDomain:s,category:sn,description:sn,inventoryPages:nn,sampledPages:nn,sections:nn,rankedKeywords:nn,profiledAt:sn}).nullable(),
   topSections:z.array(obj({path:s,pages:n,share:nn})),note:s});
 
+const measure = obj({state:z.enum(["value","none","missing"]),value:nn});
+const gapArea = z.enum(["google","links","ai_answers","coverage"]);
+const websiteGaps = obj({website:obj({id:s,name:s,url:s,domain:s}),generatedAt:s,summary:s,
+  search:obj({state:z.enum(["measured","failed","not_measured"]),reportId:sn,fetchedAt:sn,backlinks:measure,referringDomains:measure,brokenBacklinks:nn,rankingKeywords:measure,estimatedMonthlyVisits:measure}),
+  google:obj({state:z.enum(["tracked","none_tracked","unavailable"]),capturedAt:sn,tracked:n,bands:obj({top3:n,page1:n,page2:n,deeper:n}),brandTerms:strings,brandTrafficShare:nn,
+    searches:z.array(obj({keyword:s,position:n,band:z.enum(["top3","page1","page2","deeper"]),searchVolume:nn,estimatedTraffic:nn,landingPage:sn,brand:b}))}),
+  aiAnswers:obj({source:indexSource.nullable(),publishedQuestions:nn,namedIn:n,citedIn:n,bestPosition:nn,answers:z.array(obj({queryId:s,query:s,category:s,position:nn,cited:b,page:s})),
+    related:obj({total:n,published:n,matchedTerms:strings,categories:z.array(obj({category:s,total:n,published:n})),items:z.array(obj({queryId:s,query:s,category:s,published:b,page:s}))}),
+    yourQuestions:obj({completed:n,named:n}).nullable()}),
+  crawl:obj({state:z.enum(["in_index","not_in_index","unavailable"]),pagesCrawled:nn,inventoryPages:nn,lastFetchedAt:sn,topSections:z.array(obj({path:s,pages:n}))}),
+  gaps:z.array(obj({id:s,area:gapArea,severity:z.enum(["high","medium","low"]),title:s,finding:s,nextStep:s,evidence:z.array(obj({label:s,url:s}))})),
+  notChecked:z.array(obj({id:s,area:gapArea,title:s,detail:s,nextStep:s,link:obj({label:s,url:s}).nullable()})),howToRead:s});
+
 export const folioSuccessSchemas: Record<string,z.ZodType> = {
+  folio_website_gaps:websiteGaps,
   folio_index_overview:obj({source:indexSource,updatedAt:s,questions:n,publishedQuestions:n,publishedAnswers:n,recommendedWebsites:n,citedSources:n,categories:z.array(obj({audience:s,category:s,questions:n,published:n})),howToAsk:s,caveat:s,crawl:obj({available:b,pages:nn,domains:nn,updatedAt:sn})}),
   folio_index_pages:obj({available:b,reason:sn,terms:strings,mode:z.enum(["semantic","all_terms","any_term"]),semantic:z.enum(["used","no_results","unavailable","not_configured"]),domain:sn,candidates:n,candidatesCapped:b,
     items:z.array(obj({pageId:s,url:s,title:sn,domain:sn,section:sn,excerpt:s,fetchedAt:sn,matchedTerms:n,score:nn})),matching:s,caveat:s,recorded:b}),

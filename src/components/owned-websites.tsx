@@ -9,6 +9,7 @@ import { authClient } from "@/lib/auth-client";
 import { evaluationHref } from "@/lib/evaluation-navigation";
 import type { SearchConsoleReportSummary } from "@/lib/search-console-types";
 import { WebsiteSeoSummary } from "./website-seo-summary";
+import { WebsiteVisibility } from "./website-visibility";
 import { OverviewSetupGuide } from "./overview-setup-guide";
 import { CompanyFavicon } from "./company-favicon";
 import { WebsiteWorkboard } from "./website-workboard";
@@ -44,6 +45,7 @@ function OwnerWebsites({ onAudit }: { onAudit?: (url: string) => void }) {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [refresh, setRefresh] = useState(0);
+  const [searchUpdates, setSearchUpdates] = useState(0);
   const lifetime = useRef<AbortController | null>(null);
   const pending = useRef(false);
   useEffect(() => {
@@ -116,6 +118,7 @@ function OwnerWebsites({ onAudit }: { onAudit?: (url: string) => void }) {
         </div>}
       </div>
     </section>
-    {selected && <WebsiteSeoSummary key={selected.id} targetUrl={selected.url} />}
+    {selected && <WebsiteVisibility key={`visibility-${selected.id}`} websiteId={selected.id} refresh={searchUpdates} />}
+    {selected && <WebsiteSeoSummary key={selected.id} targetUrl={selected.url} onUpdated={() => setSearchUpdates(n => n + 1)} />}
   </div>;
 }
