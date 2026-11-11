@@ -8,6 +8,7 @@ import { getOwnedSeoReport, listOwnedSeoReports } from "./seo-store";
 import { readableWebsite } from "./organizations";
 import { sequentially } from "./sequential";
 import { savedVisibility, visibilityFilters } from "./visibility-service";
+import { listSavedSearchConsoleReports } from "./search-console-store";
 
 /**
  * One owned website's visibility in one read, for the owner's page and for agents
@@ -29,6 +30,21 @@ type IndexAnswerRow = { queryId: string; query: string; category: string; positi
 type IndexQuestionRow = { queryId: string; query: string; category: string; published: boolean; page: string };
 
 export type WebsiteAccess = { access: "owner" | "organization"; organizations: { id: string; name: string }[] };
+/** `google`: Google's own count. `estimate`: a third party's model. `third_party`: a third party's own record or crawl. `folio`: recorded by Folio. */
+export type DataSourceKind = "google" | "estimate" | "third_party" | "folio";
+/** Where one kind of number in this report comes from: whose data, how it is made, and when. */
+export type DataSource = { id: "google_positions" | "search_volumes" | "visits_estimate" | "backlinks" | "ai_answers" | "crawl" | "search_console";
+  label: string; provider: string; kind: DataSourceKind; asOf: string | null; detail: string };
+/** The search-visits estimate next to Google's own count of clicks, from the owner's Search Console. */
+export type GoogleCheck = {
+  state: "compared" | "google_only" | "estimate_only" | "neither" | "owner_only";
+  searchConsole: { reportId: string; property: string; startDate: string; endDate: string; scope: "united_states" | "all_countries"; clicks: number; monthlyClicks: number } | null;
+  estimate: { monthlyVisits: number; fetchedAt: string | null } | null;
+  /** Google's monthly clicks divided by the estimate; null without both or when the estimate is zero. */
+  ratio: number | null;
+  finding: string;
+  caveat: { text: string; sourceUrl: string };
+};
 export type WebsiteGapsReport = {
   /** `organization`: shared with the reader; the saved data is the sharing member's. */
   website: { id: string; name: string; url: string; domain: string } & WebsiteAccess;
@@ -43,6 +59,8 @@ export type WebsiteGapsReport = {
   crawl: { state: "in_index" | "not_in_index" | "unavailable"; pagesCrawled: number | null; inventoryPages: number | null; lastFetchedAt: string | null; topSections: { path: string; pages: number }[] };
   gaps: WebsiteGap[];
   notChecked: WebsiteBlindSpot[];
+  sources: DataSource[];
+  googleCheck: GoogleCheck;
   howToRead: string;
 };
 
@@ -54,7 +72,15 @@ export type WebsiteGapsInput = {
   index: { available: boolean; source: IndexSource | null; publishedQuestions: number | null; namedIn: number; citedIn: number; bestPosition: number | null; answers: IndexAnswerRow[]; questions: IndexQuestionRow[] };
   yourQuestions: { completed: number; named: number } | null;
   crawl: { state: "in_index" | "not_in_index" | "unavailable"; pagesCrawled: number | null; inventoryPages: number | null; lastFetchedAt: string | null; profileName: string | null; topSections: { path: string; pages: number }[] };
+  /** The owner's latest Search Console snapshot covering the whole domain; omitted for readers who don't own the website. */
+  searchConsole?: { reportId: string; property: string; startDate: string; endDate: string; totals: { clicks: number } | null; unitedStatesTotals: { clicks: number } | null } | null;
 };
+
+/** Shown wherever the visits estimate is: how it is made, and the published measure of how far such estimates miss. */
+export const ESTIMATE_CAVEAT = {
+  text: "Search visits are an estimate: searches a month × the share of clicks expected at each position, summed over the US searches a website ranks for. Ahrefs makes its estimate the same way and reports that, across 1,635 websites, its estimates differed from Google Search Console by a median of 50%.",
+  sourceUrl: "https://ahrefs.com/blog/traffic-estimations-accuracy/",
+} as const;
 
 const plain = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 const compact = new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 });
@@ -226,9 +252,71 @@ export function buildWebsiteGaps(input: WebsiteGapsInput): WebsiteGapsReport {
   else if (waiting > 0) sentences.push(`Folio’s index has ${plural(waiting, "question")} that mention it, but none has been answered yet, so its place in AI answers is still unmeasured.`);
   else if (input.index.available) sentences.push("No AI answer in Folio’s index names it yet, and none of the indexed questions is about what it does.");
 
+  const googleCheck = checkAgainstGoogle(search, owner ? input.searchConsole ?? null : undefined);
   return { website: { id: input.website.id, name: input.website.name, url: input.website.url, domain, ...access }, generatedAt: input.now.toISOString(), summary: sentences.join(" ") || `Folio has no usable saved data about ${domain} yet.`,
     search, google, aiAnswers, crawl: { state: crawl.state, pagesCrawled: crawl.pagesCrawled, inventoryPages: crawl.inventoryPages, lastFetchedAt: crawl.lastFetchedAt, topSections: crawl.topSections.slice(0, 6) },
-    gaps, notChecked, howToRead: WEBSITE_GAPS_HOW_TO_READ };
+    gaps, notChecked, sources: dataSources(search, google, input.index.available, crawl, googleCheck), googleCheck, howToRead: WEBSITE_GAPS_HOW_TO_READ };
+}
+
+const utcDay = (date: string) => new Date(`${date.slice(0, 10)}T00:00:00Z`).toLocaleDateString("en-US", { dateStyle: "medium", timeZone: "UTC" });
+const roughly = (ratio: number) => ratio < 10 ? String(Math.round(ratio * 10) / 10) : formatCount(Number(ratio.toPrecision(2)));
+
+/**
+ * The visits estimate next to Google's own count, when the owner has imported Search Console for the whole domain.
+ * `searchConsole` undefined means the reader isn't the owner, who alone sees their Google data.
+ */
+function checkAgainstGoogle(search: WebsiteSearchSummary, searchConsole: WebsiteGapsInput["searchConsole"] | undefined): GoogleCheck {
+  const visits = search.estimatedMonthlyVisits;
+  const estimate = visits.state === "value" ? { monthlyVisits: visits.value!, fetchedAt: search.fetchedAt } : visits.state === "none" ? { monthlyVisits: 0, fetchedAt: search.fetchedAt } : null;
+  const base = { estimate, ratio: null, caveat: ESTIMATE_CAVEAT };
+  if (searchConsole === undefined) return { ...base, state: "owner_only", searchConsole: null,
+    finding: "Only the website’s owner sees Google’s own numbers for it. The search visits here are a third-party estimate." };
+  const counted = searchConsole?.unitedStatesTotals ? { scope: "united_states" as const, clicks: searchConsole.unitedStatesTotals.clicks }
+    : searchConsole?.totals ? { scope: "all_countries" as const, clicks: searchConsole.totals.clicks } : null;
+  const days = searchConsole ? Math.round((Date.parse(searchConsole.endDate) - Date.parse(searchConsole.startDate)) / 86_400_000) + 1 : 0;
+  const google = searchConsole && counted && days > 0 ? { reportId: searchConsole.reportId, property: searchConsole.property, startDate: searchConsole.startDate, endDate: searchConsole.endDate,
+    ...counted, monthlyClicks: Math.round(counted.clicks * 30 / days) } : null;
+  if (!google) return { ...base, state: estimate ? "estimate_only" : "neither", searchConsole: null,
+    finding: estimate ? "The search visits here are a third-party estimate. Import this website’s Google Search Console property to see Google’s own count of clicks next to it."
+      : "Folio has neither Google’s own count nor an estimate of this website’s search visits yet." };
+  const where = google.scope === "united_states" ? "US searches" : "searches in all countries";
+  const counts = `Google counted ${plural(google.clicks, "click")} from ${where} in the ${days} days to ${utcDay(google.endDate)} (about ${formatCount(google.monthlyClicks)} a month).`;
+  if (!estimate) return { ...base, state: "google_only", searchConsole: google, finding: `${counts} No third-party estimate is saved to compare with it.` };
+  const ratio = estimate.monthlyVisits > 0 ? google.monthlyClicks / estimate.monthlyVisits : null;
+  const estimated = estimate.monthlyVisits === 0 ? "The third-party source had no search data for it at all."
+    : `The third-party estimate is ${estimate.monthlyVisits < 1 ? "under 1" : formatCount(Math.round(estimate.monthlyVisits))} a month${
+      google.monthlyClicks === 0 ? ", but Google counted no clicks."
+        : ratio! >= 2 ? `: Google’s own count is about ${roughly(ratio!)} times higher.`
+        : ratio! <= 0.5 ? `: about ${roughly(1 / ratio!)} times Google’s own count.`
+        : `, ${Math.abs(Math.round(100 * (estimate.monthlyVisits - google.monthlyClicks) / google.monthlyClicks))}% ${estimate.monthlyVisits >= google.monthlyClicks ? "above" : "below"} Google’s own count.`}`;
+  const scope = google.scope === "all_countries" ? " The estimate covers US searches only, so part of the difference is searches from other countries; importing Search Console again records US clicks to compare like with like." : "";
+  const apart = estimate.fetchedAt ? Math.round(Math.abs(Date.parse(estimate.fetchedAt) - Date.parse(google.endDate)) / 86_400_000) : 0;
+  return { ...base, state: "compared", searchConsole: google, ratio: ratio === null ? null : Math.round(ratio * 1000) / 1000,
+    finding: `${counts} ${estimated}${scope}${apart > 45 ? ` The two were measured ${apart} days apart.` : ""}` };
+}
+
+/** One line per kind of number shown, in the order the report shows them. */
+function dataSources(search: WebsiteSearchSummary, google: WebsiteGapsReport["google"], index: boolean, crawl: WebsiteGapsInput["crawl"], check: GoogleCheck): DataSource[] {
+  const sources: DataSource[] = [];
+  if (check.searchConsole) sources.push({ id: "search_console", label: "Clicks from Google", provider: "Google Search Console", kind: "google", asOf: check.searchConsole.endDate,
+    detail: "Google’s own count of clicks and impressions for this property, imported from the owner’s Search Console account." });
+  if (google.state === "tracked") sources.push(
+    { id: "google_positions", label: "Google positions", provider: "DataForSEO", kind: "third_party", asOf: google.capturedAt,
+      detail: "DataForSEO’s record of Google’s US results for each search on the day it checked. Positions move daily, so a check on another day, or by another tool, can differ." },
+    { id: "search_volumes", label: "Searches a month", provider: "DataForSEO", kind: "estimate", asOf: google.capturedAt,
+      detail: "DataForSEO’s estimate of monthly US searches for each phrase. Every tool estimates these; only Google has the exact counts." });
+  const has = (measure: Measure) => measure.state !== "missing";
+  if (search.state === "measured" && (has(search.estimatedMonthlyVisits) || has(search.rankingKeywords)))
+    sources.push({ id: "visits_estimate", label: "Search visits and ranking searches", provider: "DataForSEO", kind: "estimate", asOf: search.fetchedAt,
+      detail: "Estimated from searches a month and the share of clicks expected at each position, summed over the US searches it ranks for." });
+  if (search.state === "measured" && (has(search.backlinks) || has(search.referringDomains)))
+    sources.push({ id: "backlinks", label: "Links and linking websites", provider: "DataForSEO", kind: "third_party", asOf: search.fetchedAt,
+      detail: "Counted from DataForSEO’s own crawl of the web. Each tool’s crawler finds a different share of the web, so link counts differ between tools." });
+  if (index) sources.push({ id: "ai_answers", label: "AI answers", provider: "Folio", kind: "folio", asOf: null,
+    detail: "Folio asks AI models buyer questions with web search on and saves each full answer with its citations, so every answer counted here can be opened and checked." });
+  if (crawl.state === "in_index") sources.push({ id: "crawl", label: "Pages read", provider: "Folio", kind: "folio", asOf: crawl.lastFetchedAt,
+    detail: "Pages Folio’s own crawler fetched from the website, counted against the pages its sitemaps list." });
+  return sources;
 }
 
 const MISSING: Measure = { state: "missing", value: null };
@@ -272,6 +360,17 @@ async function googleRankings(db: D1Database, domain: string): Promise<WebsiteGa
   } catch { return { available: false, rows: [] }; }
 }
 
+/** The owner's newest Search Console snapshot for the whole domain: a domain property, or a URL-prefix property at its root. */
+async function domainSearchConsole(db: D1Database, ownerId: string, domain: string): Promise<WebsiteGapsInput["searchConsole"]> {
+  const covers = (property: string) => {
+    if (property.startsWith("sc-domain:")) return property.slice(10).toLowerCase().replace(/^www\./, "") === domain;
+    try { const url = new URL(property); return url.pathname === "/" && url.hostname.toLowerCase().replace(/^www\./, "") === domain; } catch { return false; }
+  };
+  const match = (await listSavedSearchConsoleReports(db, ownerId)).filter(report => covers(report.property) && (report.totals || report.unitedStatesTotals))
+    .sort((a, b) => b.endDate.localeCompare(a.endDate) || Number(b.property.startsWith("sc-domain:")) - Number(a.property.startsWith("sc-domain:")))[0];
+  return match ? { reportId: match.id, property: match.property, startDate: match.startDate, endDate: match.endDate, totals: match.totals, unitedStatesTotals: match.unitedStatesTotals ?? null } : null;
+}
+
 /**
  * For a website the reader owns or that is shared with one of their organizations. A shared
  * website shows the saved reports of the member who saved it. Reads only; never spends.
@@ -282,13 +381,15 @@ export async function loadWebsiteGaps(db: D1Database, readerId: string, websiteI
   if (!readable) throw new AgentApiError("Website not found. List your websites with folio_targets, or shared ones with folio_organizations.", 404, "not_found");
   const { site, ownerId } = readable, domain = hostOf(site.url);
   // One read at a time: each in-flight query can hold one of the database's few connections.
-  const [search, rankings, published, crawl, yourQuestions] = await sequentially([
+  const [search, rankings, published, crawl, yourQuestions, searchConsole] = await sequentially([
     () => savedSearch(db, ownerId, domain).catch(() => null),
     () => googleRankings(db, domain),
     () => publishedIndex(db).catch(() => null),
     () => crawlWebsite(db, domain),
     () => savedVisibility(db, ownerId, visibilityFilters(new URLSearchParams({ websiteId: site.id })))
       .then(report => ({ completed: report.current.completedQuestions, named: report.current.mentionedQuestions })).catch(() => null),
+    // Google's own numbers are the owner's: a teammate reading a shared website doesn't get them.
+    () => readable.access === "owner" ? domainSearchConsole(db, ownerId, domain).catch(() => null) : Promise.resolve(undefined),
   ] as const);
   let index: WebsiteGapsInput["index"] = { available: false, source: null, publishedQuestions: null, namedIn: 0, citedIn: 0, bestPosition: null, answers: [], questions: [] };
   if (published) {
@@ -300,7 +401,7 @@ export async function loadWebsiteGaps(db: D1Database, readerId: string, websiteI
           page: `/overview?query=${encodeURIComponent(query.id)}${query.latestObservation ? `&model=${encodeURIComponent(query.latestObservation.model)}` : ""}` })) };
     } catch { /* A private or unusual host cannot be matched against the public index. */ }
   }
-  return buildWebsiteGaps({ website: { ...site, access: readable.access, organizations: readable.organizations }, now, rankings, index, yourQuestions,
+  return buildWebsiteGaps({ website: { ...site, access: readable.access, organizations: readable.organizations }, now, rankings, index, yourQuestions, searchConsole,
     search: search ?? { state: "not_measured", reportId: null, fetchedAt: null, backlinks: MISSING, referringDomains: MISSING, brokenBacklinks: null, rankingKeywords: MISSING, estimatedMonthlyVisits: MISSING },
     crawl: { state: crawl.available ? crawl.state === "in_index" ? "in_index" : "not_in_index" : "unavailable", pagesCrawled: crawl.pagesCrawled, inventoryPages: crawl.profile?.inventoryPages ?? null,
       lastFetchedAt: crawl.lastFetchedAt, profileName: crawl.profile?.name ?? null, topSections: crawl.topSections.map(item => ({ path: item.path, pages: item.pages })) } });

@@ -82,6 +82,42 @@ test("answered questions that leave the site out, and its own saved answers, bec
   assert.ok(!report.notChecked.some(item => item.id === "ai-answers"));
 });
 
+test("every number says where it comes from, and the visits estimate sits next to Google's own count for the owner", () => {
+  const report = buildWebsiteGaps(manus);
+  assert.deepEqual(report.sources.map(item => [item.id, item.provider, item.kind]), [
+    ["google_positions", "DataForSEO", "third_party"], ["search_volumes", "DataForSEO", "estimate"], ["visits_estimate", "DataForSEO", "estimate"],
+    ["backlinks", "DataForSEO", "third_party"], ["ai_answers", "Folio", "folio"], ["crawl", "Folio", "folio"]]);
+  assert.equal(report.sources[0].asOf, "2026-11-07T03:08:49.653Z");
+  // Without an imported Search Console property the estimate is labelled as one, with the published error rate.
+  assert.equal(report.googleCheck.state, "estimate_only");
+  assert.match(report.googleCheck.finding, /third-party estimate\. Import this website’s Google Search Console property/);
+  assert.match(report.googleCheck.caveat.text, /median of 50%/);
+  assert.equal(report.googleCheck.caveat.sourceUrl, "https://ahrefs.com/blog/traffic-estimations-accuracy/");
+
+  // codegraff.com on 17 September: Google counted 149 clicks in 28 days; the saved estimate was 0.16 visits a month.
+  const codegraff = buildWebsiteGaps({ ...manus, website: { id: "site-cg", name: "codegraff.com", url: "https://codegraff.com/" },
+    search: { ...manus.search, fetchedAt: "2026-09-17T16:41:37.910Z", rankingKeywords: value(5), estimatedMonthlyVisits: value(0.15563834365457296) },
+    searchConsole: { reportId: "gsc-cg", property: "sc-domain:codegraff.com", startDate: "2026-08-14", endDate: "2026-09-10", totals: { clicks: 149 }, unitedStatesTotals: null } });
+  const check = codegraff.googleCheck;
+  assert.equal(check.state, "compared");
+  assert.deepEqual(check.searchConsole, { reportId: "gsc-cg", property: "sc-domain:codegraff.com", startDate: "2026-08-14", endDate: "2026-09-10", scope: "all_countries", clicks: 149, monthlyClicks: 160 });
+  assert.equal(check.ratio, 1028.024);
+  assert.equal(check.finding, "Google counted 149 clicks from searches in all countries in the 28 days to Sep 10, 2026 (about 160 a month). The third-party estimate is under 1 a month: Google’s own count is about 1,000 times higher. The estimate covers US searches only, so part of the difference is searches from other countries; importing Search Console again records US clicks to compare like with like.");
+  assert.equal(codegraff.sources[0].kind, "google");
+
+  // A newer import has US clicks, so the comparison is US with US; close numbers read as a percentage.
+  const us = buildWebsiteGaps({ ...manus, searchConsole: { reportId: "gsc", property: "https://www.manus.im/", startDate: "2026-10-12", endDate: "2026-11-08", totals: { clicks: 900_000 }, unitedStatesTotals: { clicks: 50_000 } } });
+  assert.equal(us.googleCheck.searchConsole?.scope, "united_states");
+  assert.match(us.googleCheck.finding, /^Google counted 50,000 clicks from US searches in the 28 days to Nov 8, 2026 \(about 53,571 a month\)\. The third-party estimate is 62,748 a month, 17% above Google’s own count\.$/);
+  // A source with no data for the site at all, and a teammate who doesn't own it.
+  assert.match(buildWebsiteGaps({ ...manus, search: { ...manus.search, estimatedMonthlyVisits: none }, searchConsole: { reportId: "g", property: "sc-domain:manus.im", startDate: "2026-10-12", endDate: "2026-11-08", totals: { clicks: 10 }, unitedStatesTotals: { clicks: 4 } } }).googleCheck.finding,
+    /had no search data for it at all\.$/);
+  const shared = buildWebsiteGaps({ ...manus, website: { ...manus.website, access: "organization", organizations: [{ id: "org", name: "Manus" }] },
+    searchConsole: { reportId: "g", property: "sc-domain:manus.im", startDate: "2026-10-12", endDate: "2026-11-08", totals: { clicks: 10 }, unitedStatesTotals: null } });
+  assert.deepEqual([shared.googleCheck.state, shared.googleCheck.searchConsole], ["owner_only", null]);
+  assert.ok(!shared.sources.some(item => item.id === "search_console"));
+});
+
 test("missing and failed data stay unknown instead of becoming zero-valued gaps", () => {
   const report = buildWebsiteGaps({ ...manus,
     search: { state: "failed", reportId: "report", fetchedAt: null, backlinks: missing, referringDomains: missing, brokenBacklinks: null, rankingKeywords: missing, estimatedMonthlyVisits: missing },

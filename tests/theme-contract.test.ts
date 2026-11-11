@@ -8,6 +8,8 @@ function cssFiles(directory: string): string[] {
     const path = join(directory, entry.name);
     // Licensed upstream Bencho styles retain their own fallback palette; Folio overrides use theme tokens.
     if (entry.isDirectory() && entry.name === "bencho") return [];
+    // The MCP App page runs in another host's sandboxed frame without theme.css; host style variables override its fallback palette.
+    if (entry.isDirectory() && entry.name === "mcp-app") return [];
     return entry.isDirectory() ? cssFiles(path) : entry.name.endsWith('.css') ? [path] : [];
   });
 }

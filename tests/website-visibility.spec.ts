@@ -27,6 +27,13 @@ const manus = {
     { id: "links-broken", area: "links", severity: "medium", title: "1,099 links point at broken pages", finding: "Other websites link to pages that no longer load.", nextStep: "Redirect each broken URL.", evidence: [] },
   ],
   notChecked: [{ id: "ai-answers", area: "ai_answers", title: "100 questions about it are waiting for answers", detail: "None has a published answer yet. That is unmeasured, not absent.", nextStep: "Collect answers for those questions.", link: { label: "See the questions", url: "/overview?query=ai-assistants-v1" } }],
+  sources: [
+    { id: "search_console", label: "Clicks from Google", provider: "Google Search Console", kind: "google", asOf: "2026-11-08", detail: "Google’s own count of clicks and impressions for this property." },
+    { id: "visits_estimate", label: "Search visits and ranking searches", provider: "DataForSEO", kind: "estimate", asOf: at, detail: "Estimated from searches a month and the share of clicks expected at each position." },
+  ],
+  googleCheck: { state: "compared", searchConsole: { reportId: "gsc", property: "sc-domain:manus.im", startDate: "2026-10-12", endDate: "2026-11-08", scope: "united_states", clicks: 50000, monthlyClicks: 53571 },
+    estimate: { monthlyVisits: 62748, fetchedAt: at }, ratio: 0.854, finding: "Google counted 50,000 clicks from US searches in the 28 days to Nov 8, 2026 (about 53,571 a month). The third-party estimate is 62,748 a month, 17% above Google’s own count.",
+    caveat: { text: "Search visits are an estimate. Ahrefs reports a median difference of 50% from Google Search Console.", sourceUrl: "https://ahrefs.com/blog/traffic-estimations-accuracy/" } },
   howToRead: "Built from saved data only.",
 };
 const folio = { ...manus, website: { id: "site-folio", name: "usefolio.site", url: "https://usefolio.site/", domain: "usefolio.site" },
@@ -35,7 +42,9 @@ const folio = { ...manus, website: { id: "site-folio", name: "usefolio.site", ur
   google: { ...manus.google, state: "none_tracked", tracked: 0, capturedAt: null, bands: { top3: 0, page1: 0, page2: 0, deeper: 0 }, brandTrafficShare: null, searches: [] },
   aiAnswers: { ...manus.aiAnswers, related: { total: 0, published: 0, matchedTerms: [], categories: [], items: [] } },
   crawl: { state: "not_in_index", pagesCrawled: 0, inventoryPages: null, lastFetchedAt: null, topSections: [] },
-  gaps: [{ id: "links-few", area: "links", severity: "high", title: "Only 3 websites link to it", finding: "Links matter.", nextStep: "Get listed.", evidence: [] }], notChecked: [] };
+  gaps: [{ id: "links-few", area: "links", severity: "high", title: "Only 3 websites link to it", finding: "Links matter.", nextStep: "Get listed.", evidence: [] }], notChecked: [], sources: [],
+  googleCheck: { ...manus.googleCheck, state: "estimate_only", searchConsole: null, estimate: { monthlyVisits: 0, fetchedAt: at }, ratio: null,
+    finding: "The search visits here are a third-party estimate. Import this website’s Google Search Console property to see Google’s own count of clicks next to it." } };
 
 async function setup(page: Page, options: { failVisibility?: boolean } = {}) {
   const state = { mutations: 0, reads: [] as string[] };
@@ -86,6 +95,15 @@ test("a website shows where it comes up, what it's missing and what hasn't been 
   await expect(unknowns).toContainText("unmeasured, not absent");
   await expect(unknowns.getByRole("link", { name: "See the questions" })).toHaveAttribute("href", "/overview?query=ai-assistants-v1");
   await expect(panel).toContainText("folio_website_gaps");
+  // Each number says where it comes from; the estimate sits beside Google's own count, with the published error rate.
+  const sources = panel.getByRole("region", { name: "Where these numbers come from" });
+  await expect(sources).toContainText("The estimate beside Google’s own count");
+  await expect(sources.locator(".wv-check-bars")).toContainText("53,571/mo");
+  await expect(sources.locator(".wv-check-bars")).toContainText("62,748/mo");
+  await expect(sources.locator(".wv-check-bars")).toContainText("US clicks");
+  await expect(sources.locator("[data-source-id='search_console']")).toContainText("Google’s own count");
+  await expect(sources.locator("[data-source-id='visits_estimate']")).toContainText("Estimate");
+  await expect(sources.getByRole("link", { name: /Ahrefs’s study/ })).toHaveAttribute("href", "https://ahrefs.com/blog/traffic-estimations-accuracy/");
   expect(state.mutations).toBe(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(await page.evaluate(() => innerWidth + 1));
 });
@@ -100,6 +118,10 @@ test("switching websites reads the other website's report; a failed read says so
   await expect(panel.getByRole("region", { name: "Google search" })).toContainText("Google doesn’t show it for any US search yet.");
   await expect(panel.getByRole("region", { name: "What Folio has read" })).toContainText("Folio hasn’t read this website yet.");
   await expect(panel).not.toContainText("ai image generator");
+  // Without Search Console the visits figure is called an estimate, with the way to see Google's own count.
+  const sources = panel.getByRole("region", { name: "Where these numbers come from" });
+  await expect(sources).toContainText("third-party estimate");
+  await expect(sources.getByRole("link", { name: "Import from Search Console" })).toHaveAttribute("href", "/search-console");
   expect(state.reads).toContain("site-folio");
   expect(state.mutations).toBe(0);
 

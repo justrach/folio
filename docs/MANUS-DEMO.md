@@ -19,8 +19,17 @@ Open **Websites**, pick `manus.im`, and walk down **Where it shows up**:
 - **AI answers.** Folio's index already has 100 questions that name Manus next to ChatGPT, Claude, Gemini, Perplexity and Copilot (AI tools › AI assistants). None has been answered yet, so its place in AI answers is unmeasured, and the panel says so rather than reporting zero.
 - **What it's missing.** Each gap has a finding, a next step and links to the evidence: big searches just off page one, most visits coming from its own name, 1,099 links pointing at broken pages.
 - **Not checked yet.** Unknowns stay separate from findings.
+- **Where these numbers come from.** Each number is labelled Google's own count, Estimate, Third-party record or Recorded by Folio, with its source and date.
+  - For `manus.im` the search visits are labelled an estimate, with a link to import Search Console.
+  - If Manus imports its Search Console property, Google's own clicks appear beside the estimate with how far apart they are. For `codegraff.com` they are about 1,000 times apart.
 
 The **Search and backlinks** panel below has the raw counts: 1.47M backlinks from 14,634 websites.
+
+**If they ask why Folio's data is better than Ahrefs or Similarweb**, answer honestly (details and sources in [Data sources](DATA-SOURCES.md)):
+- Folio's search and backlink numbers come from DataForSEO and are estimated the same way as Ahrefs's. We don't claim they're more accurate.
+- What Folio adds is Google's own count beside the estimate, a label on every number saying where it came from, and AI answers you can open and read.
+- Ahrefs's own study puts the typical gap between its estimates and Search Console at about 50%.
+- Ahrefs has far bigger indexes, and Similarweb covers traffic beyond search.
 
 ## 2. Join the organization (2 minutes)
 

@@ -3,16 +3,47 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ArrowUpRight, Bot } from "lucide-react";
-import type { GoogleBand, WebsiteGapsReport } from "@/lib/website-gaps";
+import type { DataSourceKind, GoogleBand, WebsiteGapsReport } from "@/lib/website-gaps";
 import "./website-visibility.css";
 
 const plain = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 const compact = new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 });
 const count = (value: number) => value >= 100_000 ? compact.format(value) : plain.format(value);
-const day = (value: string | null) => value && Number.isFinite(Date.parse(value)) ? new Date(value).toLocaleDateString(undefined, { dateStyle: "medium" }) : null;
+// A date without a time (Search Console's "2026-09-10") is that calendar day everywhere, not midnight UTC in local time.
+const day = (value: string | null) => !value || !Number.isFinite(Date.parse(value)) ? null : /^\d{4}-\d{2}-\d{2}$/.test(value)
+  ? new Date(`${value}T00:00:00Z`).toLocaleDateString(undefined, { dateStyle: "medium", timeZone: "UTC" }) : new Date(value).toLocaleDateString(undefined, { dateStyle: "medium" });
 const path = (url: string | null) => { if (!url) return null; try { const parsed = new URL(url); return `${parsed.pathname}${parsed.search}` || "/"; } catch { return null; } };
 const BANDS: { id: GoogleBand; label: string }[] = [{ id: "top3", label: "Top 3" }, { id: "page1", label: "Rest of page 1" }, { id: "page2", label: "Page 2" }, { id: "deeper", label: "Page 3 or later" }];
 const SEVERITY = { high: "High priority", medium: "Worth fixing", low: "Minor" } as const;
+const KIND: Record<DataSourceKind, string> = { google: "Google’s own count", estimate: "Estimate", third_party: "Third-party record", folio: "Recorded by Folio" };
+const approx = (value: number) => value > 0 && value < 1 ? "under 1" : count(Math.round(value));
+
+/** Where each number comes from, and the visits estimate beside Google's own count when the owner has imported it. */
+function NumberSources({ report }: { report: WebsiteGapsReport }) {
+  const check = report.googleCheck, sources = report.sources ?? [];
+  if (!check) return null;
+  const google = check.searchConsole, estimate = check.estimate;
+  const top = Math.max(google?.monthlyClicks ?? 0, estimate?.monthlyVisits ?? 0, 1);
+  return <section className="wv-sources" aria-labelledby="wv-sources-title">
+    <h3 id="wv-sources-title">Where these numbers come from</h3>
+    <div className={`wv-check is-${check.state}`}>
+      <p className="wv-check-title">{check.state === "compared" ? "The estimate beside Google’s own count" : "Search visits"}</p>
+      {check.state === "compared" && google && estimate && <dl className="wv-check-bars">
+        <div><dt>Google Search Console<small>{google.scope === "united_states" ? "US clicks" : "clicks, all countries"} · {day(google.endDate)}</small></dt>
+          <dd><span className="wv-check-bar is-google" style={{ width: `${Math.max(1, 100 * google.monthlyClicks / top)}%` }} /><b>{count(google.monthlyClicks)}/mo</b></dd></div>
+        <div><dt>Third-party estimate<small>DataForSEO, US{day(estimate.fetchedAt) ? ` · ${day(estimate.fetchedAt)}` : ""}</small></dt>
+          <dd><span className="wv-check-bar is-estimate" style={{ width: `${Math.max(1, 100 * estimate.monthlyVisits / top)}%` }} /><b>{approx(estimate.monthlyVisits)}/mo</b></dd></div>
+      </dl>}
+      <p>{check.finding}</p>
+      {check.state === "estimate_only" && report.website.access !== "organization" && <Link className="wv-inline-link" href="/search-console">Import from Search Console<ArrowUpRight size={13} aria-hidden="true" /></Link>}
+      <p className="wv-caveat">{check.caveat.text} <a href={check.caveat.sourceUrl} target="_blank" rel="noopener noreferrer">Ahrefs’s study<ArrowUpRight size={12} aria-hidden="true" /></a></p>
+    </div>
+    {sources.length > 0 && <ul className="wv-source-list">{sources.map(source => <li key={source.id} data-source-id={source.id}>
+      <span className={`wv-kind is-${source.kind}`}>{KIND[source.kind]}</span>
+      <div><strong>{source.label}</strong><span className="wv-source-meta">{source.provider}{day(source.asOf) ? ` · ${day(source.asOf)}` : ""}</span><p>{source.detail}</p></div>
+    </li>)}</ul>}
+  </section>;
+}
 
 function Destination({ url, label }: { url: string; label: string }) {
   return url.startsWith("/") ? <Link href={url}>{label}<ArrowUpRight size={13} aria-hidden="true" /></Link>
@@ -124,6 +155,8 @@ export function WebsiteVisibility({ websiteId, refresh = 0 }: { websiteId: strin
         {item.link && <Destination url={item.link.url} label={item.link.label} />}
       </li>)}</ul>
     </section>}
+
+    <NumberSources report={report} />
 
     <footer className="wv-foot"><Bot size={16} aria-hidden="true" />
       <p>Agents with a Folio key read this same report with <code>folio_website_gaps</code>. Nothing on this panel starts paid work. <Link href="/agents#connect">Connect an agent</Link></p>

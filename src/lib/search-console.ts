@@ -128,6 +128,8 @@ export async function fetchSearchConsoleReport(accessToken: string, property: st
   if (!available.some(entry => entry.siteUrl === property)) throw new SearchConsoleError("Choose an available Search Console property from your connected account.", 403);
   const groups = [
     { name: "totals", label: "Property totals", dimension: null },
+    // Third-party estimates (DataForSEO, like Ahrefs) cover US Google only; this total lets Folio compare like with like.
+    { name: "unitedStatesTotals", label: "United States totals", dimension: null, country: "usa" },
     { name: "daily", label: "Daily data", dimension: "date" },
     { name: "queries", label: "Queries", dimension: "query" },
     { name: "pages", label: "Pages", dimension: "page" },
@@ -136,6 +138,7 @@ export async function fetchSearchConsoleReport(accessToken: string, property: st
     const data = await request(`sites/${encodeURIComponent(property)}/searchAnalytics/query`, accessToken, requestOptions, {
       ...range, dimensions: group.dimension ? [group.dimension] : [], type: "web", dataState: "final",
       rowLimit: group.dimension ? SEARCH_CONSOLE_ROW_LIMIT : 1, startRow: 0,
+      ...("country" in group ? { dimensionFilterGroups: [{ filters: [{ dimension: "country", operator: "equals", expression: group.country }] }] } : {}),
     });
     const parsed = rows(data, group.dimension);
     if (group.dimension === "date" && parsed.some(row => row.keys[0] < range.startDate || row.keys[0] > range.endDate)) return invalidResponse();
@@ -146,7 +149,7 @@ export async function fetchSearchConsoleReport(accessToken: string, property: st
     throw failure.reason instanceof SearchConsoleError ? failure.reason : new SearchConsoleError("Search Console import failed. Try again later.");
   }
   const report: SearchConsoleReportPayload = {
-    property, ...range, fetchedAt: now.toISOString(), totals: null, daily: [], queries: [], pages: [],
+    property, ...range, fetchedAt: now.toISOString(), totals: null, unitedStatesTotals: null, daily: [], queries: [], pages: [],
     status: "complete", warnings: [COVERAGE_WARNING], rowLimit: SEARCH_CONSOLE_ROW_LIMIT,
   };
   results.forEach((result, index) => {
@@ -157,6 +160,9 @@ export async function fetchSearchConsoleReport(accessToken: string, property: st
     } else if (group.name === "totals") {
       report.totals = result.value[0] ? metrics(result.value[0]) : null;
       if (!report.totals) report.warnings.push("Google returned no property totals for this window. Totals remain unknown.");
+    } else if (group.name === "unitedStatesTotals") {
+      // With property totals present, no US row means no US searches showed the site in the window; otherwise it stays unknown.
+      report.unitedStatesTotals = result.value[0] ? metrics(result.value[0]) : report.totals ? { clicks: 0, impressions: 0, ctr: 0, position: 0 } : null;
     } else {
       report[group.name] = result.value;
       if (result.value.length === SEARCH_CONSOLE_ROW_LIMIT) {
@@ -192,6 +198,7 @@ export function validateSearchConsoleReportPayload(value: unknown): SearchConsol
   const report: SearchConsoleReportPayload = {
     property: value.property, startDate: value.startDate, endDate: value.endDate, fetchedAt: value.fetchedAt,
     totals: value.totals === null ? null : metrics(value.totals),
+    unitedStatesTotals: value.unitedStatesTotals === undefined || value.unitedStatesTotals === null ? null : metrics(value.unitedStatesTotals),
     daily: rows({ rows: value.daily }, "date"), queries: rows({ rows: value.queries }, "query"), pages: rows({ rows: value.pages }, "page"),
     status: value.status as "complete" | "partial", warnings: [...value.warnings], rowLimit: SEARCH_CONSOLE_ROW_LIMIT,
   };

@@ -78,13 +78,21 @@ Only permitted tools are advertised. Paid calls require `confirmSpend: true` and
 - `aiAnswers`: where Folio's published answers name or cite it, the indexed questions that mention its brand or a phrase it ranks for (answered or not), and the owner's own saved questions for this website.
 - `crawl`: pages Folio has read against the sitemap inventory, and its largest sections.
 - `gaps`: rules applied to those numbers, each with `severity`, a `finding`, a `nextStep` and `evidence` links: no Google rankings, big searches just off page one, most visits coming from the brand name, few linking websites, many broken backlinks, published answers on its topics that leave it out, and the owner's answers that leave it out.
+- `sources`: where each kind of number comes from, with its provider, date and kind: `google` (Google's own count), `estimate` (a third party's model), `third_party` (a third party's record or crawl) or `folio` (recorded by Folio). Search volumes, Google positions, visits and links all come from DataForSEO.
+- `googleCheck`: the search-visits estimate beside Google's own clicks, from the owner's newest Search Console snapshot for the whole domain (a domain property, or a URL-prefix property at its root). It compares US clicks with the US-only estimate when the snapshot has them (imports from 11 November 2026), otherwise all-country clicks with a note. `ratio` is Google's monthly clicks divided by the estimate. Teammates reading a shared website get `owner_only`: Google's numbers stay the owner's. `caveat` cites Ahrefs's published measure of how far such estimates miss. See [Data sources](DATA-SOURCES.md).
 - `notChecked`: unknowns kept apart from findings, such as indexed questions that were never answered, no saved lookup, or a small share of pages read. An agent should treat these as unmeasured, not as problems.
 
 The `improve_aeo` prompt now starts with this tool.
 
 ## The Folio app (MCP Apps)
 
-Hosts that support [MCP Apps](https://modelcontextprotocol.io/extensions/apps/overview) (Claude Desktop, VS Code with GitHub Copilot, Goose and others) show Folio inside the conversation when an agent calls `folio_find` or `folio_website_gaps`. Both tools carry `_meta.ui.resourceUri: "ui://folio/workspace.html"`, along with the deprecated flat `ui/resourceUri` key that some hosts still read. The host reads that resource with `resources/read`. It is a single self-contained page, `text/html;profile=mcp-app`, from `src/lib/folio-app.ts`. Hosts without MCP Apps get the same JSON as before.
+Hosts that support [MCP Apps](https://modelcontextprotocol.io/extensions/apps/overview) (Claude Desktop, VS Code with GitHub Copilot, Goose and others) show Folio inside the conversation when an agent calls `folio_find` or `folio_website_gaps`. Both tools carry `_meta.ui.resourceUri: "ui://folio/workspace.html"`, along with the deprecated flat `ui/resourceUri` key that some hosts still read. The host reads that resource with `resources/read`. Hosts without MCP Apps get the same JSON as before.
+
+How it is built:
+- `@modelcontextprotocol/ext-apps` 1.7.5 is a runtime dependency. The server registers the two tools with its `registerAppTool` and the page with `registerAppResource` (`src/lib/folio-mcp.ts`).
+- The page's source is `src/mcp-app/` (TypeScript, HTML and CSS). It runs on the package's `App` class, which handles the `ui/initialize` handshake, theme and style variables, and auto-resizing.
+- `bun run app:build` (`scripts/build-folio-app.ts`) bundles it with the package's prebuilt `app-with-deps` entry into one self-contained `text/html;profile=mcp-app` page, written to `src/lib/folio-app.generated.ts` (about 330 KB). A unit test fails if that file is out of date with `src/mcp-app/`.
+- Version 2 of the package needs the 2.x MCP SDK packages; Folio uses `@modelcontextprotocol/sdk` 1.30, so it stays on the 1.x line.
 
 What the person can do in it:
 - Search their Folio (`folio_find`).
@@ -92,18 +100,18 @@ What the person can do in it:
 - Open a saved report or an evidence link in Folio. This goes through the host's `ui/open-link`.
 - Press **Ask my agent to fix this** on a gap. This sends the agent a `ui/message` that names the gap and asks it to propose edits and wait for approval.
 
-When the person opens a report inside the app, the app also sends `ui/update-model-context`, so the agent knows what they are looking at.
+When the person opens a report inside the app, the app also sends `ui/update-model-context`, so the agent knows what they are looking at. The report includes **Where these numbers come from** (below).
 
 Boundaries:
 - The page has no network access of its own. It declares no CSP domains, so hosts apply their no-network default.
 - Every read is a `tools/call` that the host makes with the person's own key, and it may call only those three read tools. A unit test checks this.
-- It renders report text with `textContent` only.
+- It renders report text with `textContent` only; Folio's page code has no `innerHTML`, and neither does the bundle.
 - The no-key endpoint (`/api/index-mcp`) has no app.
 
 `folio_find` returns names, IDs, dates and a link back to Folio for each match. It reads only the caller's own records and their organizations, and it is not saved to agent activity.
 
 Testing:
-- `tests/folio-app.spec.ts` runs the page against the official host bridge (`AppBridge` from `@modelcontextprotocol/ext-apps` 1.7.5, a dev dependency), which validates every message against the spec's schemas.
+- `tests/folio-app.spec.ts` runs the page against the official host bridge (`AppBridge` from the same package), which validates every message against the spec's schemas.
 - The page has not yet been run in Claude Desktop or VS Code themselves.
 - Claude Desktop reaches Folio through `mcp-remote`, which passes `_meta` and resource reads through unchanged. Claude.ai's web connectors still need OAuth.
 

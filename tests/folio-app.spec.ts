@@ -29,6 +29,13 @@ const report = { website: { id: "site-manus", name: "manus.im", url: "https://ma
     { id: "links-broken", area: "links", severity: "medium", title: "<img src=x onerror=alert(1)> broken links", finding: "1,099 links point at missing pages.", nextStep: "Redirect them.", evidence: [] },
   ],
   notChecked: [{ id: "ai", area: "ai_answers", title: "AI answers", detail: "None of the 100 questions naming Manus has been answered yet.", nextStep: "Run them.", link: null }],
+  sources: [
+    { id: "search_console", label: "Clicks from Google", provider: "Google Search Console", kind: "google", asOf: "2026-11-08", detail: "Google’s own count of clicks and impressions." },
+    { id: "visits_estimate", label: "Search visits and ranking searches", provider: "DataForSEO", kind: "estimate", asOf: at, detail: "Estimated from searches a month and expected clicks." },
+  ],
+  googleCheck: { state: "compared", searchConsole: { reportId: "gsc", property: "sc-domain:manus.im", startDate: "2026-10-12", endDate: "2026-11-08", scope: "united_states", clicks: 50000, monthlyClicks: 53571 },
+    estimate: { monthlyVisits: 62748, fetchedAt: at }, ratio: 0.854, finding: "Google counted 50,000 clicks from US searches in the 28 days to Nov 8, 2026 (about 53,571 a month). The third-party estimate is 62,748 a month, 17% above Google’s own count.",
+    caveat: { text: "Search visits are an estimate. Ahrefs reports a median difference of 50% from Google Search Console.", sourceUrl: "https://ahrefs.com/blog/traffic-estimations-accuracy/" } },
   howToRead: "Built from saved data only.", recorded: true };
 const organizations = { note: "Fixture.", items: [{ id: "org-1", name: "Manus", role: "owner", members: [{ name: "Rach", role: "owner", agents: 1, you: true }, { name: "Natalie", role: "member", agents: 0, you: false }],
   websites: [{ websiteId: "site-manus", name: "manus.im", domain: "manus.im", sharedBy: "Rach" }] }] };
@@ -65,7 +72,7 @@ async function host(page: Page, first: { arguments: Record<string, unknown>; res
 
 test("the official MCP Apps host bridge renders Folio's search, opens a website's report and hands a gap to the agent", async ({ page }) => {
   const { frame, log, calls } = await host(page, { arguments: { q: "manus" }, result: asToolResult(found("manus")) });
-  await expect.poll(async () => (await log()).find(entry => entry[0] === "initialized")?.[1]).toEqual({ name: "folio", version: "1.0.0" });
+  await expect.poll(async () => (await log()).find(entry => entry[0] === "initialized")?.[1]).toEqual({ name: "folio", version: "1.1.0" });
   // The tool's own result is shown first, in the host's theme, with the query it was called with.
   await expect(frame.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(frame.getByRole("searchbox", { name: "Search your Folio" })).toHaveValue("manus");
@@ -81,11 +88,22 @@ test("the official MCP Apps host bridge renders Folio's search, opens a website'
   // The website opens its report with one read-only tool call, and the agent is told what the person is looking at.
   await matches.getByRole("button", { name: /Your website/ }).click();
   await expect(frame.getByRole("heading", { name: "manus.im", level: 2 })).toBeVisible();
-  expect((await calls("tools/call")).at(-1)).toEqual({ name: "folio_website_gaps", arguments: { websiteId: "site-manus" } });
+  // The App class adds the protocol's own _meta (a progress token); the tool and its arguments are what matter.
+  expect((await calls("tools/call")).at(-1)).toMatchObject({ name: "folio_website_gaps", arguments: { websiteId: "site-manus" } });
   await expect(frame.locator(".metric").nth(0)).toContainText("1 of 3 searches");
   await expect(frame.locator(".metric").nth(1)).toContainText("14,634");
   await expect(frame.getByRole("table")).toContainText("ai image generator");
   await expect.poll(async () => JSON.stringify((await calls("model-context")).at(-1))).toContain("websiteId site-manus");
+  // Each number says where it comes from; the estimate sits beside Google's own count, and the study behind the caveat opens through the host.
+  await expect(frame.getByRole("heading", { name: "Where these numbers come from" })).toBeVisible();
+  await expect(frame.locator(".meters")).toContainText("53,571/mo");
+  await expect(frame.locator(".meters")).toContainText("62,748/mo");
+  await expect(frame.locator("[data-source-id='search_console']")).toContainText("Google’s own count");
+  await expect(frame.locator("[data-source-id='visits_estimate']")).toContainText("Estimate");
+  await expect(frame.locator(".metric").nth(2)).toContainText("Search visits a month (estimate)");
+  await frame.getByRole("button", { name: "Ahrefs’s study" }).click();
+  await expect.poll(async () => (await calls("open-link")).at(-1)).toBe("https://ahrefs.com/blog/traffic-estimations-accuracy/");
+  expect(JSON.stringify((await calls("model-context")).at(-1))).toContain("17% above Google’s own count");
   // Untrusted report text stays text.
   await expect(frame.getByText("<img src=x onerror=alert(1)> broken links")).toBeVisible();
   await expect(frame.locator(".gaps img")).toHaveCount(0);

@@ -15,6 +15,8 @@ export type SearchConsoleReportPayload = {
   endDate: string;
   fetchedAt: string;
   totals: SearchConsoleMetrics | null;
+  /** Totals for searches from the United States only, to compare with US-only estimates. Absent in snapshots saved before 11 November 2026. */
+  unitedStatesTotals?: SearchConsoleMetrics | null;
   daily: SearchConsoleRow[];
   queries: SearchConsoleRow[];
   pages: SearchConsoleRow[];

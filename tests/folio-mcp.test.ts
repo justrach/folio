@@ -3,7 +3,9 @@ import test from "node:test";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { serveFolioMcp, invokeFolioTool, folioTools, type FolioToolContext } from "../src/lib/folio-mcp";
+import { readFileSync } from "node:fs";
 import { FOLIO_APP_CALLS, FOLIO_APP_MIME, FOLIO_APP_URI } from "../src/lib/folio-app";
+import { buildFolioAppHtml } from "../scripts/build-folio-app";
 import { parseAgentObservation, parseAgentQuery } from "../src/lib/agent-api-input";
 
 const context = { db: {}, principal: { keyId: "fixture", ownerId: "alice", scopes: ["read"] }, env: {} } as FolioToolContext;
@@ -116,11 +118,16 @@ test("Folio's MCP App: two read tools point at one ui:// page, read with resourc
   } finally { await client.close(); }
   assert.match(html, /^<!doctype html>/);
   assert.match(html, /"ui\/initialize"/);
+  // The served page is exactly what scripts/build-folio-app.ts makes from src/mcp-app/ (run `bun run app:build` after editing it).
+  assert.equal(html, buildFolioAppHtml(), "src/lib/folio-app.generated.ts is out of date: run bun run app:build");
   assert.doesNotThrow(() => new Function(html.split("<script>")[1].split("</script>")[0]), "the page's script parses");
-  // The page reaches Folio only through the host, only with read tools, and never puts data into innerHTML.
-  assert.doesNotMatch(html, /fetch\(|XMLHttpRequest|WebSocket|<script src|<link /);
-  assert.equal(html.match(/innerHTML/g)?.length, 1, "only the static icons");
-  assert.deepEqual([...new Set([...html.matchAll(/callTool\("([a-z_]+)"/g)].map(match => match[1]))].sort(), [...FOLIO_APP_CALLS].sort());
+  // The page, including the bundled App class, reaches Folio only through the host and never puts data into innerHTML.
+  assert.doesNotMatch(html, /fetch\(|XMLHttpRequest|new WebSocket|eval\(|innerHTML|<script src|<link /);
+  // Folio's own page code calls only read tools, all through one function.
+  const source = readFileSync(new URL("../src/mcp-app/folio-app.ts", import.meta.url), "utf8");
+  assert.deepEqual([...new Set([...source.matchAll(/callTool\("([a-z_]+)"/g)].map(match => match[1]))].sort(), [...FOLIO_APP_CALLS].sort());
+  assert.equal(source.match(/callServerTool\(/g)?.length, 1, "callTool is the page's only way to call a tool");
+  assert.doesNotMatch(source, /innerHTML|insertAdjacentHTML|outerHTML/);
   for (const name of FOLIO_APP_CALLS) {
     const tool = folioTools.find(item => item.name === name)!;
     assert.ok(tool.scope === "read" && !tool.paid && !tool.write, name);

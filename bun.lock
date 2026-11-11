@@ -7,6 +7,7 @@
       "dependencies": {
         "@better-auth/drizzle-adapter": "latest",
         "@codegraff/sdk": "^0.5.1",
+        "@modelcontextprotocol/ext-apps": "1.7.5",
         "@modelcontextprotocol/sdk": "1.30.0",
         "@opennextjs/cloudflare": "1.20.16",
         "@radix-ui/react-select": "2.3.8",
@@ -31,12 +32,12 @@
       },
       "devDependencies": {
         "@cloudflare/workers-types": "latest",
-        "@modelcontextprotocol/ext-apps": "1.7.5",
         "@playwright/test": "latest",
         "@types/node": "^22.0.0",
         "@types/pg": "8.15.6",
         "@types/react": "^19.0.0",
         "@types/react-dom": "^19.0.0",
+        "esbuild": "0.28.2",
         "impeccable": "^4.8.1",
         "miniflare": "5.20261104.0-beta",
         "tsx": "^4.20.0",

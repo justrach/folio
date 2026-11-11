@@ -27,6 +27,12 @@ function fakeProvider(onQuery?: (dimension: string | undefined) => Response): ty
     assert.deepEqual([body.startDate, body.endDate], ["2026-08-14", "2026-09-10"]);
     const dimension = body.dimensions[0] as string | undefined;
     assert.equal(body.rowLimit, dimension ? 1000 : 1);
+    // The only filtered request is the United States total; it is answered with half the clicks.
+    if (body.dimensionFilterGroups) {
+      assert.deepEqual(body.dimensionFilterGroups, [{ filters: [{ dimension: "country", operator: "equals", expression: "usa" }] }]);
+      assert.equal(dimension, undefined);
+      return onQuery?.("country:usa") ?? Response.json({ rows: [{ ...metric, clicks: 3 }] });
+    }
     return onQuery?.(dimension) ?? Response.json({ rows: [{ ...metric, ...(dimension ? { keys: [dimension === "date" ? "2026-09-01" : "fixture"] } : {}) }] });
   };
 }
@@ -50,7 +56,7 @@ function database() {
 test("Search Console uses exact authorized property IDs and finalized independent dimensions", async () => {
   const report = await fetchSearchConsoleReport("fixture-gsc-access", property, { now, fetcher: fakeProvider() });
   assert.equal(report.property, property); assert.equal(report.status, "complete");
-  assert.deepEqual(report.totals, metric); assert.deepEqual(report.daily[0].keys, ["2026-09-01"]);
+  assert.deepEqual(report.totals, metric); assert.deepEqual(report.unitedStatesTotals, { ...metric, clicks: 3 }); assert.deepEqual(report.daily[0].keys, ["2026-09-01"]);
   assert.deepEqual(report.queries[0].keys, ["fixture"]); assert.deepEqual(report.pages[0].keys, ["fixture"]);
   assert.ok(report.warnings.some(warning => warning.includes("bounded samples")));
   assert.deepEqual(defaultSearchConsoleRange(new Date("2026-01-02T00:01:00Z")), { startDate: "2025-12-03", endDate: "2025-12-30" });
@@ -63,14 +69,17 @@ test("Search Console uses exact authorized property IDs and finalized independen
 });
 
 test("failed and empty property totals remain unknown while successful dimensions are retained", async () => {
-  const report = await fetchSearchConsoleReport("fixture-gsc-access", property, { now, fetcher: fakeProvider(dimension => dimension === undefined
+  const report = await fetchSearchConsoleReport("fixture-gsc-access", property, { now, fetcher: fakeProvider(dimension => dimension === undefined || dimension === "country:usa"
     ? new Response("private provider diagnostic", { status: 502 })
     : Response.json({ rows: [{ ...metric, keys: [dimension === "date" ? "2026-09-01" : "fixture"] }] })) });
-  assert.equal(report.status, "partial"); assert.equal(report.totals, null); assert.equal(report.queries.length, 1);
+  assert.equal(report.status, "partial"); assert.equal(report.totals, null); assert.equal(report.unitedStatesTotals, null); assert.equal(report.queries.length, 1);
   assert.ok(report.warnings.some(warning => warning.includes("Property totals could not")));
   assert.ok(!JSON.stringify(report).includes("private provider diagnostic"));
   const empty = await fetchSearchConsoleReport("fixture-gsc-access", property, { now, fetcher: fakeProvider(() => Response.json({})) });
-  assert.equal(empty.totals, null); assert.equal(empty.status, "complete"); assert.deepEqual(empty.daily, []);
+  assert.equal(empty.totals, null); assert.equal(empty.unitedStatesTotals, null, "no property totals: the US total stays unknown, not zero"); assert.equal(empty.status, "complete"); assert.deepEqual(empty.daily, []);
+  // Property totals but no US row: no US searches showed the site, which is zero, not unknown.
+  const noUs = await fetchSearchConsoleReport("fixture-gsc-access", property, { now, fetcher: fakeProvider(dimension => dimension === "country:usa" ? Response.json({}) : undefined as unknown as Response) });
+  assert.deepEqual(noUs.unitedStatesTotals, { clicks: 0, impressions: 0, ctr: 0, position: 0 });
 });
 
 test("row caps and the report byte limit remain explicit partial evidence", async () => {

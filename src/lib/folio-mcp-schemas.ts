@@ -75,7 +75,12 @@ const websiteGaps = obj({website:obj({id:s,name:s,url:s,domain:s,access:z.enum([
     yourQuestions:obj({completed:n,named:n}).nullable()}),
   crawl:obj({state:z.enum(["in_index","not_in_index","unavailable"]),pagesCrawled:nn,inventoryPages:nn,lastFetchedAt:sn,topSections:z.array(obj({path:s,pages:n}))}),
   gaps:z.array(obj({id:s,area:gapArea,severity:z.enum(["high","medium","low"]),title:s,finding:s,nextStep:s,evidence:z.array(obj({label:s,url:s}))})),
-  notChecked:z.array(obj({id:s,area:gapArea,title:s,detail:s,nextStep:s,link:obj({label:s,url:s}).nullable()})),howToRead:s,recorded:b.optional()});
+  notChecked:z.array(obj({id:s,area:gapArea,title:s,detail:s,nextStep:s,link:obj({label:s,url:s}).nullable()})),
+  sources:z.array(obj({id:z.enum(["google_positions","search_volumes","visits_estimate","backlinks","ai_answers","crawl","search_console"]),label:s,provider:s,kind:z.enum(["google","estimate","third_party","folio"]),asOf:sn,detail:s})),
+  googleCheck:obj({state:z.enum(["compared","google_only","estimate_only","neither","owner_only"]),
+    searchConsole:obj({reportId:s,property:s,startDate:s,endDate:s,scope:z.enum(["united_states","all_countries"]),clicks:n,monthlyClicks:n}).nullable(),
+    estimate:obj({monthlyVisits:n,fetchedAt:sn}).nullable(),ratio:nn,finding:s,caveat:obj({text:s,sourceUrl:s})}),
+  howToRead:s,recorded:b.optional()});
 const organizations = obj({items:z.array(obj({id:s,name:s,role:z.enum(["owner","member"]),members:z.array(obj({name:s,role:z.enum(["owner","member"]),agents:n,you:b})),
   websites:z.array(obj({websiteId:s,name:s,domain:s,sharedBy:s}))})),note:s});
 
