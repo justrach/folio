@@ -7,6 +7,7 @@ import "./globals.css";
 import "./workspace-theme.css";
 import "./theme.css";
 import "@/components/ui/press-motion.css";
+import "./ink.css";
 
 const dmSans = localFont({
   src: [

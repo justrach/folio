@@ -1,18 +1,12 @@
 /* The hand-drawn landing: layout for the drawn sections, then motion. Ink itself is in sketch-ink.css. */
 .landing-drawn { --sk-paper: var(--landing-paper); }
 
-/* Glyphs and the mark take the colour of the text beside them. */
-.sk-glyph, .sk-mark { flex: none; overflow: visible; }
-.sk-glyph .sk-ink { stroke: currentColor; stroke-width: 1.7; }
-.sk-mark .sk-ink { stroke: currentColor; stroke-width: 2.1; }
+/* Glyphs and the mark take the colour of the text beside them (sketch-ink.css). */
 .sk-arrow, .sk-plus, .sk-mark { transition: transform 220ms cubic-bezier(.2, .8, .2, 1); }
 .landing-drawn a:hover .sk-arrow { transform: translate(2px, -2px); }
 .landing-drawn a:hover .sk-arrow.is-right { transform: translateX(3px); }
 .landing-drawn .wordmark:hover .sk-mark { transform: rotate(-24deg); }
 
-/* A drawn underline beneath a few words. */
-.landing-underlined { position: relative; display: inline-block; }
-.sk-underline { position: absolute; left: -2%; bottom: -.17em; width: 104%; height: .26em; overflow: visible; pointer-events: none; }
 .landing-hero .sk-underline .sk-ink { stroke-width: 3.2; }
 
 /* Hero poster */

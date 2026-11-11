@@ -30,6 +30,7 @@
 .app-shell.folio-workspace .page-heading p { font-size: 14px; line-height: 1.6; margin-top: 6px; max-width: 65ch; }
 .app-shell.folio-workspace .button { border-radius: 16px; font-weight: 500; min-height: 44px; font-size: 14px; }
 .app-shell.folio-workspace .panel { border-radius: 20px; background: var(--folio-surface); }
+/* The heading's arrival (title, drawn underline, description, actions) is in workspace-motion.css. */
 .app-shell.folio-workspace .page-heading { animation: none; }
 .dashboard-appearance { display: inline-flex; align-items: center; gap: 7px; min-width: 44px; min-height: 44px; justify-content: center; padding: 8px; border: 0; border-radius: 8px; background: transparent; color: var(--folio-text-secondary); font: 13px var(--folio-font-body); cursor: pointer; }
 .dashboard-appearance:hover { background: var(--folio-surface-muted); color: var(--folio-ink); }
@@ -88,9 +89,9 @@
 .folio-workspace .ranked-search-row { grid-template-columns: 24px minmax(0, 1fr); gap: 12px; }
 .folio-workspace .ranked-search-name { font-weight: 500; font-size: 15px; }
 .folio-workspace .ranked-search-chart figcaption strong { font-weight: 500; font-size: 15px; }
-.workspace-empty-art { display: block; width: min(320px, 100%); height: auto; border-radius: 10px; margin: 0 0 24px; }
 .folio-workspace .real-overview-signin, .folio-workspace .real-overview-empty { padding: 30px; }
-.folio-workspace .real-overview-signin > svg { display: none; }
+/* The lock icon is dropped here; the drawn horizon above the heading (WorkspaceEmptyArt) stays. */
+.folio-workspace .real-overview-signin > svg.folio-icon { display: none; }
 .folio-workspace .real-overview-signin h2 { font-weight: 500; font-size: 22px; }
 @media (max-width: 1100px) {
   .website-filter-bar { grid-template-columns: 1fr; gap: 14px; }
@@ -253,16 +254,15 @@
 .overview-insights-disclosure { margin-bottom: 18px; border: 1px solid var(--folio-edge); border-radius: 16px; background: var(--folio-surface); }
 .overview-insights-disclosure > summary { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 12px 16px; font-size: 13px; cursor: pointer; }
 .overview-insights-disclosure > summary span { margin-left: auto; color: var(--folio-text-secondary); font-size: 13px; }
-.overview-insights-disclosure > summary::after { content: "+"; font-size: 18px; }
-.overview-insights-disclosure[open] > summary::after { content: "−"; }
+/* A drawn plus (InkPlus) that turns to a cross when open, in place of a "+" / "−" character. */
+.overview-insights-disclosure > summary .disclosure-plus { flex: none; color: var(--folio-text-secondary); }
+.overview-insights-disclosure[open] > summary .disclosure-plus { transform: rotate(45deg); }
 .overview-insights-disclosure > summary:focus-visible { outline: 2px solid var(--folio-focus); outline-offset: 3px; border-radius: 16px; }
 .overview-insights-disclosure .overview-insights { margin: 0; border-top: 1px solid var(--folio-edge); }
 .overview-insights-disclosure :is(.overview-activity-panel, .overview-model-panel) { border: 0; }
 @media (max-width: 700px) {
   .overview-insights-disclosure { margin-bottom: 16px; border: 1px solid var(--folio-edge); border-radius: 8px; background: var(--folio-surface); }
   .overview-insights-disclosure > summary { display: flex; justify-content: space-between; gap: 12px; align-items: center; min-height: 44px; padding: 12px; font-size: 13px; cursor: pointer; }
-  .overview-insights-disclosure > summary::after { content: "+"; font-size: 16px; }
-  .overview-insights-disclosure[open] > summary::after { content: "−"; }
   .overview-insights-disclosure > summary span { margin-left: auto; color: var(--folio-text-secondary); font-size: 13px; }
   .overview-insights-disclosure .overview-insights { margin-bottom: 0; }
   .overview-insights-disclosure .overview-activity-panel { border: 0; }

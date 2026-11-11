@@ -2,12 +2,12 @@
 import {trackProductEvent} from "@/lib/product-analytics-client";
 
 import Link from "next/link";
-import { ArrowRight, Check, ShieldCheck, X } from "@/components/icons";
 import { CompanyFavicon } from "./company-favicon";
-import { WorkspaceEmptyArt } from "./workspace-empty-art";
+import { InkArrowRight, InkMark, InkPlus, InkUnderline } from "./landing-sketches";
+import { INK_RULES, InkBack, InkBox, InkCross, InkMeter, InkReading, InkShield, InkTick, StepScene, TrailLeg, TrailMini, TrailWaypoint, useInkLive } from "./onboarding-sketches";
 import { DEVELOPER_TOOLS } from "@/lib/developer-tools-source";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { authClient } from "@/lib/auth-client";
 import { websiteCustomerGroupDrafts, websiteQuestionDrafts } from "@/lib/website-question-drafts";
 import { MAX_CUSTOMER_GROUPS } from "@/lib/onboarding-customers";
@@ -35,11 +35,16 @@ const TOTAL = STEPS.length;
 const STORE = "folio-onboarding-v1";
 const LANGUAGE = "English", LOCALE = "United States";
 
-function Mark() { return <span className="ob-mark" aria-hidden="true"><i /><i /><i /><i /></span>; }
-const Arrow = () => <ArrowRight size={16} strokeWidth={2.2} aria-hidden="true" />;
-const Shield = () => <ShieldCheck size={14} strokeWidth={2} aria-hidden="true" />;
-export const Tick = () => <Check size={13} strokeWidth={3.2} aria-hidden="true" />;
-const Trust = ({ children }: { children: ReactNode }) => <p className="ob-trust"><Shield /><span>{children}</span></p>;
+const Arrow = () => <InkArrowRight size={16} />;
+export const Tick = () => <InkTick size={13} />;
+const Trust = ({ children }: { children: ReactNode }) => <p className="ob-trust"><InkShield size={15} /><span>{children}</span></p>;
+/** The heading, with a drawn underline under its key words. The words and the accessible name are unchanged. */
+function Title({ text, mark }: { text: string; mark?: string }) {
+  const at = mark ? text.lastIndexOf(mark) : -1;
+  if (!mark || at < 0) return <>{text}</>;
+  // The drawing leads the words: a positioned child reads as a word break, and here it falls on an existing space.
+  return <>{text.slice(0, at)}<span className="ink-underlined"><InkUnderline />{mark}</span>{text.slice(at + mark.length)}</>;
+}
 const date = (value: string | null) => value ? new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(value)) : "";
 const dateRange = (from: string | null, to: string | null) => {
   const a = date(from), b = date(to);
@@ -65,29 +70,42 @@ async function requestApi<T>(url: string, init?: { method?: string; body?: unkno
 
 type Nav = { can: (step: number) => boolean; go: (step: number) => void; dir: "forward" | "back" };
 
+/** The trail: seven drawn waypoints. Done steps get a planted flag, the current one is circled, and the path behind it is inked in. */
 function TopBar({ step, onExit, nav }: { step: number; onExit?: () => void; nav?: Nav }) {
-  return <header className="ob-top">
-    <Link href="/" className="ob-wordmark" aria-label="Folio home"><Mark /><span>folio<span className="dot">.</span></span></Link>
+  const live = useInkLive<HTMLElement>();
+  return <header className="ob-top" ref={live}>
+    <Link href="/" className="ob-wordmark" aria-label="Folio home"><InkMark size={28} /><span>folio.</span></Link>
     <nav className="ob-steps" aria-label="Setup steps"><ol>{STEPS.map((label, index) => {
       const n = index + 1, state = n < step ? "done" : n === step ? "now" : "next";
-      const inner = <><span className="ob-step-dot" aria-hidden="true">{state === "done" ? <Tick /> : n}</span><span>{label}</span></>;
-      return <li key={label} className={state} aria-current={state === "now" ? "step" : undefined}>
+      const inner = <><TrailWaypoint state={state} n={n} /><span className="ob-step-label">{label}</span></>;
+      return <li key={label} className={state} aria-current={state === "now" ? "step" : undefined}>{n > 1 && <TrailLeg n={n} />}
         {nav?.can(n) ? <button type="button" onClick={() => nav.go(n)} aria-label={`Back to ${label}`}>{inner}</button> : <span className="ob-step">{inner}</span>}</li>;
     })}</ol></nav>
-    <div className="ob-progress"><span>{step <= TOTAL ? `Step ${step} of ${TOTAL}` : "Optional"}<span className="ob-progress-label">{step <= TOTAL ? ` · ${STEPS[step - 1]}` : ""}</span></span>
-      <div className="ob-bars" role="progressbar" aria-label="Setup progress" aria-valuemin={1} aria-valuemax={TOTAL} aria-valuenow={Math.min(step, TOTAL)}>{Array.from({ length: TOTAL }, (_, index) => <span key={index} className={index < step ? "on" : ""} />)}</div></div>
+    <div className="ob-progress"><span className="ob-progress-text">{step <= TOTAL ? `Step ${step} of ${TOTAL}` : "Optional"}<span className="ob-progress-label">{step <= TOTAL ? ` · ${STEPS[step - 1]}` : ""}</span></span>
+      <div className="ob-bars" role="progressbar" aria-label="Setup progress" aria-valuemin={1} aria-valuemax={TOTAL} aria-valuenow={Math.min(step, TOTAL)}><TrailMini step={step} total={TOTAL} /></div></div>
     {onExit && <button type="button" className="ob-exit" onClick={onExit}>Save and exit</button>}
   </header>;
 }
 
-function Screen({ step, onExit, nav, eyebrow, title, children, side }: { step: number; onExit?: () => void; nav?: Nav; eyebrow: ReactNode; title: string; children: ReactNode; side: ReactNode }) {
+function Screen({ step, onExit, nav, eyebrow, title, mark, children, side }: { step: number; onExit?: () => void; nav?: Nav; eyebrow: ReactNode; title: string; mark?: string; children: ReactNode; side: ReactNode }) {
   const heading = useRef<HTMLHeadingElement>(null);
+  const root = useRef<HTMLDivElement>(null), typing = useRef(0);
   const previous = nav ? Array.from({length: Math.max(0, step - 1)}, (_, index) => step - index - 1).find(value => nav.can(value)) : undefined;
   useEffect(() => { heading.current?.focus({ preventScroll: true }); }, [step]);
-  return <div className="ob">
+  useEffect(() => () => window.clearTimeout(typing.current), []);
+  // Nothing moves while someone types: idle loops pause until a second after the last keystroke.
+  const onInput = (event: { target: EventTarget }) => {
+    const field = event.target, node = root.current;
+    if (!node || !(field instanceof HTMLTextAreaElement || (field instanceof HTMLInputElement && field.type !== "checkbox"))) return;
+    node.setAttribute("data-typing", "");
+    window.clearTimeout(typing.current);
+    typing.current = window.setTimeout(() => node.removeAttribute("data-typing"), 1200);
+  };
+  return <div className="ob" ref={root} style={INK_RULES} onInput={onInput} onSubmit={() => { window.clearTimeout(typing.current); root.current?.removeAttribute("data-typing"); }}>
     <TopBar step={step} onExit={onExit} nav={nav} />
     <main className="ob-main" id="main-content" data-step={step} key={step} data-dir={nav?.dir ?? "forward"}>
-      <div className="ob-copy">{previous !== undefined && <button className="ob-back-button" type="button" onClick={() => nav?.go(previous)}>← Back</button>}<p className="ob-eyebrow">{eyebrow}</p><h1 ref={heading} tabIndex={-1}>{title}</h1>{children}</div>
+      <div className="ob-copy"><div className="ob-kicker">{previous !== undefined && <button className="ob-back-button" type="button" onClick={() => nav?.go(previous)}><InkBack size={15} />Back</button>}<p className="ob-eyebrow">{eyebrow}</p></div><h1 ref={heading} tabIndex={-1}><Title text={title} mark={mark} /></h1>{children}</div>
+      <StepScene step={step} />
       <aside className="ob-side">{side}</aside>
     </main>
   </div>;
@@ -245,7 +263,7 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
 
   if (!step) return <div className="ob"><TopBar step={1} /><p className="ob-loading" role="status">Loading your setup…</p></div>;
 
-  if (step === 1) return <Screen nav={nav} step={1} eyebrow="Free page check" title="Start with your website." side={url.trim() ? <LivePreview input={url} checking={busy} /> : <ProofCard proof={proof} />}>
+  if (step === 1) return <Screen nav={nav} step={1} eyebrow="Free page check" title="Start with your website." mark="your website" side={url.trim() ? <LivePreview input={url} checking={busy} /> : <ProofCard proof={proof} />}>
     <p className="ob-lede">Get a free page check. Then choose the customer questions you want to research.</p>
     <form onSubmit={event => { event.preventDefault(); void run(async () => {
       const result = await api<{ check: Check; siteId: string | null }>("/api/onboarding/check", { method: "POST", body: { url: url.includes("://") ? url : `https://${url}` } });
@@ -265,11 +283,11 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
 
   if (step === 2 && check) {
     const top = check.fixes.slice(0, 3), rest = check.fixes.slice(3), worth = top.reduce((sum, fix) => sum + fix.gap, 0);
-    return <Screen nav={nav} step={2} eyebrow={check.host} title={`Your page scores ${Math.round(check.seoScore)} out of 100.`} side={<div className="ob-card">
+    return <Screen nav={nav} step={2} eyebrow={check.host} title={`Your page scores ${Math.round(check.seoScore)} out of 100.`} mark={`${Math.round(check.seoScore)} out of 100`} side={<div className="ob-card">
       <ScoreReveal score={check.seoScore} />
       <p className="ob-hint">Captured {date(check.createdAt)}</p>
       {top.length > 0 && <ol className="ob-rows" style={{ marginTop: 18 }} aria-label="Top fixes">{top.map(fix => <FixRow key={fix.id} fix={fix} />)}</ol>}
-      {!top.length && check.passed?.length ? <ul className="ob-passed" aria-label="Passed checks">{check.passed.map(item => <li key={item.id}><span className="ob-step-dot" aria-hidden="true"><Tick /></span>{item.label}</li>)}</ul> : null}
+      {!top.length && check.passed?.length ? <ul className="ob-passed" aria-label="Passed checks">{check.passed.map(item => <li key={item.id}><span className="ob-bullet is-done" aria-hidden="true"><Tick /></span>{item.label}</li>)}</ul> : null}
       {rest.length > 0 && <details className="ob-more" open={showMore} onToggle={event => setShowMore((event.target as HTMLDetailsElement).open)}>
         <summary>{showMore ? "Hide" : "Show"} {plural(rest.length, "more check")}</summary><ol className="ob-rows">{rest.map(fix => <FixRow key={fix.id} fix={fix} />)}</ol></details>}
     </div>}>
@@ -286,11 +304,11 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
       if (result.error) throw new Error(result.error.message ?? "Sign-in could not be completed.");
     });
     const primarySocial = providers.google ? "google" : providers.github ? "github" : null;
-    return <Screen nav={nav} step={3} eyebrow="Save your report" title="Keep this report and track it over time." side={<div className="ob-card">
+    return <Screen nav={nav} step={3} eyebrow="Save your report" title="Keep this report and track it over time." mark="over time" side={<div className="ob-card">
       <div className="ob-card-head"><span>Saved to your account</span><b>Private</b></div>
       <h2>{check.host}</h2>
       <div className="ob-score small" style={{ marginTop: 14 }}><b>{Math.round(check.seoScore)}</b><span>/ 100</span></div>
-      <div className="ob-meter"><i style={{ width: `${check.seoScore}%` }} /></div>
+      <div className="ob-meter"><InkMeter value={check.seoScore} /></div>
       <p className="ob-note">Only you can see this report. Publishing to the public index stays off until you turn it on.</p>
     </div>}>
       {primarySocial && <div className="ob-social">
@@ -321,7 +339,7 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
   if (step === 4) {
     const groups = customerGroups.filter(value => value.trim());
     const audience = groups[0] ?? "", preview = websiteCustomerGroupDrafts(groups, task)[0];
-    return <Screen nav={nav} step={4} onExit={exit} eyebrow="Your customers" title="Who should find you, and what do they need?" side={<div className="ob-card">
+    return <Screen nav={nav} step={4} onExit={exit} eyebrow="Your customers" title="Who should find you, and what do they need?" mark="need?" side={<div className="ob-card">
       <div className="ob-card-head"><span>Your first question</span><b>Updates as you type</b></div>
       {audience.trim() || task.trim()
         ? <p className="ob-quote"><QuestionPreview audience={audience} task={task} /></p>
@@ -347,13 +365,13 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
             {customerGroups.length > 1 && <button className="ob-group-remove" type="button" aria-label={`Remove customer group ${index + 1}`} onClick={() => {
               pendingGroupFocus.current = Math.min(index, customerGroups.length - 2);
               setCustomerGroups(values => values.filter((_, at) => at !== index));
-            }}><X size={14} strokeWidth={3} aria-hidden="true" /></button>}
+            }}><InkCross size={16} /></button>}
           </div>)}</div>
           <div className="ob-group-action">{customerGroups.length < MAX_CUSTOMER_GROUPS
             ? <button type="button" className="ob-group-add" onClick={() => {
               pendingGroupFocus.current = customerGroups.length;
               setCustomerGroups(values => values.length < MAX_CUSTOMER_GROUPS ? [...values, ""] : values);
-            }}>+ Add more</button>
+            }}><InkPlus size={14} /><span className="ob-vh">+ </span>Add more</button>
             : <p role="status">Max customer groups added.</p>}</div>
           {check?.suggestion.audience && customerGroups.length === 1 && audience === check.suggestion.audience && <span className="ob-hint">Suggested from your page. Edit if it is wrong.</span>}
         </fieldset>
@@ -368,7 +386,7 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
 
   if (step === 5) {
     const selected = drafts.filter((_, index) => chosen[index]);
-    return <Screen nav={nav} step={5} onExit={exit} eyebrow="Questions to track" title="Pick the questions your buyers ask." side={<div className="ob-card">
+    return <Screen nav={nav} step={5} onExit={exit} eyebrow="Questions to track" title="Pick the questions your buyers ask." mark="buyers ask" side={<div className="ob-card">
       <div className="ob-card-head"><span>{selected.length} of {drafts.length} selected</span><b>{LANGUAGE}, {LOCALE}</b></div>
       <QuestionList questions={drafts} chosen={chosen} onToggle={index => setChosen(value => value.map((item, i) => i === index ? !item : item))} />
     </div>}>
@@ -398,11 +416,11 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
     }) : false;
     const draftName = newName.trim(), draftAliases = newAliases.split(",").map(value => value.trim()).filter(Boolean);
     const ghost = (adding || !candidates.length) && draftName && !candidates.some(item => item.name.toLowerCase() === draftName.toLowerCase())
-      ? <tr className="ob-ghost" aria-hidden="true"><td style={{ width: 34 }}><span className="ob-box" /></td><td><strong>{draftName}</strong><small className="ob-website">{websiteOf({ aliases: draftAliases })}</small></td><td /></tr> : null;
-    return <Screen nav={nav} step={6} onExit={exit} eyebrow="Competitors" title={fromIndex ? "Here is who AI already recommends." : "Who do you want to watch?"} side={<div className="ob-card">
+      ? <tr className="ob-ghost" aria-hidden="true"><td style={{ width: 34 }}><span className="ob-box is-ghost"><InkBox ghost /></span></td><td><strong>{draftName}</strong><small className="ob-website">{websiteOf({ aliases: draftAliases })}</small></td><td /></tr> : null;
+    return <Screen nav={nav} step={6} onExit={exit} eyebrow="Competitors" title={fromIndex ? "Here is who AI already recommends." : "Who do you want to watch?"} mark={fromIndex ? "recommends" : "watch?"} side={<div className="ob-card">
       {fromIndex && check && <div className="ob-card-head"><span>{plural(check.competitors.totalAnswers, "saved answer")}</span><b>Avg. position</b></div>}
       {candidates.length > 0 ? <table className="ob-tbl"><tbody>
-        {candidates.map((item, index) => <tr key={item.name}><td style={{ width: 34 }}><label className="ob-check"><input type="checkbox" aria-label={`Track ${item.name}`} checked={item.checked} onChange={() => setCandidates(list => list.map((value, i) => i === index ? { ...value, checked: !value.checked } : value))} /><span className="ob-box"><Tick /></span></label></td>
+        {candidates.map((item, index) => <tr key={item.name}><td style={{ width: 34 }}><label className="ob-check"><input type="checkbox" aria-label={`Track ${item.name}`} checked={item.checked} onChange={() => setCandidates(list => list.map((value, i) => i === index ? { ...value, checked: !value.checked } : value))} /><span className="ob-box"><InkBox /></span></label></td>
           <td><strong>{item.name}</strong><small className="ob-website">{websiteOf(item)}</small>{item.answers !== undefined && <small>{item.answers} of {item.totalAnswers} answers</small>}</td>
           <td className="num">{item.averagePosition !== undefined && <span className="ob-pill">{item.averagePosition.toFixed(1)}</span>}</td></tr>)}
         {ghost}
@@ -440,7 +458,7 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
 
   if (step === 7) {
     const count = suite?.cases.length ?? 0, canRun = access?.canRun === true;
-    return <Screen nav={nav} step={7} onExit={exit} eyebrow="First baseline" title={`Ask AI your ${plural(count, "question")} now.`} side={<div className="ob-card">
+    return <Screen nav={nav} step={7} onExit={exit} eyebrow="First baseline" title={`Ask AI your ${plural(count, "question")} now.`} mark="now" side={<div className="ob-card">
       <div className="ob-card-head"><span>What runs</span><b>GPT-6.0 Astra</b></div>
       <div className="ob-sum"><div><b>{count}</b><span>{count === 1 ? "question" : "questions"}</span></div><div><b>{candidates.filter(item => item.checked).length}</b><span>competitors</span></div><div><b>{check ? 1 : 0}</b><span>page check</span></div></div>
       <p className="ob-note" style={{ marginTop: 18 }}>{access ? access.message : "Checking your run access…"}</p>
@@ -463,7 +481,7 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
 
   // Step 8: optional Search Console while the baseline runs.
   const finish = async (skipped: boolean) => { await api("/api/onboarding", { method: "PUT", body: skipped ? { searchConsoleSkipped: true, completed: true } : { completed: true } });trackProductEvent("onboarding_step_completed",{step:8,result:"success"}); };
-  return <Screen nav={nav} step={8} eyebrow={baselineRequested ? "While your baseline runs" : "One more thing"} title="Add your real Google clicks." side={<div className="ob-card">
+  return <Screen nav={nav} step={8} eyebrow={baselineRequested ? "While your baseline runs" : "One more thing"} title="Add your real Google clicks." mark="Google clicks" side={<div className="ob-card">
     <div className="ob-card-head"><span>Baseline</span><b>{!baselineRequested ? "Not started" : queue.saved === (suite?.cases.length ?? 0) && queue.saved > 0 ? "Complete" : queue.active ? "Running" : "Queued"}</b></div>
     {suite?.cases.length ? <BaselineProgress rows={queue.rows} error={queue.error} /> : <p className="ob-note">No questions saved yet.</p>}
     {baselineRequested && <p className="ob-note">One question runs at a time while Folio is open. Cancel any run from Evaluations.</p>}
@@ -514,26 +532,26 @@ function QuestionList({ questions, chosen, onToggle }: { questions: string[]; ch
     <div className="ob-question-scroll" ref={viewport} role="region" aria-label="Available questions" tabIndex={0} onScroll={updateOverflow}
       onFocusCapture={event => { if (event.target instanceof HTMLInputElement) event.target.closest("label")?.scrollIntoView({ block: "nearest" }); }}>
       <fieldset ref={list} className="ob-qlist" style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}><legend className="ob-hint" style={{ position: "absolute", left: -9999 }}>Questions</legend>
-        {questions.map((question, index) => <label className="ob-check" key={question}><input type="checkbox" checked={Boolean(chosen[index])} onChange={() => onToggle(index)} /><span className="ob-box"><Tick /></span><span>{question}</span></label>)}
+        {questions.map((question, index) => <label className="ob-check" key={question}><input type="checkbox" checked={Boolean(chosen[index])} onChange={() => onToggle(index)} /><span className="ob-box"><InkBox /></span><span>{question}</span></label>)}
       </fieldset>
     </div>
   </div>;
 }
 
-/** Counts 0 → score on the meter's curve. Reduced motion shows the final value at once. */
-function useCountUp(target: number, ms = 700) {
+/** Counts 0 → score on the meter's curve, starting once the sheet has arrived (the meter's 420ms delay). Reduced motion shows the final value at once. */
+function useCountUp(target: number, ms = 700, delay = 420) {
   const [value, setValue] = useState(0);
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setValue(target); return; }
-    let frame = 0; const start = performance.now();
+    let frame = 0; const start = performance.now() + delay;
     const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / ms);
+      const t = Math.max(0, Math.min(1, (now - start) / ms));
       setValue(Math.round(target * (1 - Math.pow(1 - t, 3))));
       if (t < 1) frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [target, ms]);
+  }, [target, ms, delay]);
   return value;
 }
 
@@ -541,7 +559,7 @@ function ScoreReveal({ score }: { score: number }) {
   const final = Math.round(score), shown = useCountUp(final);
   return <>
     <div className="ob-score" role="img" aria-label={`${final} out of 100`}><b aria-hidden="true">{shown}</b><span aria-hidden="true">/ 100</span></div>
-    <div className="ob-meter reveal"><i style={{ width: `${score}%` }} /></div>
+    <div className="ob-meter"><InkMeter value={score} reveal /></div>
   </>;
 }
 
@@ -575,20 +593,21 @@ function previewHost(input: string) {
 
 /** Step 1 side card once typing starts: the report this address will get, before any request is made. */
 function LivePreview({ input, checking }: { input: string; checking: boolean }) {
-  const host = previewHost(input);
-  return <div className="ob-card ob-live" data-checking={checking || undefined} aria-live="polite">
+  const host = previewHost(input), live = useInkLive<HTMLDivElement>();
+  return <div className="ob-card ob-live" ref={live} data-checking={checking || undefined} aria-live="polite">
     <div className="ob-card-head"><span>{checking ? "Checking your page…" : "Your free check"}</span><b>Private</b></div>
     <h2 className="ob-live-host"><span aria-hidden="true">https://</span>{host ?? input.trim()}</h2>
     <p className={`ob-hint ob-live-state${host ? " ready" : ""}`}>{checking ? "Reading the page now. This takes a few seconds." : host ? "Ready to check. Folio reads this one public page." : "Keep typing a domain, like yourwebsite.com"}</p>
+    <InkReading active={checking} />
     <div className="ob-score small pending" aria-hidden="true"><b>—</b><span>/ 100</span></div>
-    <div className="ob-meter pending"><i /></div>
-    <ul className="ob-passed ob-pending" aria-label="Checks Folio will run">{evaluationMethodology.weights.map(check => <li key={check.id}><span className="ob-step-dot" aria-hidden="true" />{check.label}<small>{check.weight} pts</small></li>)}</ul>
+    <div className="ob-meter"><InkMeter checking={checking} /></div>
+    <ul className="ob-passed ob-pending" aria-label="Checks Folio will run">{evaluationMethodology.weights.map((check, index) => <li key={check.id} style={{ "--i": index } as CSSProperties}><span className="ob-bullet" aria-hidden="true" />{check.label}<small>{check.weight} pts</small></li>)}</ul>
   </div>;
 }
 
 function ProofCard({ proof }: { proof: OnboardingProof | null }) {
   if (!proof) return null;
-  return <div className="ob-backdrop"><WorkspaceEmptyArt/><div className="ob-card">
+  return <div className="ob-card ob-proof">
     <div className="ob-card-head"><span>Example · saved public results</span></div>
     <h2>Who AI recommended</h2><p className="ob-hint" style={{ marginTop: 6 }}>{proof.category} · {plural(proof.totalAnswers, "saved answer")}</p>
     <div className="ob-proof-columns"><span>Website</span><span>Avg. position</span></div>
@@ -596,5 +615,5 @@ function ProofCard({ proof }: { proof: OnboardingProof | null }) {
     <p className="ob-note">These are public examples, not results for your website. A lower average position means an earlier place in the returned lists.</p>
     <p className="ob-proof-date">Recorded {dateRange(proof.firstObservedAt, proof.lastObservedAt)}</p>
     <Link className="ob-proof-link" href="/leaderboard?landscapeAudience=Developer+tools">Explore public results <Arrow /></Link>
-  </div></div>;
+  </div>;
 }

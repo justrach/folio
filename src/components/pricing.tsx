@@ -10,6 +10,7 @@ import {
   Loader2,
 } from "@/components/icons";
 import { authClient } from "@/lib/auth-client";
+import { InkMark } from "./landing-sketches";
 import "./pricing.css";
 import { UiBadge, UiButton, UiSurface } from "./ui/primitives";
 
@@ -49,13 +50,11 @@ const plans = [
     footnote: "Priced from $5,000 for teams past five seats.",
   },
 ];
+/** Folio's mark, drawn by the pen. */
 function Mark() {
   return (
-    <span className="folio-mark" aria-hidden="true">
-      <i />
-      <i />
-      <i />
-      <i />
+    <span className="folio-mark is-drawn" aria-hidden="true">
+      <InkMark size={34} />
     </span>
   );
 }

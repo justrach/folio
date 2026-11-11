@@ -66,9 +66,47 @@ test("login errors stay readable and successful email sign-in returns to the wor
 test("dark artwork and layered documentation follow the stored appearance", async ({ page }) => {
   await setup(page);
   await page.addInitScript(() => localStorage.setItem("folio-dashboard-appearance", "dark"));
+  // The landing poster and the setup scenes are drawn in theme ink rather than swapped as a light/dark image pair.
+  const drawn: Record<string, string> = { "/": ".sk-poster", "/start": ".ob-scene" };
+  const plainInk = ".sk-ink:not(.is-rust):not(.is-soft):not(.is-sun):not(.is-deep):not(.is-line)";
+  // The theme's ink token, read both page-wide and inside the drawing's own surface (the light landing and setup set their own ink).
+  const readInk = (target: import("@playwright/test").Page, figure: string) => target.locator(figure).first().evaluate((node, selector) => {
+    const token = (parent: Element) => {
+      const probe = document.createElement("span");
+      probe.style.color = "var(--folio-ink)";
+      parent.append(probe);
+      const color = getComputedStyle(probe).color;
+      probe.remove();
+      return color;
+    };
+    return { ink: getComputedStyle(node.querySelector(selector)!).stroke, page: token(document.body), surface: token(node.parentElement!) };
+  }, plainInk);
   for (const path of ["/login", "/", "/start"]) {
     await page.goto(path);
     await expect(page.locator("html")).toHaveAttribute("data-folio-theme", "dark");
+    await expect(page.locator("img.theme-art-light").first()).not.toBeVisible();
+    if (drawn[path]) {
+      const figure = page.locator(drawn[path]).first();
+      await expect(figure).toBeVisible();
+      await expect(figure.locator("img")).toHaveCount(0);
+      const dark = await readInk(page, drawn[path]);
+      // The same drawing under the light appearance, in a second tab of the same browser.
+      const other = await page.context().newPage();
+      await setup(other);
+      await other.addInitScript(() => localStorage.setItem("folio-dashboard-appearance", "light"));
+      await other.goto(path);
+      await expect(other.locator("html")).toHaveAttribute("data-folio-theme", "light");
+      await expect(other.locator(drawn[path]).first()).toBeVisible();
+      const light = await readInk(other, drawn[path]);
+      await other.close();
+      expect(dark.ink).not.toBe(light.ink);
+      // Dark: the page-wide dark ink, with no light-only surface override in the way.
+      expect(dark.ink).toBe(dark.page);
+      expect(dark.surface).toBe(dark.page);
+      expect(light.ink).toBe(light.surface);
+      expect(light.page).not.toBe(dark.page);
+      continue;
+    }
     const pair = page.locator("img.theme-art-dark").first();
     await expect(pair).toHaveAttribute("src", /dark/);
     await expect(page.locator("img.theme-art-light").first()).not.toBeVisible();

@@ -5,6 +5,7 @@ import type { PublicSearchObservation } from "@/lib/public-search-rankings";
 import { publicObservationChart } from "@/lib/public-observation-chart";
 import { StackedBars } from "./bencho/stacked-bars/StackedBars";
 import "./bencho/stacked-bars/StackedBars.css";
+import { InkPlus } from "./landing-sketches";
 
 const modelLabel = (name: string) => LANDSCAPE_MODELS.find(model => model.id === name)?.label ?? name;
 
@@ -12,7 +13,7 @@ const modelLabel = (name: string) => LANDSCAPE_MODELS.find(model => model.id ===
 export function OverviewInsights({ observations }: { observations: PublicSearchObservation[] }) {
   if (!observations.length) return null;
   const { counts, groups, day, week } = publicObservationChart(observations);
-  return <details className="overview-insights-disclosure"><summary>Activity and models<span>{observations.length} saved records</span></summary><section className="overview-insights" aria-label="Published observation insights">
+  return <details className="overview-insights-disclosure"><summary>Activity and models<span>{observations.length} saved records</span><InkPlus className="disclosure-plus" /></summary><section className="overview-insights" aria-label="Published observation insights">
     <div className="overview-activity-panel">
       <StackedBars colour="Mono" gap={8} categories={groups.map(modelLabel)} series={{ Day: day, Week: week }} />
       <p className="overview-chart-note">Recorded dates, not a live traffic feed. Each segment is one model’s published observations.</p>

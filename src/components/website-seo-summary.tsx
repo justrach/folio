@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { AlertTriangle, ArrowUpRight, Loader2, RefreshCw } from "@/components/icons";
 import { useSession } from "@/lib/auth-client";
 import "./website-seo-summary.css";
+import { InkSpinner } from "./workspace-sketches";
 
 /** value: measured; none: the provider has no data for this domain (not zero); missing: this part of the lookup failed. */
 type MetricState = "value" | "none" | "missing";
@@ -156,11 +157,11 @@ export function WebsiteSeoSummary({ targetUrl, onUpdated }: { targetUrl?: string
       </div>
       {ownerId && domain && <Link className="button secondary" href={href}>Open reports <ArrowUpRight size={13} /></Link>}
     </header>
-    {isPending ? <p role="status">Loading your website data…</p>
+    {isPending ? <p role="status"><InkSpinner />Loading your website data…</p>
       : !ownerId ? <p><Link href="/login">Sign in</Link> to see private website reports.</p>
       : !domain ? <p><Link href="/websites">Choose a website</Link> to view saved search estimates and backlinks.</p>
       : <>
-        {view.loading ? <p role="status">Loading saved website data…</p>
+        {view.loading ? <p role="status"><InkSpinner />Loading saved website data…</p>
           : summary?.failed ? <div className="website-seo-callout" role="status"><AlertTriangle size={16} aria-hidden="true" />
             <div><strong>The last update didn’t return any data.</strong>
               <p>The search data provider rejected or didn’t complete the lookup, so nothing was measured. Run the update again; missing values are not zero.</p></div></div>

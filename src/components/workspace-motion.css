@@ -1,0 +1,127 @@
+/* Motion for the workspace. Everything that moves is inside prefers-reduced-motion: no-preference;
+   with reduced motion every page is simply there, finished. Entrances animate transform (and the
+   separate translate and scale properties), opacity, clip-path and stroke-dashoffset, so nothing
+   changes layout and nothing starts a network request. The rail and spot boils swap frames by
+   visibility (ink.css, workspace-sketches.css). Every entrance uses fill-mode `backwards`: it holds
+   its first frame during its delay and then lets go, so when it ends the element's own styles
+   (hover and press transforms, disabled opacity, focus outlines) apply again. Entrances play when an
+   element first mounts, never on a re-render. Only the loaders loop, and a rail icon while the
+   pointer is over it; the current page's rail icon and empty-state drawings boil for a few seconds
+   and then rest, because a running boil costs a style pass every frame (measured). */
+.folio-workspace .ink-underlined .sk-underline .sk-ink { stroke-width: 3; }
+.folio-workspace .rank-ellipsis { display: flex; align-items: center; }
+.folio-workspace .engine-symbol { display: inline-flex; align-items: center; justify-content: center; }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* ── Arriving on a page: the title, its underline, the description and actions, then each panel, then rows. */
+  .app-shell.folio-workspace .page-heading h1 { animation: ws-rise 480ms cubic-bezier(.2, .8, .2, 1) backwards; }
+  .app-shell.folio-workspace .page-heading .sk-underline .sk-draw { stroke-dasharray: 1; animation: sk-draw 720ms cubic-bezier(.65, 0, .25, 1) 260ms backwards; }
+  .app-shell.folio-workspace .page-heading p { animation: ws-fade-up 460ms cubic-bezier(.2, .8, .2, 1) 140ms backwards; }
+  .app-shell.folio-workspace .page-heading .heading-actions > * { animation: ws-fade-up 420ms cubic-bezier(.2, .8, .2, 1) 220ms backwards; }
+  .app-shell.folio-workspace .page-heading .heading-actions > :nth-child(2) { animation-delay: 280ms; }
+
+  .folio-workspace .page-content > :not(.page-heading) { animation: ws-rise 560ms cubic-bezier(.2, .8, .2, 1) 200ms backwards; }
+  .folio-workspace .page-content > :nth-child(3) { animation-delay: 270ms; }
+  .folio-workspace .page-content > :nth-child(4) { animation-delay: 340ms; }
+  .folio-workspace .page-content > :nth-child(n+5) { animation-delay: 400ms; }
+  /* Panels inside a page's first wrapper follow it, a beat apart. */
+  .folio-workspace .page-content > * > :is(.panel, .workspace-state, .empty-state, .insight-banner, .org-switcher, .seo-data-empty) { animation: ws-fade-up 480ms cubic-bezier(.2, .8, .2, 1) 300ms backwards; }
+  .folio-workspace .page-content > * > :is(.panel, .workspace-state, .empty-state, .insight-banner, .org-switcher, .seo-data-empty):nth-child(2) { animation-delay: 370ms; }
+  .folio-workspace .page-content > * > :is(.panel, .workspace-state, .empty-state, .insight-banner, .org-switcher, .seo-data-empty):nth-child(n+3) { animation-delay: 440ms; }
+
+  /* Rows, tiles and findings follow their panel, one after another. */
+  .folio-workspace :is(.wv-lane, .wv-gap, .wv-unknowns li, .wv-source-list li, .org-stats > div, .website-job, .org-site-list > li, .org-members > ul > li, .audit-history-row, .wv-searches li, .website-ranking-row, .eval-history-list > button, .product-analytics-metrics > article) { animation: ws-fade-up 440ms cubic-bezier(.2, .8, .2, 1) backwards; animation-delay: calc(320ms + var(--ws-i, 0) * 55ms); }
+  .folio-workspace :is(.wv-lane, .wv-gap, .wv-unknowns li, .wv-source-list li, .org-stats > div, .website-job, .org-site-list > li, .org-members > ul > li, .audit-history-row, .wv-searches li, .website-ranking-row, .eval-history-list > button, .product-analytics-metrics > article):nth-child(2) { --ws-i: 1; }
+  .folio-workspace :is(.wv-lane, .wv-gap, .wv-unknowns li, .wv-source-list li, .org-stats > div, .website-job, .org-site-list > li, .org-members > ul > li, .audit-history-row, .wv-searches li, .website-ranking-row, .eval-history-list > button, .product-analytics-metrics > article):nth-child(3) { --ws-i: 2; }
+  .folio-workspace :is(.wv-lane, .wv-gap, .wv-unknowns li, .wv-source-list li, .org-stats > div, .website-job, .org-site-list > li, .org-members > ul > li, .audit-history-row, .wv-searches li, .website-ranking-row, .eval-history-list > button, .product-analytics-metrics > article):nth-child(4) { --ws-i: 3; }
+  .folio-workspace :is(.wv-lane, .wv-gap, .wv-unknowns li, .wv-source-list li, .org-stats > div, .website-job, .org-site-list > li, .org-members > ul > li, .audit-history-row, .wv-searches li, .website-ranking-row, .eval-history-list > button, .product-analytics-metrics > article):nth-child(5) { --ws-i: 4; }
+  .folio-workspace :is(.wv-lane, .wv-gap, .wv-unknowns li, .wv-source-list li, .org-stats > div, .website-job, .org-site-list > li, .org-members > ul > li, .audit-history-row, .wv-searches li, .website-ranking-row, .eval-history-list > button, .product-analytics-metrics > article):nth-child(n+6) { --ws-i: 5; }
+
+  /* ── Data: bars are drawn from their start with a clip, so their box is full size from the first
+     frame (layout and visibility checks never see a zero-width bar). Numbers settle into place. */
+  .folio-workspace :is(.wv-volume span, .wv-bar span, .wv-progress span, .wv-check-bar, .wv-band, .org-usage-track i, .overview-model-track i, .engine-track i, .website-ranking-track > span, .product-feature-row b) { animation: ws-wipe 900ms cubic-bezier(.3, .7, .2, 1) 420ms backwards; }
+  .folio-workspace .wv-band:nth-child(2) { animation-delay: 500ms; }
+  .folio-workspace .wv-band:nth-child(3) { animation-delay: 580ms; }
+  .folio-workspace .wv-band:nth-child(n+4) { animation-delay: 660ms; }
+  .folio-workspace :is(.wv-stat strong, .org-stats dd, .history-score, .metric-value, .public-benchmark-summary dd, .product-analytics-metrics strong) { animation: ws-settle 620ms cubic-bezier(.2, .9, .25, 1.15) 460ms backwards; }
+
+  /* ── The rail. Icons answer the pointer; the current page's icon boils (ink.css). */
+  .folio-workspace .nav-link > .folio-icon { transition: transform 260ms cubic-bezier(.3, 1.6, .5, 1); }
+  .folio-workspace .nav-link:hover > .folio-icon { transform: translateY(-1px) rotate(-7deg) scale(1.1); }
+  .folio-workspace .nav-link:active > .folio-icon { transform: scale(.92); transition-duration: 90ms; }
+  /* Opening "More tools" deals its links in, one after another. */
+  .folio-workspace .sidebar-more[open] > nav > .nav-link { animation: ws-deal 360ms cubic-bezier(.2, .8, .2, 1) backwards; animation-delay: calc(var(--ws-n, 0) * 32ms); }
+  .folio-workspace .sidebar-more[open] > nav > .nav-link:nth-child(2) { --ws-n: 1; }
+  .folio-workspace .sidebar-more[open] > nav > .nav-link:nth-child(3) { --ws-n: 2; }
+  .folio-workspace .sidebar-more[open] > nav > .nav-link:nth-child(4) { --ws-n: 3; }
+  .folio-workspace .sidebar-more[open] > nav > .nav-link:nth-child(5) { --ws-n: 4; }
+  .folio-workspace .sidebar-more[open] > nav > .nav-link:nth-child(6) { --ws-n: 5; }
+  .folio-workspace .sidebar-more[open] > nav > .nav-link:nth-child(7) { --ws-n: 6; }
+  .folio-workspace .sidebar-more[open] > nav > .nav-link:nth-child(n+8) { --ws-n: 7; }
+  .folio-workspace .sidebar-more > summary > .folio-icon { transition: transform 300ms cubic-bezier(.3, 1.5, .5, 1); }
+  .folio-workspace .sidebar-more[open] > summary > .folio-icon { transform: rotate(90deg); }
+  /* The mobile drawer: links follow the drawer in. */
+  @media (max-width: 760px) {
+    .folio-workspace .sidebar.open :is(nav, .sidebar-bottom) > .nav-link { animation: ws-deal 380ms cubic-bezier(.2, .8, .2, 1) 80ms backwards; }
+    .folio-workspace .sidebar.open nav > .nav-link:nth-child(2) { animation-delay: 115ms; }
+    .folio-workspace .sidebar.open nav > .nav-link:nth-child(3) { animation-delay: 150ms; }
+    .folio-workspace .sidebar.open nav > .nav-link:nth-child(n+4) { animation-delay: 185ms; }
+    .folio-workspace .sidebar-scrim { animation: ws-fade 240ms ease-out backwards; }
+  }
+
+  /* ── Feedback: an icon at the end of a button or link leans the way it points. */
+  .folio-workspace :is(.button, .text-link, .website-job-action, .heading-actions a) > .folio-icon:last-child { transition: transform 240ms cubic-bezier(.3, 1.5, .5, 1); }
+  .folio-workspace :is(.button, .text-link, .website-job, .heading-actions a):hover > .folio-icon:last-child { transform: translateX(3px); }
+  .folio-workspace .website-job-icon .folio-icon { transition: transform 280ms cubic-bezier(.3, 1.5, .5, 1); }
+  .folio-workspace .website-job:hover .website-job-icon .folio-icon { transform: rotate(-10deg) scale(1.12); }
+  .folio-workspace .icon-button > .folio-icon { transition: transform 240ms cubic-bezier(.3, 1.5, .5, 1); }
+  .folio-workspace .icon-button:hover > .folio-icon { transform: rotate(-8deg) scale(1.08); }
+  .folio-workspace .search-trigger > .folio-icon { transition: transform 240ms cubic-bezier(.3, 1.5, .5, 1); }
+  .folio-workspace .search-trigger:hover > .folio-icon { transform: rotate(-12deg) scale(1.1); }
+  /* Disclosures: what opens unfolds into place; a drawn plus turns to a cross. */
+  .folio-workspace details[open] > :not(summary) { animation: ws-unfold 300ms cubic-bezier(.2, .8, .2, 1) backwards; }
+  .folio-workspace .sidebar-more[open] > nav { animation: none; }
+  .folio-workspace .sk-plus { transition: transform 280ms cubic-bezier(.3, 1.5, .5, 1); }
+  /* Dialogs, toasts and the agent notebook dock arrive rather than appear. */
+  .folio-workspace .dialog[open] { animation: ws-dialog-in 300ms cubic-bezier(.2, .9, .25, 1.1) backwards; }
+  .folio-workspace .dialog[open]::backdrop { animation: ws-fade 240ms ease-out backwards; }
+  .folio-workspace .dialog[open] .dialog-header .folio-mark .sk-draw { stroke-dasharray: 1; animation: sk-draw 620ms cubic-bezier(.65, 0, .25, 1) calc(160ms + var(--i, 0) * 40ms) backwards; }
+  .toast { animation: ws-toast-in 380ms cubic-bezier(.2, .9, .25, 1.2) backwards; }
+  .agent-run-dock { animation: ws-dock-in 460ms cubic-bezier(.2, .9, .25, 1.1) 200ms backwards; }
+  .agent-run-dock .agent-dock-icon { animation: ws-settle 520ms cubic-bezier(.2, .9, .25, 1.2) 420ms backwards; }
+  /* Empty states rise with their drawing, which then draws itself on (workspace-sketches.css). */
+  .folio-workspace .empty-state .empty-art { animation: ws-fade 400ms ease-out 200ms backwards; }
+  /* The drawn mark beside the wordmark and in page footers draws on once. */
+  .folio-workspace .folio-mark.is-drawn .sk-draw { stroke-dasharray: 1; animation: sk-draw 760ms cubic-bezier(.65, 0, .25, 1) calc(var(--i, 0) * 60ms) backwards; }
+
+  /* Nothing moves while a person is typing: workspace-reveal.tsx finishes the page's entrances
+     when a text field takes focus, finishes rows that mount while it keeps focus, and shows a
+     waiting panel the field sits in without its entrance. */
+}
+
+/* ── Scroll: a panel that was below the fold when the page arrived waits, transparent but in its
+   place, and slides up once as it comes into view; when that entrance ends it is "done", which
+   carries no animation, so it never replays (workspace-reveal.tsx sets data-reveal; one shared
+   IntersectionObserver). Only the transparency of a waiting panel is screen only, so print shows
+   every panel. The animation rules apply in every medium on purpose: if they changed with the
+   medium, switching to print and back would start a panel's entrance again. The entrance and the
+   waiting transparency only apply without a reduced-motion preference, so turning it on with the
+   page open shows every panel finished at once (workspace-reveal.tsx also settles them). Nothing
+   is marked without JavaScript or with reduced motion at load. */
+.folio-workspace .page-content :is([data-reveal="wait"], [data-reveal="done"]) { animation: none !important; }
+@media (prefers-reduced-motion: no-preference) {
+  .folio-workspace .page-content [data-reveal="in"] { animation: ws-reveal 420ms cubic-bezier(.2, .8, .2, 1) backwards !important; }
+}
+@media screen and (prefers-reduced-motion: no-preference) { .folio-workspace .page-content [data-reveal="wait"] { opacity: 0; } }
+
+@keyframes ws-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes ws-reveal { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+@keyframes ws-fade-up { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes ws-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ws-wipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes ws-settle { from { opacity: 0; transform: translateY(8px) scale(.94); } to { opacity: 1; transform: none; } }
+@keyframes ws-deal { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
+@keyframes ws-unfold { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+@keyframes ws-dialog-in { from { opacity: 0; transform: translateY(14px) scale(.97); } to { opacity: 1; transform: none; } }
+@keyframes ws-toast-in { from { opacity: 0; translate: 0 18px; scale: .96; } to { opacity: 1; translate: none; scale: none; } }
+@keyframes ws-dock-in { from { opacity: 0; transform: translateY(18px) scale(.97); } to { opacity: 1; transform: none; } }

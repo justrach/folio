@@ -133,37 +133,9 @@ select {
   position: relative;
   flex-shrink: 0;
 }
-.folio-mark i {
-  position: absolute;
-  border: 1.25px solid currentColor;
-  border-radius: 50%;
-  inset: 0;
-}
-.folio-mark i:nth-child(2) {
-  inset: 4px;
-}
-.folio-mark i:nth-child(3) {
-  inset: 8px;
-}
-.folio-mark i:nth-child(4) {
-  inset: 12px;
-  background: currentColor;
-}
 .folio-mark.small {
   width: 19px;
   height: 19px;
-}
-.folio-mark.small i {
-  border-width: 1px;
-}
-.folio-mark.small i:nth-child(2) {
-  inset: 2px;
-}
-.folio-mark.small i:nth-child(3) {
-  inset: 4px;
-}
-.folio-mark.small i:nth-child(4) {
-  inset: 6px;
 }
 .workspace-switch {
   border: 1px solid var(--folio-edge);
@@ -1695,16 +1667,6 @@ td:last-child {
 }
 .empty-art { display: block; margin-bottom: 18px; }
 .empty-state.compact .empty-art .sk-spot { width: 104px; }
-.empty-icon {
-  color: var(--folio-text-muted);
-  background: var(--folio-canvas);
-  width: 58px;
-  height: 58px;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--folio-edge);
-  border-radius: 50%;
-}
 .empty-state h2 {
   font-family: var(--serif);
   font-size: 27px;

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { ArrowUpRight, Bot } from "@/components/icons";
 import type { DataSourceKind, GoogleBand, WebsiteGapsReport } from "@/lib/website-gaps";
 import "./website-visibility.css";
+import { InkSpinner } from "./workspace-sketches";
 
 const plain = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 const compact = new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 });
@@ -68,7 +69,7 @@ export function WebsiteVisibility({ websiteId, refresh = 0 }: { websiteId: strin
   const error = state.key === key ? state.error : null;
   // The placeholder holds the report's shape, so the page below doesn't jump when the report arrives.
   if (!report) return <section className="panel website-visibility" aria-label="Where this website shows up" aria-busy={!error}>
-    <h2>Where it shows up</h2>{error ? <p role="alert">{error}</p> : <><p role="status">Loading where this website shows up…</p>
+    <h2>Where it shows up</h2>{error ? <p role="alert">{error}</p> : <><p role="status"><InkSpinner />Loading where this website shows up…</p>
       <div className="wv-skeleton" aria-hidden="true"><span /><span /><span /></div></>}
   </section>;
 

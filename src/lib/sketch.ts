@@ -112,6 +112,143 @@ export class Pen {
       strokes.push(this.line([at, y], [at + lean, y + height]));
     return strokes;
   }
+
+  /**
+   * Draws existing geometry (SVG path data) again by hand: every corner lands a little off,
+   * straight runs bow, curves keep their shape but not their exact line, and a closed outline
+   * runs a little past where it began instead of meeting itself. A zero-length stroke stays a
+   * dot. The defaults suit a 24-unit icon grid.
+   */
+  trace(d: string, { hand = 0.5, boil = 0.34, bow = 0.05, maxBow = 1.1, overshoot = 1 }: TraceOptions = {}): string {
+    const nudge = ([px, py]: Pt, amount = hand, tremor = boil): Pt => [px + this.off(amount, tremor), py + this.off(amount, tremor)];
+    let out = "";
+    for (const path of parsePath(d)) {
+      const length = path.segments.reduce((sum, segment, index) => {
+        const from = index ? path.segments[index - 1].to : path.start;
+        return sum + Math.hypot(segment.to[0] - from[0], segment.to[1] - from[1]);
+      }, 0);
+      if (length < 0.05) {
+        const [dx, dy] = nudge(path.start, hand * 0.5, boil * 0.6);
+        out += `M${n(dx)} ${n(dy)}h.01`;
+        continue;
+      }
+      // A small mark is drawn with a steadier hand than a long one.
+      const steady = Math.min(1, 0.45 + length / 30);
+      const first = nudge(path.start, hand * steady, boil * steady);
+      let from = path.start, drawnFrom = first;
+      out += `M${n(first[0])} ${n(first[1])}`;
+      path.segments.forEach((segment, index) => {
+        const last = index === path.segments.length - 1;
+        // Every point is placed afresh, so a closed outline does not quite meet itself.
+        const drawnTo = nudge(segment.to, hand * steady, boil * steady);
+        const run = Math.hypot(segment.to[0] - from[0], segment.to[1] - from[1]);
+        if (!segment.c1 || !segment.c2) {
+          const lean = Math.min(maxBow, run * bow), a = this.off(lean, lean * 0.6), b = this.off(lean, lean * 0.6);
+          const dx = drawnTo[0] - drawnFrom[0], dy = drawnTo[1] - drawnFrom[1], size = Math.hypot(dx, dy) || 1, nx = -dy / size, ny = dx / size;
+          out += `C${n(drawnFrom[0] + dx / 3 + nx * a)} ${n(drawnFrom[1] + dy / 3 + ny * a)} ${n(drawnFrom[0] + dx * 2 / 3 + nx * b)} ${n(drawnFrom[1] + dy * 2 / 3 + ny * b)} ${n(drawnTo[0])} ${n(drawnTo[1])}`;
+        } else {
+          const wiggle = Math.min(maxBow, run * bow) * 0.8;
+          const c1 = nudge([segment.c1[0] + drawnFrom[0] - from[0], segment.c1[1] + drawnFrom[1] - from[1]], wiggle, wiggle * 0.6);
+          const c2 = nudge([segment.c2[0] + drawnTo[0] - segment.to[0], segment.c2[1] + drawnTo[1] - segment.to[1]], wiggle, wiggle * 0.6);
+          out += `C${n(c1[0])} ${n(c1[1])} ${n(c2[0])} ${n(c2[1])} ${n(drawnTo[0])} ${n(drawnTo[1])}`;
+        }
+        if (last && path.closed && overshoot > 0 && this.rough > 0) {
+          // Run on along the first stroke's direction, as a hand closing a shape does.
+          const head = path.segments[0], aim = head.c1 && Math.hypot(head.c1[0] - path.start[0], head.c1[1] - path.start[1]) > 0.01 ? head.c1 : head.to;
+          const dx = aim[0] - path.start[0], dy = aim[1] - path.start[1], size = Math.hypot(dx, dy) || 1, reach = overshoot * steady * (0.6 + Math.abs(this.off(0.4, 0))) * this.rough;
+          out += `L${n(first[0] + dx / size * reach)} ${n(first[1] + dy / size * reach)}`;
+        }
+        from = segment.to; drawnFrom = drawnTo;
+      });
+    }
+    return out;
+  }
 }
 
 export const BOIL_FRAMES = [0, 1, 2] as const;
+
+/* ── Tracing existing geometry ─────────────────────────────────────────────────────────────── */
+
+/** One piece of a traced outline: a straight run (no controls) or a cubic curve. */
+type Segment = { to: Pt; c1?: Pt; c2?: Pt };
+type Subpath = { start: Pt; segments: Segment[]; closed: boolean };
+export type TraceOptions = {
+  /** How far each corner or end lands from where it was meant to, in drawing units. Fixed for the drawing. */
+  hand?: number;
+  /** How far the same points shift from one boil frame to the next. */
+  boil?: number;
+  /** How much a straight run bows, as a share of its length, and the most it may bow. */
+  bow?: number; maxBow?: number;
+  /** How far a closed outline runs past where it started. */
+  overshoot?: number;
+};
+
+const TOKENS = /([MmLlHhVvCcSsQqTtAaZz])|(-?(?:\d*\.\d+|\d+\.?)(?:[eE][-+]?\d+)?)/g;
+
+/** Converts one SVG arc to cubic curves (the SVG spec's endpoint-to-centre conversion). */
+function arcToCubics(from: Pt, rx: number, ry: number, angle: number, large: boolean, sweep: boolean, to: Pt): Segment[] {
+  const [x1, y1] = from, [x2, y2] = to;
+  if (rx === 0 || ry === 0 || (x1 === x2 && y1 === y2)) return [{ to }];
+  const phi = angle * Math.PI / 180, cos = Math.cos(phi), sin = Math.sin(phi);
+  const dx = (x1 - x2) / 2, dy = (y1 - y2) / 2, xp = cos * dx + sin * dy, yp = -sin * dx + cos * dy;
+  rx = Math.abs(rx); ry = Math.abs(ry);
+  const lambda = (xp * xp) / (rx * rx) + (yp * yp) / (ry * ry);
+  if (lambda > 1) { rx *= Math.sqrt(lambda); ry *= Math.sqrt(lambda); }
+  const numerator = rx * rx * ry * ry - rx * rx * yp * yp - ry * ry * xp * xp;
+  const factor = (large === sweep ? -1 : 1) * Math.sqrt(Math.max(0, numerator / (rx * rx * yp * yp + ry * ry * xp * xp)));
+  const cxp = factor * rx * yp / ry, cyp = -factor * ry * xp / rx;
+  const cx = cos * cxp - sin * cyp + (x1 + x2) / 2, cy = sin * cxp + cos * cyp + (y1 + y2) / 2;
+  const turn = (ux: number, uy: number, vx: number, vy: number) => Math.atan2(ux * vy - uy * vx, ux * vx + uy * vy);
+  const theta = turn(1, 0, (xp - cxp) / rx, (yp - cyp) / ry);
+  let delta = turn((xp - cxp) / rx, (yp - cyp) / ry, (-xp - cxp) / rx, (-yp - cyp) / ry);
+  if (!sweep && delta > 0) delta -= Math.PI * 2;
+  if (sweep && delta < 0) delta += Math.PI * 2;
+  const pieces = Math.max(1, Math.ceil(Math.abs(delta) / (Math.PI / 2) - 1e-9)), step = delta / pieces;
+  const k = 4 / 3 * Math.tan(step / 4), segments: Segment[] = [];
+  const point = (t: number): Pt => [cx + rx * Math.cos(t) * cos - ry * Math.sin(t) * sin, cy + rx * Math.cos(t) * sin + ry * Math.sin(t) * cos];
+  const tangent = (t: number): Pt => [-rx * Math.sin(t) * cos - ry * Math.cos(t) * sin, -rx * Math.sin(t) * sin + ry * Math.cos(t) * cos];
+  for (let index = 0; index < pieces; index++) {
+    const a = theta + step * index, b = a + step, pa = point(a), pb = index === pieces - 1 ? to : point(b), ta = tangent(a), tb = tangent(b);
+    segments.push({ c1: [pa[0] + k * ta[0], pa[1] + k * ta[1]], c2: [pb[0] - k * tb[0], pb[1] - k * tb[1]], to: pb });
+  }
+  return segments;
+}
+
+/** Reads SVG path data into absolute subpaths of straight runs and cubic curves. */
+export function parsePath(d: string): Subpath[] {
+  const tokens: (string | number)[] = [...d.matchAll(TOKENS)].map(match => match[1] !== undefined ? match[1] : Number(match[2]));
+  const paths: Subpath[] = [];
+  let at = 0, command = "", current: Subpath | null = null, x = 0, y = 0, lastControl: Pt | null = null, lastQuad: Pt | null = null;
+  const number = () => tokens[at++] as number;
+  const start = (point: Pt) => { current = { start: point, segments: [], closed: false }; paths.push(current); };
+  const add = (segment: Segment) => { if (!current) start([x, y]); current!.segments.push(segment); x = segment.to[0]; y = segment.to[1]; };
+  while (at < tokens.length) {
+    if (typeof tokens[at] === "string") command = tokens[at++] as string;
+    else if (!command) throw new Error(`path data must start with a command: ${d}`);
+    const relative = command === command.toLowerCase(), ox = relative ? x : 0, oy = relative ? y : 0;
+    const upper = command.toUpperCase();
+    let control: Pt | null = null, quad: Pt | null = null;
+    switch (upper) {
+      case "M": x = ox + number(); y = oy + number(); start([x, y]); command = relative ? "l" : "L"; break;
+      case "L": add({ to: [ox + number(), oy + number()] }); break;
+      case "H": add({ to: [ox + number(), y] }); break;
+      case "V": add({ to: [x, oy + number()] }); break;
+      case "C": { const c1: Pt = [ox + number(), oy + number()], c2: Pt = [ox + number(), oy + number()]; add({ c1, c2, to: [ox + number(), oy + number()] }); control = c2; break; }
+      case "S": { const c1: Pt = lastControl ? [2 * x - lastControl[0], 2 * y - lastControl[1]] : [x, y], c2: Pt = [ox + number(), oy + number()]; add({ c1, c2, to: [ox + number(), oy + number()] }); control = c2; break; }
+      case "Q": case "T": {
+        const q: Pt = upper === "Q" ? [ox + number(), oy + number()] : lastQuad ? [2 * x - lastQuad[0], 2 * y - lastQuad[1]] : [x, y];
+        const to: Pt = [ox + number(), oy + number()];
+        add({ c1: [x + 2 / 3 * (q[0] - x), y + 2 / 3 * (q[1] - y)], c2: [to[0] + 2 / 3 * (q[0] - to[0]), to[1] + 2 / 3 * (q[1] - to[1])], to }); quad = q; break;
+      }
+      case "A": {
+        const rx = number(), ry = number(), angle = number(), large = number() !== 0, sweep = number() !== 0, to: Pt = [ox + number(), oy + number()];
+        for (const segment of arcToCubics([x, y], rx, ry, angle, large, sweep, to)) add(segment);
+        break;
+      }
+      case "Z": if (current) { const path: Subpath = current; if (x !== path.start[0] || y !== path.start[1]) add({ to: path.start }); path.closed = true; x = path.start[0]; y = path.start[1]; current = null; } break;
+      default: throw new Error(`unsupported path command ${command}`);
+    }
+    lastControl = control; lastQuad = quad;
+  }
+  return paths;
+}

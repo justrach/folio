@@ -1,6 +1,6 @@
-import Image from "next/image";
+import { HorizonSketch } from "./workspace-sketches";
 
-/** Decorative only: never represents measured progress or evidence. */
+/** Decorative only: never represents measured progress or evidence. Drawn by the pen (workspace-sketches.tsx), one drawing for both themes. */
 export function WorkspaceEmptyArt() {
-  return <><Image className="workspace-empty-art theme-art-light" src="/images/folio-workspace-horizon.webp" alt="" width={900} height={300} sizes="(max-width: 760px) 240px, 320px" /><Image className="workspace-empty-art theme-art-dark" src="/images/folio-workspace-horizon-dark.webp" alt="" width={900} height={300} sizes="(max-width: 760px) 240px, 320px" /></>;
+  return <HorizonSketch />;
 }

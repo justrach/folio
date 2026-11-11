@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { InkRunState, useInkLive } from "./onboarding-sketches";
 
 type RunStatus = "queued" | "running" | "requires_action" | "completed" | "failed" | "cancelled";
 type Run = { id: string; caseId: string; status: RunStatus; createdAt: string };
@@ -8,7 +9,7 @@ export type BaselineCase = { id: string; query: string };
 
 const ACTIVE: RunStatus[] = ["queued", "running"];
 const label: Record<RunStatus | "waiting", string> = { queued: "Starting", running: "Searching", requires_action: "Needs review", completed: "Saved", failed: "Failed", cancelled: "Cancelled", waiting: "Waiting" };
-const dot: Record<RunStatus | "waiting", string> = { queued: "live", running: "live", requires_action: "bad", completed: "done", failed: "bad", cancelled: "bad", waiting: "" };
+const dot: Record<RunStatus | "waiting", "live" | "bad" | "done" | "waiting"> = { queued: "live", running: "live", requires_action: "bad", completed: "done", failed: "bad", cancelled: "bad", waiting: "waiting" };
 
 async function json<T>(url: string, init?: RequestInit): Promise<T> {
   const response = await fetch(url, { ...init, cache: "no-store", headers: init?.body ? { "Content-Type": "application/json" } : undefined });
@@ -64,9 +65,10 @@ export function useBaselineQueue(suiteId: string | null, cases: BaselineCase[], 
 }
 
 export function BaselineProgress({ rows, error }: { rows: ReturnType<typeof useBaselineQueue>["rows"]; error: string }) {
+  const live = useInkLive<HTMLOListElement>();
   return <>
-    <ol aria-label="Baseline questions" role="status">
-      {rows.map(row => <li className="ob-run" key={row.id}><span className={`ob-dot ${dot[row.status]}`} aria-hidden="true" /><span className="ob-grow">{row.query}</span><span className="ob-state">{label[row.status]}</span></li>)}
+    <ol aria-label="Baseline questions" role="status" ref={live}>
+      {rows.map(row => <li className={`ob-run is-${dot[row.status]}`} key={row.id}><InkRunState state={dot[row.status]} /><span className="ob-grow">{row.query}</span><span className="ob-state">{label[row.status]}</span></li>)}
     </ol>
     {error && <p className="ob-note" role="alert">{error}</p>}
   </>;

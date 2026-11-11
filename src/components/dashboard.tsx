@@ -9,6 +9,7 @@ import { DashboardAppearance, DashboardNavigation } from "./dashboard-appearance
 import { CommandSearch } from "./command-search";
 import "./dashboard-refresh.css";
 import "./dashboard-soft.css";
+import "./workspace-motion.css";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
@@ -78,7 +79,8 @@ import {ProductAnalyticsPanel} from "./product-analytics-panel";
 import { ManusDashboardDemo } from "./manus-dashboard-demo";
 import { IndexedDomains } from "./indexed-domains";
 import { OrgPreview } from "./org-preview";
-import { AllClearSpot, AuditSpot, HistorySpot, StartSpot } from "./workspace-sketches";
+import { AllClearSpot, AuditSpot, HistorySpot, InkSymbol, StartSpot, type InkSymbolKind } from "./workspace-sketches";
+import { InkMark, InkUnderline } from "./landing-sketches";
 import { Organizations } from "./organizations";
 import { StartHere } from "./start-here";
 import { WorkspaceRecords } from "./workspace-records";
@@ -105,6 +107,7 @@ import { AccountMenu } from "./account-menu";
 import { GettingStarted } from "./getting-started";
 import { GithubConnection } from "./github-connection";
 import { WorkspaceLoader } from "./workspace-loader";
+import { WorkspaceReveal } from "./workspace-reveal";
 
 const TeamUsageDemo=dynamic(()=>import("./team-usage-demo").then(module=>module.TeamUsageDemo),{ssr:false});
 const RevenueGlobeDemo = dynamic(() => import("./revenue-globe-demo").then(module => module.RevenueGlobeDemo), {ssr:false,loading:()=> <p role="status">Loading sample globe…</p>});
@@ -220,13 +223,11 @@ const titles: Record<
   },
 };
 
+/** Folio's mark, drawn by the pen (InkMark): two loops around a dot. */
 function FolioMark({ small = false }: { small?: boolean }) {
   return (
-    <span className={`folio-mark ${small ? "small" : ""}`} aria-hidden="true">
-      <i />
-      <i />
-      <i />
-      <i />
+    <span className={`folio-mark is-drawn ${small ? "small" : ""}`} aria-hidden="true">
+      <InkMark size={small ? 19 : 34} />
     </span>
   );
 }
@@ -317,9 +318,9 @@ function PublicOverviewShell({ section = "overview" }: { section?: "overview" | 
       <Link href="/" className="wordmark" aria-label="Folio home"><FolioMark /><span>folio<span className="wordmark-period">.</span></span></Link>
       <span className="nav-caption">PUBLIC</span>
       <nav aria-label="Public navigation">
-        <Link href="/overview" title="Public dashboard" className={`nav-link ${!index ? "active" : ""}`} aria-current={!index ? "page" : undefined} onClick={() => setMobileOpen(false)}><LayoutDashboard size={17}/><span>Public dashboard</span></Link>
-        <Link href="/leaderboard" title="The Folio Index" className={`nav-link ${index ? "active" : ""}`} aria-current={index ? "page" : undefined} onClick={() => setMobileOpen(false)}><Trophy size={17}/><span>The Folio Index</span></Link>
-        <Link href="/docs/api" title="API reference" className="nav-link" onClick={() => setMobileOpen(false)}><Code2 size={17}/><span>API reference</span></Link>
+        <Link href="/overview" title="Public dashboard" className={`nav-link ${!index ? "active" : ""}`} aria-current={!index ? "page" : undefined} onClick={() => setMobileOpen(false)}><LayoutDashboard size={17} boil/><span>Public dashboard</span></Link>
+        <Link href="/leaderboard" title="The Folio Index" className={`nav-link ${index ? "active" : ""}`} aria-current={index ? "page" : undefined} onClick={() => setMobileOpen(false)}><Trophy size={17} boil/><span>The Folio Index</span></Link>
+        <Link href="/docs/api" title="API reference" className="nav-link" onClick={() => setMobileOpen(false)}><Code2 size={17} boil/><span>API reference</span></Link>
       </nav>
       <div className="public-sidebar-guide"><Compass size={20} /><strong>Your website, in perspective.</strong><p>Prepare questions and keep your own evidence in a private workspace.</p><Link href="/start">Explore your website <ArrowRight size={14} /></Link></div>
     </aside>
@@ -501,32 +502,32 @@ function WorkspaceDashboard({ section }: { section: string }) {
               className={`nav-link ${section === item.section && !(item.section === "overview" && demoRequested) ? "active" : ""}`}
               aria-current={section === item.section && !(item.section === "overview" && demoRequested) ? "page" : undefined}
             >
-              <item.icon size={17} />
+              <item.icon size={17} boil />
               <span>{item.label}</span>
             </Link>
           ))}
-        <Link href="/overview?view=demo" className={`nav-link ${teamDemo?"active":""}`} aria-current={teamDemo?"page":undefined} onClick={()=>setMobileOpen(false)} title="Content demo"><PencilLine size={17}/><span>Content demo</span></Link>
+        <Link href="/overview?view=demo" className={`nav-link ${teamDemo?"active":""}`} aria-current={teamDemo?"page":undefined} onClick={()=>setMobileOpen(false)} title="Content demo"><PencilLine size={17} boil/><span>Content demo</span></Link>
         </nav>
 
-        <details className="sidebar-more" open={!["overview","websites","evaluations","settings"].includes(section)}><summary className="nav-link" title="More tools"><MoreHorizontal size={17}/><span>More tools</span></summary><nav aria-label="More tools">{navigation.filter(item=>!["overview","websites","evaluations"].includes(item.section)).map(item=><Link key={item.section} href={item.href} title={item.label} className={`nav-link ${section===item.section?"active":""}`} aria-current={section===item.section?"page":undefined} onClick={()=>setMobileOpen(false)}><item.icon size={17}/><span>{item.label}</span></Link>)}<Link href="/leaderboard" title="The Folio Index" className="nav-link" onClick={()=>setMobileOpen(false)}><Trophy size={17}/><span>The Folio Index</span></Link><Link href="/agents" title="Your agents" className={`nav-link ${section==="agents"?"active":""}`} aria-current={section==="agents"?"page":undefined} onClick={()=>setMobileOpen(false)}><Bot size={17}/><span>Your agents</span></Link><Link href="/orgs" title="Organizations" className={`nav-link ${section==="orgs"?"active":""}`} aria-current={section==="orgs"?"page":undefined} onClick={()=>setMobileOpen(false)}><Building2 size={17}/><span>Organizations</span></Link><Link href="/docs/api" title="API reference" className="nav-link" onClick={()=>setMobileOpen(false)}><Code2 size={17}/><span>API reference</span></Link><Link href="/pricing" title="Plans & usage" className="nav-link" onClick={()=>setMobileOpen(false)}><BookOpen size={17}/><span>Plans & usage</span></Link></nav></details>
+        <details className="sidebar-more" open={!["overview","websites","evaluations","settings"].includes(section)}><summary className="nav-link" title="More tools"><MoreHorizontal size={17} boil/><span>More tools</span></summary><nav aria-label="More tools">{navigation.filter(item=>!["overview","websites","evaluations"].includes(item.section)).map(item=><Link key={item.section} href={item.href} title={item.label} className={`nav-link ${section===item.section?"active":""}`} aria-current={section===item.section?"page":undefined} onClick={()=>setMobileOpen(false)}><item.icon size={17} boil/><span>{item.label}</span></Link>)}<Link href="/leaderboard" title="The Folio Index" className="nav-link" onClick={()=>setMobileOpen(false)}><Trophy size={17} boil/><span>The Folio Index</span></Link><Link href="/agents" title="Your agents" className={`nav-link ${section==="agents"?"active":""}`} aria-current={section==="agents"?"page":undefined} onClick={()=>setMobileOpen(false)}><Bot size={17} boil/><span>Your agents</span></Link><Link href="/orgs" title="Organizations" className={`nav-link ${section==="orgs"?"active":""}`} aria-current={section==="orgs"?"page":undefined} onClick={()=>setMobileOpen(false)}><Building2 size={17} boil/><span>Organizations</span></Link><Link href="/docs/api" title="API reference" className="nav-link" onClick={()=>setMobileOpen(false)}><Code2 size={17} boil/><span>API reference</span></Link><Link href="/pricing" title="Plans & usage" className="nav-link" onClick={()=>setMobileOpen(false)}><BookOpen size={17} boil/><span>Plans & usage</span></Link></nav></details>
         <div className="sidebar-bottom">
           <GettingStarted userId={session?.user.id ?? null} page={section} onNavigate={() => setMobileOpen(false)} />
-          {isAdminOwner(session?.user.email) && <Link className="nav-link" href="/folio-internal/analytics" title="Product analytics"><BarChart3 size={17}/><span>Product analytics</span></Link>}
-          {isAdminOwner(session?.user.email) && <Link href="/admin" title="Admin" className="nav-link" onClick={()=>setMobileOpen(false)}><ShieldCheck size={17}/><span>Admin</span></Link>}
+          {isAdminOwner(session?.user.email) && <Link className="nav-link" href="/folio-internal/analytics" title="Product analytics"><BarChart3 size={17} boil/><span>Product analytics</span></Link>}
+          {isAdminOwner(session?.user.email) && <Link href="/admin" title="Admin" className="nav-link" onClick={()=>setMobileOpen(false)}><ShieldCheck size={17} boil/><span>Admin</span></Link>}
           <Link
             href="/settings"
             className={`nav-link ${section === "settings" ? "active" : ""}`}
             aria-current={section === "settings" ? "page" : undefined}
             onClick={() => setMobileOpen(false)}
           >
-            <Settings2 size={17} />
+            <Settings2 size={17} boil />
             <span>Settings & connections</span>
           </Link>
           <button
             className="nav-link help-link"
             onClick={() => setModal("methodology")}
           >
-            <CircleHelp size={17} />
+            <CircleHelp size={17} boil />
             <span>A little guidance</span>
           </button>
           <AccountMenu userId={session?.user.id ?? null} onNavigate={() => setMobileOpen(false)}
@@ -586,10 +587,12 @@ function WorkspaceDashboard({ section }: { section: string }) {
             </Link>
           </div>
         </header>
+        <WorkspaceReveal key={`reveal:${section}`} />
         <main className={`page-content${["evaluations", "benchmarks", "overview"].includes(section) ? " evaluation-page" : ""}${section === "overview" ? " overview-page" : ""}${section === "leaderboard" ? " index-page" : ""}`}>
-          {!teamDemo && section!=="analytics" && <div className="page-heading">
+          {/* Keyed by page, so the heading arrives (and its underline is drawn) again on each page. */}
+          {!teamDemo && section!=="analytics" && <div className="page-heading" key={section}>
             <div>
-              <h1>{title.title}</h1>
+              <h1><span className="ink-underlined">{title.title}<InkUnderline /></span></h1>
               <p>{title.description}</p>
             </div>
             <div className="heading-actions">
@@ -828,7 +831,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
                             <Change value={b.change} />
                           </Link>
                         ))}
-                        <div className="rank-ellipsis">···</div>
+                        <div className="rank-ellipsis" aria-hidden="true"><InkSymbol kind="dots" /></div>
                         <Link
                           href="/leaderboard"
                           className="mini-rank-row your-rank"
@@ -891,31 +894,31 @@ function WorkspaceDashboard({ section }: { section: string }) {
                       {[
                         {
                           name: "ChatGPT",
-                          symbol: "✳",
+                          symbol: "asterisk" as InkSymbolKind,
                           value: 44,
                           color: "var(--folio-accent)",
                         },
                         {
                           name: "Perplexity",
-                          symbol: "▥",
+                          symbol: "columns" as InkSymbolKind,
                           value: 29,
                           color: "var(--folio-charcoal)",
                         },
                         {
                           name: "Claude",
-                          symbol: "✳",
+                          symbol: "asterisk" as InkSymbolKind,
                           value: 18,
                           color: "var(--folio-text-muted)",
                         },
                         {
                           name: "Gemini",
-                          symbol: "✦",
+                          symbol: "spark" as InkSymbolKind,
                           value: 9,
                           color: "var(--folio-edge-strong)",
                         },
                       ].map((e) => (
                         <div className="engine-row" key={e.name}>
-                          <span className="engine-symbol">{e.symbol}</span>
+                          <span className="engine-symbol"><InkSymbol kind={e.symbol} /></span>
                           <span>{e.name}</span>
                           <div className="engine-track">
                             <i
@@ -2090,16 +2093,14 @@ function Methodology() {
   );
 }
 
-/** `art` is a spot sketch shown in place of the icon tile; either way the title and text carry the state. */
+/** `art` is a spot sketch (decoration); the title and text carry the state. */
 function EmptyState({
-  icon,
   art,
   title,
   text,
   action,
   compact = false,
 }: {
-  icon?: React.ReactNode;
   art?: React.ReactNode;
   title: string;
   text: string;
@@ -2108,7 +2109,7 @@ function EmptyState({
 }) {
   return (
     <div className={`empty-state ${compact ? "compact" : ""}`}>
-      {art ? <span className="empty-art">{art}</span> : <span className="empty-icon">{icon}</span>}
+      {art && <span className="empty-art">{art}</span>}
       <h2>{title}</h2>
       <p>{text}</p>
       {action}

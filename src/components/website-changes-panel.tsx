@@ -6,6 +6,7 @@ import { ArrowUpRight, Check, Loader2, RefreshCw } from "@/components/icons";
 import { useSession } from "@/lib/auth-client";
 import { CHANGE_MOVEMENT_LABELS, CHANGE_STATE_LABELS, changeAnswerLabel, type ChangeQuestion, type WebsiteChange } from "@/lib/website-change-outcome";
 import "./website-changes-panel.css";
+import { InkSpinner } from "./workspace-sketches";
 
 type Snapshot = { ownerId: string | null; changes: WebsiteChange[]; more: boolean; loading: boolean; error: boolean };
 const day = (value?: string | null) => value && Number.isFinite(Date.parse(value))
@@ -92,7 +93,7 @@ export function WebsiteChangesPanel() {
     <header><div><h2>Changes from your agent</h2><p>What your coding agent changed on your website, and what AI answers said before and after.</p></div>
       <button type="button" className="button secondary" onClick={() => setRefresh(value => value + 1)} disabled={loading} aria-label="Refresh recorded changes"><RefreshCw size={13} /> Refresh</button>
     </header>
-    {loading && <p role="status" className="website-changes-message">Loading recorded changes…</p>}
+    {loading && <p role="status" className="website-changes-message"><InkSpinner />Loading recorded changes…</p>}
     {error && <p role="alert" className="website-changes-message">Recorded changes could not be loaded. Try again.</p>}
     {notice && <p role={notice.kind} className="website-changes-message">{notice.text}</p>}
     {!loading && !error && !changes.length && <div className="website-changes-empty">

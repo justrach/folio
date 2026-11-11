@@ -1,0 +1,34 @@
+/* The workspace's drawings (workspace-sketches.tsx). Ink and palette come from sketch-ink.css.
+   Only frame 0 of a boiling drawing is shown until its boil starts; with reduced motion nothing moves. */
+.sk-horizon { width: min(320px, 100%); height: auto; aspect-ratio: 3 / 1; border-radius: 10px; overflow: hidden; }
+.workspace-empty-art { margin: 0 0 24px; }
+.sk-horizon .sk-ink { stroke-width: 1.8; }
+.ink-loader { width: 96px; height: 72px; }
+.ink-loader .sk-ink { stroke-width: 2.2; }
+.ink-loader .sk-ink.is-bold { stroke-width: 3.2; }
+.ink-spinner { display: inline-block; flex: none; vertical-align: -2px; margin-right: 7px; }
+.ink-spinner .sk-ink { stroke-width: 1.8; }
+.ink-symbol .sk-ink { stroke-width: 1.5; }
+.ink-dots .sk-ink { stroke-width: 2.6; }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Spots and the horizon: drawn on once, then a slow boil for about seven seconds, then still
+     (a running boil costs a style pass every frame). */
+  :is(.sk-spot, .sk-horizon) .sk-frame-0 .sk-draw { stroke-dasharray: 1; animation: sk-draw 760ms cubic-bezier(.65, 0, .25, 1) calc(120ms + var(--i, 0) * 55ms) both; }
+  :is(.sk-spot, .sk-horizon) .sk-frame { animation: ink-boil 1200ms steps(1, end) 2.2s 6; }
+  /* Each later frame waits a third of a cycle longer, so exactly one frame is visible at a time. */
+  :is(.sk-spot, .sk-horizon) .sk-frame-1 { animation-delay: 2.6s; }
+  :is(.sk-spot, .sk-horizon) .sk-frame-2 { animation-delay: 3s; }
+  .sk-horizon .sk-frame-0 .sk-fill { animation: ink-fade 900ms ease-out 200ms both; }
+
+  /* The loader writes a page, ticks it, and starts again. */
+  .ink-loader .sk-ink { stroke-dasharray: 1; animation: ink-rewrite 2600ms cubic-bezier(.6, 0, .3, 1) calc(var(--i, 0) * 170ms) infinite both; }
+
+  /* The inline mark: a loop drawn, then undrawn from its start, turning slowly. */
+  .ink-spinner { animation: ink-turn 2.4s linear infinite; }
+  .ink-spinner .sk-ink { stroke-dasharray: 1 1; animation: ink-chase 1.2s cubic-bezier(.5, 0, .5, 1) infinite; }
+}
+@keyframes ink-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ink-rewrite { 0% { stroke-dashoffset: 1; opacity: 1; } 34%, 78% { stroke-dashoffset: 0; opacity: 1; } 90%, 100% { stroke-dashoffset: 0; opacity: 0; } }
+@keyframes ink-chase { from { stroke-dashoffset: 1; } to { stroke-dashoffset: -1; } }
+@keyframes ink-turn { to { transform: rotate(360deg); } }

@@ -210,10 +210,6 @@
   .app-shell .next-step { padding: 26px; }
   .app-shell .next-step h2 { font-size: 27px; }
 }
-@media (prefers-reduced-motion: no-preference) {
-  .app-shell .page-heading { animation: workspace-arrive .4s ease-out both; }
-  @keyframes workspace-arrive { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-}
 
 /* The workspace is a task list first: keep wayfinding and actions legible. */
 .app-shell .sidebar { border-right: 1px solid var(--folio-edge); }

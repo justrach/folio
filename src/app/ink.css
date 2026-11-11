@@ -1,0 +1,29 @@
+/* Hand-drawn icons (src/components/icons.tsx). Every icon is a tracing made by the pen when the
+   module loads; there are no SVG filters. An icon rendered with `boil` holds three tracings of the
+   same glyph in frame groups; one is shown at a time by animating `visibility` (stepped), so the svg
+   never changes size or position. Only the rail asks for this: the current page's icon boils gently
+   for about four seconds after it becomes current, and a keyboard-focused rail link for about two,
+   then they rest (a running boil costs a style pass on every frame, measured). A rail link boils for
+   as long as a pointer hovers it, only on devices that can hover: on touch, :hover sticks after a
+   tap and would never end. Nothing moves with reduced motion. */
+.folio-icon-frame.is-1, .folio-icon-frame.is-2 { visibility: hidden; }
+/* Folio's mark, drawn by the pen (InkMark), fills whatever box the old ring mark had. */
+.folio-mark.is-drawn { display: inline-grid; place-items: center; }
+.folio-mark.is-drawn > svg { display: block; width: 100%; height: 100%; }
+@keyframes folio-icon-boil { 0% { visibility: visible; } 33.34%, 100% { visibility: hidden; } }
+
+@media (prefers-reduced-motion: no-preference) {
+  .nav-link { --icon-boil: 1050ms; }
+  .nav-link:focus-visible { --icon-boil: 450ms; }
+  .nav-link:is(.active, [aria-current="page"]) > .folio-icon.is-boil .folio-icon-frame { animation: folio-icon-boil var(--icon-boil) steps(1, end) 4; }
+  .nav-link:focus-visible > .folio-icon.is-boil .folio-icon-frame { animation: folio-icon-boil var(--icon-boil) steps(1, end) 4; }
+  /* Later frames wait a third of a cycle longer each, so exactly one is visible at a time. */
+  .nav-link:is(.active, [aria-current="page"], :focus-visible) > .folio-icon.is-boil .folio-icon-frame.is-1 { animation-delay: calc(var(--icon-boil) / 3); }
+  .nav-link:is(.active, [aria-current="page"], :focus-visible) > .folio-icon.is-boil .folio-icon-frame.is-2 { animation-delay: calc(var(--icon-boil) * 2 / 3); }
+}
+@media (prefers-reduced-motion: no-preference) and (hover: hover) {
+  .nav-link:hover { --icon-boil: 450ms; }
+  .nav-link:hover > .folio-icon.is-boil .folio-icon-frame { animation: folio-icon-boil var(--icon-boil) steps(1, end) infinite; }
+  .nav-link:hover > .folio-icon.is-boil .folio-icon-frame.is-1 { animation-delay: calc(var(--icon-boil) / 3); }
+  .nav-link:hover > .folio-icon.is-boil .folio-icon-frame.is-2 { animation-delay: calc(var(--icon-boil) * 2 / 3); }
+}

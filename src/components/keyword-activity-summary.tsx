@@ -6,6 +6,7 @@ import { ArrowUpRight, RefreshCw } from "@/components/icons";
 import { useSession } from "@/lib/auth-client";
 import { isKeywordBenchmarkId, KEYWORD_BENCHMARK_QUERY_MAX_LENGTH, type KeywordBenchmarkStatus } from "@/lib/keyword-benchmark-types";
 import "./keyword-activity-summary.css";
+import { InkSpinner } from "./workspace-sketches";
 
 type Activity = { id: string; suiteId: string; query: string; createdAt: string; updatedAt: string; status: KeywordBenchmarkStatus; kind: "baseline" | "fresh" };
 type Snapshot = { ownerId: string | null; runs: Activity[]; loading: boolean; error: boolean };
@@ -69,7 +70,7 @@ export function KeywordActivitySummary() {
     <header><div><h2>Keyword evaluations</h2><p>Recent keyword research and saved answers.</p></div>
       <button type="button" className="button secondary" onClick={() => setRefresh(value => value + 1)} disabled={loading} aria-label="Refresh saved keyword activity"><RefreshCw size={13} /> Refresh</button>
     </header>
-    {loading && <p role="status" className="keyword-activity-message">Loading saved keyword activity…</p>}
+    {loading && <p role="status" className="keyword-activity-message"><InkSpinner />Loading saved keyword activity…</p>}
     {error && <p role="alert" className="keyword-activity-message">Saved keyword activity could not be refreshed. Open your evaluations or try again.</p>}
     {runs.length > 0 ? <ol aria-label="Recent keyword evaluations">{runs.map(run => <li key={run.id}>
       <Link className="keyword-activity-query" href={`/benchmarks?suite=${encodeURIComponent(run.suiteId)}&run=${encodeURIComponent(run.id)}`}>

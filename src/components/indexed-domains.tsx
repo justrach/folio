@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { WorkspaceState } from "./workspace-state";
 import "./indexed-domains.css";
+import { InkSpinner } from "./workspace-sketches";
 
 type Domain = { domain: string; hosts: number; pages: number; lastFetched: string | null };
 
@@ -30,7 +31,7 @@ export function IndexedDomains() {
   if (failed) return <WorkspaceState title="The index could not be loaded" actions={<button type="button" className="button secondary" onClick={() => { setFailed(false); setAttempt(value => value + 1); }}>Try again</button>}>
     <p>Nothing was changed. Try again to read the saved index.</p>
   </WorkspaceState>;
-  if (domains === null) return <p className="indexed-domains-state" role="status">Loading indexed domains…</p>;
+  if (domains === null) return <p className="indexed-domains-state" role="status"><InkSpinner />Loading indexed domains…</p>;
   if (domains.length === 0) return <WorkspaceState title="The index has no pages yet.">
     <p>Domains appear here once the crawler has saved pages for them.</p>
   </WorkspaceState>;

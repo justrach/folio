@@ -17,7 +17,7 @@ import {
   ShieldCheck,
 } from "@/components/icons";
 import { useSession } from "@/lib/auth-client";
-import { FoundSpot } from "./workspace-sketches";
+import { FoundSpot, InkSpinner } from "./workspace-sketches";
 import type {
   BacklinksOverview,
   OrganicOverview,
@@ -630,7 +630,7 @@ export function SeoDataPanel() {
             </button>
           </div>
           {savedError && <p role="alert" className="seo-data-alert">{savedError}</p>}
-          {!history && !savedError && <p role="status">Loading saved reports…</p>}
+          {!history && !savedError && <p role="status"><InkSpinner />Loading saved reports…</p>}
           {history?.length === 0 && <p className="seo-data-history-empty">Your next update will be saved here. Incomplete results remain visible.</p>}
           {history && history.length > 0 && (
             <ul className="seo-data-history-list">

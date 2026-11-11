@@ -14,6 +14,7 @@ import { OverviewSetupGuide } from "./overview-setup-guide";
 import { CompanyFavicon } from "./company-favicon";
 import { WebsiteWorkboard } from "./website-workboard";
 import "./owned-websites.css";
+import { InkSpinner } from "./workspace-sketches";
 
 type Site = { id: string; name: string; url: string; isPublic: boolean; seoScore: number | null };
 
@@ -31,7 +32,7 @@ function propertyUrl(property: string) {
 
 export function OwnedWebsites({ onAudit }: { onAudit?: (url: string) => void }) {
   const { data: session, isPending } = authClient.useSession();
-  if (isPending) return <p role="status">Loading your websites…</p>;
+  if (isPending) return <p role="status"><InkSpinner />Loading your websites…</p>;
   if (!session) return null;
   return <OwnerWebsites key={session.user.id} onAudit={onAudit} />;
 }
@@ -96,7 +97,7 @@ function OwnerWebsites({ onAudit }: { onAudit?: (url: string) => void }) {
     <section className="panel owned-website-list" aria-label="Your websites">
       <div className="panel-heading"><h2>Your websites</h2><Globe2 size={20} /></div>
       <div className="owned-website-body">
-        {loading && <p role="status">Loading saved websites…</p>}
+        {loading && <p role="status"><InkSpinner />Loading saved websites…</p>}
         {error && <p role="alert">{error} <button className="text-link" onClick={() => setRefresh(n => n + 1)}>Retry websites</button></p>}
         {!!sites.length && <label className="owned-website-selector">Selected website<UiSelect aria-label="Selected website" value={selected?.id ?? ""} onChange={event => select(event.target.value)}>
           {!selected && <option value="">Select one of your websites</option>}

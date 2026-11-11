@@ -9,7 +9,7 @@ import type { InvitePreview, JoinedByEmail, OrganizationDetail, OrganizationSumm
 import { UiSelect } from "./ui/select";
 import { WebsiteVisibility } from "./website-visibility";
 import { CompanyFavicon } from "./company-favicon";
-import { TeamSpot } from "./workspace-sketches";
+import { InkSpinner, TeamSpot } from "./workspace-sketches";
 import { AgentOnboarding, CopyButton } from "./agent-onboarding";
 import { inviteMailto, inviteMessage } from "@/lib/organization-invite-message";
 import "./organizations.css";
@@ -40,7 +40,7 @@ export function Organizations() {
     if (fromHash) { sessionStorage.setItem(PENDING_INVITE, fromHash); history.replaceState(null, "", window.location.pathname + window.location.search); }
     setPending(fromHash ?? inviteToken(sessionStorage.getItem(PENDING_INVITE) ?? ""));
   }, []);
-  if (isPending) return <p role="status">Loading organizations…</p>;
+  if (isPending) return <p role="status"><InkSpinner />Loading organizations…</p>;
   if (!session) return <section className="panel org-signed-out" aria-label="Organizations">
     <TeamSpot />
     <h2>{pending ? "You’ve been invited to an organization" : "Work on websites together"}</h2>
@@ -79,7 +79,7 @@ function SignedIn({ emailVerified, pending, clearPending, onInvite }: { emailVer
     } catch (failure) { setError(failure instanceof Error ? failure.message : "Your organizations couldn’t be loaded."); }
   }, [greet]);
   useEffect(() => { void load(); }, [load]);
-  if (!organizations) return error ? <p role="alert">{error} <button className="text-link" onClick={() => void load()}>Try again</button></p> : <p role="status">Loading organizations…</p>;
+  if (!organizations) return error ? <p role="alert">{error} <button className="text-link" onClick={() => void load()}>Try again</button></p> : <p role="status"><InkSpinner />Loading organizations…</p>;
   return <div className="org-workspace">
     {pending && <JoinCard token={pending} onDone={async (organizationId, joinedVia) => { clearPending(); if (organizationId && joinedVia) greet([{ id: organizationId, text: `You joined ${joinedVia.name}${joinedVia.invitedBy ? ` with ${joinedVia.invitedBy}’s invite` : ""}.` }]); await load(organizationId ?? undefined); }} />}
     {organizations.length === 0 ? <StartCard emailVerified={emailVerified} onCreated={id => load(id)} onInvite={onInvite} />
@@ -189,7 +189,7 @@ function OrganizationView({ id, onLeft, onChanged, welcome, onDismissWelcome }: 
       return true;
     } catch (failure) { setError(failure instanceof Error ? failure.message : "That didn’t work."); return false; } finally { setBusy(false); }
   }
-  if (!detail) return error ? <p role="alert">{error}</p> : <p role="status">Loading the organization…</p>;
+  if (!detail) return error ? <p role="alert">{error}</p> : <p role="status"><InkSpinner />Loading the organization…</p>;
   const owner = detail.yourRole === "owner", waiting = detail.pending ?? [], firstSite = detail.websites[0] ?? null;
   const from = session?.user.name?.split(/\s+/)[0] ?? null;
   const agents = detail.members.reduce((total, member) => total + member.agents.length, 0);

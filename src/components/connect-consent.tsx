@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 import { ArrowLeftRight, Check, Coins, Eye, Loader2, PencilLine } from "@/components/icons";
 import { AGENT_PERMISSIONS } from "@/lib/agent-onboarding";
 import type { AgentApiScope } from "@/lib/agent-observation-types";
+import { InkMark } from "./landing-sketches";
 import "./connect-consent.css";
 
 /**
@@ -18,7 +19,7 @@ type Access = "read" | "changes";
 type Paid = Extract<AgentApiScope, "evaluate" | "seo">;
 
 export function FolioTile() {
-  return <span className="cc-tile is-folio" aria-hidden="true"><span className="folio-mark"><i /><i /><i /><i /></span></span>;
+  return <span className="cc-tile is-folio" aria-hidden="true"><span className="folio-mark is-drawn"><InkMark size={26} /></span></span>;
 }
 const initials = (name: string) => name.trim().split(/\s+/).slice(0, 2).map(part => part[0]?.toUpperCase() ?? "").join("") || "?";
 const permission = (scope: AgentApiScope) => AGENT_PERMISSIONS.find(group => group.scope === scope)!;

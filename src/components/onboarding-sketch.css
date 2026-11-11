@@ -1,0 +1,133 @@
+/* The onboarding's drawings: scenes, the trail, glyphs, the meter and drawn checkboxes.
+   Ink colours come from sketch-ink.css and the --folio-sketch-* tokens; layout is in onboarding.css. */
+.ob, .ob-scene {
+  --sk-ink: var(--folio-ink);
+  --sk-soft: color-mix(in srgb, var(--folio-ink) 46%, transparent);
+  --sk-rust: var(--folio-sketch-rust);
+  --sk-sky: var(--folio-sketch-sky);
+  --sk-sun: var(--folio-sketch-sun);
+  --sk-deep: var(--folio-sketch-deep);
+  --sk-lit: var(--folio-sketch-lit);
+  --sk-line: var(--folio-sketch-line);
+  --ob-draw-ease: cubic-bezier(.65, 0, .25, 1);
+}
+/* Glyphs take the colour of the text beside them. */
+.ob .sk-glyph { flex: none; overflow: visible; }
+.ob .sk-glyph .sk-ink { stroke: currentColor; stroke-width: 1.7; }
+.ob .sk-mark { flex: none; overflow: visible; }
+.ob .sk-mark .sk-ink { stroke: currentColor; stroke-width: 2.1; }
+
+/* Scenes */
+.ob-scene .ob-art { width: 100%; height: auto; overflow: visible; }
+
+/* Trail waypoints */
+.ob-step-dot { position: relative; display: inline-grid; place-items: center; width: 28px; height: 28px; flex: none; }
+.ob-waypoint { position: absolute; inset: 0; width: 28px; height: 28px; overflow: visible; }
+.ob-step-n { position: relative; font-size: 11.5px; font-variant-numeric: tabular-nums; line-height: 1; }
+.ob-step-dot.is-now .ob-step-n { font-weight: 700; color: var(--folio-ink); }
+.ob-step-dot.is-now .sk-ink { stroke-width: 2.1; }
+.ob-leg { width: 24px; height: 10px; flex: none; overflow: visible; }
+.ob-leg .ob-leg-ink { stroke-width: 1.8; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.ob-steps li:is(.done, .now) .ob-leg-ink { stroke-dashoffset: 0; }
+
+/* Narrow-screen trail */
+.ob-mini-trail { display: block; width: 100%; height: 16px; overflow: visible; }
+.ob-mini-ink { stroke-width: 2; clip-path: inset(-6px var(--reach) -6px -6px); }
+.ob-mini-next { fill: var(--sk-soft); }
+
+/* Drawn checkbox */
+.ob-inkbox { display: block; width: 20px; height: 20px; overflow: visible; }
+.ob-inkbox-edge { stroke: var(--folio-text-secondary); stroke-width: 1.5; }
+.ob-inkbox-fill { fill: var(--folio-accent-soft); opacity: 0; }
+.ob-inkbox-tick { stroke: var(--folio-accent); stroke-width: 2.4; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.ob-check input:checked + .ob-box .ob-inkbox-tick { stroke-dashoffset: 0; }
+.ob-check input:checked + .ob-box .ob-inkbox-fill { opacity: 1; }
+.ob-check input:checked + .ob-box .ob-inkbox-edge { stroke: var(--folio-ink); }
+.ob-inkbox.is-ghost .ob-inkbox-edge { stroke: var(--sk-soft); stroke-dasharray: 2.5 3; }
+
+/* Baseline run marks */
+.ob-runmark { width: 18px; height: 18px; flex: none; overflow: visible; }
+.ob-runmark .sk-ink { stroke-width: 1.8; }
+
+/* Meter */
+.ob-meter-ink { display: block; width: 100%; height: 20px; overflow: visible; }
+/* Butt caps: a round cap would paint about half a point past the measured value. */
+.ob-meter-value { stroke: var(--folio-accent); stroke-width: 4.5; stroke-linecap: butt; }
+.ob-meter-end { stroke: var(--folio-accent); stroke-width: 2; }
+.ob-meter-reading { stroke-width: 2.4; opacity: 0; }
+.ob-reading { display: block; width: 190px; max-width: 100%; height: auto; overflow: visible; }
+.ob-reading .sk-ink { stroke: var(--folio-edge-strong); }
+.ob-reading.is-active .sk-ink { stroke: var(--sk-soft); }
+
+/* ── Motion: only for people who have not asked for less of it ─────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  /* Draw on: a scene's strokes stay unseen until it arrives, then are drawn in order. */
+  .ob-scene[data-reveal]:not([data-inview]) :is(.sk-draw, .sk-pop) { opacity: 0; }
+  .ob-scene[data-inview] .sk-draw { stroke-dasharray: 1; animation: ob-draw 820ms var(--ob-draw-ease) calc(260ms + var(--i, 0) * 48ms) both; }
+  .ob-scene[data-inview] .sk-pop { animation: ob-fade 420ms ease-out calc(760ms + var(--i, 0) * 48ms) both; }
+
+  /* Boil: three redrawn frames shown in turn while a drawing is live. */
+  .ob [data-live] .sk-frame { visibility: visible; animation: ob-boil 720ms steps(1, end) infinite; }
+  .ob [data-live] .sk-frame-1 { animation-delay: -480ms; }
+  .ob [data-live] .sk-frame-2 { animation-delay: -240ms; }
+  .ob-top[data-live] .sk-frame { animation-duration: 1080ms; }
+  .ob-top[data-live] .sk-frame-1 { animation-delay: -720ms; }
+  .ob-top[data-live] .sk-frame-2 { animation-delay: -360ms; }
+
+  /* Idle loops, one or two per scene. */
+  .ob-scene[data-live] .ob-drift { animation: ob-drift 7s ease-in-out 1.4s infinite alternate both; }
+  .ob-scene[data-live] .ob-bob { animation: ob-bob 2.8s ease-in-out 1.2s infinite alternate both; }
+  .ob-scene[data-live] .ob-swing { animation: ob-swing 3.6s ease-in-out 1.4s infinite alternate both; }
+  .ob-scene[data-live] .ob-nod { animation: ob-nod 3.4s ease-in-out 1.6s infinite alternate both; }
+  .ob-scene[data-live] .ob-fly { animation: ob-fly 3.2s ease-in-out 1.4s infinite alternate both; }
+  .ob-scene[data-live] .ob-look { animation: ob-look 6s ease-in-out 1.6s infinite both; }
+  .ob-scene:not([data-inview]) :is(.ob-redraw, .ob-tick-loop) .sk-ink { opacity: 0; }
+  .ob-scene[data-live] .ob-redraw .sk-ink { stroke-dasharray: 1; animation: ob-redraw 7s var(--ob-draw-ease) 1.1s infinite backwards; }
+  .ob-scene[data-live] .ob-tick-loop .sk-ink { stroke-dasharray: 1; animation: ob-tick 6s var(--ob-draw-ease) calc(.9s + var(--t, 0) * .45s) infinite backwards; }
+  .ob-scene[data-inview] .ob-bar-grow { animation: ob-grow 900ms cubic-bezier(.2, .8, .2, 1) calc(500ms + var(--g, 0) * 110ms) both; }
+
+  /* Trail: a flag is planted as its step completes; the path behind the walker inks in. */
+  .ob-flag .sk-draw { stroke-dasharray: 1; animation: ob-draw 520ms var(--ob-draw-ease) calc(120ms + var(--n, 0) * 70ms + var(--i, 0) * 120ms) both; }
+  .ob-flag .sk-pop { animation: ob-fade 300ms ease-out calc(420ms + var(--n, 0) * 70ms) both; }
+  .ob-leg .ob-leg-ink { transition: stroke-dashoffset 640ms var(--ob-draw-ease) 80ms; }
+  .ob-mini-ink { transition: clip-path 640ms var(--ob-draw-ease); }
+  .ob-wordmark .sk-mark .sk-draw { stroke-dasharray: 1; animation: ob-draw 900ms var(--ob-draw-ease) calc(var(--i, 0) * 70ms) both; }
+  .ob-wordmark .sk-mark { transition: transform 260ms cubic-bezier(.2, .8, .2, 1); }
+  .ob-wordmark:hover .sk-mark { transform: rotate(-24deg); }
+
+  /* Checkbox: the tick is drawn, not switched on. */
+  .ob-inkbox-tick { transition: stroke-dashoffset 260ms var(--ob-draw-ease); }
+  .ob-inkbox-fill { transition: opacity 200ms ease-out; }
+
+  /* Baseline: a running question is circled again and again. */
+  [data-live] .ob-runmark-loop { stroke-dasharray: .7 .3; animation: ob-turn-dash 1.4s linear infinite; }
+
+  /* Score: the ink runs out to the measured value on the number's 700ms curve. */
+  .ob-meter-ink.is-reveal .ob-meter-value { stroke-dasharray: 1; animation: ob-draw-plain 700ms cubic-bezier(.33, 1, .68, 1) 420ms both; }
+  .ob-meter-ink.is-reveal .ob-meter-end { stroke-dasharray: 1; animation: ob-draw-plain 200ms ease-out 1100ms both; }
+  [data-live] .ob-meter-ink.is-checking .ob-meter-reading { opacity: 1; stroke-dasharray: .3 .7; animation: ob-read 1.5s linear infinite; }
+  [data-live] .ob-reading.is-active .sk-ink { stroke-dasharray: 1; animation: ob-rewrite 2.4s var(--ob-draw-ease) calc(var(--r, 0) * 300ms) infinite backwards; }
+
+  /* Nothing moves while someone is typing, or while the tab is hidden. */
+  .ob[data-typing] [data-live] * { animation-play-state: paused !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ob .sk-frame-1, .ob .sk-frame-2 { visibility: hidden; }
+}
+
+@keyframes ob-draw { 0% { stroke-dashoffset: 1; opacity: 0; } 3% { opacity: 1; } 100% { stroke-dashoffset: 0; opacity: 1; } }
+@keyframes ob-draw-plain { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes ob-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ob-boil { 0% { opacity: 1; } 33.34%, 100% { opacity: 0; } }
+@keyframes ob-drift { from { transform: translate(-6px, 2px); } to { transform: translate(-70px, -26px); } }
+@keyframes ob-bob { from { transform: translate(0, 0) rotate(0); } to { transform: translate(-3px, 2px) rotate(-4deg); } }
+@keyframes ob-swing { from { transform: rotate(-4deg); } to { transform: rotate(5deg); } }
+@keyframes ob-nod { from { transform: rotate(-2.5deg); } to { transform: rotate(3deg); } }
+@keyframes ob-fly { from { transform: translate(0, 0) rotate(0); } to { transform: translate(12px, -8px) rotate(-4deg); } }
+@keyframes ob-look { 0%, 20% { transform: translateX(0); } 35%, 50% { transform: translateX(-3.5px); } 65%, 80% { transform: translateX(3.5px); } 100% { transform: translateX(0); } }
+@keyframes ob-redraw { 0% { stroke-dashoffset: 1; opacity: 1; } 18%, 78% { stroke-dashoffset: 0; opacity: 1; } 88%, 100% { stroke-dashoffset: 0; opacity: 0; } }
+@keyframes ob-tick { 0% { stroke-dashoffset: 1; opacity: 1; } 10%, 82% { stroke-dashoffset: 0; opacity: 1; } 92%, 100% { stroke-dashoffset: 0; opacity: 0; } }
+@keyframes ob-grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes ob-turn-dash { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes ob-read { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes ob-rewrite { 0% { stroke-dashoffset: 1; opacity: 1; } 45%, 80% { stroke-dashoffset: 0; opacity: 1; } 95%, 100% { stroke-dashoffset: 0; opacity: 0; } }

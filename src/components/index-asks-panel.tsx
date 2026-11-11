@@ -6,6 +6,7 @@ import { ArrowUpRight, RefreshCw } from "@/components/icons";
 import { useSession } from "@/lib/auth-client";
 import type { IndexAsk } from "@/lib/index-asks";
 import "./index-asks-panel.css";
+import { InkSpinner } from "./workspace-sketches";
 
 type Snapshot = { ownerId: string | null; asks: IndexAsk[]; more: boolean; loading: boolean; error: boolean };
 const KINDS: Record<IndexAsk["tool"], string> = { search: "Searched the index", answer: "Read an answer", website: "Looked up a website" };
@@ -56,7 +57,7 @@ export function IndexAsksPanel() {
     <header><div><h2>What your agents asked</h2><p>Questions your connected agents put to the published Folio Index, and what came back.</p></div>
       <button type="button" className="button secondary" onClick={() => setRefresh(value => value + 1)} disabled={loading} aria-label="Refresh index activity"><RefreshCw size={13} /> Refresh</button>
     </header>
-    {loading && <p role="status" className="index-asks-message">Loading index activity…</p>}
+    {loading && <p role="status" className="index-asks-message"><InkSpinner />Loading index activity…</p>}
     {error && <p role="alert" className="index-asks-message">Index activity could not be loaded. Try again.</p>}
     {!loading && !error && !asks.length && <div className="index-asks-empty">
       <p>Nothing yet. When an agent connected with one of your keys searches the index or looks up a website, it appears here. Agents using the no-key endpoint are not recorded.</p>

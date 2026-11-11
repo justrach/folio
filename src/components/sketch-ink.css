@@ -31,10 +31,17 @@
 .sk-fill.is-paper { fill: var(--sk-paper, var(--folio-surface)); }
 .sk-fill.is-mark { fill: color-mix(in srgb, var(--sk-rust) 17%, transparent); }
 .sk-frame-1, .sk-frame-2 { visibility: hidden; }
+/* Glyphs and the mark take the colour of the text beside them. */
+.sk-glyph, .sk-mark { flex: none; overflow: visible; }
+.sk-glyph .sk-ink { stroke: currentColor; stroke-width: 1.7; }
+.sk-mark .sk-ink { stroke: currentColor; stroke-width: 2.1; }
 @keyframes sk-draw { 0% { stroke-dashoffset: 1; opacity: 0; } 3% { opacity: 1; } 100% { stroke-dashoffset: 0; opacity: 1; } }
+/* Three tracings shown in turn (a boil): give each frame group this animation, offset by a third. */
+@keyframes ink-boil { 0% { visibility: visible; } 33.34%, 100% { visibility: hidden; } }
 
-/* Spot sketches in the workspace: drawn on once when they appear, then still. A work screen should not keep moving. */
+/* Spot sketches in the workspace (motion in workspace-sketches.css). */
 .sk-spot { width: 136px; flex: none; }
-@media (prefers-reduced-motion: no-preference) {
-  .sk-spot .sk-draw { stroke-dasharray: 1; animation: sk-draw 700ms cubic-bezier(.65, 0, .25, 1) calc(var(--i, 0) * 55ms) both; }
-}
+
+/* A drawn underline beneath a few words. */
+.landing-underlined, .ink-underlined { position: relative; display: inline-block; }
+.sk-underline { position: absolute; left: -2%; bottom: -.17em; width: 104%; height: .26em; overflow: visible; pointer-events: none; }

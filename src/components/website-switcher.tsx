@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Check, ChevronDown, Globe2, Plus } from "@/components/icons";
 import type { Scan } from "@/lib/demo-data";
 import "./website-switcher.css";
+import { InkSpinner } from "./workspace-sketches";
 
 type Site = { id: string; name: string; url: string };
 
@@ -90,7 +91,7 @@ export function WebsiteSwitcher({ ownerId, name, activeUrl, onSelect, onAdd }: {
     {open && <div id="saved-website-picker" className="website-picker" aria-label="Saved websites">
       <p className="website-picker-heading">YOUR WEBSITES</p>
       {!ownerId ? <><p>Sign in to switch between your saved websites.</p><Link href="/login">Sign in <ArrowRight size={14} /></Link></> : <>
-        {loading && <p role="status">Loading websites…</p>}
+        {loading && <p role="status"><InkSpinner />Loading websites…</p>}
         {error && <div role="alert"><p>{error}</p><button onClick={() => setRevision(value => value + 1)}>Retry websites</button></div>}
         {!loading && !error && !sites.length && <p>No websites saved yet. Add your first website to get started.</p>}
         <div className="website-picker-list">

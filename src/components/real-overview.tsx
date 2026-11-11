@@ -24,6 +24,7 @@ import { filterCounts, filterQuestions, parseQuestionView, questionOutcome, QUES
 import "./real-overview.css";
 import "./overview-question-controls.css";
 import "./overview-window-bar.css";
+import { InkSpinner } from "./workspace-sketches";
 
 type Site = { id:string; name:string; url:string };
 type Load<T> = { state:"loading"|"ready"|"error"; items:T[] };
@@ -227,7 +228,7 @@ function OwnedOverview({scans,scansLoading,scansError,onRetryScans,onOpenScan}:O
       busy={setupState === "loading"} onAction={()=>setRefresh(value=>value+1)} note="Viewing results starts no new checks or paid work."
     />}
 
-    {data.sites.state==="loading"&&<p role="status">Loading your saved websites…</p>}
+    {data.sites.state==="loading"&&<p role="status"><InkSpinner />Loading your saved websites…</p>}
     {data.sites.state==="error"&&<p role="alert">Your saved websites could not be loaded. Refresh to try again.</p>}
     {data.sites.state==="ready"&&!selected&&!!data.sites.items.length&&<section className="panel real-overview-empty"><h2>Choose an owned website</h2><p>This website selection is unavailable for the current account.</p><Link className="button primary" href="/websites">Open My websites<ArrowRight size={14}/></Link></section>}
     {selected&&<>

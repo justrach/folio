@@ -82,7 +82,7 @@ Restart the dev server after intended `.dev.vars` changes. Obtain D1 through the
 | Offline verification | `scripts/verify-evaluation.ts`, `tests/evals.test.ts` |
 | Formal models (Lean) | `proofs/Folio/`, `docs/LEAN-PROOFS.md`; `bun run proofs:check` |
 | Read plan (how many database reads run at once) | `src/data/read-plan.json`, `withLimit` and `batches` in `src/lib/sequential.ts`, `proofs/Folio/ReadPlan.lean`, `tests/read-plan.test.ts`. Change the JSON and the Lean constants together. |
-| Icons (Folio's own set; no icon library) | `src/components/icons.tsx`, `tests/icons.test.ts`; review sheet with `node --import tsx scripts/icon-sheet.ts` |
+| Icons and workspace drawings (Folio's own, traced by hand with the pen at module load; no icon library, no SVG filters) | `src/components/icons.tsx` (geometry traced by `Pen.trace` in `src/lib/sketch.ts`; `boil` frames shown by `src/app/ink.css`), `workspace-sketches.tsx` + `.css` (spots, horizon, loader, inline loading mark, demo symbols), `workspace-motion.css` + `workspace-reveal.tsx` (workspace motion), `tests/icons.test.ts`, `tests/sketch.test.ts`; review sheet with `node --import tsx scripts/icon-sheet.ts` |
 
 Component-only filenames in the map are relative to `src/components/`; adjacent library filenames are relative to `src/lib/`.
 

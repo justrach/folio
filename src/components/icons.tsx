@@ -1,27 +1,47 @@
 import type { ReactNode, SVGProps } from "react";
+import { BOIL_FRAMES, Pen } from "../lib/sketch";
+import { planGlyph } from "./icon-plan";
 
 /**
- * Folio's own icon set. Every glyph is drawn in this file; nothing is taken from an icon library.
+ * Folio's own icon set, drawn by hand. Nothing is taken from an icon library.
  *
- * Grid and style: a 24-unit square with a 3-unit margin, one stroke weight (1.75 by default),
- * round caps and joins, no fills. Corners on boxes are 2.5 units. A dot is a zero-length line
- * (`h.01`), so it takes the stroke weight like everything else.
+ * Each glyph below is written as plain geometry on a 24-unit grid (3-unit margin, round caps and
+ * joins, no fills, 2.5-unit box corners; a dot is a zero-length line, `h.01`). That geometry is the
+ * plan, not what is shown: when this module loads, the pen in src/lib/sketch.ts traces every
+ * glyph once (`Pen.trace`), so corners land a little off, straight runs bow and closed outlines
+ * run past where they began. The trace is seeded by the icon's name, so the server and the
+ * browser draw the same strokes, and no render does any drawing work.
  *
  * Use: `<ArrowRight size={15} />`. `size` sets width and height; any SVG attribute passes through.
  * An icon is decorative (`aria-hidden`) unless it is given `aria-label`, `aria-labelledby` or `role`.
+ * `boil` adds two more tracings of the same glyph (three frames); CSS in src/app/ink.css shows one
+ * at a time where a boil is wanted (the current page in the rail, a hovered rail link). Without
+ * it the icon is a single tracing, so ordinary icons cost no extra nodes.
  *
  * Adding one: draw it on the same grid, add `export const Name = icon("Name", <>…</>)` in the
  * matching group, and look at it at both sizes with `node --import tsx scripts/icon-sheet.ts`.
  */
-export type IconProps = Omit<SVGProps<SVGSVGElement>, "ref"> & { size?: number | string };
+export type IconProps = Omit<SVGProps<SVGSVGElement>, "ref"> & { size?: number | string; boil?: boolean };
 export type FolioIcon = { (props: IconProps): ReactNode; displayName?: string };
 
+/** A stable seed from the icon's name. */
+const seedOf = (name: string) => [...name].reduce((hash, char) => Math.imul(hash ^ char.charCodeAt(0), 16777619) >>> 0, 2166136261) % 100000;
+
 function icon(name: string, body: ReactNode): FolioIcon {
-  function Icon({ size = 24, strokeWidth = 1.75, className, ...rest }: IconProps) {
+  const shapes = planGlyph(body), seed = seedOf(name);
+  // Traced once, here, for all three frames.
+  const frames = BOIL_FRAMES.map(frame => {
+    const pen = new Pen(seed, frame);
+    return shapes.map((shape, index) => <path key={index} d={pen.trace(shape.d, shape.options)} {...shape.props} />);
+  });
+  const still = frames[0];
+  const boiling = frames.map((paths, frame) => <g key={frame} className={`folio-icon-frame is-${frame}`}>{paths}</g>);
+  function Icon({ size = 24, strokeWidth = 1.75, className, boil, ...rest }: IconProps) {
     const labelled = rest["aria-label"] !== undefined || rest["aria-labelledby"] !== undefined || rest.role !== undefined;
+    const classes = `folio-icon${boil ? " is-boil" : ""}${className ? ` ${className}` : ""}`;
     return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className ? `folio-icon ${className}` : "folio-icon"}
-      aria-hidden={labelled ? undefined : true} focusable="false" {...rest}>{body}</svg>;
+      strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={classes}
+      aria-hidden={labelled ? undefined : true} focusable="false" {...rest}>{boil ? boiling : still}</svg>;
   }
   Icon.displayName = name;
   return Icon;
@@ -71,7 +91,8 @@ export const List = icon("List", <><path d="M9 7h11" /><path d="M9 12h11" /><pat
 export const ListChecks = icon("ListChecks", <><path d="m3.5 7 1.5 1.5 3-3" /><path d="m3.5 16.5 1.5 1.5 3-3" /><path d="M12 7h8.5" /><path d="M12 16.5h8.5" /></>);
 export const Play = icon("Play", <path d="M7 5.5v13a1 1 0 0 0 1.5.9l10.6-6.5a1 1 0 0 0 0-1.8L8.5 4.6a1 1 0 0 0-1.5.9Z" />);
 export const Pause = icon("Pause", <><rect x="6.5" y="5" width="3.5" height="14" rx="1.25" /><rect x="14" y="5" width="3.5" height="14" rx="1.25" /></>);
-export const Loader2 = icon("Loader2", <path d="M21 12a9 9 0 1 1-6.2-8.56" />);
+// Spins: a steady hand, so the arc turns about its centre instead of orbiting.
+export const Loader2 = icon("Loader2", <path d="M21 12a9 9 0 1 1-6.2-8.56" data-trace={{ hand: 0.12, boil: 0.08, bow: 0.02, maxBow: 0.3 }} />);
 export const Settings2 = icon("Settings2", <><path d="M4 8h9" /><path d="M17 8h3" /><circle cx="15" cy="8" r="2" /><path d="M4 16h3" /><path d="M11 16h9" /><circle cx="9" cy="16" r="2" /></>);
 export const Settings = icon("Settings", <><path d="m12 3 7.8 4.5v9L12 21l-7.8-4.5v-9L12 3Z" /><circle cx="12" cy="12" r="3" /></>);
 
@@ -79,7 +100,8 @@ export const Settings = icon("Settings", <><path d="m12 3 7.8 4.5v9L12 21l-7.8-4
 export const Info = icon("Info", <>{ring}<path d="M12 11v5.5" /><path d="M12 7.5h.01" /></>);
 export const CircleHelp = icon("CircleHelp", <>{ring}<path d="M9.4 9.5a2.7 2.7 0 0 1 5.2.9c0 1.7-2.6 2.2-2.6 3.9" /><path d="M12 17h.01" /></>);
 export const CircleCheck = icon("CircleCheck", <>{ring}<path d="m8.2 12.3 2.6 2.6 5-5.3" /></>);
-export const CircleDashed = icon("CircleDashed", <circle cx="12" cy="12" r="9" strokeDasharray="3.3 3.77" />);
+// Dashes measured along the drawn stroke (pathLength), so eight of them close evenly however the ring was traced.
+export const CircleDashed = icon("CircleDashed", <circle cx="12" cy="12" r="9" pathLength={8} strokeDasharray=".47 .53" data-trace={{ overshoot: 0, hand: 0.3 }} />);
 export const TriangleAlert = icon("TriangleAlert", warningTriangle);
 export const AlertTriangle = icon("AlertTriangle", warningTriangle);
 export const OctagonAlert = icon("OctagonAlert", <><path d="M8.3 3h7.4L21 8.3v7.4L15.7 21H8.3L3 15.7V8.3L8.3 3Z" /><path d="M12 8v4.5" /><path d="M12 16h.01" /></>);
