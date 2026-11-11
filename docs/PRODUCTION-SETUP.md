@@ -318,6 +318,24 @@ After deployment: `/api/getting-started` without a session returned 401 `unautho
 and the checklist. Some requests from this machine timed out and succeeded on retry. Read against production, the
 owner's checklist shows 3 of 5: website, Search Console and team done; agent and agent question not yet.
 
+**Harness in Connect your agent** (`40709c5`) followed on 11 November 2026: frontend
+`14ff8f62-190d-4219-b767-41fb5e914d2c`, backend `261f4ecb-9a53-4305-940f-03198b2a48cd` (`--keep-vars`). No migration,
+no secret change and no server change: Harness uses the OAuth endpoints from the release above.
+- Validation: typecheck, 458 unit tests, 52 D1 integration tests, the production build and both smoke tests. The
+  Connect your agent browser spec, including the new Harness case, passed 6 of 6 on desktop and on mobile.
+- Before deploying, the real graff ran against production in a throwaway home. `graff mcp add` reported
+  `folio needs sign-in`. `graff mcp login` registered and sent the authorize request with PKCE and `resource`. A
+  script recorded the approval for the owner as *Read only*, since there was no browser, and graff saved its tokens
+  outside `mcp.json`. `graff mcp reconnect` then reported `ready`, `auth: oauth`, 20 tools. Cleanup: 1 key,
+  2 tokens, 1 code and 1 client deleted.
+- Earlier attempts from this machine failed with graff's `TlsInitializationFailed` while outbound connections were
+  timing out. The run succeeded once the local dev server, which was holding thousands of loopback sockets, was
+  stopped.
+
+After deployment, `/agents`, `/oauth/authorize` and the authorization-server metadata returned 200. The served chunks
+contain the Harness command (`graff mcp login folio`), the https note, "One command, no key in it" and
+"Use a key instead". It has not been run from inside the Harness app yet.
+
 ### Vector store
 
 Page embeddings live in turbopuffer, not Postgres (see [embeddings](EMBEDDINGS.md)).
