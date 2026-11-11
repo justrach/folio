@@ -19,8 +19,8 @@ evidence, account, and spending states visible.
 Workspace controls use rounded 16px shapes and the existing shared press feedback.
 The Index view chooser uses a segmented surface with a filled selected tab; it
 reflows to two columns on phones. Public summary cards and the question browser
-share 16px corners. The private overview places the answer-model selector beside
-its scope explanation on desktop and stacks them on mobile. Its summary values
+share 16px corners. The private overview puts the search-scope switch, the answer-model selector and
+their scope explanation in one row on desktop and stacks them on mobile. Its summary values
 stay compact above the chart cards, and recommended steps and saved report types
 use separate cards. Repeated private summary values and public activity/model charts
 are collapsed behind labelled disclosures by default. Controls squash vertically
@@ -123,7 +123,9 @@ In `/start` Step 5, the right-hand questions panel keeps its collapsed seven-row
 
 `/overview` defaults to the public benchmark dashboard. **My website results** is the explicit `/overview?view=workspace` view. Signed-out visitors to that view see a sign-in prompt; signed-in owners choose an existing saved website. The overview loads saved application records with GET requests only. It does not reconcile provider sessions, start a search, or import an SEO report.
 
-**Search observations** uses the latest completed answer for each question targeting that exact website. Open-web and reviewed-documentation observations occupy separate tabs. A newer pending, failed, cancelled, or needs-attention attempt stays visible without replacing its earlier completed answer. Each question links to its answer and, when different, its latest attempt.
+**AI search answers** uses the latest completed answer for each question targeting that exact website. A **Searched** switch separates open-web answers from legacy reviewed-documentation answers. The panel opens with one sentence saying how many questions have a completed answer, followed by only the attempt states that apply (pending, needs attention, failed, cancelled, not run); zero counts are not listed. A newer pending, failed, cancelled, or needs-attention attempt stays visible without replacing its earlier completed answer. Each question shows **Position in the answer** and **Cited as a source**, and links to its answer and, when different, its latest attempt. A single question hides the search box, outcome filters and layout switch unless a filter is active.
+
+The date range, its contents and CSV export share one line. **Inspect saved activity**, **Charts and trends** and **Summary details** are one stacked list of collapsed rows above the questions; **More findings to investigate** and **Details and history** use the same row style below the panel.
 
 The sidebar's **Switch website** control opens the authenticated account's saved websites from `/api/sites`, including sites without audits. Choosing a website reads its own audit history and opens its latest saved SEO audit; a site without an audit opens Search & backlinks with the target prepared. The picker includes loading, retry, signed-out, and empty states, plus **Add a website** to open the audit form. Opening or selecting never starts an audit, paid SEO lookup, or evaluation. The menu reloads on opening, supports keyboard dismissal, and clears its private state when the account changes.
 

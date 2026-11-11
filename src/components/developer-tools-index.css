@@ -10,30 +10,30 @@
 .devtools-search input::placeholder{color:var(--folio-text-secondary);opacity:1}
 .devtools-search:focus-within{outline:2px solid var(--folio-edge-strong);outline-offset:2px}
 .devtools-select{display:grid;gap:6px;min-width:0}
-.devtools-select>span{font-size:12px;font-weight:600;color:var(--folio-ink)}
-.devtools-filters select{max-width:100%;min-height:44px;padding:10px;border:1px solid var(--folio-edge-strong);border-radius:4px;background:var(--folio-surface);color:var(--folio-ink);font:inherit;font-size:13px}
-.devtools-results-count{font-size:13px;color:var(--folio-text-secondary);margin:0 0 16px}
+.devtools-select>span{font-size:13px;font-weight:600;color:var(--folio-ink)}
+.devtools-filters select{max-width:100%;min-height:44px;padding:10px;border:1px solid var(--folio-edge-strong);border-radius:4px;background:var(--folio-surface);color:var(--folio-ink);font:inherit;font-size:14px}
+.devtools-results-count{font-size:14px;color:var(--folio-text-secondary);margin:0 0 16px}
 .devtool-name{display:grid;gap:7px}
 .devtool-name>a{display:flex;align-items:center;gap:7px;font-size:16px;font-weight:650}
-.devtool-name>span{font-size:13px;color:var(--folio-text-secondary);line-height:1.6}
+.devtool-name>span{font-size:14px;color:var(--folio-text-secondary);line-height:1.6}
 .devtool-category{display:grid;gap:6px}
-.devtool-category>span{font-size:13px;color:var(--folio-ink)}
-.devtool-category>small{font-size:12px;color:var(--folio-text-secondary)}
+.devtool-category>span{font-size:14px;color:var(--folio-ink)}
+.devtool-category>small{font-size:13px;color:var(--folio-text-secondary)}
 .devtool-score{display:grid;gap:6px;color:var(--folio-ink)}
 .devtool-score strong{font-size:23px;font-weight:650}
-.devtool-score small{font-size:13px;font-weight:400;color:var(--folio-text-secondary)}
-.devtool-score>span{font-size:12px;color:var(--folio-text-secondary);line-height:1.5;white-space:normal}
+.devtool-score small{font-size:14px;font-weight:400;color:var(--folio-text-secondary)}
+.devtool-score>span{font-size:13px;color:var(--folio-text-secondary);line-height:1.5;white-space:normal}
 .devtool-score .devtool-unmeasured{font-size:14px;font-weight:600}
 .devtool-score .devtool-capture-error{max-width:230px;color:var(--folio-accent);overflow-wrap:anywhere}
 .devtool-check-summary{color:var(--folio-text-secondary)}
-.devtool-links{display:grid;gap:10px;font-size:13px;white-space:nowrap}
+.devtool-links{display:grid;gap:10px;font-size:14px;white-space:nowrap}
 .devtool-detail{max-width:720px}
 .devtool-detail h3{font-size:17px;font-weight:600;color:var(--folio-ink)}
 .devtool-detail h3:focus-visible{outline:2px solid var(--folio-edge-strong);outline-offset:4px}
-.devtool-observation dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:8px 18px;font-size:13px}
+.devtool-observation dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:8px 18px;font-size:14px}
 .devtool-observation dd{margin:0;overflow-wrap:anywhere}
-.devtool-observation code{font-size:12px;word-break:break-all}
-.devtool-observation ul{font-size:13px;padding-left:18px;line-height:1.6}
+.devtool-observation code{font-size:13px;word-break:break-all}
+.devtool-observation ul{font-size:14px;padding-left:18px;line-height:1.6}
 .devtool-observation li{margin-block:12px}
 .devtool-observation li p{margin:4px 0}
 .devtool-observation .devtool-capture-error{color:var(--folio-accent)}
@@ -44,10 +44,10 @@
 .devtools-directory .spectrum-table-scroll{position:relative;border-color:var(--folio-edge-strong)}
 .devtools-directory .spectrum-table table{min-width:850px;font-size:14px}
 .devtools-directory .spectrum-table td,.devtools-directory .spectrum-table tbody th{color:var(--folio-ink);font-size:14px;letter-spacing:normal}
-.devtools-directory .spectrum-table thead th{font-size:13px;color:var(--folio-ink)}
+.devtools-directory .spectrum-table thead th{font-size:14px;color:var(--folio-ink)}
 .devtools-directory .spectrum-table td a,.devtools-directory .spectrum-table th a{color:var(--folio-ink)}
-.devtools-directory .spectrum-table .spectrum-table-empty,.devtools-directory .spectrum-table-pagination{color:var(--folio-text-secondary);font-size:13px}
-.devtools-directory .spectrum-table-details{color:var(--folio-ink);font-size:13px}
+.devtools-directory .spectrum-table .spectrum-table-empty,.devtools-directory .spectrum-table-pagination{color:var(--folio-text-secondary);font-size:14px}
+.devtools-directory .spectrum-table-details{color:var(--folio-ink);font-size:14px}
 @media(max-width:850px){
   .devtools-directory{padding:16px 12px 2px}
   .devtools-filters{align-items:stretch}

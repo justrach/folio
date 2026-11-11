@@ -1,4 +1,4 @@
 
-.public-index-refresh { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:20px; color:var(--folio-text-secondary); font-size:13px; }
+.public-index-refresh { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:20px; color:var(--folio-text-secondary); font-size:14px; }
 .public-index-refresh p { margin:0; }
 @media(max-width:700px) { .public-index-refresh { align-items:flex-start; } .public-index-refresh .button { flex-shrink:0; } }

@@ -35,28 +35,28 @@
   margin-bottom: 32px;
 }
 .app-shell .workspace-avatar { background: var(--folio-text-secondary); color: var(--folio-inverse-text); border-radius: 7px; }
-.app-shell .workspace-switch > span:nth-child(2) { font-size: 13px; }
-.app-shell .workspace-switch small, .app-shell .profile small { font-size: 12px; }
-.app-shell .nav-caption { color: var(--folio-text-secondary); font-size: 12px; letter-spacing: .5px; }
-.app-shell .nav-link { color: var(--folio-text-secondary); height: 40px; font-size: 13px; border-radius: 5px; gap: 12px; }
+.app-shell .workspace-switch > span:nth-child(2) { font-size: 14px; }
+.app-shell .workspace-switch small, .app-shell .profile small { font-size: 13px; }
+.app-shell .nav-caption { color: var(--folio-text-secondary); font-size: 13px; letter-spacing: .5px; }
+.app-shell .nav-link { color: var(--folio-text-secondary); height: 40px; font-size: 14px; border-radius: 5px; gap: 12px; }
 .app-shell .nav-link:hover { background: var(--folio-surface-muted); color: var(--folio-ink); }
 .app-shell .nav-link.active { background: var(--folio-surface-muted); color: var(--folio-ink); box-shadow: none; }
 .app-shell .nav-link svg { width: 17px; height: 17px; stroke-width: 1.6; }
 .app-shell .nav-count { background: var(--folio-inverse-surface); color: var(--folio-inverse-text); border-color: var(--folio-edge-strong); }
 .app-shell .nav-link.active .nav-count { background: var(--folio-surface-muted); color: var(--folio-ink); }
 .app-shell .profile { padding: 22px 5px; }
-.app-shell .profile > span:nth-child(2) { font-size: 13px; }
+.app-shell .profile > span:nth-child(2) { font-size: 14px; }
 .app-shell .sidebar .avatar { border-color: var(--folio-edge-strong); background: var(--folio-surface-muted); box-shadow: none; }
 .app-shell .sidebar-note { background: var(--folio-inverse-surface); color: var(--folio-inverse-text); border-color: var(--folio-edge-strong); }
 .app-shell .sidebar-note p, .app-shell .sidebar-note .edition { color: var(--folio-inverse-text); }
 .app-shell .main-shell { margin-left: 242px; }
 .app-shell .topbar { background: transparent; height: 76px; padding: 0 44px; }
-.app-shell .breadcrumb, .app-shell .search-trigger { font-size: 12px; color: var(--folio-text-secondary); }
+.app-shell .breadcrumb, .app-shell .search-trigger { font-size: 13px; color: var(--folio-text-secondary); }
 .app-shell .breadcrumb > span { color: var(--folio-text-secondary); }
 .app-shell .search-trigger kbd { color: var(--folio-text-secondary); border-color: var(--folio-edge); }
 .app-shell .page-content { padding: 42px 44px 0; max-width: 1510px; }
 .app-shell .page-heading { margin-bottom: 34px; align-items: flex-end; }
-.app-shell .page-heading .eyebrow { font-size: 12px; letter-spacing: 1.5px; color: var(--folio-text-secondary); }
+.app-shell .page-heading .eyebrow { font-size: 13px; letter-spacing: 1.5px; color: var(--folio-text-secondary); }
 .app-shell .page-heading h1 {
   font-family: var(--sans);
   font-size: clamp(30px, 2.8vw, 43px);
@@ -69,17 +69,17 @@
 }
 .app-shell .page-heading p { font-size: 14px; line-height: 1.6; color: var(--folio-text-secondary); }
 .app-shell .heading-actions { padding: 0; flex-wrap: wrap; justify-content: flex-end; }
-.app-shell .button { min-height: 42px; font-size: 12px; border-radius: 7px; padding: 0 17px; }
+.app-shell .button { min-height: 42px; font-size: 13px; border-radius: 7px; padding: 0 17px; }
 .app-shell .button:active:not(:disabled) { transform: translateY(1px); }
 .app-shell .button.secondary { background: var(--folio-surface); border-color: var(--folio-edge); color: var(--folio-ink); }
 .app-shell .button.secondary:hover { background: var(--folio-canvas); }
 .app-shell .button.primary:hover { background: var(--folio-inverse-surface); }
 .app-shell .button.cream { background: var(--folio-canvas); color: var(--folio-ink); }
 .app-shell .report-context { height: 45px; margin-bottom: 0; border-bottom: 0; }
-.app-shell .report-tabs button { font-size: 13px; color: var(--folio-text-secondary); }
+.app-shell .report-tabs button { font-size: 14px; color: var(--folio-text-secondary); }
 .app-shell .report-tabs button.selected { color: var(--folio-ink); font-weight: 600; }
 .app-shell .report-tabs button.selected:after { background: var(--folio-text-secondary); }
-.app-shell .sample-label { background: var(--folio-canvas); color: var(--folio-text-secondary); border-color: var(--folio-edge); font-size: 12px; border-radius: 5px; }
+.app-shell .sample-label { background: var(--folio-canvas); color: var(--folio-text-secondary); border-color: var(--folio-edge); font-size: 13px; border-radius: 5px; }
 .app-shell .metric-grid {
   gap: 0;
   border-top: 1px solid var(--folio-edge);
@@ -98,52 +98,52 @@
 .app-shell .metric-card:first-child { padding-left: 0; }
 .app-shell .metric-card + .metric-card { border-left: 1px solid var(--folio-edge); }
 .app-shell .metric-card:last-child { padding-right: 0; }
-.app-shell .metric-label, .app-shell .primary .metric-label { color: var(--folio-text-secondary); font-size: 12px; }
+.app-shell .metric-label, .app-shell .primary .metric-label { color: var(--folio-text-secondary); font-size: 13px; }
 .app-shell .metric-middle { height: 78px; }
 .app-shell .metric-value { font-size: clamp(34px, 3.5vw, 49px); font-weight: 400; letter-spacing: -2px; font-variant-numeric: tabular-nums; }
 .app-shell .metric-suffix, .app-shell .primary .metric-suffix { color: var(--folio-text-secondary); font-size: 15px; letter-spacing: -.4px; }
 .app-shell .metric-suffix.percent { font-size: 24px; }
-.app-shell .metric-bottom, .app-shell .primary .metric-bottom { font-size: 12px; color: var(--folio-text-secondary); white-space: normal; flex-wrap: wrap; }
-.app-shell .metric-card > p, .app-shell .primary > p { color: var(--folio-text-secondary); font-size: 12px; line-height: 1.5; margin-top: 8px; }
-.app-shell .primary .change, .app-shell .metric-bottom .change { background: transparent; padding: 0; color: var(--folio-text-secondary); font-size: 12px; }
+.app-shell .metric-bottom, .app-shell .primary .metric-bottom { font-size: 13px; color: var(--folio-text-secondary); white-space: normal; flex-wrap: wrap; }
+.app-shell .metric-card > p, .app-shell .primary > p { color: var(--folio-text-secondary); font-size: 13px; line-height: 1.5; margin-top: 8px; }
+.app-shell .primary .change, .app-shell .metric-bottom .change { background: transparent; padding: 0; color: var(--folio-text-secondary); font-size: 13px; }
 .app-shell .sparkline { width: 55px; min-width: 25px; opacity: .8; }
 .app-shell .sparkline polyline { stroke: var(--folio-text-secondary); }
 .app-shell .panel { border: 1px solid var(--folio-edge); border-radius: 8px; background: var(--panel); box-shadow: none; }
 .app-shell .panel-heading { padding: 24px 26px 0; }
 .app-shell .panel-heading h2 { font-size: 16px; font-weight: 500; letter-spacing: -.3px; }
-.app-shell .panel-heading p { color: var(--folio-text-secondary); font-size: 12px; line-height: 1.5; }
+.app-shell .panel-heading p { color: var(--folio-text-secondary); font-size: 13px; line-height: 1.5; }
 .app-shell .overview-grid { gap: 24px; grid-template-columns: minmax(0, 1.8fr) minmax(280px, 1fr); margin-bottom: 24px; }
 .app-shell .trend-panel { min-height: 405px; }
 .app-shell .segmented { background: var(--folio-canvas); border-color: var(--folio-edge); border-radius: 7px; }
-.app-shell .segmented button { color: var(--folio-text-secondary); font-size: 12px; padding: 7px 10px; }
+.app-shell .segmented button { color: var(--folio-text-secondary); font-size: 13px; padding: 7px 10px; }
 .app-shell .segmented button.active { background: var(--folio-surface); color: var(--folio-ink); border-radius: 4px; }
-.app-shell .chart-legend { font-size: 12px; color: var(--folio-text-secondary); }
+.app-shell .chart-legend { font-size: 13px; color: var(--folio-text-secondary); }
 .app-shell .legend-line.seo { background: var(--folio-text-secondary); }
-.app-shell .chart-footer { font-size: 12px; color: var(--folio-text-secondary); border-color: var(--folio-edge); }
+.app-shell .chart-footer { font-size: 13px; color: var(--folio-text-secondary); border-color: var(--folio-edge); }
 .app-shell .index-panel { background: var(--folio-canvas); border-color: var(--folio-edge); }
 .app-shell .index-panel .panel-heading h2 { font-family: var(--sans); font-size: 21px; font-weight: 500; line-height: 1.2; letter-spacing: -.6px; }
-.app-shell .index-description { font-size: 12px; color: var(--folio-text-secondary); }
-.app-shell .mini-rank-row { height: 43px; font-size: 12px; }
+.app-shell .index-description { font-size: 13px; color: var(--folio-text-secondary); }
+.app-shell .mini-rank-row { height: 43px; font-size: 13px; }
 .app-shell .mini-score { font-variant-numeric: tabular-nums; font-size: 14px; color: var(--folio-ink); }
 .app-shell .your-rank { background: var(--folio-surface-muted); border-color: var(--folio-edge); }
-.app-shell .panel-link { font-size: 12px; border-color: var(--folio-edge); color: var(--folio-ink); }
+.app-shell .panel-link { font-size: 13px; border-color: var(--folio-edge); color: var(--folio-ink); }
 .app-shell .bottom-grid { gap: 24px; }
 .app-shell .next-step { background: var(--folio-canvas); color: var(--ink); border-radius: 8px; padding: 30px; }
 .app-shell .next-step h2 { font-family: var(--sans); font-size: 29px; font-weight: 400; line-height: 1.15; letter-spacing: -.9px; }
-.app-shell .next-step p { color: var(--folio-text-secondary); font-size: 12px; }
-.app-shell .next-step .eyebrow { color: var(--folio-text-secondary); font-size: 12px; }
-.app-shell .next-step .button { font-size: 12px; min-height: 39px; }
+.app-shell .next-step p { color: var(--folio-text-secondary); font-size: 13px; }
+.app-shell .next-step .eyebrow { color: var(--folio-text-secondary); font-size: 13px; }
+.app-shell .next-step .button { font-size: 13px; min-height: 39px; }
 .app-shell .report-motif { opacity: .4; }
-.app-shell .engine-row { font-size: 12px; margin: 18px 26px; }
+.app-shell .engine-row { font-size: 13px; margin: 18px 26px; }
 .app-shell .engine-track { background: var(--folio-canvas); }
 .app-shell .engine-track i { background: var(--folio-text-secondary); }
-.app-shell .engine-panel > .muted { color: var(--folio-text-secondary); font-size: 12px; }
-.app-shell .prompt-table td { font-size: 12px; padding-top: 20px; padding-bottom: 20px; }
-.app-shell th { color: var(--folio-text-secondary); font-size: 12px; letter-spacing: .8px; background: var(--folio-canvas); }
+.app-shell .engine-panel > .muted { color: var(--folio-text-secondary); font-size: 13px; }
+.app-shell .prompt-table td { font-size: 13px; padding-top: 20px; padding-bottom: 20px; }
+.app-shell th { color: var(--folio-text-secondary); font-size: 13px; letter-spacing: .8px; background: var(--folio-canvas); }
 .app-shell td { border-color: var(--folio-edge); }
 .app-shell .intent-tag { color: var(--folio-text-secondary); background: var(--folio-canvas); }
 .app-shell .page-footer { color: var(--folio-text-secondary); padding: 28px 0; }
-.app-shell .page-footer button { font-size: 12px; }
+.app-shell .page-footer button { font-size: 13px; }
 .app-shell :is(input, select, textarea):focus-visible { outline-color: var(--folio-edge-strong); }
 .app-shell .sidebar :is(button, a):focus-visible { outline-color: var(--folio-edge-strong); }
 /* Quiet shared hierarchy across every workspace route. */
@@ -197,16 +197,16 @@
   .app-shell .topbar { height: 64px; padding-inline: 20px; }
   .app-shell .page-content { padding: 28px 20px 0; }
   .app-shell .page-heading h1 { font-size: 34px; letter-spacing: -1.4px; }
-  .app-shell .page-heading p { font-size: 13px; }
+  .app-shell .page-heading p { font-size: 14px; }
   .app-shell .metric-card { padding: 0 14px; }
   .app-shell .metric-value { font-size: 39px; }
-  .app-shell .metric-label { font-size: 12px; }
+  .app-shell .metric-label { font-size: 13px; }
   .app-shell .metric-middle { height: 65px; }
-  .app-shell .metric-card > p { font-size: 12px; }
+  .app-shell .metric-card > p { font-size: 13px; }
   .app-shell .panel-heading { padding: 21px 20px 0; }
   .app-shell .panel-heading h2 { font-size: 15px; }
-  .app-shell .panel-heading p { font-size: 12px; }
-  .app-shell .chart-footer { font-size: 12px; }
+  .app-shell .panel-heading p { font-size: 13px; }
+  .app-shell .chart-footer { font-size: 13px; }
   .app-shell .next-step { padding: 26px; }
   .app-shell .next-step h2 { font-size: 27px; }
 }
@@ -220,12 +220,12 @@
 .app-shell .nav-link { min-height: 44px; height: auto; font-size: 14px; font-weight: 500; padding-inline: 12px; }
 .app-shell .nav-link[aria-current="page"] { background: var(--folio-surface); color: var(--folio-ink); font-weight: 650; box-shadow: inset 3px 0 0 var(--folio-accent); }
 .app-shell .nav-link > svg { display: block; flex: none; }
-.app-shell .nav-caption { font-size: 12px; letter-spacing: .08em; }
-.app-shell .breadcrumb, .app-shell .search-trigger { font-size: 13px; }
+.app-shell .nav-caption { font-size: 13px; letter-spacing: .08em; }
+.app-shell .breadcrumb, .app-shell .search-trigger { font-size: 14px; }
 .app-shell .page-heading { align-items: flex-start; }
 .app-shell .page-heading h1 { font-size: clamp(32px, 2.8vw, 42px); line-height: 1.12; }
 .app-shell .page-heading p { font-size: 15px; max-width: 65ch; }
-.app-shell .button { min-height: 44px; font-size: 13px; font-weight: 600; }
+.app-shell .button { min-height: 44px; font-size: 14px; font-weight: 600; }
 .app-shell main.evaluation-page { padding-top: 18px; }
 .app-shell .evaluation-page .page-heading { margin-bottom: 8px; }
 .app-shell :is(a, button, input, select, textarea, summary):focus-visible { outline: 2px solid var(--folio-focus); outline-offset: 3px; }
@@ -249,7 +249,7 @@
 .app-shell .nav-group + .nav-group { margin-top: 12px; }
 .app-shell .nav-caption {
   color: var(--folio-text-muted);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: 0;
   margin: 0 8px 4px;
@@ -257,7 +257,7 @@
 }
 .app-shell .sidebar .nav-link {
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 14px;
   gap: 8px;
   height: 32px;
   min-height: 32px;
@@ -269,7 +269,7 @@
 .app-shell .page-heading { align-items: flex-start; gap: 12px; margin-bottom: 20px; }
 .app-shell .page-heading .eyebrow { display: none; }
 .app-shell .page-heading h1 { font-size: 20px; letter-spacing: -0.2px; line-height: 28px; margin: 0; }
-.app-shell .page-heading p { font-size: 13px; line-height: 20px; margin: 4px 0 0; }
+.app-shell .page-heading p { font-size: 14px; line-height: 20px; margin: 4px 0 0; }
 
 .agent-task-row { gap: 8px; min-height: 40px; padding: 6px 8px; }
 .agent-task-row-icon { height: 20px; width: 20px; }

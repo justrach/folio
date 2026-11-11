@@ -10,7 +10,7 @@
 .seo-data-history > p {
   margin: 18px 23px 23px;
   color: var(--folio-text-secondary);
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.7;
 }
 .seo-data-history .seo-data-section-heading {
@@ -35,18 +35,18 @@
   background: var(--folio-surface);
 }
 .seo-data-history-list strong {
-  font-size: 12px;
+  font-size: 13px;
   overflow-wrap: anywhere;
 }
 .seo-data-history-list small {
   display: block;
   margin-top: 5px;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--folio-text-secondary);
   line-height: 1.5;
 }
 .seo-data-history-status {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--folio-ink);
 }
 @media (max-width: 600px) {
@@ -64,8 +64,8 @@
   }
 }
 .seo-data-availability { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 18px; }
-.seo-data-availability p { flex: 1; min-width: 220px; font-size: 12px; line-height: 1.8; color: var(--folio-text-secondary); }
-.seo-data-badge { padding: 5px 8px; border: 1px solid var(--folio-edge); border-radius: 4px; font-size: 12px; color: var(--folio-text-secondary); background: var(--folio-surface); white-space: nowrap; }
+.seo-data-availability p { flex: 1; min-width: 220px; font-size: 13px; line-height: 1.8; color: var(--folio-text-secondary); }
+.seo-data-badge { padding: 5px 8px; border: 1px solid var(--folio-edge); border-radius: 4px; font-size: 13px; color: var(--folio-text-secondary); background: var(--folio-surface); white-space: nowrap; }
 .seo-data-section-heading {
   display: flex;
   align-items: center;
@@ -81,7 +81,7 @@
   gap: 9px;
 }
 .seo-data-section-heading p {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--folio-text-secondary);
   margin-top: 8px;
   line-height: 1.6;
@@ -98,7 +98,7 @@
 }
 .seo-data-query label {
   display: block;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--folio-text-secondary);
   margin-bottom: 9px;
 }
@@ -128,7 +128,7 @@
   min-height: 43px;
   flex: 1;
   width: 100%;
-  font-size: 13px;
+  font-size: 14px;
   outline: none;
 }
 .seo-data-input-wrap input:focus-visible {
@@ -142,7 +142,7 @@
   display: flex;
   align-items: flex-start;
   gap: 7px;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--folio-text-secondary);
   line-height: 1.8;
   margin-top: 12px;
@@ -155,7 +155,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px 22px;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--folio-text-muted);
   margin-top: 13px;
 }
@@ -167,7 +167,7 @@
   display: flex;
   margin: 0 23px 20px;
   color: var(--folio-text-secondary);
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.7;
 }
 .seo-data-alert {
@@ -176,7 +176,7 @@
   border: 1px solid var(--folio-accent-edge);
   color: var(--folio-accent);
   border-radius: 4px;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.8;
   margin: 0 23px 22px;
 }
@@ -210,7 +210,7 @@
 .seo-data-empty p {
   max-width: 460px;
   color: var(--folio-text-secondary);
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.9;
   margin-top: 13px;
 }
@@ -218,7 +218,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--folio-text-muted);
   margin-top: 24px;
 }
@@ -250,7 +250,7 @@
 .seo-data-handoff p {
   max-width: 570px;
   color: var(--folio-text-secondary);
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.8;
   overflow-wrap: anywhere;
 }
@@ -290,7 +290,7 @@
 }
 .seo-data-result-heading p {
   color: var(--folio-text-secondary);
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.8;
 }
 .seo-data-partial {
@@ -302,7 +302,7 @@
   border: 1px solid var(--folio-edge);
   border-radius: 5px;
   color: var(--folio-text-secondary);
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.7;
 }
 .seo-data-partial svg {
@@ -322,7 +322,7 @@
   min-width: 0;
 }
 .seo-data-metric > span {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--folio-text-secondary);
   display: block;
   line-height: 1.5;
@@ -337,7 +337,7 @@
   overflow-wrap: anywhere;
 }
 .seo-data-metric > small {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--folio-text-muted);
   display: block;
   line-height: 1.7;
@@ -361,12 +361,12 @@
   padding: 0 23px 22px;
 }
 .seo-data-distribution h3 {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
 }
 .seo-data-distribution > p {
   color: var(--folio-text-secondary);
-  font-size: 12px;
+  font-size: 13px;
   margin-top: 7px;
   line-height: 1.7;
 }
@@ -384,7 +384,7 @@
   align-items: center;
   gap: 12px;
   min-width: 0;
-  font-size: 12px;
+  font-size: 13px;
 }
 .seo-data-position {
   width: 41px;
@@ -427,16 +427,16 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--folio-text-secondary);
 }
 .seo-data-movement strong {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--folio-text-secondary);
 }
 .seo-data-source-note {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--folio-text-secondary);
   line-height: 1.9;
   padding: 18px 23px;
@@ -449,7 +449,7 @@
   align-items: center;
   padding: 13px 23px;
   border-top: 1px solid var(--line);
-  font-size: 12px;
+  font-size: 13px;
   color: var(--folio-text-secondary);
   background: var(--folio-surface);
 }
@@ -475,14 +475,14 @@
   color: var(--folio-text-secondary);
 }
 .seo-data-source-state p {
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.8;
   margin-top: 8px;
 }
 .seo-data-source-state small {
   display: block;
   margin-top: 10px;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.7;
 }
 .seo-data-source-state.error {
@@ -504,7 +504,7 @@
   display: flex;
   justify-content: space-between;
   gap: 8px;
-  font-size: 12px;
+  font-size: 13px;
   border-bottom: 1px solid var(--folio-edge);
   padding-bottom: 10px;
 }
@@ -516,7 +516,7 @@
   font-variant-numeric: tabular-nums;
 }
 .seo-data-disclosure {
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.9;
   color: var(--folio-text-secondary);
   display: flex;
@@ -532,7 +532,7 @@
   padding: 22px 23px 24px;
 }
 .seo-data-detail h3 {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
 }
 .seo-data-detail-heading {
@@ -544,7 +544,7 @@
 .seo-data-detail-heading p,
 .seo-data-detail-prompt p {
   color: var(--folio-text-secondary);
-  font-size: 12px;
+  font-size: 13px;
   margin-top: 7px;
   line-height: 1.7;
 }
@@ -564,14 +564,14 @@
   gap: 7px;
   align-items: flex-start;
   color: var(--folio-text-muted);
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.7;
   margin-top: 10px;
 }
 .seo-data-detail-empty,
 .seo-data-detail-note {
   color: var(--folio-text-secondary);
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.7;
   margin-top: 14px;
 }
@@ -585,13 +585,13 @@
 .seo-data-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: 13px;
 }
 .seo-data-table caption {
   text-align: left;
   padding: 12px 14px 0;
   color: var(--folio-text-secondary);
-  font-size: 12px;
+  font-size: 13px;
 }
 .seo-data-table th,
 .seo-data-table td {
@@ -604,7 +604,7 @@
 .seo-data-table thead th {
   border-top: 0;
   color: var(--folio-text-muted);
-  font-size: 12px;
+  font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -626,7 +626,7 @@
   margin-top: 18px;
 }
 .seo-data-landing h4 {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -644,7 +644,7 @@
   align-items: baseline;
   gap: 10px;
   flex-wrap: wrap;
-  font-size: 12px;
+  font-size: 13px;
 }
 .seo-data-landing span {
   min-width: 0;
@@ -667,7 +667,7 @@
     gap: 14px;
   }
   .seo-data-table {
-    font-size: 12px;
+    font-size: 13px;
   }
   .seo-data-table th,
   .seo-data-table td {
@@ -694,7 +694,7 @@
     align-items: flex-start;
   }
   .seo-data-section-heading > .seo-data-badge {
-    font-size: 12px;
+    font-size: 13px;
     padding: 4px 5px;
   }
   .seo-data-query .seo-data-section-heading h2 {
@@ -724,7 +724,7 @@
     font-size: 27px;
   }
   .seo-data-empty > span:last-child {
-    font-size: 12px;
+    font-size: 13px;
     line-height: 1.6;
   }
   .seo-data-metrics {
@@ -760,7 +760,7 @@
     row-gap: 14px;
   }
   .seo-data-distribution li {
-    font-size: 12px;
+    font-size: 13px;
   }
   .seo-data-movement {
     padding: 17px 19px;
@@ -786,15 +786,15 @@
     gap: 10px;
   }
   .seo-data-source-state p {
-    font-size: 12px;
+    font-size: 13px;
   }
   .seo-data-alert {
     margin-inline: 19px;
   }
   .seo-data-disclosure {
-    font-size: 12px;
+    font-size: 13px;
   }
   .seo-data-section-heading h2 {
-    font-size: 13px;
+    font-size: 14px;
   }
 }

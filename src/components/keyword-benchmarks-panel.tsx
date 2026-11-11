@@ -10,6 +10,7 @@ import { useSession } from "@/lib/auth-client";
 import { isKeywordBenchmarkBlocking, isKeywordBenchmarkId, type KeywordBenchmarkRun, type KeywordBenchmarkRunSummary, type KeywordBenchmarkSuite, type KeywordBenchmarkSuiteSummary } from "@/lib/keyword-benchmark-types";
 import { KeywordObservationReport } from "./keyword-observation-report";
 import { QuestionSuiteEditor } from "./question-suite-editor";
+import { WorkspaceState } from "./workspace-state";
 import "./keyword-benchmarks-panel.css";
 
 type Site = { id: string; name: string; url: string };
@@ -54,7 +55,7 @@ export function KeywordBenchmarksPanel({ targetUrl, websiteId, basePath = "/benc
   if (basePath === "/evaluations") returnParams.set("view", "search");
   const returnTo = `${basePath}${returnParams.size ? `?${returnParams}` : ""}`;
   if (isPending) return <p role="status" className="benchmark-loading">Loading your workspace…</p>;
-  if (!session?.user.id) return <section className="panel benchmark-empty"><h2>Your keyword observations stay private.</h2><p>Sign in to use a saved website, choose questions, and compare recorded answers.</p><Link className="button primary" href={`/login?next=${encodeURIComponent(returnTo)}`}>Sign in to your workspace <ArrowRight size={14}/></Link></section>;
+  if (!session?.user.id) return <WorkspaceState title="Your keyword observations stay private." actions={<Link className="button primary" href={`/login?next=${encodeURIComponent(returnTo)}`}>Sign in to your workspace <ArrowRight size={14}/></Link>}><p>Sign in to use a saved website, choose questions, and compare recorded answers.</p></WorkspaceState>;
   return <OwnedBenchmarks key={session.user.id} targetUrl={targetUrl} websiteId={websiteId} basePath={basePath}/>;
 }
 

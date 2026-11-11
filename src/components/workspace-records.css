@@ -19,9 +19,9 @@
   padding: 10px 12px;
 }
 
-.workspace-records-panel h2 { font-size: 13px; font-weight: 600; margin: 0; }
+.workspace-records-panel h2 { font-size: 14px; font-weight: 600; margin: 0; }
 .workspace-records-panel > header a {
-  align-items: center; color: var(--folio-text-secondary); display: inline-flex; font-size: 12px; gap: 4px; text-decoration: none;
+  align-items: center; color: var(--folio-text-secondary); display: inline-flex; font-size: 13px; gap: 4px; text-decoration: none;
 }
 .workspace-records-panel > header a:hover { color: var(--folio-ink); text-decoration: underline; }
 
@@ -32,10 +32,10 @@
   text-decoration: none;
 }
 .workspace-records-panel li a:hover { background: var(--folio-surface-muted); }
-.workspace-records-panel li strong { flex: 1; font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.workspace-records-panel li small { color: var(--folio-text-muted); font-size: 12px; white-space: nowrap; }
+.workspace-records-panel li strong { flex: 1; font-size: 14px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.workspace-records-panel li small { color: var(--folio-text-muted); font-size: 13px; white-space: nowrap; }
 
-.workspace-records-empty { color: var(--folio-text-muted); font-size: 12px; margin: 0; padding: 14px 12px; }
+.workspace-records-empty { color: var(--folio-text-muted); font-size: 13px; margin: 0; padding: 14px 12px; }
 .workspace-records-empty a { color: var(--folio-ink); }
 
 .dot { border-radius: 50%; display: inline-block; flex: none; height: 8px; width: 8px; background: var(--folio-edge-strong); }

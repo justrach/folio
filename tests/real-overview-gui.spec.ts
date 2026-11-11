@@ -84,7 +84,7 @@ test("overview uses exact selected-site observations, preserves completed answer
   await expect(metric(page, "Appeared in answers")).toContainText("1 of 2 completed answers");
   await expect(metric(page, "Questions with completed answers").locator("dd")).toHaveText("2 / 3 loaded");
   await expect(metric(page, "Distinct cited pages").locator("dd")).toHaveText("2");
-  await expect(page.getByLabel("Latest attempt states")).toContainText("1 need attention");
+  await expect(page.getByLabel("Latest attempt states")).toContainText("1 needs attention");
   await expect(page.getByLabel("Latest attempt states")).toContainText("1 not run");
   await expect(page.getByLabel("Latest attempt states")).toContainText("1 failed");
   const evaluations = page.getByRole("region", { name: "Workspace evaluations", exact: true });
@@ -106,7 +106,7 @@ test("overview uses exact selected-site observations, preserves completed answer
   await page.getByRole("button", { name: "Reviewed documentation", exact: true }).click();
   await expect(search(page)).toContainText("Legacy documentation question");
   await expect(metric(page, "Appeared in answers").locator("dd")).toHaveText("100%");
-  await page.getByRole("button", { name: "Open-web observations", exact: true }).click();
+  await page.getByRole("button", { name: "Open web", exact: true }).click();
   await selectValue(page.getByLabel("Selected website", { exact: true }), beta.id);
   expect(new URL(page.url()).searchParams.get("view")).toBe("workspace");
   await expect(search(page)).toContainText("Beta private question"); await expect(search(page)).not.toContainText(suite.cases[0].query);
