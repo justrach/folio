@@ -4,8 +4,6 @@ import {trackProductEvent} from "@/lib/product-analytics-client";
 import Link from "next/link";
 import { ArrowRight, Check, ShieldCheck, X } from "lucide-react";
 import { CompanyFavicon } from "./company-favicon";
-import { WorkspaceEmptyArt } from "./workspace-empty-art";
-import { DEVELOPER_TOOLS } from "@/lib/developer-tools-source";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { authClient } from "@/lib/auth-client";
@@ -18,7 +16,6 @@ import type { CompetitorSuggestion } from "@/lib/onboarding-competitors";
 import { BaselineProgress, useBaselineQueue } from "./onboarding-progress";
 import "./onboarding.css";
 
-export type OnboardingProof = { category: string; totalAnswers: number; firstObservedAt: string | null; lastObservedAt: string | null; rows: { name: string; answers: number; totalAnswers: number; averagePosition: number }[] };
 export type StarterPack = { id: string; name: string; questions: string[]; companies: { name: string; aliases: string[] }[] };
 type Fix = { id: string; label: string; points: number; maxPoints: number; gap: number; detail: string };
 type Check = { id: string; url: string; host: string; createdAt: string; seoScore: number; scoredChecks: number; fixes: Fix[]; passed?: { id: string; label: string }[];
@@ -41,12 +38,6 @@ const Shield = () => <ShieldCheck size={14} strokeWidth={2} aria-hidden="true" /
 export const Tick = () => <Check size={13} strokeWidth={3.2} aria-hidden="true" />;
 const Trust = ({ children }: { children: ReactNode }) => <p className="ob-trust"><Shield /><span>{children}</span></p>;
 const date = (value: string | null) => value ? new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(value)) : "";
-const dateRange = (from: string | null, to: string | null) => {
-  const a = date(from), b = date(to);
-  if (!a || a === b) return a;
-  const [d1, m1, y1] = a.split(" "), [d2, m2, y2] = b.split(" ");
-  return m1 === m2 && y1 === y2 ? `${d1} and ${d2} ${m2} ${y2}` : `${a} and ${b}`;
-};
 const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
 const websiteOf = (company: { domain?: string; aliases: string[] }) => competitorWebsite(company) ?? "Website not provided";
 
@@ -86,14 +77,14 @@ function Screen({ step, onExit, nav, eyebrow, title, children, side }: { step: n
   useEffect(() => { heading.current?.focus({ preventScroll: true }); }, [step]);
   return <div className="ob">
     <TopBar step={step} onExit={onExit} nav={nav} />
-    <main className="ob-main" id="main-content" data-step={step} key={step} data-dir={nav?.dir ?? "forward"}>
+    <main className={`ob-main${side ? "" : " ob-main-solo"}`} id="main-content" data-step={step} key={step} data-dir={nav?.dir ?? "forward"}>
       <div className="ob-copy">{previous !== undefined && <button className="ob-back-button" type="button" onClick={() => nav?.go(previous)}>← Back</button>}<p className="ob-eyebrow">{eyebrow}</p><h1 ref={heading} tabIndex={-1}>{title}</h1>{children}</div>
-      <aside className="ob-side">{side}</aside>
+      {side && <aside className="ob-side">{side}</aside>}
     </main>
   </div>;
 }
 
-type OnboardingProps = { proof: OnboardingProof | null; starterPacks: StarterPack[] };
+type OnboardingProps = { starterPacks: StarterPack[] };
 
 export function Onboarding(props: OnboardingProps) {
   const { data: session, isPending } = authClient.useSession();
@@ -102,7 +93,7 @@ export function Onboarding(props: OnboardingProps) {
   return <OnboardingFlow key={session?.user.id ?? "anonymous"} {...props} signedIn={Boolean(session)} />;
 }
 
-function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { signedIn: boolean }) {
+function OnboardingFlow({ starterPacks, signedIn }: OnboardingProps & { signedIn: boolean }) {
   const router = useRouter();
   const params = useSearchParams();
   const requestedStep = useRef(Number(params.get("step")));
@@ -245,7 +236,7 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
 
   if (!step) return <div className="ob"><TopBar step={1} /><p className="ob-loading" role="status">Loading your setup…</p></div>;
 
-  if (step === 1) return <Screen nav={nav} step={1} eyebrow="Free page check" title="Start with your website." side={url.trim() ? <LivePreview input={url} checking={busy} /> : <ProofCard proof={proof} />}>
+  if (step === 1) return <Screen nav={nav} step={1} eyebrow="Free page check" title="Start with your website." side={url.trim() ? <LivePreview input={url} checking={busy} /> : null}>
     <p className="ob-lede">Get a free page check. Then choose the customer questions you want to research.</p>
     <form onSubmit={event => { event.preventDefault(); void run(async () => {
       const result = await api<{ check: Check; siteId: string | null }>("/api/onboarding/check", { method: "POST", body: { url: url.includes("://") ? url : `https://${url}` } });
@@ -584,17 +575,4 @@ function LivePreview({ input, checking }: { input: string; checking: boolean }) 
     <div className="ob-meter pending"><i /></div>
     <ul className="ob-passed ob-pending" aria-label="Checks Folio will run">{evaluationMethodology.weights.map(check => <li key={check.id}><span className="ob-step-dot" aria-hidden="true" />{check.label}<small>{check.weight} pts</small></li>)}</ul>
   </div>;
-}
-
-function ProofCard({ proof }: { proof: OnboardingProof | null }) {
-  if (!proof) return null;
-  return <div className="ob-backdrop"><WorkspaceEmptyArt/><div className="ob-card">
-    <div className="ob-card-head"><span>Example · saved public results</span></div>
-    <h2>Who AI recommended</h2><p className="ob-hint" style={{ marginTop: 6 }}>{proof.category} · {plural(proof.totalAnswers, "saved answer")}</p>
-    <div className="ob-proof-columns"><span>Website</span><span>Avg. position</span></div>
-    <ol className="ob-rows">{proof.rows.map(row => <li key={row.name}><CompanyFavicon name={row.name} url={DEVELOPER_TOOLS.find(tool=>tool.name===row.name)?.websiteUrl ?? null}/><div className="ob-grow"><strong>{row.name}</strong><small>Listed in {row.answers} of {row.totalAnswers} answers</small></div><span className="ob-pill">{row.averagePosition.toFixed(1)}</span></li>)}</ol>
-    <p className="ob-note">These are public examples, not results for your website. A lower average position means an earlier place in the returned lists.</p>
-    <p className="ob-proof-date">Recorded {dateRange(proof.firstObservedAt, proof.lastObservedAt)}</p>
-    <Link className="ob-proof-link" href="/leaderboard?landscapeAudience=Developer+tools">Explore public results <Arrow /></Link>
-  </div></div>;
 }
