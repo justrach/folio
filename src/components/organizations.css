@@ -41,11 +41,11 @@
 .org-onboard > p { max-width: 900px; margin-top: 8px; }
 .org-steps { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin-top: 18px; list-style: none; }
 .org-steps > li { display: flex; gap: 12px; min-width: 0; padding: 18px; border-radius: var(--folio-radius-control); background: var(--folio-canvas); }
-.org-steps > li > div { display: grid; gap: 10px; align-content: start; min-width: 0; }
+.org-steps > li > div { display: grid; grid-template-columns: minmax(0,1fr); gap: 10px; align-content: start; min-width: 0; }
 .org-step-number { display: grid; place-items: center; width: 28px; height: 28px; flex: none; border-radius: 999px; background: var(--folio-accent); color: var(--folio-on-accent); font-size: 14px; font-weight: 600; }
-.org-steps details { border-top: 1px solid var(--folio-edge); padding-top: 8px; }
+.org-steps details { min-width: 0; border-top: 1px solid var(--folio-edge); padding-top: 8px; }
 .org-steps summary { cursor: pointer; font-size: 13px; font-weight: 500; color: var(--folio-ink); }
-.org-steps pre { margin: 8px 0; padding: 12px; max-width: 100%; overflow-x: auto; border-radius: 8px; background: var(--folio-surface); border: 1px solid var(--folio-edge); font-family: var(--folio-font-mono); font-size: 13px; line-height: 1.5; color: var(--folio-ink); }
+.org-steps pre { margin: 8px 0; padding: 12px; max-width: 100%; overflow-x: auto; border-radius: 8px; background: var(--folio-surface); border: 1px solid var(--folio-edge); font-family: var(--folio-font-mono); font-size: 13px; line-height: 1.5; color: var(--folio-ink); white-space: pre-wrap; overflow-wrap: anywhere; }
 .org-steps blockquote { margin: 0; padding: 12px 14px; border-left: 3px solid var(--folio-accent); border-radius: 0 8px 8px 0; background: var(--folio-surface); font-size: 14px; line-height: 1.6; color: var(--folio-ink); }
 .org-copy { justify-self: start; min-height: 34px !important; }
 

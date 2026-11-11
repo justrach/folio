@@ -124,6 +124,16 @@ It reads saved data only; no migration, secret or paid work. Typecheck, 431 unit
 returned 200, the new route returned 401 without a session, the no-key MCP endpoint still listed only its four
 index tools, and the served stylesheet includes the new panel.
 
+**Organizations** (`7847b24` plus a layout fix) followed. Migration `0028_organizations.sql` was applied to the
+production Postgres `public` schema through the `scripts/pg-schema.ts` translation (`CREATE TABLE IF NOT EXISTS`;
+four empty tables, 21 columns); the D1 rollback engine does not have it, like `0023`–`0027`. Before that, the same
+flows (create, invite, join, share, a teammate's gap read, roles, remove, leave) ran on production Postgres inside
+one transaction that was rolled back. Validation: 431 unit tests, 10 D1 integration tests, desktop/mobile browser
+checks for organizations, the team preview and the website panels, the production build and both smoke tests. After
+deployment `/orgs` and `/orgs?view=preview` returned 200 and the organization APIs returned 401 without a session.
+On the owner's request a **Manus** organization was created on the owner's account with `manus.im` shared; it has
+no other members and no invite link yet.
+
 ### Vector store
 
 Page embeddings live in turbopuffer, not Postgres (see [embeddings](EMBEDDINGS.md)).
