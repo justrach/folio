@@ -210,6 +210,38 @@ in memory and was deleted afterwards (1 key deleted, 0 recorded asks, none remai
 
 The app has not been opened in Claude Desktop or VS Code.
 
+**MCP App on the official package, and where every number comes from** (`95d0ae6`) followed: frontend
+`5c506a3c-c16b-45a3-8a49-ede8da902fc7`, backend `96e5d448-6dba-4dd4-b8a2-c30942c4b5cf` (`--keep-vars`). No migration or
+secret change.
+- `@modelcontextprotocol/ext-apps` 1.7.5 is now a runtime dependency, used for `registerAppTool`, `registerAppResource`
+  and, in the page, the `App` class. The page is built into `src/lib/folio-app.generated.ts` (328 KB).
+- The backend upload grew from 4.16 MB to 4.35 MB gzipped.
+- MCP server `1.9.0`: `folio_website_gaps` adds `sources` and `googleCheck`.
+- Search Console imports now make a fifth request, for US-only totals. No Search Console import was run during this
+  release, so no saved snapshot has US totals yet.
+
+Before deploying, the report code ran against production Postgres in a read-only session for the owner's websites:
+- `codegraff.com` compared Google's 149 clicks in 28 days (about 160 a month) with DataForSEO's estimate of under 1 a
+  month.
+- `manus.im` and `usefolio.site` showed "estimate only".
+
+Validation: typecheck, 445 unit tests, the 17 D1 integration tests for these areas, browser checks, the production build
+and both smoke tests.
+- Browser checks: 60 of 62 passed against the local dev server. The two that failed (desktop and mobile) were the
+  Search Console import test's check for unexpected requests, which saw `GET /api/analytics/config`. That request
+  happens locally because `playwright.config.ts` opts out of analytics only under `CI`; with `CI=1` the spec passed.
+- D1: two tests hit `connect ETIMEDOUT 127.0.0.1` while another session's local `workerd` held about 1,800 loopback
+  sockets, and passed on rerun.
+
+After deployment, a live check over HTTPS used a temporary read key named "MCP App check (temporary)":
+- The first attempt hit a network connect timeout to usefolio.site; its key was still deleted. The second succeeded.
+- Server `1.9.0`. Both app tools carry `_meta.ui` and the flat key.
+- The served page is byte-identical to the build.
+- `folio_website_gaps` for `codegraff.com` returned `compared` with ratio 1,028.
+- Cleanup: 1 key and 1 recorded ask deleted, none remaining.
+
+`/websites`, `/orgs` and `/search-console` returned 200, and the served bundle contains the new section.
+
 ### Vector store
 
 Page embeddings live in turbopuffer, not Postgres (see [embeddings](EMBEDDINGS.md)).
