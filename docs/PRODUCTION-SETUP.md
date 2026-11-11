@@ -162,6 +162,17 @@ on the local dev server and passed on rerun), the production build and both smok
 `/agents` and `/login` returned 200. Without a session, `GET /api/organizations` and the `add_by_email` action
 returned 401, and the served `/orgs` bundle contains the email form and the Manus client.
 
+**Smoother join-and-connect flow** (`f91a172`) followed: frontend `efbe371a-c7b5-4b4e-b65b-329d60cc861d`, backend
+`8c1f5611-ce98-4237-a884-ded2e60c957d` (`--keep-vars`). Frontend only in effect: no migration, no secret change, no
+API change. Owners get **Email the invite** (`mailto:`) and **Copy message** for each waiting person; `/login?next=/orgs`
+explains that only a Google or GitHub sign-in with the added address joins by itself; new members get a welcome card;
+**Connect your agent** highlights the next step and fills the new key into copies for clients that can't read
+`FOLIO_API_KEY`. Validation: typecheck, 439 unit tests (one run, started right after the dev server was stopped, had a
+single failure that did not recur in six further runs), the 10 D1 integration tests, 22 browser checks on desktop and
+mobile (one first page load timed out locally and passed on rerun), the production build and both smoke tests. After
+deployment `/orgs`, `/agents` and `/login?next=/orgs` returned 200, `GET /api/organizations` returned 401 without a
+session, and the served bundle contains the invite actions, the welcome card, the login hint and the key-filling copy.
+
 ### Vector store
 
 Page embeddings live in turbopuffer, not Postgres (see [embeddings](EMBEDDINGS.md)).
