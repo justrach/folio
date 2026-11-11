@@ -103,6 +103,12 @@ production OpenNext build and both built-Worker smoke tests. After deployment: h
 `folio_index_overview` from live published data, returned 405 to GET and 403 to a foreign origin.
 No keyword run was started as a deployment check.
 
+Later the same day the readable-contrast frontend (`feat/readable-contrast`, `d107c6d`) was merged in
+(`c81ef0b`) and both Workers redeployed from one build: frontend `ae3a7ac7-e371-4ba4-941e-aad457e7b1cf`,
+backend `832e1ec7-1974-4d90-a10a-5cd2392f4a8f` (`--keep-vars`). Typecheck, 427 unit tests, the production
+build and both smoke tests passed; production pages returned 200, private APIs 401, and the served
+stylesheets include `--folio-raised`. This release was then fast-forwarded to `main`.
+
 ### Vector store
 
 Page embeddings live in turbopuffer, not Postgres (see [embeddings](EMBEDDINGS.md)).
