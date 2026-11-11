@@ -132,6 +132,8 @@ export async function buildClaudeDesktopExtension(origin: string): Promise<Array
   // A fixed date keeps the file identical between requests.
   const date = new Date("2026-11-11T00:00:00Z");
   zip.file("manifest.json", `${JSON.stringify(claudeDesktopManifest(origin), null, 2)}\n`, { date });
-  zip.file("server/index.js", BRIDGE_SCRIPT, { date });
+  // The folder entry gets the same fixed date; left to JSZip it would carry the build time and change the bytes.
+  zip.file("server/", null, { dir: true, date });
+  zip.file("server/index.js", BRIDGE_SCRIPT, { date, createFolders: false });
   return zip.generateAsync({ type: "arraybuffer", compression: "DEFLATE", platform: "UNIX" });
 }

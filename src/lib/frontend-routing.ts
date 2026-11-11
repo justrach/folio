@@ -25,6 +25,8 @@ export async function serveFrontend(request: Request, services: Services, render
   }
   if (url.pathname === "/admin" || url.pathname === "/folio-internal" || url.pathname.startsWith("/folio-internal/")) return services.FOLIO_BACKEND.fetch(request);
   if (url.pathname === "/api" || url.pathname.startsWith("/api/")) return services.FOLIO_BACKEND.fetch(request);
+  // MCP clients discover OAuth here; the backend serves it next to the endpoints it describes.
+  if (url.pathname.startsWith("/.well-known/oauth-")) return services.FOLIO_BACKEND.fetch(request);
   if (url.pathname === "/leaderboard" && (url.searchParams.get("view") === "questions" || url.searchParams.has("cohort") || url.searchParams.has("q")))
     return services.FOLIO_PUBLIC_INDEX.fetch(request);
   return render();

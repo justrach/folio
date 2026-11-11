@@ -5,6 +5,8 @@ import { AgentApiError } from "@/lib/agent-api-key-store";
 import { authenticateSandboxSeoGrant } from "@/lib/sandbox-seo";
 import { serveFolioMcp, type FolioToolContext } from "@/lib/folio-mcp";
 import { readJsonBody } from "@/lib/api-request";
+import { mcpEndpoint } from "@/lib/agent-onboarding";
+import { requestOrigin, resourceMetadataUrl } from "@/lib/mcp-oauth";
 import type { AgentsEnvironment } from "@/lib/agents";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -24,7 +26,7 @@ async function handle(request: Request) {
         DATAFORSEO_PASSWORD: values.DATAFORSEO_PASSWORD || process.env.DATAFORSEO_PASSWORD,
         DATAFORSEO_ALLOWED_USER_IDS: values.DATAFORSEO_ALLOWED_USER_IDS || process.env.DATAFORSEO_ALLOWED_USER_IDS,
       } };
-    } else context = await agentApiContext(request);
+    } else context = await agentApiContext(request, "read", { oauthResource: mcpEndpoint(requestOrigin(request)) });
     // Links the Folio app opens point back at the site this request reached.
     context = { ...context, origin: new URL(request.url).origin };
     let bounded = request;
@@ -35,7 +37,12 @@ async function handle(request: Request) {
     const response = await serveFolioMcp(bounded, context);
     for (const [key, value] of Object.entries(AGENT_API_HEADERS)) response.headers.set(key, value);
     return response;
-  } catch (error) { return agentApiErrorResponse(error); }
+  } catch (error) {
+    const response = agentApiErrorResponse(error);
+    // Tells MCP clients where to sign in with OAuth (RFC 9728 §5.1); clients with a Folio key never get here.
+    if (response.status === 401) response.headers.set("WWW-Authenticate", `Bearer ${error instanceof AgentApiError && error.code === "invalid_token" ? 'error="invalid_token", ' : ""}resource_metadata="${resourceMetadataUrl(requestOrigin(request))}"`);
+    return response;
+  }
 }
 export const POST = handle;
 export const GET = handle;

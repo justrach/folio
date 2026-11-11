@@ -14,12 +14,15 @@ import { EvalStoreError } from "./eval-store";
 
 export const AGENT_API_HEADERS = { "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff", "Referrer-Policy": "no-referrer" };
 
-/** Cookie sessions never substitute for an agent key on /api/v1. */
-export async function agentApiContext(request: Request, scope: AgentApiScope = "read") {
-  const match = /^Bearer (folio_v1_[a-f0-9]{64})$/i.exec(request.headers.get("authorization") ?? "");
+/**
+ * Cookie sessions never substitute for an agent key on /api/v1. OAuth access tokens (`folio_at_`) are accepted only where
+ * `oauthResource` names the resource they were issued for: Folio's MCP endpoint.
+ */
+export async function agentApiContext(request: Request, scope: AgentApiScope = "read", options: { oauthResource?: string } = {}) {
+  const match = /^Bearer (folio_v1_[a-f0-9]{64}|folio_at_[a-f0-9]{64})$/i.exec(request.headers.get("authorization") ?? "");
   if (!match) throw new AgentApiError("Send a Folio API key in the Authorization: Bearer header.", 401, "unauthorized");
   const db = await getDb();
-  const principal = await authenticateAgentApiKey(db, match[1], scope);
+  const principal = await authenticateAgentApiKey(db, match[1], scope, { resource: options.oauthResource });
   const { env } = await getCloudflareContext({ async: true });
   const values = env as unknown as AgentRunEnvironment;
   return { db, principal, env: {

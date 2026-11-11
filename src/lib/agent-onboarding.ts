@@ -88,7 +88,7 @@ export function agentClients(origin: string): AgentClientSetup[] {
       ],
       check: { label: "Check it", code: "Quit and reopen Claude Desktop, then open the tools menu in a new chat", expect: "folio listed with its tools" },
       notes: ["The extension file holds no key: Claude asks for it when you install, masks it, and lets you change it later in its extension settings.",
-        "Claude.ai and ChatGPT web connectors need OAuth sign-in, which Folio doesn’t offer yet."] },
+        `On claude.ai or ChatGPT, add a custom connector with ${cloudUrl} instead: no key to copy, you approve it on Folio.`] },
     // From Manus's documentation (Connectors → Create → custom MCP server by URL); not yet run in a Manus account.
     { id: "manus", label: "Manus", kind: "Cloud agent", readsShellEnvironment: false,
       intro: "Manus works on its own computer in the cloud and reaches Folio over the internet. In Manus, open Connectors, choose Create, add a custom MCP server by URL, and fill in these three fields. Manus tests the connection when you save it.",
@@ -112,7 +112,8 @@ export function agentClients(origin: string): AgentClientSetup[] {
         { label: "Header", language: "text", code: `Authorization: Bearer ${KEY_PLACEHOLDER}` },
       ],
       check: null,
-      notes: ["Each request is independent: no session to keep alive, and GET streams aren’t needed.", "Browser-based clients must run on this Folio site’s own origin."] },
+      notes: [`Clients that sign in with OAuth (claude.ai and ChatGPT custom connectors, and others) need only the endpoint: they open Folio, you approve them on the same card, and they never see a key. Use ${cloudUrl} for them.`,
+        "Each request is independent: no session to keep alive, and GET streams aren’t needed.", "Browser-based clients must run on this Folio site’s own origin."] },
   ];
 }
 
@@ -235,6 +236,6 @@ export const CONNECTION_TROUBLESHOOTING: { problem: string; fix: string }[] = [
   { problem: "It worked in the terminal but not in the editor", fix: "Editors and desktop apps don’t always see variables exported in a terminal. Open the editor from that terminal, or paste the key where its config says." },
   { problem: "403 “Untrusted MCP origin”", fix: "Browser-based clients are refused unless they run on this Folio site. Use a terminal, editor or desktop agent." },
   { problem: "429 “reached its request limit”", fix: "Each key allows 60 requests a minute. Wait a minute. A person can have 10 active keys, so give each agent its own." },
-  { problem: "Claude.ai or ChatGPT connectors won’t connect", fix: "Their web connectors need OAuth sign-in, which Folio doesn’t offer yet. Use Claude Desktop through mcp-remote, or a terminal or editor agent." },
+  { problem: "Claude.ai or ChatGPT connectors won’t connect", fix: "Add a custom connector with Folio’s public address (https://usefolio.site/api/mcp), with no key: it opens Folio to sign in and approve. If it says the app can’t connect, start again from the connector; a request is good for ten minutes." },
   { problem: "Manus says the connection test failed", fix: "Check the server URL ends in /api/mcp and the Bearer token is the whole key, starting folio_v1_. Run the terminal test in step 4 to tell a bad key from a Manus problem; if the key works there, tell us what Manus shows." },
 ];

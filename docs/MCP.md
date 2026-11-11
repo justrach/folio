@@ -41,7 +41,22 @@ After approval, step 3 offers the quickest way each client supports (`installAct
 
 Claude Code and Codex have no install links, so a single command is their one step. The Claude Desktop bridge (`BRIDGE_SCRIPT` in `src/lib/claude-desktop-extension.ts`) needs nothing installed: Claude Desktop runs it with its own Node.js. It sends `initialize` first and then the rest side by side, carrying the session and protocol version. A connection that fails before anything is sent is tried once more; it never logs the key.
 
-Claude.ai and ChatGPT web connectors need OAuth sign-in, which Folio does not offer yet. It is the next step: the same consent card behind an OAuth authorize page.
+### Sign in with OAuth (claude.ai, ChatGPT and other connectors)
+
+Apps that connect with OAuth need only `https://usefolio.site/api/mcp`. Folio follows the MCP authorization spec (2025-11-25), implemented in `src/lib/mcp-oauth.ts`:
+
+- **Discovery.** `/api/mcp` answers a request without a token with 401 and `WWW-Authenticate: Bearer resource_metadata="…/.well-known/oauth-protected-resource/api/mcp"`. That document (also at the root path) names Folio as the authorization server. `/.well-known/oauth-authorization-server` lists the endpoints and `code_challenge_methods_supported: ["S256"]`.
+- **Clients.** An app registers itself at `/api/oauth/register` (RFC 7591), or uses the https URL of its client ID metadata document as its `client_id`. Folio fetches that document, checks it names itself, and caches it for a day.
+  - Return addresses must be https, `http://localhost` or `127.0.0.1` (any port, RFC 8252), or an app's own scheme (`cursor:`, `vscode:`).
+  - Clients are public with PKCE by default; one that asks for `client_secret_post` or `client_secret_basic` gets a secret.
+- **Consent.** `/oauth/authorize` shows the same consent card as Connect your agent. It also shows the return address, and whether Folio could identify the app ("Identified by …" for metadata documents, "Registered itself" otherwise). Signing in returns to the same request.
+  - Problems with the app or its return address are shown on Folio's page and never redirected. Other problems, and Cancel (`access_denied`), go back to the app with its `state` and `iss`.
+- **Tokens.** Approving stores a one-use, ten-minute code bound to the app, the return address, the PKCE challenge, the resource and the person's choices. The token endpoint then creates the connection's key: an ordinary agent key with `oauth_client_id`, which the app never sees. It returns a one-hour `folio_at_` access token and a `folio_rt_` refresh token. Refresh tokens rotate, and each works once.
+  - Reconnecting the same app replaces its key, so it doesn't add another.
+  - The key's permissions, organization limit, 60-a-minute rate limit and 1–90-day life apply, and revoking it in Folio disconnects the app. `/api/oauth/revoke` with a refresh token does the same.
+- **Audience.** Access tokens are bound to `https://usefolio.site/api/mcp` and accepted only there, never on `/api/v1`. Codes, tokens and secrets are stored as SHA-256 hashes; tables are in `migrations/0031_mcp_oauth.sql`.
+
+The official MCP SDK client ran the whole flow against the local preview: 401 discovery, registration, the consent page in a browser, PKCE, token exchange, MCP calls, refresh rotation, replay refused, and revocation.
 
 Manual setup: create a revocable Folio key in `/docs/api#api-keys`. Store it in the client environment as `FOLIO_API_KEY`, never in a committed configuration. Keys inherit the exact issuing account's record ownership. Select `read` for saved evidence, optionally `evaluate` for paid evaluations, `seo` for paid DataForSEO lookups and `changes` to record website changes (no charges). Existing evaluation keys do not acquire SEO permission. Account provider access and quotas still apply.
 
@@ -67,7 +82,7 @@ Claude Code MCP configuration (environment substitution):
 }
 ```
 
-For local coding clients use `http://localhost:3001/api/mcp`. Remote sandboxes require a deployed public HTTPS endpoint. This is bearer-key authentication, not an OAuth authorization server. Requests authenticate before protocol handling; cookie sessions alone cannot access MCP. Revocation applies on the next request. Browser requests must have the deployment's exact Origin. Keys are limited to 60 requests per minute.
+For local coding clients use `http://localhost:3001/api/mcp`. Remote sandboxes require a deployed public HTTPS endpoint. Clients send a Folio key or an OAuth access token as a bearer token (see above). Requests authenticate before protocol handling; cookie sessions alone cannot access MCP. Revocation applies on the next request. Browser requests must have the deployment's exact Origin. Keys are limited to 60 requests per minute.
 
 | Tool | Permission | Behavior |
 | --- | --- | --- |
@@ -134,7 +149,7 @@ Boundaries:
 Testing:
 - `tests/folio-app.spec.ts` runs the page against the official host bridge (`AppBridge` from the same package), which validates every message against the spec's schemas.
 - The page has not yet been run in Claude Desktop or VS Code themselves.
-- Claude Desktop reaches Folio through `mcp-remote`, which passes `_meta` and resource reads through unchanged. Claude.ai's web connectors still need OAuth.
+- Claude Desktop reaches Folio through `mcp-remote`, which passes `_meta` and resource reads through unchanged. Claude.ai's web connectors can now connect with OAuth; the app has not been opened there yet.
 
 ## Organizations
 

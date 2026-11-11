@@ -1810,6 +1810,8 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
       if (next.origin === "https://folio.invalid" && next.pathname === "/docs/api") returnTo = "/docs/api";
       // An invite link's secret stays in this tab's storage, so returning to /orgs resumes joining.
       if (next.origin === "https://folio.invalid" && next.pathname === "/orgs") returnTo = "/orgs";
+      // An app's OAuth request returns to its consent page with its own query, which the page checks again.
+      if (next.origin === "https://folio.invalid" && next.pathname === "/oauth/authorize") returnTo = `/oauth/authorize${next.search}`;
       if (next.origin === "https://folio.invalid" && ["/evaluations", "/agents"].includes(next.pathname)) {
         const views = next.searchParams.getAll("view");
         const view = views.length === 1 && ["search", "page"].includes(views[0]) ? views[0] : null;

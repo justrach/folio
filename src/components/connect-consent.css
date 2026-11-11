@@ -55,6 +55,18 @@ button.cc-chip { cursor: pointer; }
 .cc-actions .button { justify-content: center; }
 .cc-card .cc-error { margin: 0; font-size: 13px; color: var(--folio-danger); }
 .cc-card .cc-footer { margin: 0; text-align: center; font-size: 13px; color: var(--folio-text-muted); }
+.cc-card .cc-footer a { color: var(--folio-ink); text-decoration: underline; text-underline-offset: 3px; }
+
+/* /oauth/authorize: the card on its own page. */
+.cc-page { display: grid; place-items: center; min-height: 100vh; padding: 32px 16px; background: var(--folio-canvas); }
+.cc-badge { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px; border-radius: 999px; border: 1px solid var(--folio-edge); font-size: 12px; font-weight: 500; color: var(--folio-text-secondary); }
+.cc-badge.is-verified { border-color: color-mix(in srgb, var(--folio-success) 45%, var(--folio-edge)); color: var(--folio-ink); background: color-mix(in srgb, var(--folio-success) 10%, transparent); }
+.cc-badge svg { flex: none; }
+.cc-card .cc-redirect { display: grid; gap: 2px; margin: 0; font-size: 14px; color: var(--folio-ink); }
+.cc-redirect code { font-family: var(--folio-font-mono); font-size: 12px; color: var(--folio-text-secondary); overflow-wrap: anywhere; }
+.cc-card .cc-center { text-align: center; }
+.cc-wide { justify-content: center; }
+.cc-waiting { justify-items: center; }
 
 /* After approval. */
 .cc-card.is-done { gap: 12px; }

@@ -66,6 +66,16 @@ test("frontend renders current pages and preserves explicit legacy index links",
   assert.deepEqual(calls, ["legacy", "legacy", "legacy", "legacy", "legacy"]);
 });
 
+test("OAuth discovery goes to the backend, and the consent page renders on the frontend", async () => {
+  const calls: string[] = [];
+  const services = { FOLIO_BACKEND: { async fetch() { calls.push("backend"); return new Response("backend"); } },
+    FOLIO_PUBLIC_INDEX: { async fetch() { calls.push("legacy"); return new Response("legacy"); } } };
+  for (const path of ["/.well-known/oauth-protected-resource", "/.well-known/oauth-protected-resource/api/mcp", "/.well-known/oauth-authorization-server"])
+    assert.equal(await (await serveFrontend(new Request(`https://usefolio.site${path}`), services, async () => { throw new Error("Wrong renderer"); })).text(), "backend", path);
+  assert.equal(await (await serveFrontend(new Request("https://usefolio.site/oauth/authorize?client_id=x"), services, async () => new Response("ui"))).text(), "ui");
+  assert.deepEqual(calls, ["backend", "backend", "backend"]);
+});
+
 test("internal admin pages render on the authenticated backend rather than the database-free frontend",async()=>{
  for(const path of ['/admin','/folio-internal','/folio-internal/analytics']){
   const request=new Request(`https://usefolio.site${path}?_rsc=fixture`,{headers:{cookie:'fixture=session'}});let forwarded=0;
