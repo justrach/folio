@@ -242,6 +242,33 @@ After deployment, a live check over HTTPS used a temporary read key named "MCP A
 
 `/websites`, `/orgs` and `/search-console` returned 200, and the served bundle contains the new section.
 
+**Consent card, organization-limited keys and one-step install** (`04af681`) followed on 11 November 2026: frontend
+`0abd63dc-7596-43e8-a54e-132a154e7e16`, backend `f0a02421-e49d-4781-8a3a-e2c78499588b` (`--keep-vars`). No secret change.
+- Migration `0030_agent_key_organizations.sql` was applied to production Postgres `public` before the deploy, in a
+  transaction with `ADD COLUMN IF NOT EXISTS`. `agent_api_keys.organization_ids_json` is nullable `text`, and the one
+  existing key kept NULL (all organizations).
+- New route `/api/agent-setup/claude-desktop` serves `folio.mcpb`. It is the same file for everyone and holds no key.
+- Backend upload: 4.41 MB gzipped.
+
+Validation: typecheck, 452 unit tests, the 18 D1 integration tests for these areas (one `fetch failed` passed on
+rerun), 10 of 10 Connect-your-agent browser checks (desktop and mobile), the production build and both smoke tests.
+- The `.mcpb` manifest passed `npx @anthropic-ai/mcpb@2.1.2 validate`.
+- Its bridge ran against production with a temporary read key, the way Claude Desktop runs it: initialize, the full
+  167 KB tool list, `folio_organizations` and the prompt list. An unknown key got a readable error.
+- The Claude Code and Codex one-paste commands each ran twice with the real CLIs in a throwaway home.
+- Local timeouts earlier in this session came from this worktree's own dev server: its `workerd` bindings proxy held
+  about 12,000 loopback connections (the leak already listed in TODO), not another session's.
+
+After deployment, a live check over HTTPS used two temporary read keys named "Consent check (temporary)":
+- The download returned 200 `folio.mcpb` (`manifest.json`, `server/index.js`), pointed at
+  `https://usefolio.site/api/mcp`, with the key setting marked sensitive.
+- An unlimited key's `folio_organizations` listed Manus (1 shared website). A key limited to `[]` listed no
+  organizations, and its note said so.
+- Cleanup: 2 keys deleted, none remaining.
+
+`/agents` returned 200, and the served chunk contains the consent card. Add to Cursor, Add to VS Code and the Claude
+Desktop install have not been run in the real apps.
+
 ### Vector store
 
 Page embeddings live in turbopuffer, not Postgres (see [embeddings](EMBEDDINGS.md)).
