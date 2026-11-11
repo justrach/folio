@@ -12,11 +12,11 @@ export async function agentApiHash(value: string): Promise<string> {
   return Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value))), byte => byte.toString(16).padStart(2, "0")).join("");
 }
 type KeyRow = { id: string; user_id: string; name: string; prefix: string; scopes_json: string; organization_ids_json: string | null;
-  created_at: number; expires_at: number; revoked_at: number | null; last_used_at: number | null };
-const columns = "id,user_id,name,prefix,scopes_json,organization_ids_json,created_at,expires_at,revoked_at,last_used_at";
+  created_at: number; expires_at: number; revoked_at: number | null; last_used_at: number | null; oauth_client_id?: string | null };
+const columns = "id,user_id,name,prefix,scopes_json,organization_ids_json,created_at,expires_at,revoked_at,last_used_at,oauth_client_id";
 const limitOf = (row: KeyRow): string[] | null => row.organization_ids_json === null ? null : JSON.parse(row.organization_ids_json);
 function summary(row: KeyRow): AgentApiKeySummary {
-  return { id: row.id, name: row.name, prefix: row.prefix, scopes: JSON.parse(row.scopes_json), organizations: limitOf(row),
+  return { id: row.id, name: row.name, prefix: row.prefix, scopes: JSON.parse(row.scopes_json), organizations: limitOf(row), connection: row.oauth_client_id ? "sign-in" : "key",
     createdAt: new Date(row.created_at).toISOString(), expiresAt: new Date(row.expires_at).toISOString(),
     revokedAt: row.revoked_at === null ? null : new Date(row.revoked_at).toISOString(),
     lastUsedAt: row.last_used_at === null ? null : new Date(row.last_used_at).toISOString() };

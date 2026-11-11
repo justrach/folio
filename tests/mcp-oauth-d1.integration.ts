@@ -110,6 +110,8 @@ test("D1: an app registers, the person approves on the consent page, and the app
     // The connection is an ordinary key (limit included); the app never had it.
     const keys = await listAgentApiKeys(db, "rach");
     assert.deepEqual(keys.filter(key => !key.revokedAt).map(key => [key.name, key.scopes, key.organizations]), [["Rach’s Claude", ["read"], [manus.id]]]);
+    // The panel tells it apart from a pasted key.
+    assert.deepEqual(keys.filter(key => !key.revokedAt).map(key => key.connection), ["sign-in"]);
 
     // The access token reads Folio over MCP, within its organization limit, only for Folio's MCP endpoint.
     const client = await mcp(db, tokens.access_token);

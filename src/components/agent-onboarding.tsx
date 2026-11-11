@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { AppWindow, Bot, Check, CircleCheck, Cloud, Code2, Copy, Download, ExternalLink, Eye, EyeOff, KeyRound, Loader2, MessageSquareText, Monitor, MousePointer2, Plug, PlugZap, ShieldCheck, SquareTerminal, Terminal, Wrench,
+import { AppWindow, Bot, Check, CircleCheck, Cloud, Code2, Copy, Download, ExternalLink, Eye, EyeOff, Info, KeyRound, Loader2, MessageSquareText, Monitor, MousePointer2, Plug, PlugZap, ShieldCheck, SquareTerminal, Terminal, Wrench,
   type FolioIcon } from "@/components/icons";
 import { authClient } from "@/lib/auth-client";
 import type { AgentApiKeySummary } from "@/lib/agent-observation-types";
-import { AGENT_PERMISSIONS, CONNECTION_TROUBLESHOOTING, KEY_PLACEHOLDER, agentClients, connectionTestCommand, exportLine, installAction, isFormField, maskedKey, onboardingProgress, publicIndexEndpoint,
-  reachableOrigin, starterPrompts, withKey, type AgentClientId, type InstallAction, type SetupBlock } from "@/lib/agent-onboarding";
+import { AGENT_PERMISSIONS, CONNECTION_TROUBLESHOOTING, KEY_IN_COPY, KEY_PLACEHOLDER, agentClients, connectionAbilities, connectionTestCommand, exportLine, installAction, isFormField, maskedKey, onboardingProgress,
+  orderPrompts, promptReadiness, publicIndexEndpoint, reachableOrigin, starterPrompts, withKey, type AgentClientId, type InstallAction, type SetupBlock, type StarterPromptId } from "@/lib/agent-onboarding";
 import { UiSelect } from "./ui/select";
 import { ConnectConsent, ConsentDone, type ConsentChoice, type ConsentOrganization } from "./connect-consent";
 import "./agent-onboarding.css";
@@ -29,14 +29,20 @@ export function CopyButton({ text, label = "Copy", className = "", primary = fal
     try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1600); } catch { /* The text stays selectable. */ }
   }}>{copied ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}{copied ? "Copied" : label}</button>;
 }
+/** Said beside a copy control whose text holds the key: where it is safe to paste. */
+export function KeyNote({ children }: { children: ReactNode }) {
+  return <p className="ao-key-note"><KeyRound size={14} aria-hidden="true" /><span>{children}</span></p>;
+}
+/** One label per kind of thing copied, everywhere on the panel. */
+const copyLabel = (block: SetupBlock) => block.file || block.language === "json" || block.language === "toml" ? "Copy file" : block.language === "shell" ? "Copy command" : "Copy value";
 /** A file or command. If it needs the key and one was just created, copying fills it in; the screen keeps the placeholder. */
 function Code({ block, token = null }: { block: SetupBlock; token?: string | null }) {
   const keyed = block.code.includes(KEY_PLACEHOLDER);
   return <figure className="ao-code">
     <figcaption><span>{block.label}{block.file && <code>{block.file}</code>}</span>
-      {keyed && token ? <CopyButton text={withKey(block.code, token)} label="Copy with your key" /> : <CopyButton text={block.code} />}</figcaption>
+      <CopyButton text={keyed && token ? withKey(block.code, token) : block.code} label={copyLabel(block)} /></figcaption>
     <pre data-language={block.language}>{block.code}</pre>
-    {keyed && <p className="ao-expect">{token ? "The copy includes your new key, so there’s nothing to replace." : `Replace ${KEY_PLACEHOLDER} with your key.`}</p>}
+    {keyed && (token ? <KeyNote>{block.language === "shell" ? KEY_IN_COPY.command : KEY_IN_COPY.file}</KeyNote> : <p className="ao-expect">Replace {KEY_PLACEHOLDER} with your key.</p>)}
   </figure>;
 }
 /** Values typed into a client’s form, one per row, each with its own copy button. */
@@ -46,8 +52,9 @@ function Fields({ blocks, token }: { blocks: SetupBlock[]; token: string | null 
     return <div key={block.label}>
       <dt>{block.label}</dt>
       <dd><code>{keyOnly && token ? maskedKey(token) : block.code}</code>
-        {keyed && token ? <CopyButton text={withKey(block.code, token)} label={keyOnly ? "Copy key" : "Copy with your key"} />
-          : keyOnly ? <span className="ao-field-hint">Paste the key from step 2</span> : <CopyButton text={block.code} />}</dd>
+        {keyed && token ? <CopyButton text={withKey(block.code, token)} label={keyOnly ? "Copy key" : "Copy value"} />
+          : keyOnly ? <span className="ao-field-hint">Paste the key from step 2</span> : <CopyButton text={block.code} label="Copy value" />}</dd>
+      {keyed && token && <dd className="ao-field-note"><KeyNote>{KEY_IN_COPY.key}</KeyNote></dd>}
     </div>;
   })}</dl>;
 }
@@ -70,28 +77,53 @@ function Install({ action, token }: { action: InstallAction; token: string | nul
     : action.needsKey ? <button type="button" className="button primary" disabled={!ready} onClick={() => action.href && openLink(action.href)}><ExternalLink size={15} aria-hidden="true" />{action.label}</button>
     : <a className="button primary" href={action.href!}><ExternalLink size={15} aria-hidden="true" />{action.label}</a>}
     <p className="ao-install-hint">{action.hint}</p>
+    {action.needsKey && ready && <KeyNote>{action.kind === "link" ? KEY_IN_COPY.link : KEY_IN_COPY.command}</KeyNote>}
   </div>;
 }
 
-/** The signed-in person's keys, with a light poll while a new key waits for its first call. Reads only. */
+/**
+ * The signed-in person's keys, with a light poll while a new key waits for its first call. Reads only. The panel is
+ * remounted for each account, and every read in flight is aborted when it unmounts, so a late reply for the previous
+ * account is never shown.
+ */
 function useAgentKeys(signedIn: boolean) {
   const [keys, setKeys] = useState<AgentApiKeySummary[] | null>(null);
   const [error, setError] = useState("");
+  const inFlight = useRef(new Set<AbortController>());
+  useEffect(() => { const reads = inFlight.current; return () => { for (const read of reads) read.abort(); reads.clear(); }; }, []);
   const reload = useCallback(async () => {
+    const controller = new AbortController();
+    inFlight.current.add(controller);
     try {
-      const response = await fetch("/api/agent-keys", { cache: "no-store" });
+      const response = await fetch("/api/agent-keys", { cache: "no-store", signal: controller.signal });
       if (!response.ok) throw new Error();
-      setKeys((await response.json() as { keys: AgentApiKeySummary[] }).keys); setError("");
-    } catch { setError("Your keys couldn’t be loaded."); }
+      const body = await response.json() as { keys: AgentApiKeySummary[] };
+      if (!controller.signal.aborted) { setKeys(body.keys); setError(""); }
+    } catch { if (!controller.signal.aborted) setError("Your keys couldn’t be loaded."); }
+    finally { inFlight.current.delete(controller); }
   }, []);
   useEffect(() => { if (signedIn) void reload(); }, [signedIn, reload]);
   return { keys, setKeys, error, reload };
 }
 
-type Props = { domain?: string | null; organization?: string | null; onKeysChanged?: () => void; collapseWhenConnected?: boolean };
+/**
+ * A website the prompts can be about. `organization`: someone else shares it with the person through that organization,
+ * so the agent finds it with folio_organizations. `label`: how the picker names it (the domain by default).
+ */
+export type PromptWebsite = { id: string; domain: string; organization?: string | null; label?: string };
+type Props = { websites?: PromptWebsite[]; organization?: string | null; onKeysChanged?: () => void; collapseWhenConnected?: boolean };
 
-/** Step-by-step agent setup. Creating a key is the only write; nothing here spends credits. */
-export function AgentOnboarding({ domain = null, organization = null, onKeysChanged, collapseWhenConnected = false }: Props) {
+/**
+ * Step-by-step agent setup. Creating a key is the only write; nothing here spends credits. Everything in it belongs to the
+ * signed-in account (keys, a new key's token, the chosen website, prompt marks), so another account, or signing out,
+ * starts a fresh panel.
+ */
+export function AgentOnboarding(props: Props) {
+  const { data: session } = authClient.useSession();
+  return <OnboardingPanel key={session?.user.id ?? "signed-out"} {...props} />;
+}
+
+function OnboardingPanel({ websites = [], organization = null, onKeysChanged, collapseWhenConnected = false }: Props) {
   const { data: session, isPending } = authClient.useSession();
   const signedIn = Boolean(session?.user.id);
   const [origin, setOrigin] = useState("https://usefolio.site");
@@ -107,7 +139,7 @@ export function AgentOnboarding({ domain = null, organization = null, onKeysChan
     const controller = new AbortController();
     fetch("/api/organizations", { cache: "no-store", signal: controller.signal }).then(async response => {
       const body = response.ok ? await response.json() as { organizations?: ConsentOrganization[] } : {};
-      setOrganizations((body.organizations ?? []).map(org => ({ id: org.id, name: org.name })));
+      if (!controller.signal.aborted) setOrganizations((body.organizations ?? []).map(org => ({ id: org.id, name: org.name })));
     }).catch(() => { if (!controller.signal.aborted) setOrganizations([]); });
     return () => controller.abort();
   }, [signedIn]);
@@ -140,7 +172,10 @@ export function AgentOnboarding({ domain = null, organization = null, onKeysChan
 
   const live = (keys ?? []).filter(key => active(key, now));
   const connected = live.filter(key => key.lastUsedAt).sort((a, b) => Date.parse(b.lastUsedAt!) - Date.parse(a.lastUsedAt!));
-  const prompts = starterPrompts({ domain, organization });
+  const leadNow = collapseWhenConnected && connected.length > 0 && !watch;
+  const [leadLatched, setLeadLatched] = useState(false);
+  useEffect(() => { if (leadNow) setLeadLatched(true); }, [leadNow]);
+  const leadWithStatus = leadNow || (leadLatched && connected.length > 0);
   const firstName = session?.user.name?.split(/\s+/)[0] ?? "My";
   // The key made on this page, for the copy buttons in step 3. It lives only in this tab’s memory.
   const fresh = watch && watched && !watched.revokedAt ? watch.token : null;
@@ -161,7 +196,15 @@ export function AgentOnboarding({ domain = null, organization = null, onKeysChan
     {files.length > 0 && <div className="ao-blocks">{files.map(block => <Code key={block.label} block={block} token={fresh} />)}</div>}
   </>;
 
-  const body = <>
+  // Kept here, not in the prompts section, so the choice and the marks survive the layout changing around them.
+  const [picked, setPicked] = useState<string | null>(null);
+  const [readiness, setReadiness] = useState<Record<string, Readiness>>({});
+  // Leading the connected layout, no agent is picked yet, so the prompts don't name one, and the Claude Code slash command is
+  // offered only as "in Claude Code" (other clients' equivalents aren't verified, so nothing is said about them).
+  const prompts = <StarterPrompts websites={websites} signedIn={signedIn} userId={session?.user.id ?? null} clientLabel={leadWithStatus ? "your agent" : client.label}
+    slashCommands={leadWithStatus ? "if-claude-code" : client.id === "claude-code" ? "claude-code" : null}
+    picked={picked} onPick={setPicked} readiness={readiness} onReadiness={setReadiness} />;
+  const body = (promptsAbove: boolean) => <>
     <ol className="ao-steps">
       <li className="ao-step"><span className="ao-number">1</span><div className="ao-step-body">
         <h3><Bot size={16} aria-hidden="true" />Pick your agent</h3>
@@ -193,31 +236,21 @@ export function AgentOnboarding({ domain = null, organization = null, onKeysChan
 
       <li {...step(4)}>{number(4)}<div className="ao-step-body">
         <h3><Terminal size={16} aria-hidden="true" />Check it’s connected</h3>
-        <div className="ao-check-grid">
+        <div className={`ao-check-grid ${promptsAbove ? "is-single" : ""}`}>
           <div>
-            {client.check && <figure className="ao-code"><figcaption><span>{client.check.label} in {client.label}</span><CopyButton text={client.check.code} /></figcaption>
+            {client.check && <figure className="ao-code"><figcaption><span>{client.check.label} in {client.label}</span><CopyButton text={client.check.code} label={client.id === "manus" ? "Copy prompt" : /^[a-z][\w-]* /.test(client.check.code) ? "Copy command" : "Copy"} /></figcaption>
               <pre>{client.check.code}</pre><p className="ao-expect">You should see <b>{client.check.expect}</b></p></figure>}
             <details className="ao-curl"><summary>Or test the key from any terminal</summary>
-              <p>Lists the websites this key can read. It uses <code>FOLIO_API_KEY</code>, so the key itself is never typed into the command.</p>
+              <p>Makes one free read (<code>folio_organizations</code>) with the key in <code>FOLIO_API_KEY</code>, so the key itself is never typed into the command. A reply listing your organizations means the key works; 401 means it doesn’t.</p>
               <Code block={{ label: "Test the key", language: "shell", code: connectionTestCommand(origin) }} /></details>
           </div>
-          <ConnectionStatus signedIn={signedIn} keys={keys} live={live} connected={connected} watched={watched} waiting={waiting} now={now} organization={organization}
-            onRefresh={async () => { setNow(Date.now()); await reload(); }} />
+          {/* Connected on /agents, the status already leads the panel. */}
+          {!promptsAbove && <ConnectionStatus signedIn={signedIn} keys={keys} live={live} connected={connected} watched={watched} waiting={waiting} now={now} organization={organization} signsIn={client.signsIn}
+            onRefresh={async () => { setNow(Date.now()); await reload(); }} />}
         </div>
       </div></li>
 
-      <li {...step(5)}>{number(5)}<div className="ao-step-body">
-        <h3><MessageSquareText size={16} aria-hidden="true" />Ask it something</h3>
-        <p>Paste one of these into {client.label}. Each says which tools it uses and what the key needs; none of them spends credits.</p>
-        <div className="ao-prompts">{prompts.map(prompt => <article key={prompt.id} className="ao-prompt">
-          <header><strong>{prompt.title}</strong>
-            <span className="ao-badges">{prompt.scopes.map(scope => <span key={scope} className={`ao-badge is-${scope}`}>{AGENT_PERMISSIONS.find(item => item.scope === scope)?.label}</span>)}
-              {prompt.needsRepository && <span className="ao-badge">In your site’s repository</span>}</span></header>
-          <blockquote>{prompt.text}</blockquote>
-          <footer><span className="ao-tools">{prompt.tools.map(tool => <code key={tool}>{tool}</code>)}</span><CopyButton text={prompt.text} label="Copy prompt" /></footer>
-          {prompt.slashCommand && client.id === "claude-code" && <p className="ao-slash">Or type <code>{prompt.slashCommand}</code> in Claude Code for the guided version.</p>}
-        </article>)}</div>
-      </div></li>
+      {!promptsAbove && <li {...step(5)}>{number(5)}<div className="ao-step-body">{prompts}</div></li>}
     </ol>
 
     <div className="ao-reference">
@@ -234,15 +267,22 @@ export function AgentOnboarding({ domain = null, organization = null, onKeysChan
     </div>
   </>;
 
-  const intro = <p className="ao-intro">Each {organization ? `member of ${organization}` : "person"} connects their own agent with their own key.
-    {organization ? ` It can read your websites and everything shared with ${organization}, and its reads of shared websites show up as team activity.` : " It reads your saved websites and Folio’s published answers."} It can’t spend unless the key allows it.</p>;
-  if (collapseWhenConnected && connected.length && !watch) return <details className="panel agent-onboarding is-collapsed" id="connect">
-    <summary><Bot size={18} aria-hidden="true" /><span><strong>Connect another agent</strong><small>{connected.length} of your agents {connected.length === 1 ? "has" : "have"} connected. Last: {connected[0].name}, {used(connected[0].lastUsedAt, now)}.</small></span></summary>
-    {intro}{body}
-  </details>;
+  const intro = <p className="ao-intro">Each {organization ? `member of ${organization}` : "person"} connects their own agent, with their own key or sign-in.
+    {organization ? ` It can read your websites and everything shared with ${organization}, and its reads of shared websites show up as team activity.` : " It reads your saved websites and Folio’s published answers."} It can’t spend unless its permissions allow it.</p>;
+  // Once an agent is connected, /agents leads with what's connected and what to ask it; the setup folds away for the next agent.
+  // The layout stays for this account once chosen, so approving another key inside the fold keeps its approved card.
+  if (leadWithStatus) return <section className="panel agent-onboarding is-connected" id="connect" aria-labelledby="ao-title">
+    <h2 id="ao-title"><Bot size={20} aria-hidden="true" />Your connected agents</h2>
+    <ConnectionStatus signedIn={signedIn} keys={keys} live={live} connected={connected} watched={watched} waiting={waiting} now={now} organization={organization}
+      onRefresh={async () => { setNow(Date.now()); await reload(); }} />
+    {prompts}
+    <details className="ao-setup" open={watch ? true : undefined}><summary><Bot size={18} aria-hidden="true" /><span><strong>Connect another agent</strong><small>{connected.length} of your agents {connected.length === 1 ? "has" : "have"} connected. Last: {connected[0].name}, {used(connected[0].lastUsedAt, now)}.</small></span></summary>
+      {intro}{body(true)}
+    </details>
+  </section>;
   return <section className="panel agent-onboarding" id="connect" aria-labelledby="ao-title">
     <h2 id="ao-title"><Bot size={20} aria-hidden="true" />Connect your agent</h2>
-    {intro}{body}
+    {intro}{body(false)}
   </section>;
 }
 
@@ -270,13 +310,16 @@ function KeyForm({ client, account, onSwitchAccount, organizations, firstName, o
   if (created) {
     const line = exportLine(created.token);
     return <ConsentDone icon={client.icon} connected={connected} title={connected ? `${clientLabel} is connected` : `${created.name} is approved`}>
-      <p className="ao-done-sub">{connected ? "It can now read your websites through Folio. Try a prompt in step 5." : "The key is shown only now; copy it before you leave this page."}</p>
+      {connected && <p className="ao-done-sub">It can now read your websites through Folio. Try one of the prompts.</p>}
+      {/* Said for as long as the key is on screen, connected or not. */}
+      <p className="ao-done-sub">The key is shown only now; copy it before you leave this page.</p>
       {next && !connected && <p className="ao-next">{next}</p>}
       <div className="ao-secret"><code aria-label="Your new key">{revealed ? line : `export FOLIO_API_KEY="${maskedKey(created.token)}"`}</code>
         <button type="button" className="button secondary ao-copy" onClick={() => setRevealed(value => !value)}>{revealed ? <EyeOff size={14} aria-hidden="true" /> : <Eye size={14} aria-hidden="true" />}{revealed ? "Hide" : "Show"}</button>
-        <CopyButton text={readsShell ? line : created.token} label={readsShell ? "Copy export line" : "Copy key"} /></div>
-      <p className="ao-aside">{readsShell ? `${next ? "To set it up by hand instead, paste the export line" : "Paste it"} into the terminal you start ${clientLabel} from. To keep it for new terminals, add the same line to ~/.zshrc (or your shell’s profile).`
-        : `${clientLabel} doesn’t read your terminal’s variables.${next ? "" : " In step 3, the copy buttons that mention your key put it in for you."}`}{organization ? ` Teammates in ${organization} see this agent’s name and when it was last used, never the key.` : ""}</p>
+        <CopyButton text={readsShell ? line : created.token} label={readsShell ? "Copy command" : "Copy key"} /></div>
+      <KeyNote>{readsShell ? KEY_IN_COPY.command : KEY_IN_COPY.key}</KeyNote>
+      <p className="ao-aside">{readsShell ? `${next ? "To set it up by hand instead, paste the export command" : "Paste it"} into the terminal you start ${clientLabel} from. To keep it for new terminals, add the same line to ~/.zshrc (or your shell’s profile).`
+        : `${clientLabel} doesn’t read your terminal’s variables.${next ? "" : " In step 3, copies marked as containing your key put it in for you."}`}{organization ? ` Teammates in ${organization} see this agent’s name and when it was last used, never the key.` : ""}</p>
       <button type="button" className="text-link" onClick={() => setCreated(null)}>Approve another key</button>
     </ConsentDone>;
   }
@@ -292,8 +335,8 @@ function KeyForm({ client, account, onSwitchAccount, organizations, firstName, o
   </div>;
 }
 
-function ConnectionStatus({ signedIn, keys, live, connected, watched, waiting, now, organization, onRefresh }: { signedIn: boolean; keys: AgentApiKeySummary[] | null; live: AgentApiKeySummary[];
-  connected: AgentApiKeySummary[]; watched: AgentApiKeySummary | null; waiting: boolean; now: number; organization: string | null; onRefresh: () => Promise<void> }) {
+function ConnectionStatus({ signedIn, keys, live, connected, watched, waiting, now, organization, onRefresh, signsIn = false }: { signedIn: boolean; keys: AgentApiKeySummary[] | null; live: AgentApiKeySummary[];
+  connected: AgentApiKeySummary[]; watched: AgentApiKeySummary | null; waiting: boolean; now: number; organization: string | null; onRefresh: () => Promise<void>; signsIn?: boolean }) {
   const [busy, setBusy] = useState(false);
   let state: "signed-out" | "loading" | "waiting" | "connected" | "idle" | "none" = !signedIn ? "signed-out" : keys === null ? "loading"
     : watched?.lastUsedAt ? "connected" : waiting ? "waiting" : connected.length ? "connected" : live.length ? "idle" : "none";
@@ -306,25 +349,98 @@ function ConnectionStatus({ signedIn, keys, live, connected, watched, waiting, n
     {state === "loading" && <p role="status">Loading your keys…</p>}
     {state === "waiting" && <p>Run the check on the left. This updates by itself the moment {watched!.name} makes its first call.</p>}
     {state === "idle" && <p>None of your {live.length} active key{live.length === 1 ? " has" : "s have"} been used yet. Run the check on the left, then refresh.</p>}
-    {state === "none" && <p>No key yet. Create one in step 2.</p>}
-    {state === "connected" && <ul>{shown.map(key => <li key={key.id}><span className={`ao-dot ${now - Date.parse(key.lastUsedAt!) < 600_000 ? "is-live" : ""}`} aria-hidden="true" /><strong>{key.name}</strong><small>{used(key.lastUsedAt, now)}</small></li>)}</ul>}
+    {state === "none" && <p>{signsIn ? "Nothing connected yet. Run the command in step 3 and approve Folio in your browser." : "No key yet. Create one in step 2."}</p>}
+    {state === "connected" && <ul>{shown.map(key => <ConnectionRow key={key.id} connection={key} now={now} />)}</ul>}
     {state === "connected" && organization && <p className="ao-aside">{organization} sees these under Members and their agents.</p>}
     {signedIn && state !== "loading" && state !== "waiting" && <button type="button" className="text-link" disabled={busy} onClick={async () => { setBusy(true); await onRefresh(); setBusy(false); }}>Refresh</button>}
   </div>;
 }
 
-/** /agents: the same setup, aimed at the person's first saved website. */
+/** One connection in the status box: its name, last use, how it connected, what it may do and whether it can spend. */
+function ConnectionRow({ connection, now }: { connection: AgentApiKeySummary; now: number }) {
+  const abilities = connectionAbilities(connection.scopes);
+  return <li>
+    <span className="ao-conn-name"><span className={`ao-dot ${now - Date.parse(connection.lastUsedAt!) < 600_000 ? "is-live" : ""}`} aria-hidden="true" /><strong>{connection.name}</strong><small>{used(connection.lastUsedAt, now)}</small></span>
+    <span className="ao-conn-meta">
+      {connection.connection && <span>{connection.connection === "sign-in" ? "Signed in" : "Key"}</span>}
+      <span>{abilities.access} · {abilities.toolCount} tools</span>
+      <span className={abilities.paidActions.length ? "is-paid" : "is-free"}>{abilities.money}</span>
+    </span>
+  </li>;
+}
+
+type Readiness = Partial<Record<StarterPromptId, string>>;
+/**
+ * Step 5: the first prompts, about the website the person picks. When the prompts come into view, one free read of that
+ * website's saved report (the Websites page's own, /api/sites/[id]/visibility; no provider call, nothing saved) marks
+ * the prompts that would come back empty and moves the ones that will work first. If the read fails, nothing is marked.
+ */
+function StarterPrompts({ websites, signedIn, userId, clientLabel, slashCommands, picked, onPick, readiness, onReadiness }: { websites: PromptWebsite[]; signedIn: boolean;
+  userId: string | null; clientLabel: string; slashCommands: "claude-code" | "if-claude-code" | null; picked: string | null; onPick: (id: string) => void;
+  readiness: Record<string, Readiness>; onReadiness: (update: (previous: Record<string, Readiness>) => Record<string, Readiness>) => void }) {
+  const website = websites.find(item => item.id === picked) ?? websites[0] ?? null;
+  const websiteId = website?.id ?? null;
+  const ref = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  // Keyed by owner and website, so another account's marks never show.
+  const readKey = userId && websiteId ? `${userId}:${websiteId}` : null;
+  useEffect(() => {
+    const element = ref.current;
+    if (inView || !element || !signedIn) return;
+    if (typeof IntersectionObserver === "undefined") { setInView(true); return; }
+    const observer = new IntersectionObserver(entries => { if (entries.some(entry => entry.isIntersecting)) { setInView(true); observer.disconnect(); } }, { rootMargin: "120px" });
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [inView, signedIn]);
+  // Depends on the website's id, not the object, so a parent that rebuilds its list on every render doesn't restart the read.
+  const known = readKey ? Boolean(readiness[readKey]) : false;
+  useEffect(() => {
+    if (!signedIn || !inView || !websiteId || !readKey || known) return;
+    const controller = new AbortController();
+    fetch(`/api/sites/${encodeURIComponent(websiteId)}/visibility`, { cache: "no-store", signal: controller.signal }).then(async response => {
+      const body = response.ok ? await response.json() as { report?: Parameters<typeof promptReadiness>[0] } : null;
+      if (!controller.signal.aborted) onReadiness(previous => ({ ...previous, [readKey]: promptReadiness(body?.report) }));
+    }).catch(() => { if (!controller.signal.aborted) onReadiness(previous => ({ ...previous, [readKey]: {} })); });
+    return () => controller.abort();
+  }, [signedIn, inView, websiteId, readKey, known, onReadiness]);
+  const notes = (readKey && readiness[readKey]) || {};
+  const prompts = orderPrompts(starterPrompts({ domain: website?.domain ?? null, organization: website?.organization ?? null }), notes);
+  const site = website?.domain ?? "your website";
+  return <div className="ao-prompts-block" ref={ref}>
+    <h3><MessageSquareText size={16} aria-hidden="true" />Ask it something</h3>
+    <div className="ao-prompts-lead">
+      <p>Paste one of these into {clientLabel}. Each names {site}, has the agent use only Folio’s tools, and tells it to start nothing paid, so none of them spends credits.</p>
+      {websites.length > 1 && <label className="ao-site-picker"><span>Website</span>
+        <UiSelect aria-label="Website the prompts are about" value={website?.id ?? ""} onChange={event => onPick(event.target.value)}>
+          {websites.map(item => <option key={item.id} value={item.id}>{item.label ?? item.domain}</option>)}</UiSelect></label>}
+    </div>
+    <div className="ao-prompts">{prompts.map(prompt => <article key={prompt.id} className={`ao-prompt ${notes[prompt.id] ? "is-empty" : ""}`}>
+      <header><strong>{prompt.title}</strong>
+        <span className="ao-badges">{prompt.scopes.map(scope => <span key={scope} className={`ao-badge is-${scope}`}>{AGENT_PERMISSIONS.find(item => item.scope === scope)?.label}</span>)}
+          {prompt.needsRepository && <span className="ao-badge">In your site’s repository</span>}</span></header>
+      {notes[prompt.id] && <p className="ao-prompt-empty"><Info size={14} aria-hidden="true" /><span>{notes[prompt.id]}</span></p>}
+      <blockquote>{prompt.text}</blockquote>
+      <footer><span className="ao-tools">{prompt.tools.map(tool => <code key={tool}>{tool}</code>)}</span><CopyButton text={prompt.text} label="Copy prompt" /></footer>
+      {prompt.thirdParty && <p className="ao-prompt-note">{prompt.thirdParty}</p>}
+      {prompt.slashCommand && slashCommands === "claude-code" && <p className="ao-slash">Or type <code>{prompt.slashCommand}</code> in Claude Code for the guided version.</p>}
+      {prompt.slashCommand && slashCommands === "if-claude-code" && <p className="ao-slash">If your agent is Claude Code, you can type <code>{prompt.slashCommand}</code> instead for the guided version.</p>}
+    </article>)}</div>
+  </div>;
+}
+
+/** /agents: the same setup, aimed at the person's saved websites (the first one until they pick another). */
 export function WorkspaceAgentOnboarding() {
   const { data: session } = authClient.useSession();
-  const [domain, setDomain] = useState<string | null>(null);
+  const [websites, setWebsites] = useState<PromptWebsite[]>([]);
   useEffect(() => {
+    setWebsites([]);
     if (!session?.user.id) return;
     const controller = new AbortController();
     fetch("/api/sites", { cache: "no-store", signal: controller.signal }).then(async response => {
-      const sites = response.ok ? (await response.json() as { sites?: { url: string }[] }).sites ?? [] : [];
-      if (sites[0]) setDomain(new URL(sites[0].url).hostname.replace(/^www\./, ""));
+      const sites = response.ok ? (await response.json() as { sites?: { id: string; url: string }[] }).sites ?? [] : [];
+      setWebsites(sites.flatMap(site => { try { return [{ id: site.id, domain: new URL(site.url).hostname.replace(/^www\./, "") }]; } catch { return []; } }));
     }).catch(() => undefined);
     return () => controller.abort();
   }, [session?.user.id]);
-  return <AgentOnboarding domain={domain} collapseWhenConnected />;
+  return <AgentOnboarding websites={websites} collapseWhenConnected />;
 }

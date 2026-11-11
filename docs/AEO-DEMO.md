@@ -27,7 +27,7 @@ export FOLIO_API_KEY=folio_v1_…        # shown once when the key is created
 claude mcp add --transport http folio http://localhost:3001/api/mcp --header "Authorization: Bearer ${FOLIO_API_KEY}"
 ```
 
-Codex and the JSON configuration are in [MCP](MCP.md). Use `https://usefolio.site/api/mcp` against the deployed app.
+Codex and the JSON configuration are in [MCP](MCP.md). Use `https://usefolio.site/api/mcp` against the deployed app. Run these in a terminal: a command with the key in it never belongs in a chat with an agent. The **Connect your agent** panel (`/agents#connect`) does the same step by step, and its **Fix the top gap in this repository** prompt is a short form of the loop below with the same guardrails.
 
 ## 2. Run the guided prompt
 

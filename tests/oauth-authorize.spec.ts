@@ -39,6 +39,13 @@ test("an app's consent page names it, shows where it returns, and sends back the
   await expect(card).toContainText("Folio can’t confirm who made it");
   await expect(card.getByLabel("Connection name")).toHaveValue("Rach’s Claude");
   await expect(card.getByLabel("Lasts")).toContainText("90 days");
+  // What the app asked for sits beside what the person is granting, and follows the choice.
+  const asked = card.locator(".cc-asked");
+  await expect(asked).toContainText("Claude asked for: read");
+  await expect(asked).toContainText("You’re granting: read");
+  await card.getByRole("radio", { name: "Read & record changes" }).click();
+  await expect(asked).toContainText("You’re granting: read and record changes");
+  await card.getByRole("radio", { name: "Read only" }).click();
   await card.getByRole("radio", { name: "Select" }).click();
   await card.getByRole("button", { name: "Manus", exact: true }).click();
   await card.getByRole("button", { name: "Approve" }).click();

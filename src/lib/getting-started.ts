@@ -8,7 +8,7 @@ import type { D1Database } from "@cloudflare/workers-types";
 export const GETTING_STARTED_STEPS = [
   { id: "website", label: "Add your website", detail: "Save the website you want Folio to watch.", href: "/websites" },
   { id: "search-console", label: "Connect Search Console", detail: "Bring in Google’s own clicks, so estimates sit beside real numbers.", href: "/search-console" },
-  { id: "agent", label: "Connect your agent", detail: "Approve Claude, Cursor, Codex or ChatGPT to read your websites.", href: "/agents#connect" },
+  { id: "agent", label: "Connect your agent", detail: "Approve Claude Code, Codex, Harness, Cursor or another agent to read your websites.", href: "/agents#connect" },
   { id: "ask", label: "Ask what your website is missing", detail: "Have your agent read Folio’s report on your website.", href: "/agents#connect" },
   { id: "team", label: "Bring in your team", detail: "Create or join an organization and share a website.", href: "/orgs" },
 ] as const;

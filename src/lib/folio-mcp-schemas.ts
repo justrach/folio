@@ -106,7 +106,7 @@ export const folioSuccessSchemas: Record<string,z.ZodType> = {
   folio_run:observation,folio_evaluate:observation,folio_reconcile:observation,folio_observation:savedObservation,
   folio_run_history:obj({...page,items:z.array(run.nullable()),changePolling:sn}),
   folio_observations:obj({items:z.array(z.union([obj({target,result:savedObservation}),obj({target,error:folioErrorSchema})]))}),
-  folio_capabilities:obj({version:s,supportedFeatures:strings,prompts:strings,allowedScopes:z.array(scope),tools:z.array(obj({name:s,requiredScope:scope,allowed:b,paid:b,requirements:strings,conditionalScopes:z.array(obj({when:s,requiredScope:scope,allowed:b}))})),observationTargets:obj({website:obj({kind:z.literal("website"),websiteId:s}),keyword:obj({kind:z.literal("keyword"),caseId:s})})}),
+  folio_capabilities:obj({version:s,supportedFeatures:strings,prompts:strings,allowedScopes:z.array(scope),summary:s,visibleTools:obj({total:z.number().int(),byScope:z.array(obj({scope,count:z.number().int()}))}),tools:z.array(obj({name:s,requiredScope:scope,allowed:b,paid:b,requirements:strings,conditionalScopes:z.array(obj({when:s,requiredScope:scope,allowed:b}))})),observationTargets:obj({website:obj({kind:z.literal("website"),websiteId:s}),keyword:obj({kind:z.literal("keyword"),caseId:s})})}),
   folio_seo_lookup:seoLookup,folio_sandbox_seo:seoLookup,
   folio_seo_reports:z.union([
     obj({...page,items:z.array(obj({id:s,domain:s,createdAt:s,retrievedAt:sn,detailState:z.enum(["collected","not_collected"]).optional()}))}),

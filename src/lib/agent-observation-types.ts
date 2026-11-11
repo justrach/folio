@@ -10,6 +10,8 @@ export type AgentApiKeySummary = {
   id: string; name: string; prefix: string; scopes: AgentApiScope[];
   /** Organization IDs the key is limited to; null means all of the owner's organizations. Own websites are always readable. */
   organizations?: string[] | null;
+  /** "sign-in": an app the person approved on Folio's consent page (OAuth); it never held the key. "key": a key the person copied. */
+  connection?: "key" | "sign-in";
   createdAt: string; expiresAt: string; lastUsedAt: string | null; revokedAt: string | null;
 };
 /** Whether a key limited to `allowed` (null = all) may read what is shared in `organizationId`. */

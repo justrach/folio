@@ -44,9 +44,17 @@ type Props = {
   onApprove: (choice: ConsentChoice) => void;
   onCancel?: () => void;
   footer?: ReactNode;
+  /** What the app itself asked for (OAuth `scope`), shown beside what the person grants. Absent when nothing was asked. */
+  requested?: AgentApiScope[];
 };
 
-export function ConnectConsent({ client, account, onSwitchAccount, organizations, details, busy, error, onApprove, onCancel, footer }: Props) {
+/** "read and record changes": scopes in the words of the permission guide. */
+const scopeWords = (scopes: AgentApiScope[]) => {
+  const words = (["read", "changes", "evaluate", "seo"] as const).filter(scope => scopes.includes(scope)).map(scope => permission(scope).label.toLowerCase());
+  return words.length <= 1 ? words.join("") : `${words.slice(0, -1).join(", ")} and ${words.at(-1)}`;
+};
+
+export function ConnectConsent({ client, account, onSwitchAccount, organizations, details, busy, error, onApprove, onCancel, footer, requested }: Props) {
   const [access, setAccess] = useState<Access>("read");
   const [paid, setPaid] = useState<Paid[]>([]);
   const [mode, setMode] = useState<"all" | "select">("all");
@@ -76,10 +84,12 @@ export function ConnectConsent({ client, account, onSwitchAccount, organizations
           </div></div>
         <ul className="cc-lines">
           <li><Eye size={15} aria-hidden="true" />Find your websites and read what they’re missing, plus Folio’s published AI answers</li>
-          {access === "read" ? <li className="is-check"><Check size={15} aria-hidden="true" />Nothing in Folio or on your websites is changed</li>
+          {access === "read" ? <li className="is-check"><Check size={15} aria-hidden="true" />Changes nothing on your websites. Folio lists what it asked under What your agents asked</li>
             : <li><PencilLine size={15} aria-hidden="true" />Save what it changed on your websites and when it went live. It can’t edit or publish them</li>}
           {paid.length > 0 && <li className="is-paid"><Coins size={15} aria-hidden="true" />Can spend: {paid.map(scope => permission(scope).label.toLowerCase()).join(" and ")}. Each one is charged, and it must confirm the spend</li>}
         </ul>
+        {requested && requested.length > 0 && <p className="cc-asked" aria-live="polite"><span><b>{client.label} asked for:</b> {scopeWords(requested)}</span>
+          <span><b>You’re granting:</b> {scopeWords(scopes)}</span></p>}
         <details className="cc-paid" open={paid.length > 0 || undefined}>
           <summary>Paid actions</summary>
           {(["evaluate", "seo"] as const).map(scope => <label key={scope}>

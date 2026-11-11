@@ -6,6 +6,7 @@ import { ArrowRight, Globe, Loader2, ShieldAlert, ShieldCheck, TriangleAlert } f
 import { authClient } from "@/lib/auth-client";
 import { ConnectConsent, ConsentDone, FolioTile, type ConsentChoice, type ConsentOrganization } from "./connect-consent";
 import { UiSelect } from "./ui/select";
+import type { AgentApiScope } from "@/lib/agent-observation-types";
 import "./connect-consent.css";
 
 /**
@@ -79,7 +80,7 @@ export function OAuthAuthorize() {
   const { preview } = state;
   return <ConnectConsent client={{ label: preview.client.name, icon: <Globe size={20} /> }} account={{ name: session?.user.name || session?.user.email || "you" }}
     onSwitchAccount={() => void switchAccount()} organizations={organizations} busy={busy} error={error} onApprove={choice => void approve(choice)}
-    onCancel={() => window.location.assign(preview.cancel)}
+    onCancel={() => window.location.assign(preview.cancel)} requested={preview.requested.filter((scope): scope is AgentApiScope => (["read", "changes", "evaluate", "seo"] as string[]).includes(scope))}
     details={<>
       <section className="cc-section" aria-labelledby="cc-returns">
         <div className="cc-section-head"><h4 id="cc-returns">Returns to</h4>

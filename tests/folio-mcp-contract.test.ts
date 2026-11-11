@@ -3,7 +3,8 @@ import test from "node:test";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { AjvJsonSchemaValidator } from "@modelcontextprotocol/sdk/validation/ajv";
-import { serveFolioMcp, folioToolError, type FolioToolContext, type invokeFolioTool } from "../src/lib/folio-mcp";
+import { serveFolioMcp, folioToolError, invokeFolioTool, type FolioToolContext } from "../src/lib/folio-mcp";
+import type { AgentApiScope } from "../src/lib/agent-observation-types";
 import { AgentApiError } from "../src/lib/agent-api-key-store";
 import { SeoDataError } from "../src/lib/dataforseo";
 
@@ -68,8 +69,12 @@ test("capabilities disclose conditional SEO permission and missing SEO scope nev
   const discovery = await connect();
   try {
     const result = await discovery.callTool({ name: "folio_capabilities", arguments: {} });
-    const payload = result.structuredContent as { result: { supportedFeatures: string[]; tools: { name: string; allowed: boolean; conditionalScopes: unknown[] }[] } };
+    const payload = result.structuredContent as { result: { supportedFeatures: string[]; allowedScopes: string[]; summary: string; visibleTools: { total: number; byScope: { scope: string; count: number }[] }; tools: { name: string; allowed: boolean; conditionalScopes: unknown[] }[] } };
     assert.ok(payload.result.supportedFeatures.includes("structured-errors"));
+    // In words, from the same scopes: what this connection can do, and how many tools it sees by scope.
+    assert.match(payload.result.summary, /^This connection can read/);
+    assert.equal(payload.result.visibleTools.total, payload.result.tools.filter(tool => tool.allowed).length);
+    assert.deepEqual(payload.result.visibleTools.byScope.map(item => item.scope), payload.result.allowedScopes.filter(scope => ["read", "changes", "evaluate", "seo"].includes(scope)).sort((a, b) => ["read", "changes", "evaluate", "seo"].indexOf(a) - ["read", "changes", "evaluate", "seo"].indexOf(b)));
     assert.deepEqual(payload.result.tools.find(t => t.name === "folio_evaluate")!.conditionalScopes, [{ when: "useSeoTools=true", requiredScope: "seo", allowed: false }]);
     assert.equal(payload.result.tools.find(t => t.name === "folio_seo_lookup")!.allowed, false);
   } finally { await discovery.close(); }
@@ -102,4 +107,18 @@ test("errors distinguish approval, limits, missing records and uncertain executi
     assert.equal(result.isError, true);
     assert.equal((result.structuredContent as { error: { code: string } }).error.code, "execution_uncertain");
   } finally { await client.close(); }
+});
+
+test("capabilities say in words what each connection can do, with the tools it sees by scope", async () => {
+  const cases: [AgentApiScope[], string, number, { scope: string; count: number }[]][] = [
+    [["read"], "This connection can read. It can’t start paid work.", 20, [{ scope: "read", count: 20 }]],
+    [["changes", "read"], "This connection can read and record changes. It can’t start paid work.", 22, [{ scope: "read", count: 20 }, { scope: "changes", count: 2 }]],
+    [["read", "seo"], "This connection can read and run paid search lookups. Each lookup is charged, needs your account’s approval and must be confirmed in the call.", 22, [{ scope: "read", count: 20 }, { scope: "seo", count: 2 }]],
+  ];
+  for (const [scopes, summary, total, byScope] of cases) {
+    const result = await invokeFolioTool("folio_capabilities", {}, { ...context, principal: { ...context.principal, scopes } }) as { summary: string; visibleTools: { total: number; byScope: unknown[] }; allowedScopes: string[] };
+    assert.equal(result.summary, summary);
+    assert.deepEqual(result.visibleTools, { total, byScope });
+    assert.deepEqual(result.allowedScopes, scopes, "existing fields are unchanged");
+  }
 });

@@ -46,6 +46,8 @@ test("actual D1 API credentials are hashed, scoped, expiring, revocable, owner-i
     await assert.rejects(revokeAgentApiKey(db, "bob", issued.key.id), error => error instanceof AgentApiError && error.status === 404);
     assert.deepEqual(await listAgentApiKeys(db, "bob"), []);
     assert.ok(!(JSON.stringify(await listAgentApiKeys(db, "alice"))).includes("token_hash"));
+    // A key the person copied says so, beside connections made by signing in (see the OAuth test).
+    assert.deepEqual((await listAgentApiKeys(db, "alice")).map(key => key.connection), ["key"]);
     await revokeAgentApiKey(db, "alice", issued.key.id);
     await assert.rejects(authenticateAgentApiKey(db, issued.token, "read"), error => error instanceof AgentApiError && error.status === 401);
     const expired = await createAgentApiKey(db, "alice", { name: "Expired fixture", scopes: ["read"], expiresInDays: 1 }, { now: new Date(Date.now() - 86_400_001) });

@@ -7,15 +7,6 @@
 .ao-intro { max-width: 900px; margin-top: 8px; }
 .ao-aside { margin-top: 8px; font-size: 13px !important; color: var(--folio-text-muted) !important; }
 
-.agent-onboarding.is-collapsed { padding: 0; }
-.agent-onboarding.is-collapsed > summary { display: flex; align-items: center; gap: 12px; padding: 18px 23px; cursor: pointer; list-style: none; }
-.agent-onboarding.is-collapsed > summary::-webkit-details-marker { display: none; }
-.agent-onboarding.is-collapsed > summary span { display: grid; gap: 2px; }
-.agent-onboarding.is-collapsed > summary strong { font-size: 16px; font-weight: 600; }
-.agent-onboarding.is-collapsed > summary small { font-size: 13px; color: var(--folio-text-muted); }
-.agent-onboarding.is-collapsed[open] > :not(summary) { margin-left: 23px; margin-right: 23px; }
-.agent-onboarding.is-collapsed[open] > :last-child { margin-bottom: 23px; }
-
 .ao-steps { display: grid; gap: 0; margin-top: 18px; list-style: none; counter-reset: none; }
 .ao-step { display: grid; grid-template-columns: 30px minmax(0,1fr); gap: 14px; position: relative; padding-bottom: 22px; }
 .ao-step:not(:last-child)::before { content: ""; position: absolute; left: 14px; top: 32px; bottom: 4px; width: 2px; border-radius: 2px; background: var(--folio-edge); }
@@ -75,6 +66,7 @@
 .ao-notes { display: grid; gap: 4px; padding-left: 18px; font-size: 13px; line-height: 1.6; color: var(--folio-text-secondary); }
 
 .ao-check-grid { display: grid; grid-template-columns: minmax(0,1.4fr) minmax(220px,1fr); gap: 12px; align-items: start; }
+.ao-check-grid.is-single { grid-template-columns: minmax(0,1fr); max-width: 760px; }
 .ao-check-grid > div:first-child { display: grid; gap: 10px; min-width: 0; }
 .ao-curl summary { cursor: pointer; font-size: 13px; font-weight: 500; color: var(--folio-ink); }
 .ao-curl[open] { display: grid; gap: 8px; }
@@ -116,6 +108,46 @@
 .ao-trouble dt { font-size: 14px; font-weight: 600; color: var(--folio-ink); }
 .ao-trouble dd { margin: 4px 0 0; font-size: 13px; line-height: 1.6; color: var(--folio-text-secondary); }
 
+/* Said beside every copy that holds the key: where it's safe to paste. */
+.ao-key-note { display: flex; align-items: flex-start; gap: 7px; margin: 0; font-size: 13px !important; line-height: 1.5 !important; color: var(--folio-ink) !important; }
+.ao-key-note > svg { flex: none; margin-top: 2px; color: var(--folio-text-secondary); }
+.ao-install > .ao-key-note { flex: 1 1 100%; }
+.ao-code > .ao-key-note { padding: 0 14px 12px; }
+.cc-card .ao-key-note { justify-content: center; text-align: left; }
+.ao-fields > div:has(.ao-field-note) { grid-template-rows: auto auto; }
+.ao-fields .ao-field-note { grid-column: 1 / -1; }
+
+/* Each connection: name and last use, then how it connected, what it may do and the line about money. */
+.ao-status li { display: grid; gap: 3px; }
+.ao-conn-name { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; }
+.ao-conn-meta { display: flex; flex-wrap: wrap; gap: 2px 0; padding-left: 16px; font-size: 13px; color: var(--folio-text-secondary); }
+.ao-conn-meta > span + span::before { content: "·"; padding: 0 6px; color: var(--folio-text-faint); }
+.ao-conn-meta .is-paid { color: var(--folio-ink); font-weight: 500; }
+
+/* Step 5: the website the prompts are about, and prompts that would come back empty. */
+.ao-prompts-block { display: grid; gap: 10px; min-width: 0; }
+.ao-prompts-lead { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; }
+.ao-prompts-lead > p { flex: 1 1 360px; }
+.ao-site-picker { display: grid; gap: 4px; min-width: min(100%, 240px); font-size: 13px; font-weight: 500; color: var(--folio-text-secondary); }
+.ao-prompt { display: flex; flex-direction: column; }
+.ao-prompt blockquote { flex: 1 1 auto; }
+.ao-prompt.is-empty { background: transparent; border: 1px dashed var(--folio-edge-strong); }
+.ao-prompt.is-empty blockquote { border-left-color: var(--folio-edge-strong); color: var(--folio-text-secondary); }
+.ao-prompt-empty { display: flex; align-items: flex-start; gap: 7px; font-size: 13px !important; line-height: 1.5 !important; color: var(--folio-ink) !important; }
+.ao-prompt-empty > svg { flex: none; margin-top: 2px; color: var(--folio-text-secondary); }
+.ao-prompt-note { font-size: 13px !important; line-height: 1.5 !important; color: var(--folio-text-muted) !important; }
+
+/* Connected on /agents: status and prompts first, the setup for another agent folded below. */
+.agent-onboarding.is-connected { display: grid; gap: 16px; }
+.agent-onboarding.is-connected > .ao-status { max-width: 760px; }
+.ao-setup { border-top: 1px solid var(--folio-edge); padding-top: 14px; }
+.ao-setup > summary { display: flex; align-items: center; gap: 12px; cursor: pointer; list-style: none; }
+.ao-setup > summary::-webkit-details-marker { display: none; }
+.ao-setup > summary span { display: grid; gap: 2px; }
+.ao-setup > summary strong { font-size: 16px; font-weight: 600; }
+.ao-setup > summary small { font-size: 13px; color: var(--folio-text-muted); }
+.ao-setup[open] > summary { margin-bottom: 4px; }
+
 @media(max-width:900px) { .ao-check-grid, .ao-permissions, .ao-trouble, .ao-prompts { grid-template-columns: 1fr; } }
 @media(max-width:700px) {
   .agent-onboarding { padding: 18px; }
@@ -125,4 +157,6 @@
   .ao-fields > div { grid-template-columns: minmax(0,1fr); gap: 4px; }
   .ao-clients { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .ao-prompt footer { flex-direction: column; align-items: stretch; }
+  .ao-conn-meta { padding-left: 0; }
+  .ao-site-picker { min-width: 100%; }
 }

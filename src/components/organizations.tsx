@@ -193,7 +193,13 @@ function OrganizationView({ id, onLeft, onChanged, welcome, onDismissWelcome }: 
   const owner = detail.yourRole === "owner", waiting = detail.pending ?? [], firstSite = detail.websites[0] ?? null;
   const from = session?.user.name?.split(/\s+/)[0] ?? null;
   const agents = detail.members.reduce((total, member) => total + member.agents.length, 0);
-  const setup = <AgentOnboarding domain={detail.websites[0]?.domain ?? null} organization={detail.name} onKeysChanged={reload} />;
+  // The prompts can be about any website shared here, or one of the person's own that isn't shared yet. A website the
+  // person shared themselves is theirs (only its owner can share it), so its prompts treat it as their own.
+  const promptWebsites = [...detail.websites.map(site => site.sharedBy.userId === session?.user.id
+      ? { id: site.websiteId, domain: site.domain, label: `${site.domain} · yours, shared in ${detail.name}` }
+      : { id: site.websiteId, domain: site.domain, organization: detail.name, label: `${site.domain} · shared in ${detail.name}` }),
+    ...(detail.shareable ?? []).flatMap(site => { try { return [{ id: site.websiteId, domain: new URL(site.url).hostname.replace(/^www\./, "") }]; } catch { return []; } })];
+  const setup = <AgentOnboarding websites={promptWebsites} organization={detail.name} onKeysChanged={reload} />;
   return <div className="org-detail">
     <header className="panel org-head">
       <div className="org-mark" aria-hidden="true">{initials(detail.name)}</div>
