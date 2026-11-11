@@ -38,6 +38,7 @@ async function setup(page: Page, options: { signedIn?: boolean; organizations?: 
       return route.fulfill({ json: { organization: detail() } });
     }
     if (url.pathname === "/api/sites/site-manus/visibility") return route.fulfill({ json: { report } });
+    if (url.pathname === "/api/agent-keys" && method === "GET") return route.fulfill({ json: { keys: [{ id: "k1", name: "Rach's Claude Code", prefix: "folio_v1_cccccccc", scopes: ["read"], createdAt: at, expiresAt: "2099-01-01T00:00:00.000Z", revokedAt: null, lastUsedAt: at }] } });
     if (method !== "GET") return route.fulfill({ status: 403, json: { error: { message: "Unplanned write in a browser fixture." } } });
     return route.fulfill({ json: {} });
   });
@@ -64,12 +65,15 @@ test("someone with no organization creates one, sees agent onboarding, invites p
   await expect(page.getByRole("heading", { name: "Manus", level: 2 })).toBeVisible();
   expect(state.posts).toContainEqual({ path: "/api/organizations", name: "Manus" });
 
+  // The organization page always shows the full setup, aimed at the shared website and this organization.
   const onboard = page.getByRole("region", { name: "Connect your agent" });
+  await expect(onboard).toContainText("Each member of Manus connects their own agent");
   await expect(onboard.locator("pre").first()).toContainText("/api/mcp");
-  await expect(onboard.locator("pre").first()).toContainText("Bearer ${FOLIO_API_KEY}");
-  await expect(onboard).toContainText("You have 1 active key: Rach's Claude Code.");
-  await expect(onboard.locator("blockquote")).toContainText("folio_website_gaps for manus.im");
-  await expect(onboard.getByRole("link", { name: "Create a key" })).toHaveAttribute("href", "/docs/api#api-keys");
+  await expect(onboard).toContainText("Bearer ${FOLIO_API_KEY}");
+  await expect(onboard).toContainText("You have 1 active key: Rach's Claude Code (used");
+  await expect(onboard.locator(".ao-status")).toContainText("Manus sees these under Members and their agents.");
+  await expect(onboard.locator("blockquote").first()).toContainText("Call folio_organizations to find manus.im in Manus, then call folio_website_gaps");
+  await expect(onboard.getByRole("link", { name: "Manage or revoke keys" })).toHaveAttribute("href", "/docs/api#api-keys");
 
   const members = page.getByRole("region", { name: "Members and their agents" });
   await expect(members.getByRole("list", { name: "Rach Pradhan's agents" })).toContainText("Rach's Claude Code");

@@ -6,6 +6,7 @@ import { crawlWebsite } from "./index-pages";
 import { registrableDomain } from "./index-stats";
 import { getOwnedSeoReport, listOwnedSeoReports } from "./seo-store";
 import { readableWebsite } from "./organizations";
+import { sequentially } from "./sequential";
 import { savedVisibility, visibilityFilters } from "./visibility-service";
 
 /**
@@ -280,14 +281,15 @@ export async function loadWebsiteGaps(db: D1Database, readerId: string, websiteI
   const readable = await readableWebsite(db, readerId, websiteId);
   if (!readable) throw new AgentApiError("Website not found. List your websites with folio_targets, or shared ones with folio_organizations.", 404, "not_found");
   const { site, ownerId } = readable, domain = hostOf(site.url);
-  const [search, rankings, published, crawl, yourQuestions] = await Promise.all([
-    savedSearch(db, ownerId, domain).catch(() => null),
-    googleRankings(db, domain),
-    publishedIndex(db).catch(() => null),
-    crawlWebsite(db, domain),
-    savedVisibility(db, ownerId, visibilityFilters(new URLSearchParams({ websiteId: site.id })))
+  // One read at a time: each in-flight query can hold one of the database's few connections.
+  const [search, rankings, published, crawl, yourQuestions] = await sequentially([
+    () => savedSearch(db, ownerId, domain).catch(() => null),
+    () => googleRankings(db, domain),
+    () => publishedIndex(db).catch(() => null),
+    () => crawlWebsite(db, domain),
+    () => savedVisibility(db, ownerId, visibilityFilters(new URLSearchParams({ websiteId: site.id })))
       .then(report => ({ completed: report.current.completedQuestions, named: report.current.mentionedQuestions })).catch(() => null),
-  ]);
+  ] as const);
   let index: WebsiteGapsInput["index"] = { available: false, source: null, publishedQuestions: null, namedIn: 0, citedIn: 0, bestPosition: null, answers: [], questions: [] };
   if (published) {
     try {

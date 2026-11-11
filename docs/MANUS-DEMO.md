@@ -30,15 +30,24 @@ Share the invite link. Each person opens it, signs in with Google, and presses *
 
 ## 3. Connect your own agent (3 minutes)
 
-The **Connect your agent** card on the organization page has the three steps, with copy buttons:
+The **Connect your agent** panel on the organization page (also at `/agents#connect`) walks each person through five steps:
 
-1. **Create a Folio key.** Each person uses their own; it sees their websites plus everything shared with the organization.
-2. **Add Folio to the agent**: `.mcp.json` for Claude Code, `config.toml` for Codex, or any Streamable HTTP MCP client at `/api/mcp` with `Authorization: Bearer <key>`.
-3. **Ask it.** The suggested prompt is:
+1. **Pick your agent**: Claude Code, Codex, Cursor, VS Code (Copilot agent mode), Claude Desktop, or any MCP client.
+2. **Create a key for it** right there. It's named after the agent ("Rach's Claude Code"), has read access by default, and can optionally record changes or, deliberately, spend. The key is shown once and masked on screen; **Copy export line** copies `export FOLIO_API_KEY="…"`. Safe to do while screen-sharing.
+3. **Add Folio to it.** For Claude Code that's one command:
 
-   > Use Folio (the "folio" MCP server). Call folio_organizations to find the websites Manus shares, then folio_website_gaps for manus.im. Tell me what it's missing, which gap to fix first and why, and what hasn't been checked yet. Don't start anything paid.
+   ```sh
+   claude mcp add --transport http --scope user folio https://usefolio.site/api/mcp \
+     --header "Authorization: Bearer $FOLIO_API_KEY"
+   ```
 
-The agent calls `folio_organizations`, finds `manus.im`'s `websiteId`, then `folio_website_gaps`, which returns the same report as the page, as structured data. Refresh the organization page: the read appears under **What the team's agents read**.
+   There's also a `.mcp.json` the team can commit to its repository (it holds no key; each person sets their own `FOLIO_API_KEY`), and the matching setup for each other client.
+4. **Check it's connected**: `claude mcp list` should show `folio: … ✔ Connected`. The status box on the page turns green by itself the moment the new key makes its first call, and the agent appears under **Members and their agents**.
+5. **Ask it something.** Four ready prompts: what manus.im is missing, who AI answers recommend instead, whether its pages answer the big searches, and fixing the top gap in the website's repository (in Claude Code, `/mcp__folio__improve_aeo` runs the guided version).
+
+The first prompt calls `folio_organizations`, finds `manus.im`'s `websiteId`, then `folio_website_gaps`, which returns the same report as the page, as structured data. Refresh the organization page: the read appears under **What the team's agents read**.
+
+Below the steps, **What your agent can do with each permission** lists every tool by permission (and which ones can charge), and **If it doesn't connect** covers the usual causes: an expired key, a variable the editor can't see, browser clients, the 60-requests-a-minute limit, and web connectors (Claude.ai, ChatGPT) that need OAuth, which Folio doesn't offer yet.
 
 ## 4. What happens next (2 minutes)
 

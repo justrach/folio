@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowRight, Bot, Check, Copy, Globe2, KeyRound, Link2, LogOut, MessageSquareText, Plus, Share2, UserPlus, Users } from "lucide-react";
+import { ArrowRight, Bot, Globe2, Link2, LogOut, Plus, Share2, UserPlus, Users } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import type { InvitePreview, OrganizationDetail, OrganizationSummary } from "@/lib/organizations";
 import { UiSelect } from "./ui/select";
 import { WebsiteVisibility } from "./website-visibility";
+import { AgentOnboarding, CopyButton } from "./agent-onboarding";
 import "./organizations.css";
 
 const PENDING_INVITE = "folio-pending-invite";
@@ -23,13 +24,6 @@ async function call<T>(url: string, body?: Record<string, unknown>): Promise<T> 
   const payload = await response.json().catch(() => null) as { error?: { message?: string } } | null;
   if (!response.ok) throw new Error(payload?.error?.message ?? "That didn’t work. Please try again.");
   return payload as T;
-}
-
-function CopyButton({ text, label = "Copy" }: { text: string; label?: string }) {
-  const [copied, setCopied] = useState(false);
-  return <button type="button" className="button secondary org-copy" onClick={async () => {
-    try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1600); } catch { /* The text stays selectable. */ }
-  }}>{copied ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}{copied ? "Copied" : label}</button>;
 }
 
 /** Real organizations. Membership and sharing only: nothing on this page spends credits. */
@@ -151,6 +145,8 @@ function OrganizationView({ id, onLeft, onChanged }: { id: string; onLeft: () =>
   const [link, setLink] = useState<string | null>(null), [open, setOpen] = useState<string | null>(null), [share, setShare] = useState("");
   const [confirm, setConfirm] = useState<string | null>(null);
   useEffect(() => { call<{ organization: OrganizationDetail }>(`/api/organizations/${encodeURIComponent(id)}`).then(result => { setDetail(result.organization); setOpen(result.organization.websites[0]?.websiteId ?? null); }, failure => setError(failure.message)); }, [id]);
+  // A new or newly connected key changes the member list; re-read it.
+  const reload = useCallback(() => { call<{ organization: OrganizationDetail }>(`/api/organizations/${encodeURIComponent(id)}`).then(result => setDetail(result.organization), () => undefined); }, [id]);
   async function act(body: Record<string, unknown>, done?: string) {
     setBusy(true); setError(""); setNotice("");
     try {
@@ -162,12 +158,7 @@ function OrganizationView({ id, onLeft, onChanged }: { id: string; onLeft: () =>
     } catch (failure) { setError(failure instanceof Error ? failure.message : "That didn’t work."); } finally { setBusy(false); }
   }
   if (!detail) return error ? <p role="alert">{error}</p> : <p role="status">Loading the organization…</p>;
-  const owner = detail.yourRole === "owner", me = detail.members.find(member => member.you);
-  const domain = detail.websites[0]?.domain ?? "our website";
-  const origin = typeof window === "undefined" ? "https://usefolio.site" : window.location.origin;
-  const claude = JSON.stringify({ mcpServers: { folio: { type: "http", url: `${origin}/api/mcp`, headers: { Authorization: "Bearer ${FOLIO_API_KEY}" } } } }, null, 2);
-  const codex = `[mcp_servers.folio]\nurl = "${origin}/api/mcp"\nbearer_token_env_var = "FOLIO_API_KEY"`;
-  const prompt = `Use Folio (the "folio" MCP server). Call folio_organizations to find the websites ${detail.name} shares, then folio_website_gaps for ${domain}. Tell me what it's missing, which gap to fix first and why, and what hasn't been checked yet. Don't start anything paid.`;
+  const owner = detail.yourRole === "owner";
   return <div className="org-detail">
     <header className="panel org-head">
       <div className="org-mark" aria-hidden="true">{initials(detail.name)}</div>
@@ -176,21 +167,7 @@ function OrganizationView({ id, onLeft, onChanged }: { id: string; onLeft: () =>
     {notice && <p role="status" className="org-notice">{notice}</p>}
     {error && <p role="alert" className="org-notice is-error">{error}</p>}
 
-    <section className="panel org-onboard" aria-labelledby="org-onboard-title">
-      <h2 id="org-onboard-title"><Bot size={20} aria-hidden="true" />Connect your agent</h2>
-      <p>Each member connects their own agent (Claude Code, Codex, Cursor or any MCP client) with their own key. It can read your websites and everything shared with {detail.name}, and its reads show up below as team activity. It can’t spend unless the key allows it and you approve.</p>
-      <ol className="org-steps">
-        <li><span className="org-step-number">1</span><div><h3><KeyRound size={15} aria-hidden="true" />Create a Folio key</h3>
-          <p>{me?.agents.length ? `You have ${me.agents.length} active key${me.agents.length === 1 ? "" : "s"}: ${me.agents.map(agent => agent.name).join(", ")}.` : "You haven’t connected an agent yet."} Read access is enough to start. Store it as <code>FOLIO_API_KEY</code>; it’s shown once.</p>
-          <Link className="button secondary" href="/docs/api#api-keys">Create a key<ArrowRight size={14} aria-hidden="true" /></Link></div></li>
-        <li><span className="org-step-number">2</span><div><h3><Link2 size={15} aria-hidden="true" />Add Folio to your agent</h3>
-          <details open><summary>Claude Code · <code>.mcp.json</code></summary><pre>{claude}</pre><CopyButton text={claude} /></details>
-          <details><summary>Codex · <code>config.toml</code></summary><pre>{codex}</pre><CopyButton text={codex} /></details>
-          <details><summary>Any MCP client</summary><p>Streamable HTTP at <code>{origin}/api/mcp</code> with the header <code>Authorization: Bearer &lt;your key&gt;</code>.</p></details></div></li>
-        <li><span className="org-step-number">3</span><div><h3><MessageSquareText size={15} aria-hidden="true" />Ask it what {domain === "our website" ? "your website" : domain} is missing</h3>
-          <blockquote>{prompt}</blockquote><CopyButton text={prompt} label="Copy prompt" /></div></li>
-      </ol>
-    </section>
+    <AgentOnboarding domain={detail.websites[0]?.domain ?? null} organization={detail.name} onKeysChanged={reload} />
 
     <section className="panel org-websites" aria-labelledby="org-websites-title">
       <header><h2 id="org-websites-title"><Globe2 size={19} aria-hidden="true" />Shared websites</h2>
@@ -217,7 +194,7 @@ function OrganizationView({ id, onLeft, onChanged }: { id: string; onLeft: () =>
         <div className="org-member"><strong>{member.name}{member.you ? " (you)" : ""}</strong><span>{member.email}</span></div>
         <span className="org-role">{member.role === "owner" ? "Owner" : "Member"}</span>
         <ul className="org-agents" aria-label={`${member.name}'s agents`}>{member.agents.length ? member.agents.map((agent, index) => <li key={`${agent.name}-${index}`}><Bot size={13} aria-hidden="true" />{agent.name}<small>{used(agent.lastUsedAt)}</small></li>)
-          : <li className="is-empty">No agent connected</li>}</ul>
+          : <li className="is-empty">{member.you ? <a href="#connect">Connect your agent</a> : "No agent connected"}</li>}</ul>
         {owner && !member.you && <div className="org-member-actions">
           <button type="button" className="text-link" disabled={busy} onClick={() => void act({ action: "set_role", userId: member.userId, role: member.role === "owner" ? "member" : "owner" }, `${member.name} is now ${member.role === "owner" ? "a member" : "an owner"}.`)}>{member.role === "owner" ? "Make member" : "Make owner"}</button>
           {confirm === `remove:${member.userId}` ? <button type="button" className="text-link is-danger" disabled={busy} onClick={() => void act({ action: "remove_member", userId: member.userId }, `${member.name} was removed.`)}>Confirm remove</button>

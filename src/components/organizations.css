@@ -37,17 +37,6 @@
 .org-mark { display: grid; place-items: center; width: 54px; height: 54px; flex: none; border-radius: 14px; background: var(--folio-ink); color: var(--folio-surface); font-size: 19px; font-weight: 600; }
 .org-role { display: inline-flex; padding: 1px 9px; border-radius: 999px; background: var(--folio-surface-muted); color: var(--folio-ink); font-size: 13px; font-weight: 500; white-space: nowrap; }
 
-.org-onboard { border: 1px solid color-mix(in srgb, var(--folio-accent) 45%, var(--folio-edge)); }
-.org-onboard > p { max-width: 900px; margin-top: 8px; }
-.org-steps { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin-top: 18px; list-style: none; }
-.org-steps > li { display: flex; gap: 12px; min-width: 0; padding: 18px; border-radius: var(--folio-radius-control); background: var(--folio-canvas); }
-.org-steps > li > div { display: grid; grid-template-columns: minmax(0,1fr); gap: 10px; align-content: start; min-width: 0; }
-.org-step-number { display: grid; place-items: center; width: 28px; height: 28px; flex: none; border-radius: 999px; background: var(--folio-accent); color: var(--folio-on-accent); font-size: 14px; font-weight: 600; }
-.org-steps details { min-width: 0; border-top: 1px solid var(--folio-edge); padding-top: 8px; }
-.org-steps summary { cursor: pointer; font-size: 13px; font-weight: 500; color: var(--folio-ink); }
-.org-steps pre { margin: 8px 0; padding: 12px; max-width: 100%; overflow-x: auto; border-radius: 8px; background: var(--folio-surface); border: 1px solid var(--folio-edge); font-family: var(--folio-font-mono); font-size: 13px; line-height: 1.5; color: var(--folio-ink); white-space: pre-wrap; overflow-wrap: anywhere; }
-.org-steps blockquote { margin: 0; padding: 12px 14px; border-left: 3px solid var(--folio-accent); border-radius: 0 8px 8px 0; background: var(--folio-surface); font-size: 14px; line-height: 1.6; color: var(--folio-ink); }
-.org-copy { justify-self: start; min-height: 34px !important; }
 
 .org-websites > header, .org-members > header, .org-invites > header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
 .org-share { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -87,7 +76,7 @@
 .org-leave { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; justify-content: flex-end; font-size: 13px; color: var(--folio-text-secondary); }
 .org-leave .text-link { display: inline-flex; align-items: center; gap: 6px; }
 
-@media(max-width:1100px) { .org-steps { grid-template-columns: 1fr; } .org-members > ul > li { grid-template-columns: 38px minmax(0,1fr) auto; } .org-agents, .org-member-actions { grid-column: 2 / -1; } }
+@media(max-width:1100px) { .org-members > ul > li { grid-template-columns: 38px minmax(0,1fr) auto; } .org-agents, .org-member-actions { grid-column: 2 / -1; } }
 @media(max-width:700px) {
   .org-workspace .panel { padding: 18px; }
   .org-start-grid { grid-template-columns: 1fr; }

@@ -126,7 +126,7 @@ export function WebsiteVisibility({ websiteId, refresh = 0 }: { websiteId: strin
     </section>}
 
     <footer className="wv-foot"><Bot size={16} aria-hidden="true" />
-      <p>Agents with a Folio key read this same report with <code>folio_website_gaps</code>. Nothing on this panel starts paid work. <Link href="/agents">Connect an agent</Link></p>
+      <p>Agents with a Folio key read this same report with <code>folio_website_gaps</code>. Nothing on this panel starts paid work. <Link href="/agents#connect">Connect an agent</Link></p>
     </footer>
   </section>;
 }

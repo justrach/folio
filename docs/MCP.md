@@ -4,7 +4,22 @@ Folio serves authenticated Streamable HTTP at `/api/mcp` in its existing Next.js
 
 ## Connect a coding client
 
-Create a revocable Folio key in `/docs/api#api-keys`. Store it in the client environment as `FOLIO_API_KEY`, never in a committed configuration. Keys inherit the exact issuing account's record ownership. Select `read` for saved evidence, optionally `evaluate` for paid evaluations, `seo` for paid DataForSEO lookups and `changes` to record website changes (no charges). Existing evaluation keys do not acquire SEO permission. Account provider access and quotas still apply.
+The **Connect your agent** panel (on `/agents#connect` and every organization page) does this step by step: pick a client, create a key for it inline (shown once, masked on screen), copy that client's setup, watch a status box turn green when the key makes its first call, then paste a starter prompt. Its snippets, permission guide and troubleshooting come from `src/lib/agent-onboarding.ts`; a unit test keeps the permission guide in step with each tool's scope here.
+
+Setups shown there, each checked on 11 November 2026 against production with a temporary read key (since deleted):
+
+| Client | Setup | Check | Result |
+| --- | --- | --- | --- |
+| Claude Code | `claude mcp add --transport http --scope user folio https://usefolio.site/api/mcp --header "Authorization: Bearer $FOLIO_API_KEY"` | `claude mcp list` | `✔ Connected` |
+| Claude Code, shared | the `.mcp.json` below, committed; each person sets `FOLIO_API_KEY` | `claude mcp list` | Pending approval, then `✔ Connected` |
+| Codex | `codex mcp add folio --url https://usefolio.site/api/mcp --bearer-token-env-var FOLIO_API_KEY` | `codex mcp list` | Writes exactly the `config.toml` below |
+| Cursor | `.cursor/mcp.json` with `"Authorization": "Bearer ${env:FOLIO_API_KEY}"` | `cursor-agent mcp list-tools folio` | All 19 read tools |
+| Claude Desktop | `npx -y mcp-remote https://usefolio.site/api/mcp --header "Authorization:${FOLIO_AUTH}"`, with `FOLIO_AUTH` in the server's `env` | run through Claude Code's stdio loader | `✔ Connected` |
+| VS Code | `.vscode/mcp.json` with a `promptString` input for the key | not run here | follows VS Code's documented format |
+
+Claude.ai and ChatGPT web connectors need OAuth sign-in, which Folio does not offer yet.
+
+Manual setup: create a revocable Folio key in `/docs/api#api-keys`. Store it in the client environment as `FOLIO_API_KEY`, never in a committed configuration. Keys inherit the exact issuing account's record ownership. Select `read` for saved evidence, optionally `evaluate` for paid evaluations, `seo` for paid DataForSEO lookups and `changes` to record website changes (no charges). Existing evaluation keys do not acquire SEO permission. Account provider access and quotas still apply.
 
 Codex `config.toml`:
 

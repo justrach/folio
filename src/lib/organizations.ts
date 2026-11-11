@@ -1,6 +1,7 @@
 import "server-only";
 import type { D1Database } from "@cloudflare/workers-types";
 import { AgentApiError, agentApiHash } from "./agent-api-key-store";
+import { sequentially } from "./sequential";
 
 /**
  * Organizations: anyone can create one or join one with an invite link. Websites stay
@@ -85,23 +86,23 @@ export async function getOrganization(db: D1Database, userId: string, organizati
   const yourRole = await roleIn(db, userId, organizationId);
   const organization = await db.prepare("SELECT id, name, created_at FROM organizations WHERE id = ?").bind(organizationId).first<{ id: string; name: string; created_at: number }>();
   if (!organization) throw new AgentApiError("Organization not found.", 404, "not_found");
-  const [members, keys, websites, invites, shareable] = await Promise.all([
-    db.prepare(`SELECT m.user_id, m.role, m.joined_at, u.name, u.email FROM organization_members m JOIN user u ON u.id = m.user_id
+  const [members, keys, websites, invites, shareable] = await sequentially([
+    () => db.prepare(`SELECT m.user_id, m.role, m.joined_at, u.name, u.email FROM organization_members m JOIN user u ON u.id = m.user_id
       WHERE m.organization_id = ? ORDER BY CASE m.role WHEN 'owner' THEN 0 ELSE 1 END, m.joined_at, m.user_id`).bind(organizationId)
       .all<{ user_id: string; role: OrganizationRole; joined_at: number; name: string; email: string }>(),
     // Members see which agents their teammates have connected: key names and last use, never the key.
-    db.prepare(`SELECT k.user_id, k.name, k.scopes_json, k.last_used_at, k.expires_at FROM agent_api_keys k
+    () => db.prepare(`SELECT k.user_id, k.name, k.scopes_json, k.last_used_at, k.expires_at FROM agent_api_keys k
       JOIN organization_members m ON m.user_id = k.user_id AND m.organization_id = ? WHERE k.revoked_at IS NULL AND k.expires_at > ? ORDER BY k.created_at DESC`)
       .bind(organizationId, now).all<{ user_id: string; name: string; scopes_json: string; last_used_at: number | null; expires_at: number }>(),
-    db.prepare(`SELECT w.site_id, w.shared_by, w.shared_at, s.name, s.url, s.user_id, u.name AS shared_by_name FROM organization_websites w
+    () => db.prepare(`SELECT w.site_id, w.shared_by, w.shared_at, s.name, s.url, s.user_id, u.name AS shared_by_name FROM organization_websites w
       JOIN sites s ON s.id = w.site_id JOIN user u ON u.id = w.shared_by WHERE w.organization_id = ? ORDER BY w.shared_at, w.site_id`).bind(organizationId)
       .all<{ site_id: string; shared_by: string; shared_at: number; name: string; url: string; user_id: string; shared_by_name: string }>(),
-    yourRole === "owner" ? db.prepare(`SELECT i.id, i.created_at, i.expires_at, i.uses, i.max_uses, u.name AS created_by_name FROM organization_invites i
+    () => yourRole === "owner" ? db.prepare(`SELECT i.id, i.created_at, i.expires_at, i.uses, i.max_uses, u.name AS created_by_name FROM organization_invites i
       LEFT JOIN user u ON u.id = i.created_by WHERE i.organization_id = ? AND i.revoked_at IS NULL AND i.expires_at > ? AND i.uses < i.max_uses ORDER BY i.created_at DESC`)
-      .bind(organizationId, now).all<{ id: string; created_at: number; expires_at: number; uses: number; max_uses: number; created_by_name: string | null }>() : null,
-    db.prepare(`SELECT id, name, url FROM sites WHERE user_id = ? AND id NOT IN (SELECT site_id FROM organization_websites WHERE organization_id = ?)
+      .bind(organizationId, now).all<{ id: string; created_at: number; expires_at: number; uses: number; max_uses: number; created_by_name: string | null }>() : Promise.resolve(null),
+    () => db.prepare(`SELECT id, name, url FROM sites WHERE user_id = ? AND id NOT IN (SELECT site_id FROM organization_websites WHERE organization_id = ?)
       ORDER BY created_at DESC LIMIT 100`).bind(userId, organizationId).all<{ id: string; name: string; url: string }>(),
-  ]);
+  ] as const);
   const shared = websites.results.map(row => ({ websiteId: row.site_id, name: row.name, url: row.url, domain: hostOf(row.url),
     sharedBy: { userId: row.shared_by, name: row.shared_by_name }, sharedAt: iso(row.shared_at), canUnshare: row.user_id === userId || yourRole === "owner" }));
   // Agent activity is shown only for the organization's shared websites; other asks stay private.

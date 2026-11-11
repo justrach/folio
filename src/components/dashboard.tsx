@@ -90,6 +90,7 @@ import "./public-overview-shell.css";
 import { KeywordActivitySummary } from "./keyword-activity-summary";
 import { WebsiteChangesPanel } from "./website-changes-panel";
 import { IndexAsksPanel } from "./index-asks-panel";
+import { WorkspaceAgentOnboarding } from "./agent-onboarding";
 import "./evaluation-page-shell.css";
 import { KeywordBenchmarksPanel } from "./keyword-benchmarks-panel";
 import { DeveloperToolsIndex } from "./developer-tools-index";
@@ -198,7 +199,7 @@ const titles: Record<
     eyebrow: "MEET YOUR RESEARCH TEAM",
     title: "Your agents",
     description:
-      "Follow your evaluations, their progress, and the evidence they return.",
+      "Connect your own agents, then follow what they read, change and return.",
   },
   "search-data": {
     eyebrow: "THE SEARCH LANDSCAPE",
@@ -1037,7 +1038,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
                 />
               )}
               {section === "analytics" && <ProductAnalyticsPanel key={ownerId??"signed-out"} ownerId={ownerId}/>}
-              {section === "agents" && <><WebsiteChangesPanel /><IndexAsksPanel /><KeywordActivitySummary /><AgentRunsPanel /></>}
+              {section === "agents" && <><WorkspaceAgentOnboarding /><WebsiteChangesPanel /><IndexAsksPanel /><KeywordActivitySummary /><AgentRunsPanel /></>}
               {section === "evaluations" && (
                 <EvaluationsPanel initialTargetUrl={actual?.url} />
               )}
