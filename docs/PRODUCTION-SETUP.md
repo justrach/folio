@@ -302,6 +302,22 @@ After deployment, a live check used the official MCP SDK client over HTTPS again
 
 claude.ai, ChatGPT and Claude Code have not connected through it yet.
 
+**Account menu and Getting started** (`b6a87a5`) followed on 11 November 2026: frontend
+`643c42f1-5e4a-4f17-9ab4-6936de5a344d`, backend `6a0a1dc3-5750-4d96-88e2-0d472f66633e` (`--keep-vars`). No migration
+and no secret change; the new route `/api/getting-started` reads existing tables.
+- The backend deploy failed nine times over about 15 minutes, while Cloudflare reported Workers as degraded: eight with
+  API error 10021 ("binding ANALYTICS_DB of type d1 failed to generate"), then one API timeout. Both D1 databases
+  existed on the account throughout. The same bundle deployed unchanged on the next try. Until then the frontend
+  was live and `/api/getting-started` returned an HTML error page.
+- Validation: typecheck, 457 unit tests, 17 D1 integration tests, the production build and both smoke tests; browser
+  checks of the menu and checklist (3 of 3 on desktop and mobile) and of Connect your agent and the consent page
+  (8 of 8 each), with reruns after local loopback timeouts.
+
+After deployment: `/api/getting-started` without a session returned 401 `unauthorized` as JSON. `/websites`,
+`/agents` and `/oauth/authorize` returned 200, and the served chunk `1su45g4qwxmef.js` contains both the account menu
+and the checklist. Some requests from this machine timed out and succeeded on retry. Read against production, the
+owner's checklist shows 3 of 5: website, Search Console and team done; agent and agent question not yet.
+
 ### Vector store
 
 Page embeddings live in turbopuffer, not Postgres (see [embeddings](EMBEDDINGS.md)).
