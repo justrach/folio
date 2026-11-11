@@ -16,7 +16,8 @@
 .org-signed-out { justify-items: start; padding: 32px !important; }
 .org-signed-out h2, .org-start h2 { font-family: var(--serif); font-size: 28px; font-weight: 400; letter-spacing: -.4px; }
 .org-signed-out p { max-width: 640px; }
-.org-start header { display: flex; gap: 14px; align-items: flex-start; }
+.org-start header { display: flex; gap: 22px; align-items: center; }
+.org-workspace .sk-spot { width: 124px; }
 .org-start header p { max-width: 720px; margin-top: 6px; }
 .org-start-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
 .org-start-grid > div { display: grid; gap: 8px; align-content: start; padding: 18px; border-radius: var(--folio-radius-control); background: var(--folio-canvas); }

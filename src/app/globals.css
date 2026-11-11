@@ -1693,6 +1693,8 @@ td:last-child {
 .empty-state.compact {
   min-height: 240px;
 }
+.empty-art { display: block; margin-bottom: 18px; }
+.empty-state.compact .empty-art .sk-spot { width: 104px; }
 .empty-icon {
   color: var(--folio-text-muted);
   background: var(--folio-canvas);

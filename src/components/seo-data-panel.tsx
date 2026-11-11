@@ -17,6 +17,7 @@ import {
   ShieldCheck,
 } from "@/components/icons";
 import { useSession } from "@/lib/auth-client";
+import { FoundSpot } from "./workspace-sketches";
 import type {
   BacklinksOverview,
   OrganicOverview,
@@ -649,9 +650,7 @@ export function SeoDataPanel() {
 
       {!result ? (
         <section className="seo-data-empty" aria-label="SEO results">
-          <span className="seo-data-empty-icon">
-            <BarChart3 size={29} />
-          </span>
+          <FoundSpot />
           <h2>See how your website is found.</h2>
           <p>
             Enter a domain to update its search estimates and backlink profile, or open a saved report above.

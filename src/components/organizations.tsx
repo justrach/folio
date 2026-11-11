@@ -9,6 +9,7 @@ import type { InvitePreview, JoinedByEmail, OrganizationDetail, OrganizationSumm
 import { UiSelect } from "./ui/select";
 import { WebsiteVisibility } from "./website-visibility";
 import { CompanyFavicon } from "./company-favicon";
+import { TeamSpot } from "./workspace-sketches";
 import { AgentOnboarding, CopyButton } from "./agent-onboarding";
 import { inviteMailto, inviteMessage } from "@/lib/organization-invite-message";
 import "./organizations.css";
@@ -41,7 +42,7 @@ export function Organizations() {
   }, []);
   if (isPending) return <p role="status">Loading organizations…</p>;
   if (!session) return <section className="panel org-signed-out" aria-label="Organizations">
-    <Users size={22} aria-hidden="true" />
+    <TeamSpot />
     <h2>{pending ? "You’ve been invited to an organization" : "Work on websites together"}</h2>
     <p>{pending ? "Sign in to see which organization invited you and join it. Nothing happens until you choose to join."
       : "Create an organization or join one with an invite link. Members share websites, see each other’s connected agents, and read the same reports."}</p>
@@ -148,7 +149,7 @@ function JoinByLink({ compact = false, onInvite }: { compact?: boolean; onInvite
 
 function StartCard({ emailVerified, onCreated, onInvite }: { emailVerified: boolean; onCreated: (id: string) => Promise<void> | void; onInvite: (token: string) => void }) {
   return <section className="panel org-start" aria-label="Start an organization">
-    <header><Users size={22} aria-hidden="true" /><div><h2>Work on websites together</h2>
+    <header><TeamSpot /><div><h2>Work on websites together</h2>
       <p>An organization is a team in Folio. Members share websites, read the same “where it shows up” reports, and connect their own agents, which can read everything the team shares.</p></div></header>
     <div className="org-start-grid">
       <div><h3>Create one</h3><p>You become its owner and can invite people with a link.</p><CreateForm onCreated={onCreated} /></div>

@@ -13,38 +13,37 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowDown,
-  ArrowLeft,
   ArrowDownToLine,
+  ArrowLeft,
   ArrowRight,
   ArrowUp,
   ArrowUpRight,
   BarChart3,
   BookOpen,
-  Building2,
   Bot,
+  Building2,
   Check,
   CheckCheck,
-  ChevronDown,
   ChevronRight,
   CircleHelp,
   Clipboard,
   Code2,
   Compass,
-  ExternalLink,
   Eye,
   EyeOff,
   FileCode2,
-  FileText,
   FlaskConical,
   Globe2,
   Info,
   LayoutDashboard,
+  Link2,
   Loader2,
   LogOut,
   Mail,
   Menu,
+  MessageSquareText,
   MoreHorizontal,
-  Play,
+  PencilLine,
   Plus,
   Search,
   Settings2,
@@ -79,6 +78,7 @@ import {ProductAnalyticsPanel} from "./product-analytics-panel";
 import { ManusDashboardDemo } from "./manus-dashboard-demo";
 import { IndexedDomains } from "./indexed-domains";
 import { OrgPreview } from "./org-preview";
+import { AllClearSpot, AuditSpot, HistorySpot, StartSpot } from "./workspace-sketches";
 import { Organizations } from "./organizations";
 import { StartHere } from "./start-here";
 import { WorkspaceRecords } from "./workspace-records";
@@ -129,7 +129,7 @@ const navigation = [
     label: "Search & backlinks",
     href: "/search-data",
     section: "search-data",
-    icon: Search,
+    icon: Link2,
   },
   {
     label: "Website checks",
@@ -137,7 +137,7 @@ const navigation = [
     section: "evaluations",
     icon: FlaskConical,
   },
-  { label: "Keyword evaluations", href: "/benchmarks", section: "benchmarks", icon: FlaskConical },
+  { label: "Keyword evaluations", href: "/benchmarks", section: "benchmarks", icon: MessageSquareText },
   { label: "Search Console", href: "/search-console", section: "search-console", icon: Search },
   {
     label: "Patch studio",
@@ -505,7 +505,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
               <span>{item.label}</span>
             </Link>
           ))}
-        <Link href="/overview?view=demo" className={`nav-link ${teamDemo?"active":""}`} aria-current={teamDemo?"page":undefined} onClick={()=>setMobileOpen(false)} title="Content demo"><Sparkles size={17}/><span>Content demo</span></Link>
+        <Link href="/overview?view=demo" className={`nav-link ${teamDemo?"active":""}`} aria-current={teamDemo?"page":undefined} onClick={()=>setMobileOpen(false)} title="Content demo"><PencilLine size={17}/><span>Content demo</span></Link>
         </nav>
 
         <details className="sidebar-more" open={!["overview","websites","evaluations","settings"].includes(section)}><summary className="nav-link" title="More tools"><MoreHorizontal size={17}/><span>More tools</span></summary><nav aria-label="More tools">{navigation.filter(item=>!["overview","websites","evaluations"].includes(item.section)).map(item=><Link key={item.section} href={item.href} title={item.label} className={`nav-link ${section===item.section?"active":""}`} aria-current={section===item.section?"page":undefined} onClick={()=>setMobileOpen(false)}><item.icon size={17}/><span>{item.label}</span></Link>)}<Link href="/leaderboard" title="The Folio Index" className="nav-link" onClick={()=>setMobileOpen(false)}><Trophy size={17}/><span>The Folio Index</span></Link><Link href="/agents" title="Your agents" className={`nav-link ${section==="agents"?"active":""}`} aria-current={section==="agents"?"page":undefined} onClick={()=>setMobileOpen(false)}><Bot size={17}/><span>Your agents</span></Link><Link href="/orgs" title="Organizations" className={`nav-link ${section==="orgs"?"active":""}`} aria-current={section==="orgs"?"page":undefined} onClick={()=>setMobileOpen(false)}><Building2 size={17}/><span>Organizations</span></Link><Link href="/docs/api" title="API reference" className="nav-link" onClick={()=>setMobileOpen(false)}><Code2 size={17}/><span>API reference</span></Link><Link href="/pricing" title="Plans & usage" className="nav-link" onClick={()=>setMobileOpen(false)}><BookOpen size={17}/><span>Plans & usage</span></Link></nav></details>
@@ -678,7 +678,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
           !activeScan &&
           ["overview", "seo", "visibility", "patches"].includes(section) ? (
             <EmptyState
-              icon={<Compass size={29} />}
+              art={<StartSpot />}
               title={loadingScans ? "Loading your saved audits…" : "Your first chapter starts here."}
               text={session ? "Run a website audit to measure technical health. Agent evaluations are saved separately in Evaluations." : "Sign in and run a website audit to start building your own report. Every result is saved with its source evidence."}
               action={
@@ -759,7 +759,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
                       {actual ? (
                         <EmptyState
                           compact
-                          icon={<BarChart3 size={25} />}
+                          art={<HistorySpot />}
                           title="History grows with every audit."
                           text={`Latest measured SEO health: ${actual.seoScore}/100. The current evidence suite does not measure consumer-AI visibility.`}
                         />
@@ -1370,7 +1370,7 @@ function Websites({
         ) : (
           <EmptyState
             compact
-            icon={<BookOpen size={26} />}
+            art={<AuditSpot />}
             title="No page audits saved yet."
             text={
               session
@@ -1442,7 +1442,7 @@ function PatchStudio({
   if (!patch)
     return (
       <EmptyState
-        icon={<CheckCheck size={30} />}
+        art={<AllClearSpot />}
         title="Nothing to repair right now."
         text="No downloadable suggestions were produced for this audit."
       />
@@ -2090,14 +2090,17 @@ function Methodology() {
   );
 }
 
+/** `art` is a spot sketch shown in place of the icon tile; either way the title and text carry the state. */
 function EmptyState({
   icon,
+  art,
   title,
   text,
   action,
   compact = false,
 }: {
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
+  art?: React.ReactNode;
   title: string;
   text: string;
   action?: React.ReactNode;
@@ -2105,7 +2108,7 @@ function EmptyState({
 }) {
   return (
     <div className={`empty-state ${compact ? "compact" : ""}`}>
-      <span className="empty-icon">{icon}</span>
+      {art ? <span className="empty-art">{art}</span> : <span className="empty-icon">{icon}</span>}
       <h2>{title}</h2>
       <p>{text}</p>
       {action}

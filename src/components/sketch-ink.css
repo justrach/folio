@@ -1,0 +1,40 @@
+/* Ink shared by every hand-drawn figure: the landing's drawings and the workspace's spot sketches.
+   The palette (--folio-sketch-*) lives with the other artwork tokens in src/app/theme.css. */
+:where(.sk, .sk-glyph, .sk-mark, .sk-underline) {
+  --sk-ink: var(--folio-ink);
+  --sk-soft: color-mix(in srgb, var(--folio-ink) 46%, transparent);
+  --sk-rust: var(--folio-sketch-rust);
+  --sk-sky: var(--folio-sketch-sky);
+  --sk-sun: var(--folio-sketch-sun);
+  --sk-deep: var(--folio-sketch-deep);
+  --sk-lit: var(--folio-sketch-lit);
+  --sk-dune: var(--folio-sketch-dune);
+  --sk-line: var(--folio-sketch-line);
+}
+.sk { display: block; width: 100%; height: auto; overflow: visible; }
+.sk-ink { fill: none; stroke: var(--sk-ink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.sk-ink.is-rust { stroke: var(--sk-rust); }
+.sk-ink.is-soft { stroke: var(--sk-soft); }
+.sk-ink.is-sun { stroke: var(--sk-sun); }
+.sk-ink.is-deep { stroke: var(--sk-deep); }
+.sk-ink.is-line { stroke: var(--sk-line); }
+.sk-ink.is-thin { stroke-width: 1.35; }
+.sk-ink.is-bold { stroke-width: 3; }
+.sk-ink.is-dashed { stroke-dasharray: 1.5 6; }
+.sk-grain { stroke-width: 1.7; }
+.sk-fill { stroke: none; }
+.sk-fill.is-sky { fill: var(--sk-sky); }
+.sk-fill.is-sun { fill: var(--sk-sun); }
+.sk-fill.is-dune { fill: var(--sk-dune); }
+.sk-fill.is-lit { fill: var(--sk-lit); }
+.sk-fill.is-ink { fill: currentColor; }
+.sk-fill.is-paper { fill: var(--sk-paper, var(--folio-surface)); }
+.sk-fill.is-mark { fill: color-mix(in srgb, var(--sk-rust) 17%, transparent); }
+.sk-frame-1, .sk-frame-2 { visibility: hidden; }
+@keyframes sk-draw { 0% { stroke-dashoffset: 1; opacity: 0; } 3% { opacity: 1; } 100% { stroke-dashoffset: 0; opacity: 1; } }
+
+/* Spot sketches in the workspace: drawn on once when they appear, then still. A work screen should not keep moving. */
+.sk-spot { width: 136px; flex: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .sk-spot .sk-draw { stroke-dasharray: 1; animation: sk-draw 700ms cubic-bezier(.65, 0, .25, 1) calc(var(--i, 0) * 55ms) both; }
+}

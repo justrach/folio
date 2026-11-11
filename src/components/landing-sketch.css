@@ -1,38 +1,5 @@
-/* The hand-drawn landing: ink, layout for the drawn sections, then motion. Loaded after landing.css. */
-/* The sketch palette (--folio-sketch-*) is defined with the other artwork tokens in src/app/theme.css. */
-.landing-drawn {
-  --sk-ink: var(--folio-ink);
-  --sk-soft: color-mix(in srgb, var(--folio-ink) 46%, transparent);
-  --sk-rust: var(--folio-sketch-rust);
-  --sk-sky: var(--folio-sketch-sky);
-  --sk-sun: var(--folio-sketch-sun);
-  --sk-deep: var(--folio-sketch-deep);
-  --sk-lit: var(--folio-sketch-lit);
-  --sk-dune: var(--folio-sketch-dune);
-  --sk-line: var(--folio-sketch-line);
-}
-
-/* Ink */
-.sk { display: block; width: 100%; height: auto; overflow: visible; }
-.sk-ink { fill: none; stroke: var(--sk-ink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.sk-ink.is-rust { stroke: var(--sk-rust); }
-.sk-ink.is-soft { stroke: var(--sk-soft); }
-.sk-ink.is-sun { stroke: var(--sk-sun); }
-.sk-ink.is-deep { stroke: var(--sk-deep); }
-.sk-ink.is-line { stroke: var(--sk-line); }
-.sk-ink.is-thin { stroke-width: 1.35; }
-.sk-ink.is-bold { stroke-width: 3; }
-.sk-ink.is-dashed { stroke-dasharray: 1.5 6; }
-.sk-grain { stroke-width: 1.7; }
-.sk-fill { stroke: none; }
-.sk-fill.is-sky { fill: var(--sk-sky); }
-.sk-fill.is-sun { fill: var(--sk-sun); }
-.sk-fill.is-dune { fill: var(--sk-dune); }
-.sk-fill.is-lit { fill: var(--sk-lit); }
-.sk-fill.is-ink { fill: currentColor; }
-.sk-fill.is-paper { fill: var(--landing-paper); }
-.sk-fill.is-mark { fill: color-mix(in srgb, var(--sk-rust) 17%, transparent); }
-.sk-frame-1, .sk-frame-2 { visibility: hidden; }
+/* The hand-drawn landing: layout for the drawn sections, then motion. Ink itself is in sketch-ink.css. */
+.landing-drawn { --sk-paper: var(--landing-paper); }
 
 /* Glyphs and the mark take the colour of the text beside them. */
 .sk-glyph, .sk-mark { flex: none; overflow: visible; }
@@ -136,7 +103,6 @@
   .landing-drawn [data-reveal][data-inview] .sk-rise { animation: sk-rise 2.2s cubic-bezier(.2, .7, .2, 1) 200ms both; }
 }
 
-@keyframes sk-draw { 0% { stroke-dashoffset: 1; opacity: 0; } 3% { opacity: 1; } 100% { stroke-dashoffset: 0; opacity: 1; } }
 @keyframes sk-pop { from { opacity: 0; } to { opacity: 1; } }
 @keyframes sk-boil { 0% { visibility: visible; } 33.34%, 100% { visibility: hidden; } }
 @keyframes sk-bob { from { transform: translateY(0); } to { transform: translateY(-5px); } }

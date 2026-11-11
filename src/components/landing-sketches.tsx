@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode } from "react";
 import { BOIL_FRAMES, Pen, type Pt } from "@/lib/sketch";
+import { Ink, type Tone } from "./sketch-ink";
 
 /**
  * The landing's drawings. Each one is placed point by point in this file and inked by `Pen`
@@ -10,15 +11,6 @@ import { BOIL_FRAMES, Pen, type Pt } from "@/lib/sketch";
  * redrawn frames alternate so the line "boils", and a few parts loop. All of it is off under
  * prefers-reduced-motion, where the first frame is shown complete.
  */
-type Tone = "ink" | "rust" | "soft" | "sun" | "deep" | "line";
-type InkProps = { d: string; tone?: Tone; weight?: "thin" | "bold"; i?: number; still?: boolean; className?: string };
-
-/** One stroke. `i` staggers when it is drawn; `still` strokes appear without being drawn on. */
-function Ink({ d, tone = "ink", weight, i = 0, still, className }: InkProps) {
-  const classes = ["sk-ink", `is-${tone}`, weight && `is-${weight}`, !still && "sk-draw", className].filter(Boolean).join(" ");
-  return <path d={d} pathLength={1} className={classes} style={{ "--i": i } as CSSProperties} />;
-}
-
 /** Draws the same marks three times with a different tremor; CSS shows one frame at a time. */
 function Boil({ seed, rough = 1, children }: { seed: number; rough?: number; children: (pen: Pen, frame: number) => ReactNode }) {
   return <>{BOIL_FRAMES.map(frame => <g key={frame} className={`sk-frame sk-frame-${frame}`}>{children(new Pen(seed, frame, rough), frame)}</g>)}</>;
