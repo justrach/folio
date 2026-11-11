@@ -10,8 +10,8 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { AgentApiError, authenticateAgentApiKey, createAgentApiKey } from "../src/lib/agent-api-key-store";
 import { serveFolioMcp } from "../src/lib/folio-mcp";
-import { acceptInvite, createInvite, createOrganization, getOrganization, leaveOrganization, listOrganizations, previewInvite, readableWebsite,
-  removeMember, revokeInvite, setMemberRole, shareWebsite, unshareWebsite } from "../src/lib/organizations";
+import { acceptInvite, addMemberByEmail, agentOrganizations, cancelEmailInvite, claimEmailInvites, createInvite, createOrganization, getOrganization, leaveOrganization,
+  listOrganizations, previewInvite, readableWebsite, removeMember, revokeInvite, setMemberRole, shareWebsite, unshareWebsite } from "../src/lib/organizations";
 import { loadWebsiteGaps, type WebsiteGapsReport } from "../src/lib/website-gaps";
 import { listIndexAsks } from "../src/lib/index-asks";
 
@@ -123,6 +123,71 @@ test("D1: anyone can create or join an organization; shared websites, agents and
     assert.deepEqual(await leaveOrganization(db, "rach", org.id), { deleted: true });
     assert.equal((await db.prepare("SELECT (SELECT COUNT(*) FROM organizations)+(SELECT COUNT(*) FROM organization_members)+(SELECT COUNT(*) FROM organization_websites)+(SELECT COUNT(*) FROM organization_invites) AS n").first<{ n: number }>())!.n, 0);
     assert.equal((await db.prepare("SELECT COUNT(*) AS n FROM sites").first<{ n: number }>())!.n, 3, "websites stay with their owners");
+    assert.equal(provider.mock.callCount(), 0);
+  } finally { await current.dispose(); await rm(directory, { recursive: true, force: true }); }
+});
+
+test("D1: an owner adds someone by email before they have an account; they join on their first verified sign-in", { timeout: 120_000 }, async t => {
+  const directory = await mkdtemp(join(tmpdir(), "folio-organizations-email-")), current = runtime(directory);
+  const provider = t.mock.method(globalThis, "fetch", async () => { throw new Error("No provider calls permitted"); });
+  const signUp = (id: string, email: string, verified: boolean) => db.prepare("INSERT INTO user(id,name,email,email_verified,created_at,updated_at) VALUES(?,?,?,?,?,?)")
+    .bind(id, id[0].toUpperCase() + id.slice(1), email, verified ? 1 : 0, Date.now(), Date.now()).run();
+  let db: D1Database;
+  try {
+    db = await current.getD1Database("DB"); await setup(db);
+    const org = await createOrganization(db, "rach", { name: "Manus" });
+    await acceptInvite(db, "avery", (await createInvite(db, "rach", org.id)).token);
+
+    // Only owners add by email; the address is checked and stored lowercased; members already in are refused.
+    const added = await addMemberByEmail(db, "rach", org.id, "  Natalie@Manus.Test ");
+    assert.equal(added.pending.email, "natalie@manus.test");
+    await rejects(addMemberByEmail(db, "avery", org.id, "someone@manus.test"), 403);
+    await rejects(addMemberByEmail(db, "outsider", org.id, "someone@manus.test"), 404);
+    await rejects(addMemberByEmail(db, "rach", org.id, "not an email"), 400);
+    await rejects(addMemberByEmail(db, "rach", org.id, "AVERY@example.test"), 409);
+    // Adding the same email again extends the wait instead of adding a second row.
+    const again = await addMemberByEmail(db, "rach", org.id, "natalie@manus.test", Date.now() + 1000);
+    assert.equal(again.pending.id, added.pending.id);
+    const owner = await getOrganization(db, "rach", org.id);
+    assert.deepEqual(owner.pending!.map(item => [item.email, item.addedBy]), [["natalie@manus.test", "Rach"]]);
+    assert.equal((await getOrganization(db, "avery", org.id)).pending, null, "members don't see waiting emails");
+    assert.equal(owner.members.length, 2, "a waiting email is not a member yet");
+
+    // Someone who registers that address without verifying it claims nothing.
+    await addMemberByEmail(db, "rach", org.id, "unverified@manus.test");
+    await signUp("impostor", "unverified@manus.test", false);
+    assert.deepEqual(await claimEmailInvites(db, "impostor"), []);
+    assert.equal((await listOrganizations(db, "impostor")).length, 0);
+
+    // The real person signs in with Google (verified, any letter case) and joins on their first read.
+    await signUp("natalie", "Natalie@manus.test", true);
+    assert.deepEqual(await claimEmailInvites(db, "natalie"), [{ id: org.id, name: "Manus", addedBy: "Rach" }]);
+    assert.deepEqual(await claimEmailInvites(db, "natalie"), [], "claiming twice is harmless");
+    assert.deepEqual((await listOrganizations(db, "natalie")).map(item => [item.name, item.role]), [["Manus", "member"]]);
+    const after = await getOrganization(db, "rach", org.id);
+    assert.deepEqual(after.members.map(member => [member.name, member.role]), [["Rach", "owner"], ["Avery", "member"], ["Natalie", "member"]]);
+    assert.deepEqual(after.pending!.map(item => item.email), ["unverified@manus.test"]);
+
+    // An agent's first folio_organizations read claims too; an expired wait does not.
+    await addMemberByEmail(db, "rach", org.id, "sam@example.test");
+    await db.prepare("UPDATE user SET email_verified = 1 WHERE id = 'sam'").run();
+    assert.deepEqual((await agentOrganizations(db, "sam")).items.map(item => item.name), ["Manus"]);
+    await addMemberByEmail(db, "rach", org.id, "late@manus.test", Date.now() - 31 * 86_400_000);
+    await signUp("late", "late@manus.test", true);
+    assert.deepEqual(await claimEmailInvites(db, "late"), []);
+
+    // Cancelling stops the join; only owners cancel.
+    const cancelled = await addMemberByEmail(db, "rach", org.id, "changed-mind@manus.test");
+    await rejects(cancelEmailInvite(db, "avery", org.id, cancelled.pending.id), 403);
+    await cancelEmailInvite(db, "rach", org.id, cancelled.pending.id);
+    await rejects(cancelEmailInvite(db, "rach", org.id, cancelled.pending.id), 404);
+    await signUp("changed", "changed-mind@manus.test", true);
+    assert.deepEqual(await claimEmailInvites(db, "changed"), []);
+
+    // Deleting the organization removes every waiting email.
+    for (const id of ["avery", "natalie", "sam"]) await leaveOrganization(db, id, org.id);
+    assert.deepEqual(await leaveOrganization(db, "rach", org.id), { deleted: true });
+    assert.equal((await db.prepare("SELECT COUNT(*) AS n FROM organization_email_invites").first<{ n: number }>())!.n, 0);
     assert.equal(provider.mock.callCount(), 0);
   } finally { await current.dispose(); await rm(directory, { recursive: true, force: true }); }
 });

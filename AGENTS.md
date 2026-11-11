@@ -57,7 +57,7 @@ Restart the dev server after intended `.dev.vars` changes. Obtain D1 through the
 | Product story and charts | `landing.tsx`, `charts.tsx`, `published-index.tsx`, their adjacent styles |
 | Managed provider transport | `src/lib/agents.ts` (OpenAI website evaluations), `codegraff-agent.ts` + `codegraff-keyword-agent.ts` (Folio's own Graff agent for keyword runs), `docs/CODEGRAFF-AGENT.md` |
 | Run orchestration and access | `src/lib/agent-runs.ts`, `eval-api.ts`, `src/app/api/evaluations/` |
-| Organizations (create, invite, join, share websites, members' agents) | `src/lib/organizations.ts`, `src/app/api/organizations/`, `src/components/organizations.tsx`, `migrations/0028_organizations.sql`, `docs/MANUS-DEMO.md` |
+| Organizations (create, invite, add by email, join, share websites, members' agents) | `src/lib/organizations.ts`, `src/app/api/organizations/`, `src/components/organizations.tsx`, `migrations/0028_organizations.sql`, `0029_organization_email_invites.sql`, `docs/MANUS-DEMO.md` |
 | Agent MCP, change records, guided prompts | `src/lib/folio-mcp.ts`, `website-gaps.ts` (`folio_website_gaps` and the **Where it shows up** panel), `website-changes.ts`, `website-change-outcome.ts`, `aeo-prompts.ts`, `src/app/api/changes/`, `src/components/website-changes-panel.tsx`, `docs/AEO-DEMO.md` |
 | Published and crawled index for agents (no-key MCP, ask feed) | `src/lib/index-answers.ts`, `index-pages.ts` (Postgres `research` schema, keyed), `index-asks.ts`, `src/app/api/index-mcp/`, `src/app/api/index-asks/`, `src/components/index-asks-panel.tsx`, `docs/MCP.md` |
 | Browser evaluation state | `src/components/evaluation-workspace.tsx`, `evaluations-panel.tsx`, `agent-runs-panel.tsx` |
@@ -89,7 +89,7 @@ Component-only filenames in the map are relative to `src/components/`; adjacent 
 | `/search-console` | Google consent, explicit performance imports, and private saved snapshots |
 | `/evaluations` | Launch, inspect, compare, export, or delete private evaluations |
 | `/agents` | Managed run status, recorded returns, and required owner actions |
-| `/orgs` | Organizations: create one or join with an invite link (`#join=` fragment), shared websites, members' agents; `?view=preview` keeps the sample team preview |
+| `/orgs` | Organizations: create one, join with an invite link (`#join=` fragment), or be added by email before having an account (joins on a verified sign-in); shared websites, members' agents; `?view=preview` keeps the sample team preview |
 | `/visibility` | Illustrative AI visibility experience until real collectors exist |
 | `/leaderboard` | Sample benchmark and separate opt-in technical index |
 | `/pricing` | Proposed plans and private plan-interest preference |

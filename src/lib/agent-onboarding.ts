@@ -5,7 +5,7 @@
  */
 import type { AgentApiScope } from "./agent-observation-types";
 
-export type AgentClientId = "claude-code" | "codex" | "cursor" | "vscode" | "claude-desktop" | "other";
+export type AgentClientId = "claude-code" | "codex" | "cursor" | "vscode" | "claude-desktop" | "manus" | "other";
 export type SetupBlock = { label: string; file?: string; language: "shell" | "json" | "toml" | "text"; code: string };
 export type AgentClientSetup = {
   id: AgentClientId; label: string; kind: string;
@@ -15,12 +15,21 @@ export type AgentClientSetup = {
 };
 
 export const FOLIO_KEY_ENV = "FOLIO_API_KEY";
+/** Where cloud agents reach Folio when this page is open on a computer the internet can't reach. */
+export const FOLIO_PUBLIC_ORIGIN = "https://usefolio.site";
 export const mcpEndpoint = (origin: string) => `${origin.replace(/\/$/, "")}/api/mcp`;
+/** A cloud agent such as Manus calls Folio from its own servers, so a local or plain-http origin is replaced with the public one. */
+export function reachableOrigin(origin: string) {
+  try {
+    const url = new URL(origin);
+    return url.protocol === "https:" && !/^(localhost|127\.|0\.0\.0\.0|\[::1\])/.test(url.hostname) && !url.hostname.endsWith(".localhost") ? url.origin : FOLIO_PUBLIC_ORIGIN;
+  } catch { return FOLIO_PUBLIC_ORIGIN; }
+}
 export const publicIndexEndpoint = (origin: string) => `${origin.replace(/\/$/, "")}/api/index-mcp`;
 const json = (value: unknown) => JSON.stringify(value, null, 2);
 
 export function agentClients(origin: string): AgentClientSetup[] {
-  const url = mcpEndpoint(origin);
+  const url = mcpEndpoint(origin), cloud = reachableOrigin(origin), cloudUrl = mcpEndpoint(cloud);
   return [
     { id: "claude-code", label: "Claude Code", kind: "Terminal", readsShellEnvironment: true,
       intro: "One command adds Folio for every project on this computer. Run it in a terminal where FOLIO_API_KEY is set.",
@@ -72,6 +81,24 @@ export function agentClients(origin: string): AgentClientSetup[] {
       check: { label: "Check it", code: "Quit and reopen Claude Desktop, then open the tools menu in a new chat", expect: "folio listed with its tools" },
       notes: ["Desktop apps don’t see your terminal’s variables, so the key goes in this file: replace <your Folio key>.",
         "Claude.ai and ChatGPT web connectors need OAuth sign-in, which Folio doesn’t offer yet."] },
+    // From Manus's documentation (Connectors → Create → custom MCP server by URL); not yet run in a Manus account.
+    { id: "manus", label: "Manus", kind: "Cloud agent", readsShellEnvironment: false,
+      intro: "Manus works on its own computer in the cloud and reaches Folio over the internet. In Manus, open Connectors, choose Create, and add a custom MCP server by URL with these details.",
+      blocks: [
+        { label: "Server name", language: "text", code: "folio" },
+        { label: "Server URL", language: "text", code: cloudUrl },
+        { label: "If Manus asks for a header instead of a token", language: "text", code: "Authorization: Bearer <your Folio key>" },
+      ],
+      check: { label: "Ask it", code: "Use the folio connector. List the folio tools you can use, then call folio_organizations and tell me which websites you can read.",
+        expect: "the folio_ tools your key allows, then your websites and your organization’s" },
+      notes: [
+        "For authentication, choose Bearer token and paste the key from step 2. Manus tests the connection when you save it.",
+        "Manus keeps the key in your Manus account, and any task with the folio connector turned on can use it. Start with Read only and a short expiry.",
+        "Turn the folio connector on for the task, or add it to a Manus Project so every task in it starts with Folio.",
+        "The last prompt in step 5 edits your website’s code: give Manus the repository through its GitHub connector, or use Claude Code, Codex or Cursor.",
+        ...(cloud === origin.replace(/\/$/, "") ? [] : [`Manus calls Folio from the internet, so this uses ${cloud}, not the address this page is open on.`]),
+        "These steps follow Manus’s documentation; Folio hasn’t run them in a Manus account yet. If the test fails, tell us what Manus shows.",
+      ] },
     { id: "other", label: "Any MCP client", kind: "Anything else", readsShellEnvironment: false,
       intro: "Folio speaks Streamable HTTP MCP. Point your client at the endpoint with a bearer token.",
       blocks: [
@@ -134,4 +161,5 @@ export const CONNECTION_TROUBLESHOOTING: { problem: string; fix: string }[] = [
   { problem: "403 “Untrusted MCP origin”", fix: "Browser-based clients are refused unless they run on this Folio site. Use a terminal, editor or desktop agent." },
   { problem: "429 “reached its request limit”", fix: "Each key allows 60 requests a minute. Wait a minute. A person can have 10 active keys, so give each agent its own." },
   { problem: "Claude.ai or ChatGPT connectors won’t connect", fix: "Their web connectors need OAuth sign-in, which Folio doesn’t offer yet. Use Claude Desktop through mcp-remote, or a terminal or editor agent." },
+  { problem: "Manus says the connection test failed", fix: "Check the server URL ends in /api/mcp and the Bearer token is the whole key, starting folio_v1_. Run the terminal test in step 4 to tell a bad key from a Manus problem; if the key works there, tell us what Manus shows." },
 ];

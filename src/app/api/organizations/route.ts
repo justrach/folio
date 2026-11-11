@@ -1,14 +1,15 @@
 import { agentKeyContext, agentApiErrorResponse, AGENT_API_HEADERS } from "@/lib/agent-api";
 import { onlyFields } from "@/lib/agent-api-input";
 import { readJsonBody } from "@/lib/api-request";
-import { createOrganization, listOrganizations } from "@/lib/organizations";
+import { claimEmailInvites, createOrganization, listOrganizations } from "@/lib/organizations";
 export const dynamic = "force-dynamic";
 
-/** The signed-in person's organizations. */
+/** The signed-in person's organizations, after joining any that added their verified email. */
 export async function GET(request: Request) {
   try {
     const { db, ownerId } = await agentKeyContext(request, false, "see your organizations");
-    return Response.json({ organizations: await listOrganizations(db, ownerId) }, { headers: AGENT_API_HEADERS });
+    const joined = await claimEmailInvites(db, ownerId);
+    return Response.json({ organizations: await listOrganizations(db, ownerId), joined }, { headers: AGENT_API_HEADERS });
   } catch (error) { return agentApiErrorResponse(error); }
 }
 

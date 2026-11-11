@@ -90,6 +90,27 @@ test("clients that ignore shell variables say where to paste the key", async ({ 
   expect(keyPosts(state)).toHaveLength(1);
 });
 
+test("Manus, a cloud agent, gets the public address, a Bearer token to paste, and a prompt to check it", async ({ page }) => {
+  const state = await setup(page);
+  await page.goto("/agents");
+  const panel = page.getByRole("region", { name: "Connect your agent" });
+  await panel.getByRole("radio", { name: /Manus/ }).click();
+  await expect(panel.getByRole("heading", { name: "Add Folio to Manus" })).toBeVisible();
+  await expect(panel).toContainText("open Connectors, choose Create");
+  // The page runs locally here, but Manus calls from the internet, so the URL is the public one.
+  await expect(panel.locator("figure").filter({ hasText: "Server URL" }).locator("pre")).toHaveText("https://usefolio.site/api/mcp");
+  await expect(panel).toContainText("not the address this page is open on");
+  await expect(panel).toContainText("choose Bearer token and paste the key from step 2");
+  await expect(panel).toContainText("hasn’t run them in a Manus account yet");
+  await expect(panel.locator("figure").filter({ hasText: "Ask it in Manus" })).toContainText("call folio_organizations");
+  await expect(panel.getByLabel("Key name")).toHaveValue("Rach’s Manus");
+  await panel.getByRole("button", { name: "Create key" }).click();
+  await expect(panel.getByRole("button", { name: "Copy key" })).toBeVisible();
+  await expect(panel).toContainText("Manus doesn’t read your terminal’s variables");
+  expect(keyPosts(state).map(post => post.body)).toEqual([{ name: "Rach’s Manus", scopes: ["read"], expiresInDays: 30 }]);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(await page.evaluate(() => innerWidth + 1));
+});
+
 test("someone with a connected agent sees a compact entry; signed-out visitors still see the setup", async ({ page }) => {
   await setup(page, { keys: [key("k1", "Rach’s Claude Code", new Date().toISOString())] });
   await page.goto("/agents");

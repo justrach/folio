@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Bot, Check, CircleCheck, Copy, Eye, EyeOff, KeyRound, Loader2, MessageSquareText, PlugZap, ShieldCheck, Terminal, Wrench } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import type { AgentApiKeySummary, AgentApiScope } from "@/lib/agent-observation-types";
-import { AGENT_PERMISSIONS, CONNECTION_TROUBLESHOOTING, agentClients, connectionTestCommand, exportLine, publicIndexEndpoint, starterPrompts, type AgentClientId, type SetupBlock } from "@/lib/agent-onboarding";
+import { AGENT_PERMISSIONS, CONNECTION_TROUBLESHOOTING, agentClients, connectionTestCommand, exportLine, publicIndexEndpoint, reachableOrigin, starterPrompts, type AgentClientId, type SetupBlock } from "@/lib/agent-onboarding";
 import { UiSelect } from "./ui/select";
 import "./agent-onboarding.css";
 
@@ -101,7 +101,7 @@ export function AgentOnboarding({ domain = null, organization = null, onKeysChan
         <p>{client.intro}</p>
         <div className="ao-blocks">{client.blocks.map(block => <Code key={block.label} block={block} />)}</div>
         {client.notes.length > 0 && <ul className="ao-notes">{client.notes.map(note => <li key={note}>{note}</li>)}</ul>}
-        <p className="ao-aside">Just looking around? <code>{publicIndexEndpoint(origin)}</code> needs no key and reads Folio’s published AI answers only.</p>
+        <p className="ao-aside">Just looking around? <code>{publicIndexEndpoint(client.id === "manus" ? reachableOrigin(origin) : origin)}</code> needs no key and reads Folio’s published AI answers only.</p>
       </div></li>
 
       <li className="ao-step"><span className={`ao-number ${connected.length ? "is-done" : ""}`}>{connected.length ? <Check size={14} aria-label="Done" /> : "4"}</span><div className="ao-step-body">

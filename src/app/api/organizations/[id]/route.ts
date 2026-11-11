@@ -2,7 +2,7 @@ import { agentKeyContext, agentApiErrorResponse, AGENT_API_HEADERS } from "@/lib
 import { AgentApiError } from "@/lib/agent-api-key-store";
 import { agentIdentifier, onlyFields } from "@/lib/agent-api-input";
 import { readJsonBody } from "@/lib/api-request";
-import { createInvite, getOrganization, leaveOrganization, removeMember, renameOrganization, revokeInvite, setMemberRole, shareWebsite, unshareWebsite } from "@/lib/organizations";
+import { addMemberByEmail, cancelEmailInvite, createInvite, getOrganization, leaveOrganization, removeMember, renameOrganization, revokeInvite, setMemberRole, shareWebsite, unshareWebsite } from "@/lib/organizations";
 export const dynamic = "force-dynamic";
 
 /** Members only: people, their connected agents, shared websites and (for owners) invite links. */
@@ -13,7 +13,7 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
   } catch (error) { return agentApiErrorResponse(error); }
 }
 
-const FIELDS: Record<string, string[]> = { invite: [], revoke_invite: ["inviteId"], remove_member: ["userId"], set_role: ["userId", "role"], leave: [],
+const FIELDS: Record<string, string[]> = { invite: [], revoke_invite: ["inviteId"], add_by_email: ["email"], cancel_email_invite: ["inviteId"], remove_member: ["userId"], set_role: ["userId", "role"], leave: [],
   share_website: ["websiteId"], unshare_website: ["websiteId"], rename: ["name"] };
 
 /** One explicit owner or member action per request. None of them spends credits. */
@@ -27,6 +27,8 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     let result: Record<string, unknown> = {};
     if (action === "invite") result = await createInvite(db, ownerId, id);
     else if (action === "revoke_invite") await revokeInvite(db, ownerId, id, body.inviteId);
+    else if (action === "add_by_email") result = await addMemberByEmail(db, ownerId, id, body.email);
+    else if (action === "cancel_email_invite") await cancelEmailInvite(db, ownerId, id, body.inviteId);
     else if (action === "remove_member") await removeMember(db, ownerId, id, body.userId);
     else if (action === "set_role") await setMemberRole(db, ownerId, id, body.userId, body.role);
     else if (action === "share_website") await shareWebsite(db, ownerId, id, body.websiteId);

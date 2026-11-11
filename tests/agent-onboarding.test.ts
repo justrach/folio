@@ -1,13 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { AGENT_PERMISSIONS, CONNECTION_TROUBLESHOOTING, agentClients, connectionTestCommand, exportLine, mcpEndpoint, starterPrompts } from "../src/lib/agent-onboarding";
+import { AGENT_PERMISSIONS, CONNECTION_TROUBLESHOOTING, agentClients, connectionTestCommand, exportLine, mcpEndpoint, reachableOrigin, starterPrompts } from "../src/lib/agent-onboarding";
 import { folioTools } from "../src/lib/folio-mcp";
 
 const origin = "https://usefolio.site";
 
 test("every client's setup points at this Folio's MCP endpoint and never contains a key", () => {
   const clients = agentClients(origin);
-  assert.deepEqual(clients.map(client => client.id), ["claude-code", "codex", "cursor", "vscode", "claude-desktop", "other"]);
+  assert.deepEqual(clients.map(client => client.id), ["claude-code", "codex", "cursor", "vscode", "claude-desktop", "manus", "other"]);
   for (const client of clients) {
     const text = client.blocks.map(block => block.code).join("\n");
     assert.ok(text.includes("https://usefolio.site/api/mcp"), client.id);
@@ -25,8 +25,25 @@ test("every client's setup points at this Folio's MCP endpoint and never contain
   assert.equal(vscode.inputs[0].password, true);
   assert.deepEqual(JSON.parse(byId["claude-desktop"].blocks[0].code).mcpServers.folio.args, ["-y", "mcp-remote", "https://usefolio.site/api/mcp", "--header", "Authorization:${FOLIO_AUTH}"]);
   // Clients that ignore shell variables are flagged so the page says where to paste the key.
-  assert.deepEqual(clients.filter(client => !client.readsShellEnvironment).map(client => client.id), ["vscode", "claude-desktop", "other"]);
+  assert.deepEqual(clients.filter(client => !client.readsShellEnvironment).map(client => client.id), ["vscode", "claude-desktop", "manus", "other"]);
   assert.equal(mcpEndpoint("http://localhost:3012/"), "http://localhost:3012/api/mcp");
+});
+
+test("Manus, a cloud agent, is always pointed at an address the internet can reach", () => {
+  const manus = (origin: string) => agentClients(origin).find(client => client.id === "manus")!;
+  const url = (origin: string) => manus(origin).blocks.find(block => block.label === "Server URL")!.code;
+  assert.equal(url("https://usefolio.site"), "https://usefolio.site/api/mcp");
+  assert.equal(url("https://folio-frontend.example.workers.dev"), "https://folio-frontend.example.workers.dev/api/mcp");
+  for (const local of ["http://localhost:3012", "http://127.0.0.1:3012", "https://localhost:3001", "http://usefolio.site", "not a url"]) {
+    assert.equal(url(local), "https://usefolio.site/api/mcp", local);
+    assert.ok(manus(local).notes.some(note => note.includes("not the address this page is open on")), local);
+  }
+  assert.ok(!manus("https://usefolio.site").notes.some(note => note.includes("not the address this page is open on")));
+  // Every other client keeps the page's own origin, so local development stays local.
+  assert.equal(agentClients("http://localhost:3012").find(client => client.id === "codex")!.blocks[0].code, "codex mcp add folio --url http://localhost:3012/api/mcp --bearer-token-env-var FOLIO_API_KEY");
+  assert.equal(reachableOrigin("https://usefolio.site/"), "https://usefolio.site");
+  assert.ok(manus("https://usefolio.site").notes.some(note => /hasn’t run them in a Manus account/.test(note)), "the setup says it is unverified");
+  assert.ok(CONNECTION_TROUBLESHOOTING.some(item => item.problem.startsWith("Manus")));
 });
 
 test("the terminal check reads the key from the environment and calls a read-only tool", () => {

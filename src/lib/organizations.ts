@@ -6,25 +6,29 @@ import { sequentially } from "./sequential";
 /**
  * Organizations: anyone can create one or join one with an invite link. Websites stay
  * owned by the person who saved them; sharing one lets every member (and their agents)
- * read its saved reports. Owners invite, remove and promote members. Nothing here
- * contacts a provider or spends credits.
+ * read its saved reports. Owners invite (by link or by email), remove and promote
+ * members. Nothing here contacts a provider, sends email or spends credits.
  */
 export const ORGANIZATION_LIMITS = { ownedPerUser: 10, membershipsPerUser: 20, membersPerOrganization: 100, websitesPerOrganization: 50,
-  activeInvites: 20, inviteDays: 14, inviteUses: 25 } as const;
+  activeInvites: 20, inviteDays: 14, inviteUses: 25, pendingEmails: 50, emailInviteDays: 30 } as const;
 export type OrganizationRole = "owner" | "member";
 export type OrganizationSummary = { id: string; name: string; role: OrganizationRole; members: number; websites: number; createdAt: string };
 export type OrganizationMember = { userId: string; name: string; email: string; role: OrganizationRole; joinedAt: string; you: boolean;
   agents: { name: string; scopes: string[]; lastUsedAt: string | null; expiresAt: string }[] };
 export type SharedWebsite = { websiteId: string; name: string; url: string; domain: string; sharedBy: { userId: string; name: string }; sharedAt: string; canUnshare: boolean };
 export type OrganizationInvite = { id: string; createdAt: string; expiresAt: string; uses: number; maxUses: number; createdBy: string | null };
+/** Someone an owner added by email who hasn't signed in with that email yet. */
+export type PendingMember = { id: string; email: string; addedAt: string; expiresAt: string; addedBy: string | null };
+export type JoinedByEmail = { id: string; name: string; addedBy: string | null };
 export type OrganizationActivity = { memberName: string; agentName: string | null; tool: string; summary: string; domain: string | null; at: string };
 export type OrganizationDetail = { id: string; name: string; createdAt: string; yourRole: OrganizationRole; members: OrganizationMember[]; websites: SharedWebsite[];
   /** Owners only; null for members. */
-  invites: OrganizationInvite[] | null; shareable: { websiteId: string; name: string; url: string }[]; activity: OrganizationActivity[] };
+  invites: OrganizationInvite[] | null; pending: PendingMember[] | null; shareable: { websiteId: string; name: string; url: string }[]; activity: OrganizationActivity[] };
 export type InvitePreview = { organization: { id: string; name: string; members: number }; invitedBy: string | null; expiresAt: string; alreadyMember: boolean };
 
 const ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/;
 const TOKEN = /^folio_join_[a-f0-9]{48}$/;
+const EMAIL = /^[^\s@<>()",;:\\[\]]+@[^\s@<>()",;:\\[\]]+\.[^\s@<>()",;:\\[\]]+$/;
 const iso = (value: unknown) => new Date(Number(value)).toISOString();
 const hostOf = (url: string) => { try { return new URL(url).hostname.toLowerCase().replace(/\.$/, "").replace(/^www\./, ""); } catch { return url; } };
 const signedIn = (userId: string) => { if (!userId) throw new AgentApiError("Sign in to use organizations.", 401, "unauthorized"); };
@@ -36,6 +40,11 @@ export function organizationName(value: unknown): string {
   const name = typeof value === "string" ? value.trim().replace(/\s+/g, " ") : "";
   if (!name || name.length > 80 || /[\u0000-\u001f\u007f]/.test(name)) throw new AgentApiError("Use an organization name of 1–80 characters.", 400, "invalid_request");
   return name;
+}
+export function memberEmail(value: unknown): string {
+  const email = typeof value === "string" ? value.trim().toLowerCase() : "";
+  if (email.length < 3 || email.length > 254 || !EMAIL.test(email)) throw new AgentApiError("Use a valid email address.", 400, "invalid_request");
+  return email;
 }
 async function roleIn(db: D1Database, userId: string, organizationId: string): Promise<OrganizationRole> {
   signedIn(userId);
@@ -86,7 +95,7 @@ export async function getOrganization(db: D1Database, userId: string, organizati
   const yourRole = await roleIn(db, userId, organizationId);
   const organization = await db.prepare("SELECT id, name, created_at FROM organizations WHERE id = ?").bind(organizationId).first<{ id: string; name: string; created_at: number }>();
   if (!organization) throw new AgentApiError("Organization not found.", 404, "not_found");
-  const [members, keys, websites, invites, shareable] = await sequentially([
+  const [members, keys, websites, invites, pending, shareable] = await sequentially([
     () => db.prepare(`SELECT m.user_id, m.role, m.joined_at, u.name, u.email FROM organization_members m JOIN user u ON u.id = m.user_id
       WHERE m.organization_id = ? ORDER BY CASE m.role WHEN 'owner' THEN 0 ELSE 1 END, m.joined_at, m.user_id`).bind(organizationId)
       .all<{ user_id: string; role: OrganizationRole; joined_at: number; name: string; email: string }>(),
@@ -100,6 +109,9 @@ export async function getOrganization(db: D1Database, userId: string, organizati
     () => yourRole === "owner" ? db.prepare(`SELECT i.id, i.created_at, i.expires_at, i.uses, i.max_uses, u.name AS created_by_name FROM organization_invites i
       LEFT JOIN user u ON u.id = i.created_by WHERE i.organization_id = ? AND i.revoked_at IS NULL AND i.expires_at > ? AND i.uses < i.max_uses ORDER BY i.created_at DESC`)
       .bind(organizationId, now).all<{ id: string; created_at: number; expires_at: number; uses: number; max_uses: number; created_by_name: string | null }>() : Promise.resolve(null),
+    () => yourRole === "owner" ? db.prepare(`SELECT i.id, i.email, i.created_at, i.expires_at, u.name AS invited_by_name FROM organization_email_invites i
+      LEFT JOIN user u ON u.id = i.invited_by WHERE i.organization_id = ? AND i.expires_at > ? ORDER BY i.created_at DESC, i.id`)
+      .bind(organizationId, now).all<{ id: string; email: string; created_at: number; expires_at: number; invited_by_name: string | null }>() : Promise.resolve(null),
     () => db.prepare(`SELECT id, name, url FROM sites WHERE user_id = ? AND id NOT IN (SELECT site_id FROM organization_websites WHERE organization_id = ?)
       ORDER BY created_at DESC LIMIT 100`).bind(userId, organizationId).all<{ id: string; name: string; url: string }>(),
   ] as const);
@@ -117,6 +129,7 @@ export async function getOrganization(db: D1Database, userId: string, organizati
         lastUsedAt: key.last_used_at === null ? null : iso(key.last_used_at), expiresAt: iso(key.expires_at) })) })),
     websites: shared,
     invites: invites ? invites.results.map(row => ({ id: row.id, createdAt: iso(row.created_at), expiresAt: iso(row.expires_at), uses: Number(row.uses), maxUses: Number(row.max_uses), createdBy: row.created_by_name })) : null,
+    pending: pending ? pending.results.map(row => ({ id: row.id, email: row.email, addedAt: iso(row.created_at), expiresAt: iso(row.expires_at), addedBy: row.invited_by_name })) : null,
     shareable: shareable.results.map(row => ({ websiteId: row.id, name: row.name, url: row.url })),
     activity: activity.map(row => ({ memberName: row.member_name, agentName: row.key_name, tool: row.tool, summary: row.summary, domain: row.domain, at: iso(row.created_at) })) };
 }
@@ -166,6 +179,56 @@ export async function acceptInvite(db: D1Database, userId: string, token: unknow
   if (!claimed.meta.changes) throw new AgentApiError("This invite link has just been used up. Ask for a new one.", 404, "not_found");
   await db.prepare("INSERT INTO organization_members(organization_id, user_id, role, joined_at) VALUES(?, ?, 'member', ?) ON CONFLICT DO NOTHING").bind(row.organization_id, userId, now).run();
   return { organizationId: row.organization_id, joined: true };
+}
+
+/**
+ * Owners add someone by email before they have an account. Nobody is looked up, so this never reveals
+ * who uses Folio: the person joins when they next sign in with that email, verified by Google or GitHub.
+ * Adding the same email again extends the wait.
+ */
+export async function addMemberByEmail(db: D1Database, userId: string, organizationId: string, email: unknown, now = Date.now()): Promise<{ pending: PendingMember }> {
+  await requireOwner(db, userId, organizationId);
+  const address = memberEmail(email);
+  const member = await db.prepare("SELECT 1 AS found FROM organization_members m JOIN user u ON u.id = m.user_id WHERE m.organization_id = ? AND lower(u.email) = ?")
+    .bind(organizationId, address).first<{ found: number }>();
+  if (member) throw new AgentApiError("That person is already a member.", 409, "already_member");
+  const waiting = await db.prepare("SELECT COUNT(*) AS n FROM organization_email_invites WHERE organization_id = ? AND expires_at > ? AND email <> ?")
+    .bind(organizationId, now, address).first<{ n: number }>();
+  const others = Number(waiting?.n ?? 0);
+  if (others >= ORGANIZATION_LIMITS.pendingEmails) throw new AgentApiError("Cancel someone who hasn’t joined yet before adding another email.", 409, "limit_reached");
+  if ((await counts(db, organizationId)).members + others >= ORGANIZATION_LIMITS.membersPerOrganization) throw new AgentApiError("This organization is full.", 409, "limit_reached");
+  const expires = now + ORGANIZATION_LIMITS.emailInviteDays * 86_400_000;
+  await db.prepare(`INSERT INTO organization_email_invites(id, organization_id, email, invited_by, created_at, expires_at) VALUES(?, ?, ?, ?, ?, ?)
+    ON CONFLICT(organization_id, email) DO UPDATE SET invited_by = excluded.invited_by, created_at = excluded.created_at, expires_at = excluded.expires_at`)
+    .bind(crypto.randomUUID(), organizationId, address, userId, now, expires).run();
+  const row = await db.prepare("SELECT id FROM organization_email_invites WHERE organization_id = ? AND email = ?").bind(organizationId, address).first<{ id: string }>();
+  return { pending: { id: row!.id, email: address, addedAt: iso(now), expiresAt: iso(expires), addedBy: null } };
+}
+export async function cancelEmailInvite(db: D1Database, userId: string, organizationId: string, inviteId: unknown) {
+  await requireOwner(db, userId, organizationId);
+  const result = await db.prepare("DELETE FROM organization_email_invites WHERE id = ? AND organization_id = ?").bind(identifier(inviteId, "invite"), organizationId).run();
+  if (!result.meta.changes) throw new AgentApiError("That person isn’t waiting to join.", 404, "not_found");
+}
+/**
+ * Turns the signed-in person's waiting email invites into memberships. Only an email their sign-in
+ * provider verified counts, so creating an account with someone else's address claims nothing.
+ * An invite that would break a limit keeps waiting.
+ */
+export async function claimEmailInvites(db: D1Database, userId: string, now = Date.now()): Promise<JoinedByEmail[]> {
+  signedIn(userId);
+  const user = await db.prepare("SELECT email, email_verified FROM user WHERE id = ?").bind(userId).first<{ email: string | null; email_verified: unknown }>();
+  if (!user?.email || !(user.email_verified === true || Number(user.email_verified) === 1)) return [];
+  const { results } = await db.prepare(`SELECT i.id, i.organization_id, o.name, u.name AS invited_by_name FROM organization_email_invites i
+      JOIN organizations o ON o.id = i.organization_id LEFT JOIN user u ON u.id = i.invited_by WHERE i.email = ? AND i.expires_at > ? ORDER BY i.created_at, i.id`)
+    .bind(user.email.trim().toLowerCase(), now).all<{ id: string; organization_id: string; name: string; invited_by_name: string | null }>();
+  const joined: JoinedByEmail[] = [];
+  for (const row of results) {
+    if ((await memberships(db, userId)).memberships >= ORGANIZATION_LIMITS.membershipsPerUser || (await counts(db, row.organization_id)).members >= ORGANIZATION_LIMITS.membersPerOrganization) continue;
+    const added = await db.prepare("INSERT INTO organization_members(organization_id, user_id, role, joined_at) VALUES(?, ?, 'member', ?) ON CONFLICT DO NOTHING").bind(row.organization_id, userId, now).run();
+    await db.prepare("DELETE FROM organization_email_invites WHERE id = ?").bind(row.id).run();
+    if (added.meta.changes) joined.push({ id: row.organization_id, name: row.name, addedBy: row.invited_by_name });
+  }
+  return joined;
 }
 
 /** A member who leaves or is removed takes their shared websites with them. */
@@ -240,6 +303,7 @@ export async function readableWebsite(db: D1Database, userId: string, websiteId:
 
 /** For agents: the caller's organizations, teammates (names and roles only) and shared website IDs. */
 export async function agentOrganizations(db: D1Database, userId: string, now = Date.now()) {
+  await claimEmailInvites(db, userId, now);
   const items = [];
   for (const summary of await listOrganizations(db, userId)) {
     const detail = await getOrganization(db, userId, summary.id, now);

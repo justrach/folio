@@ -5,7 +5,9 @@ A ten-minute walkthrough on `https://usefolio.site`: where manus.im shows up, wh
 ## Before the meeting
 
 1. Sign in, open **Organizations** (`/orgs`) and select **Manus**. It shares `manus.im`.
-2. Under **Invite people**, press **Create invite link** and copy it. The link is shown once, works for 14 days and up to 25 people. Revoke it there after the meeting if you like.
+2. Under **Invite people**, either:
+   - **Add by email** each person, even before they have a Folio account. They join the first time they sign in with that email through Google or GitHub; until then they're listed as waiting to sign in (for 30 days), and you can cancel them. Folio sends no email: send them the sign-in link shown there (`https://usefolio.site/login?next=/orgs`).
+   - Or press **Create invite link** and copy it. The link is shown once, works for 14 days and up to 25 people. Revoke it there after the meeting if you like.
 3. Have a terminal with Claude Code (or Codex) ready, and a Folio key in `FOLIO_API_KEY` ([create one](/docs/api#api-keys); read access is enough).
 
 ## 1. Where manus.im shows up (3 minutes)
@@ -22,7 +24,7 @@ The **Search and backlinks** panel below has the raw counts: 1.47M backlinks fro
 
 ## 2. Join the organization (2 minutes)
 
-Share the invite link. Each person opens it, signs in with Google, and presses **Join organization**. Opening the link adds nobody by itself. They then see:
+People you added by email just sign in with Google at the link you sent: they land in the organization, with a note saying who added them. With an invite link instead, each person opens it, signs in with Google, and presses **Join organization**; opening the link adds nobody by itself. Either way, they then see:
 
 - the shared `manus.im` report (the saved data of whoever shared it),
 - the members, and the agents each member has connected (key names and last use, never the key),
@@ -32,7 +34,7 @@ Share the invite link. Each person opens it, signs in with Google, and presses *
 
 The **Connect your agent** panel on the organization page (also at `/agents#connect`) walks each person through five steps:
 
-1. **Pick your agent**: Claude Code, Codex, Cursor, VS Code (Copilot agent mode), Claude Desktop, or any MCP client.
+1. **Pick your agent**: Claude Code, Codex, Cursor, VS Code (Copilot agent mode), Claude Desktop, Manus, or any MCP client.
 2. **Create a key for it** right there. It's named after the agent ("Rach's Claude Code"), has read access by default, and can optionally record changes or, deliberately, spend. The key is shown once and masked on screen; **Copy export line** copies `export FOLIO_API_KEY="…"`. Safe to do while screen-sharing.
 3. **Add Folio to it.** For Claude Code that's one command:
 
@@ -42,6 +44,8 @@ The **Connect your agent** panel on the organization page (also at `/agents#conn
    ```
 
    There's also a `.mcp.json` the team can commit to its repository (it holds no key; each person sets their own `FOLIO_API_KEY`), and the matching setup for each other client.
+
+   **For Manus itself**, pick **Manus**: in Manus, open **Connectors → Create** and add a custom MCP server by URL, named `folio`, with URL `https://usefolio.site/api/mcp` and the key as a **Bearer token** (**Copy key** copies just the key). Manus tests the connection when it's saved. Then turn the folio connector on in a task and ask it to list the folio tools and call `folio_organizations`. These steps follow Manus's documentation and haven't been run in a Manus account yet, so try them before the meeting if you can; if Manus reports 403 `Untrusted MCP origin`, Folio needs to accept Manus's origin first.
 4. **Check it's connected**: `claude mcp list` should show `folio: … ✔ Connected`. The status box on the page turns green by itself the moment the new key makes its first call, and the agent appears under **Members and their agents**.
 5. **Ask it something.** Four ready prompts: what manus.im is missing, who AI answers recommend instead, whether its pages answer the big searches, and fixing the top gap in the website's repository (in Claude Code, `/mcp__folio__improve_aeo` runs the guided version).
 
@@ -57,6 +61,8 @@ Below the steps, **What your agent can do with each permission** lists every too
 
 ## What is real and what is not
 
-Real: organizations, invites, membership, roles, shared websites, each member's own keys and agents, the reports and the agent tools. Saved data only.
+Real: organizations, invite links and adding by email, membership, roles, shared websites, each member's own keys and agents, the reports and the agent tools. Saved data only.
+
+Untested: connecting Manus itself (documented steps, not yet run in a Manus account).
 
 Not yet: per-member credit budgets, shared question sets (questions still belong to the person who saved them), and any measurement of Manus in AI answers until those questions are run.

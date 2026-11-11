@@ -16,6 +16,9 @@ Setups shown there, each checked on 11 November 2026 against production with a t
 | Cursor | `.cursor/mcp.json` with `"Authorization": "Bearer ${env:FOLIO_API_KEY}"` | `cursor-agent mcp list-tools folio` | All 19 read tools |
 | Claude Desktop | `npx -y mcp-remote https://usefolio.site/api/mcp --header "Authorization:${FOLIO_AUTH}"`, with `FOLIO_AUTH` in the server's `env` | run through Claude Code's stdio loader | `✔ Connected` |
 | VS Code | `.vscode/mcp.json` with a `promptString` input for the key | not run here | follows VS Code's documented format |
+| Manus | Connectors → Create → custom MCP server by URL: name `folio`, URL `https://usefolio.site/api/mcp`, Bearer token = the key | ask a Manus task to list the folio tools and call `folio_organizations` | not run here: no Manus account; follows Manus's documentation |
+
+Manus runs in the cloud, so its URL is always a public `https://` address: when the panel is open on `localhost` or plain `http`, it shows `https://usefolio.site` instead (`reachableOrigin`). If Manus's servers send an `Origin` header, the MCP route's origin check will refuse it with 403 `Untrusted MCP origin`; that has not been observed, because the setup has not been run.
 
 Claude.ai and ChatGPT web connectors need OAuth sign-in, which Folio does not offer yet.
 
@@ -82,7 +85,7 @@ The `improve_aeo` prompt now starts with this tool.
 
 Anyone signed in can create an organization at `/orgs` or join one with an invite link (`src/lib/organizations.ts`, migration `0028_organizations.sql`). Owners create links (14 days, up to 25 uses, revocable; only a hash is stored, and the secret travels in the URL fragment and request bodies, never a logged path), remove members and promote or demote owners; an organization always keeps an owner, and the last member leaving deletes it. Any member can share a website they saved; it stays theirs, and members read its saved reports. A member who leaves or is removed takes their shared websites with them.
 
-Each member connects their own agent with their own key. `folio_organizations` lists the caller's organizations, teammates' names and roles (not emails), how many agents each has connected, and the shared websites' `websiteId`s; `folio_website_gaps` then reads any of them. The organization page shows each member's active keys by name and last use, and the agent reads of shared websites; asks about other websites stay private. Other tools (`folio_visibility`, `folio_page_evidence`, paid tools) still act only on the caller's own records. There are no per-member credit budgets yet. A walkthrough for presenting this is in [Manus demo](MANUS-DEMO.md).
+Each member connects their own agent with their own key. `folio_organizations` first joins any organization whose owner added the caller's email (only when Google or GitHub verified it, as on `/orgs`), then lists the caller's organizations, teammates' names and roles (not emails), how many agents each has connected, and the shared websites' `websiteId`s; `folio_website_gaps` then reads any of them. The organization page shows each member's active keys by name and last use, and the agent reads of shared websites; asks about other websites stay private. Other tools (`folio_visibility`, `folio_page_evidence`, paid tools) still act only on the caller's own records. There are no per-member credit budgets yet. A walkthrough for presenting this is in [Manus demo](MANUS-DEMO.md).
 
 ## Ask the published index
 
