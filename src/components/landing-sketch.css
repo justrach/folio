@@ -1,0 +1,153 @@
+/* The hand-drawn landing: ink, layout for the drawn sections, then motion. Loaded after landing.css. */
+/* The sketch palette (--folio-sketch-*) is defined with the other artwork tokens in src/app/theme.css. */
+.landing-drawn {
+  --sk-ink: var(--folio-ink);
+  --sk-soft: color-mix(in srgb, var(--folio-ink) 46%, transparent);
+  --sk-rust: var(--folio-sketch-rust);
+  --sk-sky: var(--folio-sketch-sky);
+  --sk-sun: var(--folio-sketch-sun);
+  --sk-deep: var(--folio-sketch-deep);
+  --sk-lit: var(--folio-sketch-lit);
+  --sk-dune: var(--folio-sketch-dune);
+  --sk-line: var(--folio-sketch-line);
+}
+
+/* Ink */
+.sk { display: block; width: 100%; height: auto; overflow: visible; }
+.sk-ink { fill: none; stroke: var(--sk-ink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.sk-ink.is-rust { stroke: var(--sk-rust); }
+.sk-ink.is-soft { stroke: var(--sk-soft); }
+.sk-ink.is-sun { stroke: var(--sk-sun); }
+.sk-ink.is-deep { stroke: var(--sk-deep); }
+.sk-ink.is-line { stroke: var(--sk-line); }
+.sk-ink.is-thin { stroke-width: 1.35; }
+.sk-ink.is-bold { stroke-width: 3; }
+.sk-ink.is-dashed { stroke-dasharray: 1.5 6; }
+.sk-grain { stroke-width: 1.7; }
+.sk-fill { stroke: none; }
+.sk-fill.is-sky { fill: var(--sk-sky); }
+.sk-fill.is-sun { fill: var(--sk-sun); }
+.sk-fill.is-dune { fill: var(--sk-dune); }
+.sk-fill.is-lit { fill: var(--sk-lit); }
+.sk-fill.is-ink { fill: currentColor; }
+.sk-fill.is-paper { fill: var(--landing-paper); }
+.sk-fill.is-mark { fill: color-mix(in srgb, var(--sk-rust) 17%, transparent); }
+.sk-frame-1, .sk-frame-2 { visibility: hidden; }
+
+/* Glyphs and the mark take the colour of the text beside them. */
+.sk-glyph, .sk-mark { flex: none; overflow: visible; }
+.sk-glyph .sk-ink { stroke: currentColor; stroke-width: 1.7; }
+.sk-mark .sk-ink { stroke: currentColor; stroke-width: 2.1; }
+.sk-arrow, .sk-plus, .sk-mark { transition: transform 220ms cubic-bezier(.2, .8, .2, 1); }
+.landing-drawn a:hover .sk-arrow { transform: translate(2px, -2px); }
+.landing-drawn a:hover .sk-arrow.is-right { transform: translateX(3px); }
+.landing-drawn .wordmark:hover .sk-mark { transform: rotate(-24deg); }
+
+/* A drawn underline beneath a few words. */
+.landing-underlined { position: relative; display: inline-block; }
+.sk-underline { position: absolute; left: -2%; bottom: -.17em; width: 104%; height: .26em; overflow: visible; pointer-events: none; }
+.landing-hero .sk-underline .sk-ink { stroke-width: 3.2; }
+
+/* Hero poster */
+.landing-drawn .landing-art { padding: 12px 12px 0; }
+.sk-poster { aspect-ratio: 4 / 5; overflow: hidden; }
+
+/* Storyboard */
+.landing-drawn .landing-story { display: block; padding: 84px 0 72px; border-block: 1px solid var(--landing-rule); }
+.landing-story-intro { display: flex; align-items: end; justify-content: space-between; flex-wrap: wrap; gap: 14px 40px; margin-bottom: 46px; }
+.landing-story-intro h2 { font: 500 clamp(30px, 3vw, 42px)/1.15 var(--folio-font-display); letter-spacing: -.025em; }
+.landing-drawn .landing-story-intro p { font-size: 16px; }
+.landing-drawn .landing-story ol.landing-story-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 60px; margin: 0; padding: 0; list-style: none; }
+.landing-drawn .landing-story-steps > li { min-width: 0; padding: 0; border: 0; }
+.landing-story-frame { position: relative; padding: 20px 16px; border-radius: 20px; background: var(--folio-art-paper); }
+.landing-story-steps > li:nth-child(2) .landing-story-frame { background: var(--folio-art-sage); }
+.landing-story-steps > li:nth-child(3) .landing-story-frame { background: var(--folio-art-sand); }
+.sk-story-arrow { position: absolute; top: 50%; right: -58px; width: 56px; transform: translateY(-50%); }
+.landing-drawn .landing-step-label { display: block; margin-top: 24px; font-size: 12px; letter-spacing: .06em; color: var(--landing-muted); font-variant-numeric: tabular-nums; }
+.landing-drawn .landing-story-steps h3 { font: 500 22px/1.25 var(--folio-font-display); letter-spacing: -.02em; margin: 8px 0 8px; }
+.landing-drawn .landing-story-steps li > p { font-size: 15px; line-height: 1.6; max-width: 34ch; }
+.landing-drawn .landing-workflow-note { max-width: 560px; margin-top: 40px; font-size: 13px; }
+
+/* The finer details */
+.landing-explainer-intro { display: grid; align-content: start; gap: 30px; }
+.sk-fineprint { max-width: 230px; }
+.landing-drawn .landing-faq summary { display: flex; align-items: center; justify-content: space-between; gap: 20px; list-style: none; min-height: 28px; }
+.landing-drawn .landing-faq summary::-webkit-details-marker { display: none; }
+.landing-drawn .landing-faq details[open] .sk-plus { transform: rotate(45deg); }
+.landing-drawn .landing-faq details p { max-width: 62ch; }
+
+/* Closing band */
+.landing-drawn .landing-next { display: grid; grid-template-columns: minmax(0, 1fr) minmax(180px, 330px) auto; align-items: center; gap: 36px;
+  margin: 56px 0 60px; padding: 38px 44px; border-radius: 26px; background: var(--folio-art-sage); overflow: hidden; }
+.landing-drawn .landing-next h2 { font: 500 clamp(26px, 2.6vw, 34px)/1.2 var(--folio-font-display); letter-spacing: -.025em; }
+.sk-sunrise { align-self: end; margin-bottom: -38px; }
+
+@media (max-width: 1000px) {
+  .landing-drawn .landing-story ol.landing-story-steps { gap: 28px; }
+  .sk-story-arrow { display: none; }
+  .landing-drawn .landing-next { grid-template-columns: minmax(0, 1fr) auto; }
+  .sk-sunrise { grid-column: 1 / -1; grid-row: 1; max-width: 330px; margin: -10px auto 0; }
+}
+@media (max-width: 700px) {
+  .landing-drawn .landing-story { padding: 52px 0 48px; }
+  .landing-story-intro { margin-bottom: 30px; }
+  .landing-drawn .landing-story ol.landing-story-steps { grid-template-columns: 1fr; gap: 40px; }
+  .landing-story-frame { max-width: 420px; }
+  .landing-drawn .landing-step-label { margin-top: 18px; }
+  .landing-explainer-intro { gap: 18px; }
+  .sk-fineprint { max-width: 170px; }
+  .landing-drawn .landing-next { grid-template-columns: 1fr; gap: 22px; margin: 40px 0 44px; padding: 28px 24px 30px; }
+  .sk-sunrise { max-width: 300px; margin: -6px 0 0; }
+}
+
+/* ── Motion: only for people who have not asked for less of it ─────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  /* Draw on: a stroke stays unseen until its figure scrolls into view, then is drawn in order. */
+  .landing-drawn [data-reveal] .sk-draw { stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0; }
+  .landing-drawn [data-reveal][data-inview] .sk-draw { animation: sk-draw 900ms cubic-bezier(.65, 0, .25, 1) calc(var(--i, 0) * 65ms) both; }
+  .landing-drawn [data-reveal] .sk-pop { opacity: 0; }
+  .landing-drawn [data-reveal][data-inview] .sk-pop { animation: sk-pop 500ms ease-out calc(var(--i, 0) * 65ms) both; }
+
+  /* Boil: three redrawn frames, one at a time, while the figure is on screen. */
+  .landing-drawn [data-live] .sk-frame { animation: sk-boil 690ms steps(1, end) infinite; }
+  .landing-drawn [data-live] .sk-frame-1 { animation-delay: -460ms; }
+  .landing-drawn [data-live] .sk-frame-2 { animation-delay: -230ms; }
+
+  /* Poster */
+  .landing-drawn [data-live] .sk-sun-bob { animation: sk-bob 8s ease-in-out infinite alternate; }
+  .landing-drawn [data-live] .sk-rays { animation: sk-turn 80s linear infinite; }
+  .landing-drawn [data-live] .sk-wind .sk-ink { stroke-dasharray: .36 .64; animation: sk-flow 9s linear infinite; }
+  .landing-drawn [data-live] .sk-birds { animation: sk-drift 22s ease-in-out infinite alternate; }
+  .landing-drawn [data-reveal]:not([data-inview]) .sk-here .sk-ink { opacity: 0; }
+  .landing-drawn [data-live] .sk-here .sk-ink { stroke-dasharray: 1; animation: sk-redraw 8s cubic-bezier(.65, 0, .25, 1) 2.6s infinite backwards; }
+
+  /* Storyboard */
+  .landing-drawn [data-live] .sk-caret { animation: sk-blink 1.1s steps(1, end) infinite; }
+  .landing-drawn [data-live] .sk-question { animation: sk-nod 3.2s ease-in-out infinite alternate; }
+  .landing-drawn [data-live] .sk-rows { animation: sk-rows 10s cubic-bezier(.6, 0, .3, 1) 1.6s infinite; }
+  .landing-drawn [data-reveal]:not([data-inview]) .sk-rewrite .sk-ink { opacity: 0; }
+  .landing-drawn [data-live] .sk-rewrite .sk-ink { stroke-dasharray: 1; animation: sk-rewrite 9s linear 1.4s infinite backwards; }
+  .landing-drawn [data-live] .sk-pencil { animation: sk-pencil 9s linear 1.4s infinite backwards; }
+  .landing-drawn [data-live] .sk-pencil-hand { animation: sk-scratch 300ms ease-in-out infinite alternate; }
+  .landing-drawn [data-live] .sk-cycle { animation: sk-turn 20s linear infinite; }
+
+  /* Closing band */
+  .landing-drawn [data-reveal] .sk-rise { transform: translateY(46px); }
+  .landing-drawn [data-reveal][data-inview] .sk-rise { animation: sk-rise 2.2s cubic-bezier(.2, .7, .2, 1) 200ms both; }
+}
+
+@keyframes sk-draw { 0% { stroke-dashoffset: 1; opacity: 0; } 3% { opacity: 1; } 100% { stroke-dashoffset: 0; opacity: 1; } }
+@keyframes sk-pop { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sk-boil { 0% { visibility: visible; } 33.34%, 100% { visibility: hidden; } }
+@keyframes sk-bob { from { transform: translateY(0); } to { transform: translateY(-5px); } }
+@keyframes sk-turn { to { transform: rotate(360deg); } }
+@keyframes sk-flow { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes sk-drift { from { transform: translate(-8px, 2px); } to { transform: translate(34px, -6px); } }
+@keyframes sk-redraw { 0% { stroke-dashoffset: 1; opacity: 1; } 16%, 76% { stroke-dashoffset: 0; opacity: 1; } 86%, 100% { stroke-dashoffset: 0; opacity: 0; } }
+@keyframes sk-blink { 0% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes sk-nod { from { transform: rotate(-5deg); } to { transform: rotate(6deg); } }
+@keyframes sk-rows { 0%, 17% { transform: translateY(0); } 25%, 42% { transform: translateY(38px); } 50%, 67% { transform: translateY(76px); } 75%, 92% { transform: translateY(114px); } 100% { transform: translateY(0); } }
+@keyframes sk-rewrite { 0% { stroke-dashoffset: 1; opacity: 1; } 38%, 84% { stroke-dashoffset: 0; opacity: 1; } 92%, 100% { stroke-dashoffset: 0; opacity: 0; } }
+@keyframes sk-pencil { 0% { transform: translateX(-88px); } 38%, 88% { transform: translateX(0); } 100% { transform: translateX(-88px); } }
+@keyframes sk-scratch { from { transform: translate(0, 0); } to { transform: translate(1.6px, -2.2px); } }
+@keyframes sk-rise { from { transform: translateY(46px); } to { transform: translateY(0); } }

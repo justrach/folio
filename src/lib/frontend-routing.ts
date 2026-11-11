@@ -31,3 +31,10 @@ export async function serveFrontend(request: Request, services: Services, render
     return services.FOLIO_PUBLIC_INDEX.fetch(request);
   return render();
 }
+
+/** The same response, marked so search engines neither index it nor follow its links. */
+export function noIndex(response: Response): Response {
+  const marked = new Response(response.body, response);
+  marked.headers.set("X-Robots-Tag", "noindex, nofollow");
+  return marked;
+}

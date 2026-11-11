@@ -176,6 +176,9 @@ html:not([data-folio-theme="dark"]) .ob {
 :root { --folio-art-paper: #e8e4d8; --folio-art-sage: #dfe5d8; --folio-art-sand: #ead8c4; --folio-art-rust: #85502e; --folio-brand-tile: #fff; --folio-brand-ink: #203b30; --folio-overlay: #14201866; --folio-dialog-shadow: #0003; }
 
 /* Paired artwork follows the explicit stored theme, including before hydration. */
+/* Ink for the hand-drawn landing artwork (src/components/landing-sketches.tsx). */
+:root { --folio-sketch-rust: #c4581c; --folio-sketch-sky: #ecd7b6; --folio-sketch-sun: #e37b2b; --folio-sketch-deep: #b5531b; --folio-sketch-lit: #ea9744; --folio-sketch-dune: #1f3329; --folio-sketch-line: #587563; }
+html[data-folio-theme="dark"] { --folio-sketch-rust: #eba566; --folio-sketch-sky: #1b2c24; --folio-sketch-sun: #eca55e; --folio-sketch-deep: #f3c592; --folio-sketch-lit: #a5642f; --folio-sketch-dune: #09110d; --folio-sketch-line: #3a5a49; }
 :root img.theme-art-dark { display: none; }
 :root img.theme-art-light { display: block; }
 html[data-folio-theme="dark"] img.theme-art-light { display: none; }

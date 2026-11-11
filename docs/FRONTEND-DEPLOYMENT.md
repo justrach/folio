@@ -63,6 +63,17 @@ bunx wrangler deploy --config wrangler.frontend.jsonc
 bunx wrangler deploy --config wrangler.frontend.jsonc --env production
 ```
 
+`staging.usefolio.site` is a third deployment of the same build, for reviewing UI before production:
+
+```sh
+bunx wrangler deploy --config wrangler.frontend.jsonc --env staging
+```
+
+It is its own Worker (`folio-frontend-staging`) on a custom domain, bound to the production backend and public
+index, so public pages show real published data and nothing is copied. `FOLIO_NOINDEX=1` adds
+`X-Robots-Tag: noindex, nofollow` to every response. Sign-in does not work there: the backend's auth origin is
+`https://usefolio.site`. Deploying it does not touch the production routes.
+
 The preview is interactive for public pages. Account OAuth callbacks retain the
 production origin; use the final `https://usefolio.site` domain for real sign-in.
 Opening pages, switching themes and reopening saved evidence must not start paid

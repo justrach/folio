@@ -115,27 +115,25 @@ test("landing check sorting, pagination, keyboard disclosure, and source data st
   verifyReadOnly();
 });
 
-test("manual workflow cycles with keyboard and swipe while sound remains opt-in", async ({ page }) => {
+test("the three workflow steps are drawn in order, the drawings stay decorative, and sound remains opt-in", async ({ page }) => {
   const verifyReadOnly = await readOnlyFixture(page);
   await page.goto("/");
   const sound = page.getByRole("button", { name: "Interaction sounds", exact: true });
   await expect(sound).toHaveAttribute("aria-pressed", "false");
-  const front = page.locator('.csw-card[data-front]');
-  await expect(front).toContainText("Ask a question.");
-  await front.focus();
-  await page.keyboard.press("Enter");
-  await expect(front).toContainText("Follow the evidence.");
-  await expect(front).toBeFocused();
-  await page.getByRole("button", { name: "Next workflow step" }).click();
-  await expect(front).toContainText("Find your next move.");
-  await page.getByRole("button", { name: "Next workflow step" }).click();
-  await expect(front).toContainText("Ask a question.");
-  const box = (await front.boundingBox())!;
-  await page.mouse.move(box.x + box.width * .8, box.y + box.height / 2);
-  await page.mouse.down();
-  await page.mouse.move(box.x + box.width * .2, box.y + box.height / 2, { steps: 5 });
-  await page.mouse.up();
-  await expect(front).toContainText("Follow the evidence.");
+  const steps = page.getByRole("region", { name: "Less noise. More direction." }).getByRole("listitem");
+  await expect(steps).toHaveCount(3);
+  await expect(steps.getByRole("heading", { level: 3 })).toHaveText(["Ask a question.", "Follow the evidence.", "Find your next move."]);
+  await expect(page.getByRole("region", { name: "Less noise. More direction." })).toContainText("A changed answer does not prove an edit caused it.");
+  // Every storyboard drawing is hidden from assistive technology; only the poster is described.
+  await expect(steps.locator("svg.sk-scene[aria-hidden=true]")).toHaveCount(3);
+  await expect(page.getByRole("img", { name: /sculptural dune/ })).toBeVisible();
+  // No icon-set glyph is left on the landing's own chrome: nav, hero, workflow, details and closing band.
+  await expect(page.locator(".landing-nav .folio-icon, .landing-hero .folio-icon, .landing-story .folio-icon, .landing-explainer .folio-icon, .landing-next .folio-icon, .landing-footer .folio-icon")).toHaveCount(0);
+  // With reduced motion (this project's default) each drawing is complete without waiting for scroll.
+  expect(await page.locator(".sk-poster .sk-draw").first().evaluate(element => getComputedStyle(element).strokeDashoffset)).toBe("0px");
+  const details = page.locator(".landing-faq details").first();
+  await details.locator("summary").click();
+  await expect(details).toHaveAttribute("open", "");
   await sound.click();
   await expect(sound).toHaveAttribute("aria-pressed", "true");
   await sound.click();

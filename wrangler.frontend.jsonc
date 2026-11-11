@@ -14,6 +14,19 @@
   ],
   "observability": { "enabled": true, "redact_query_string": true, "logs": { "invocation_logs": false }, "traces": { "enabled": false } },
   "env": {
+    // Review copy of the UI at staging.usefolio.site. It forwards /api to the production backend, so
+    // public pages show real published data; sign-in stays on usefolio.site. Never indexed (FOLIO_NOINDEX).
+    "staging": {
+      "name": "folio-frontend-staging",
+      "workers_dev": false,
+      "routes": [{ "pattern": "staging.usefolio.site", "custom_domain": true }],
+      "vars": { "FOLIO_NOINDEX": "1" },
+      "services": [
+        { "binding": "WORKER_SELF_REFERENCE", "service": "folio-frontend-staging" },
+        { "binding": "FOLIO_BACKEND", "service": "folio-visibility" },
+        { "binding": "FOLIO_PUBLIC_INDEX", "service": "folio-public-index" }
+      ]
+    },
     "production": {
       "name": "folio-frontend",
       "workers_dev": false,

@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { serveFrontend } from "../src/lib/frontend-routing";
+import { noIndex, serveFrontend } from "../src/lib/frontend-routing";
 
 test("frontend forwards API requests and responses unchanged without rendering or reading a database", async () => {
   const request = new Request("https://usefolio.site/api/auth/callback/google?code=fixture", { method: "POST", headers: { cookie: "fixture=session", "content-type": "text/plain" }, body: "fixture payload" });
@@ -82,4 +82,10 @@ test("internal admin pages render on the authenticated backend rather than the d
   const result=await serveFrontend(request,{FOLIO_BACKEND:{async fetch(r){forwarded++;assert.equal(r,request);return new Response('Private admin rendering');}},FOLIO_PUBLIC_INDEX:{async fetch(){throw new Error('Wrong service');}}},async()=>{throw new Error('Frontend cannot read auth/analytics SQL');});
   assert.equal(forwarded,1);assert.equal(await result.text(),'Private admin rendering');
  }
+});
+
+test("a review deployment's responses are marked noindex without losing their status, body or headers", async () => {
+  const marked = noIndex(new Response("page", { status: 404, headers: { "Content-Type": "text/html", "Cache-Control": "no-store" } }));
+  assert.equal(marked.headers.get("X-Robots-Tag"), "noindex, nofollow");
+  assert.deepEqual([marked.status, marked.headers.get("Content-Type"), marked.headers.get("Cache-Control"), await marked.text()], [404, "text/html", "no-store", "page"]);
 });
