@@ -173,6 +173,18 @@ mobile (one first page load timed out locally and passed on rerun), the producti
 deployment `/orgs`, `/agents` and `/login?next=/orgs` returned 200, `GET /api/organizations` returned 401 without a
 session, and the served bundle contains the invite actions, the welcome card, the login hint and the key-filling copy.
 
+**Find anything** (`d629bec`) followed: frontend `06bd0d65-401f-412b-a682-8d1e030d10dc`, backend
+`4d3b8c87-bdc7-46db-bde0-019c99649ba6` (`--keep-vars`). No migration or secret change. One new read-only endpoint,
+`GET /api/workspace-search` (names, IDs and dates of the signed-in person's websites, saved reports and organizations,
+one query at a time). Before deploying, its queries ran against production Postgres for the owner in a read-only
+session in 50 ms: 3 websites, 5 saved SEO reports, 2 Search Console snapshots and the Manus organization.
+Validation: typecheck, 443 unit tests, the 11 D1 integration tests for these areas (three failed in one run with
+`connect ETIMEDOUT 127.0.0.1` while another session's local `workerd` held thousands of loopback connections, and all
+passed on rerun), 30 browser checks on desktop and mobile, the production build and both smoke tests. The first
+`git push` failed with an SSH access error after the deploy had started and succeeded on retry. After deployment,
+`/settings`, `/orgs`, `/search-data` and the `?org=`/`?report=` forms returned 200, `/api/workspace-search` returned
+401 without a session, and the served bundle contains the new search box.
+
 ### Vector store
 
 Page embeddings live in turbopuffer, not Postgres (see [embeddings](EMBEDDINGS.md)).
