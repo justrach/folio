@@ -91,11 +91,19 @@ function records(index: WorkspaceSearchIndex | null, audits: SearchableAudit[], 
 }
 
 const defaultDate = (iso: string) => { const at = new Date(iso); return Number.isNaN(at.getTime()) ? "date unknown" : at.toLocaleDateString(undefined, { dateStyle: "medium" }); };
+const strip = ({ keywords: _keywords, ...result }: CommandResult & { keywords: string[] }): CommandResult => result;
+
+/** For agents (folio_find): only the person's own websites, organizations and reports, best match first; all of them, newest first, when nothing is typed. */
+export function workspaceMatches(query: string, index: WorkspaceSearchIndex, options: { date?: (iso: string) => string; limit?: number } = {}): { items: CommandResult[]; truncated: boolean } {
+  const all = records(index, [], options.date ?? defaultDate), limit = options.limit ?? 40;
+  const matches = !fold(query) ? all : all.map((item, order) => ({ item, order, points: score(query, item) })).filter(entry => entry.points > 0)
+    .sort((a, b) => b.points - a.points || a.order - b.order).map(entry => entry.item);
+  return { items: matches.slice(0, limit).map(strip), truncated: matches.length > limit };
+}
 
 /** Pages in their usual order when nothing is typed; otherwise everything that matches, best first. */
 export function commandResults(query: string, input: { index?: WorkspaceSearchIndex | null; audits?: SearchableAudit[]; date?: (iso: string) => string } = {}): CommandResult[] {
   const pages = COMMAND_PAGES.map(page => ({ key: `page:${page.id}`, kind: "page" as const, icon: page.id, title: page.title, detail: page.detail, href: page.href, keywords: page.keywords }));
-  const strip = ({ keywords: _keywords, ...result }: CommandResult & { keywords: string[] }): CommandResult => result;
   if (!fold(query)) return pages.map(strip);
   const perKind = new Map<CommandKind, number>();
   return [...pages, ...records(input.index ?? null, input.audits ?? [], input.date ?? defaultDate)]

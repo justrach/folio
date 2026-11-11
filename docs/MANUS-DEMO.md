@@ -50,6 +50,13 @@ The **Connect your agent** panel on the organization page (also at `/agents#conn
 4. **Check it's connected**: `claude mcp list` should show `folio: … ✔ Connected`. The status box on the page turns green by itself the moment the new key makes its first call, and the agent appears under **Members and their agents**.
 5. **Ask it something.** Four ready prompts: what manus.im is missing, who AI answers recommend instead, whether its pages answer the big searches, and fixing the top gap in the website's repository (in Claude Code, `/mcp__folio__improve_aeo` runs the guided version).
 
+   In an agent that shows MCP Apps (Claude Desktop, VS Code with Copilot), asking "find manus in Folio" shows Folio itself in the chat:
+   - a search box with the Manus organization, `manus.im` and its saved reports;
+   - **What it's missing** opens the same report as the website page;
+   - **Ask my agent to fix this** hands a gap back to the agent.
+
+   This has been tested against the official MCP Apps host bridge, not yet in Claude Desktop or VS Code, so try it before the meeting.
+
 The first prompt calls `folio_organizations`, finds `manus.im`'s `websiteId`, then `folio_website_gaps`, which returns the same report as the page, as structured data. Refresh the organization page: the read appears under **What the team's agents read**.
 
 Below the steps, **What your agent can do with each permission** lists every tool by permission (and which ones can charge), and **If it doesn't connect** covers the usual causes: an expired key, a variable the editor can't see, browser clients, the 60-requests-a-minute limit, and web connectors (Claude.ai, ChatGPT) that need OAuth, which Folio doesn't offer yet.

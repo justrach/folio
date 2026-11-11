@@ -51,6 +51,7 @@ For local coding clients use `http://localhost:3001/api/mcp`. Remote sandboxes r
 | Tool | Permission | Behavior |
 | --- | --- | --- |
 | `folio_targets` | read | Owned website and question IDs |
+| `folio_find` | read | Find your websites, organizations and saved reports by name or domain, with the IDs other tools take; opens the Folio app in hosts that support MCP Apps |
 | `folio_organizations` | read | Your organizations, teammates (names and roles), how many agents each has connected, and the websites shared with each |
 | `folio_website_gaps` | read | One website you saved or that is shared with your organization: where it shows up on Google and in AI answers, what it is missing, and what has not been checked |
 | `folio_index` | read | The complete published dataset in one response (about 5 MB); prefer the four tools below |
@@ -80,6 +81,31 @@ Only permitted tools are advertised. Paid calls require `confirmSpend: true` and
 - `notChecked`: unknowns kept apart from findings, such as indexed questions that were never answered, no saved lookup, or a small share of pages read. An agent should treat these as unmeasured, not as problems.
 
 The `improve_aeo` prompt now starts with this tool.
+
+## The Folio app (MCP Apps)
+
+Hosts that support [MCP Apps](https://modelcontextprotocol.io/extensions/apps/overview) (Claude Desktop, VS Code with GitHub Copilot, Goose and others) show Folio inside the conversation when an agent calls `folio_find` or `folio_website_gaps`. Both tools carry `_meta.ui.resourceUri: "ui://folio/workspace.html"`, along with the deprecated flat `ui/resourceUri` key that some hosts still read. The host reads that resource with `resources/read`. It is a single self-contained page, `text/html;profile=mcp-app`, from `src/lib/folio-app.ts`. Hosts without MCP Apps get the same JSON as before.
+
+What the person can do in it:
+- Search their Folio (`folio_find`).
+- Open a website's **Where it shows up** report (`folio_website_gaps`) or an organization's shared websites (`folio_organizations`).
+- Open a saved report or an evidence link in Folio. This goes through the host's `ui/open-link`.
+- Press **Ask my agent to fix this** on a gap. This sends the agent a `ui/message` that names the gap and asks it to propose edits and wait for approval.
+
+When the person opens a report inside the app, the app also sends `ui/update-model-context`, so the agent knows what they are looking at.
+
+Boundaries:
+- The page has no network access of its own. It declares no CSP domains, so hosts apply their no-network default.
+- Every read is a `tools/call` that the host makes with the person's own key, and it may call only those three read tools. A unit test checks this.
+- It renders report text with `textContent` only.
+- The no-key endpoint (`/api/index-mcp`) has no app.
+
+`folio_find` returns names, IDs, dates and a link back to Folio for each match. It reads only the caller's own records and their organizations, and it is not saved to agent activity.
+
+Testing:
+- `tests/folio-app.spec.ts` runs the page against the official host bridge (`AppBridge` from `@modelcontextprotocol/ext-apps` 1.7.5, a dev dependency), which validates every message against the spec's schemas.
+- The page has not yet been run in Claude Desktop or VS Code themselves.
+- Claude Desktop reaches Folio through `mcp-remote`, which passes `_meta` and resource reads through unchanged. Claude.ai's web connectors still need OAuth.
 
 ## Organizations
 

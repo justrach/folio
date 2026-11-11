@@ -27,20 +27,29 @@ import { createIndexClient, IndexClientError } from "./index-client";
 import { directPageSearch } from "./page-vectors";
 import { loadWebsiteGaps } from "./website-gaps";
 import { agentOrganizations } from "./organizations";
+import { workspaceSearchIndex } from "./workspace-search";
+import { workspaceMatches } from "./command-search";
+import { FOLIO_APP_HTML, FOLIO_APP_MIME, FOLIO_APP_URI } from "./folio-app";
 
 /** `publicIndex` is the no-key endpoint: only `public` tools, no owner, nothing recorded. */
-export type FolioToolContext = { db: D1Database; principal: AgentApiPrincipal; env: AgentRunEnvironment; sandbox?: SandboxSeoPrincipal; publicIndex?: boolean };
+export type FolioToolContext = { db: D1Database; principal: AgentApiPrincipal; env: AgentRunEnvironment; sandbox?: SandboxSeoPrincipal; publicIndex?: boolean;
+  /** The Folio site the request reached, for links back to it. Defaults to the public site. */
+  origin?: string };
 const id = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/);
 const paging = { limit:z.number().int().min(1).max(100).optional(), cursor:z.string().max(512).optional() };
 const requestKey = z.string().regex(/^[A-Za-z0-9._:-]{8,128}$/);
 /** `write` tools save private workspace state. They never spend, edit or publish the website. */
 type Definition = { name: string; title: string; description: string; scope: AgentApiScope; paid?: boolean; write?: boolean; public?: boolean; schema: Record<string, z.ZodType> };
-const FOLIO_MCP_VERSION = "1.7.0";
+const FOLIO_MCP_VERSION = "1.8.0";
+/** Tools whose results the Folio app (an MCP App) renders in hosts that support MCP Apps; other hosts get the same JSON. */
+const APP_TOOLS = new Set(["folio_find", "folio_website_gaps"]);
+const utcDate = (iso: string) => { const at = new Date(iso); return Number.isNaN(at.getTime()) ? "date unknown" : at.toLocaleDateString("en-US", { dateStyle: "medium", timeZone: "UTC" }); };
 const indexPaging = { limit:z.number().int().min(1).max(25).optional(), cursor:z.string().max(64).optional() };
 const INDEX_RECORDING = " With a Folio key, the first page of each ask is saved to the key owner's activity in Folio; the no-key endpoint saves nothing.";
 export const folioTools: Definition[] = [
   { name: "folio_targets", title: "Websites and questions", description: "List your saved websites and question IDs. Start here before selecting an owned record. No provider calls.", scope: "read", schema: { kind:z.enum(["website","keyword"]).default("website"), websiteId:id.optional(), suiteId:id.optional(), searchMode:z.enum(["open-web","reviewed-domains"]).optional(), ...paging } },
   { name: "folio_organizations", title: "Your organizations", description: "The organizations you belong to: teammates (names and roles), how many agents each has connected, and the websites shared with each organization, with their websiteIds. Use a websiteId with folio_website_gaps. No provider calls.", scope: "read", schema: {} },
+  { name: "folio_find", title: "Find in your Folio", description: "Find the websites, organizations and saved reports you can open in Folio by a name or domain (q), or list them all. Returns the IDs other tools take: websiteId for folio_website_gaps, reportId of a search & backlinks report for folio_seo_reports, organizationId for folio_organizations. Names, IDs and dates only; no provider calls, nothing saved. Hosts that support MCP Apps show it as Folio's search, where the person can open a website's report.", scope: "read", schema: { q: z.string().max(200).optional() } },
   { name: "folio_website_gaps", title: "What a website is missing", description: "One website you saved, or one shared with your organization, in one read: the Google searches that show it and at what position, its saved backlink and search counts, whether Folio's published AI answers name it (and which indexed questions mention it), how much of it Folio has read, then a list of gaps, each with evidence and a next step, and a separate list of what has not been checked yet. Start here for a website, then use folio_visibility, folio_index_answer or folio_index_pages for detail (those read only your own websites). Saved data only; no provider calls or charges. The read is saved to your agent activity, which teammates see for shared websites.", scope: "read", schema: { websiteId: id } },
   { name: "folio_index", title: "Public benchmark index", description: "The complete published dataset in one response (several megabytes). Prefer folio_index_search, folio_index_answer and folio_index_website. Returned order is query-specific, not a general quality score.", scope: "read", schema: {} },
   { name:"folio_index_overview",title:"Published index overview",description:"Size, freshness and categories of Folio's published index: saved AI answers to buyer questions. Start here. No provider calls.",scope:"read",public:true,schema:{} },
@@ -123,6 +132,15 @@ export async function invokeFolioTool(name: string, args: Record<string, unknown
     }
     case "folio_targets": return pagedTargets(db, principal.ownerId, input);
     case "folio_organizations": return agentOrganizations(db, principal.ownerId);
+    case "folio_find": {
+      const query = ((input.q as string | undefined) ?? "").trim(), origin = (context.origin ?? "https://usefolio.site").replace(/\/$/, "");
+      const found = workspaceMatches(query, await workspaceSearchIndex(db, principal.ownerId), { date: utcDate });
+      const idOf = (key: string) => key.slice(key.indexOf(":") + 1);
+      return { query: query || null, truncated: found.truncated, items: found.items.map(item => ({ kind: item.kind, title: item.title, detail: item.detail, url: `${origin}${item.href}`,
+        websiteId: item.kind === "website" ? idOf(item.key) : null, organizationId: item.kind === "organization" ? idOf(item.key) : null,
+        reportId: item.kind === "seo-report" || item.kind === "search-console" ? idOf(item.key) : null })),
+        note: "Pass a websiteId to folio_website_gaps, a search & backlinks reportId to folio_seo_reports, and use folio_organizations for an organization's shared websites. Search Console snapshots open in Folio (url). Titles are names and domains the person saved." };
+    }
     case "folio_website_gaps": {
       const report = await loadWebsiteGaps(db, principal.ownerId, input.websiteId as string);
       // Recording is activity, not part of the answer: a failed save never fails the read.
@@ -133,7 +151,7 @@ export async function invokeFolioTool(name: string, args: Record<string, unknown
     case "folio_changes": return listWebsiteChanges(db,principal.ownerId,input as Parameters<typeof listWebsiteChanges>[2]);
     case "folio_change_record": return recordWebsiteChange(db,{ownerId:principal.ownerId,keyId:principal.keyId},input as RecordWebsiteChangeInput);
     case "folio_change_update": {const {changeId,...update}=input;return updateWebsiteChange(db,principal.ownerId,changeId as string,update as UpdateWebsiteChangeInput,"agent");}
-    case "folio_capabilities": return {version:FOLIO_MCP_VERSION,supportedFeatures:["saved-observations","saved-run-history","batch-observations","saved-page-evidence","matched-visibility-comparison","structured-errors","website-change-records","guided-prompts","published-index-search","crawled-page-search","website-gaps","organizations"],prompts:AEO_PROMPTS.map(p=>p.name),allowedScopes:principal.scopes,tools:folioTools.map(t=>({name:t.name,requiredScope:t.scope,allowed:principal.scopes.includes(t.scope),paid:Boolean(t.paid),requirements:t.paid?["Explicit user spending authorization","Approved account","Stable requestKey","confirmSpend=true"]:t.write?["Saves private workspace state; does not edit or publish the website",...(t.name==="folio_change_update"?["Owner confirmation that the change is live"]:["Stable requestKey"])]:[],conditionalScopes:t.name==="folio_evaluate"?[{when:"useSeoTools=true",requiredScope:"seo",allowed:principal.scopes.includes("seo")}]:[]})),observationTargets:{website:{kind:"website",websiteId:"saved website ID"},keyword:{kind:"keyword",caseId:"saved question ID"}}};
+    case "folio_capabilities": return {version:FOLIO_MCP_VERSION,supportedFeatures:["saved-observations","saved-run-history","batch-observations","saved-page-evidence","matched-visibility-comparison","structured-errors","website-change-records","guided-prompts","published-index-search","crawled-page-search","website-gaps","organizations","workspace-find","mcp-app"],prompts:AEO_PROMPTS.map(p=>p.name),allowedScopes:principal.scopes,tools:folioTools.map(t=>({name:t.name,requiredScope:t.scope,allowed:principal.scopes.includes(t.scope),paid:Boolean(t.paid),requirements:t.paid?["Explicit user spending authorization","Approved account","Stable requestKey","confirmSpend=true"]:t.write?["Saves private workspace state; does not edit or publish the website",...(t.name==="folio_change_update"?["Owner confirmation that the change is live"]:["Stable requestKey"])]:[],conditionalScopes:t.name==="folio_evaluate"?[{when:"useSeoTools=true",requiredScope:"seo",allowed:principal.scopes.includes("seo")}]:[]})),observationTargets:{website:{kind:"website",websiteId:"saved website ID"},keyword:{kind:"keyword",caseId:"saved question ID"}}};
     case "folio_run_history": return savedRunHistory(db,principal.ownerId,input as Parameters<typeof savedRunHistory>[2]);
     case "folio_page_evidence": return savedPageEvidence(db,principal.ownerId,input as Parameters<typeof savedPageEvidence>[2]);
     case "folio_visibility_compare": return savedVisibilityComparison(db,principal.ownerId,input as Parameters<typeof savedVisibilityComparison>[2]);
@@ -211,6 +229,8 @@ export async function serveFolioMcp(request: Request, context: FolioToolContext,
   for (const tool of definitions) server.registerTool(tool.name, {
     title: tool.title, description: tool.description, inputSchema: z.strictObject(tool.schema), outputSchema:z.strictObject({result:folioSuccessSchemas[tool.name].optional(),error:folioErrorSchema.optional()}),
     annotations: { readOnlyHint: !tool.paid && !tool.write && tool.name !== "folio_reconcile", destructiveHint: false, idempotentHint: true, openWorldHint: Boolean(tool.paid || tool.name === "folio_reconcile") },
+    // The flat key is the deprecated spelling some hosts still read; both point at the same resource.
+    ...(!context.sandbox && !context.publicIndex && APP_TOOLS.has(tool.name) ? { _meta: { ui: { resourceUri: FOLIO_APP_URI }, "ui/resourceUri": FOLIO_APP_URI } } : {}),
   }, async (args:Record<string,unknown>) => {
     try {
       const result = await execute(tool.name, args, context);
@@ -223,6 +243,10 @@ export async function serveFolioMcp(request: Request, context: FolioToolContext,
       return { isError:true, content:[{type:"text" as const,text:JSON.stringify({error:detail})}],structuredContent:{error:detail} };
     }
   });
+  // The app is a static page; the person's data reaches it only through the tool calls the host makes with this key.
+  if (!context.sandbox && !context.publicIndex) server.registerResource("folio-workspace", FOLIO_APP_URI, { title: "Folio", mimeType: FOLIO_APP_MIME,
+    description: "Folio's search and website report, shown in the conversation by hosts that support MCP Apps." },
+    async () => ({ contents: [{ uri: FOLIO_APP_URI, mimeType: FOLIO_APP_MIME, text: FOLIO_APP_HTML, _meta: { ui: { prefersBorder: true } } }] }));
   const transport = new WebStandardStreamableHTTPServerTransport({ sessionIdGenerator: undefined, enableJsonResponse: true });
   await server.connect(transport);
   try {

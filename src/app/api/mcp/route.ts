@@ -25,6 +25,8 @@ async function handle(request: Request) {
         DATAFORSEO_ALLOWED_USER_IDS: values.DATAFORSEO_ALLOWED_USER_IDS || process.env.DATAFORSEO_ALLOWED_USER_IDS,
       } };
     } else context = await agentApiContext(request);
+    // Links the Folio app opens point back at the site this request reached.
+    context = { ...context, origin: new URL(request.url).origin };
     let bounded = request;
     if (request.method === "POST") {
       const body = await readJsonBody(request);

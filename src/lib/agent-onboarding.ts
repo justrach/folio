@@ -136,8 +136,8 @@ export type PermissionGroup = { scope: AgentApiScope; label: string; charges: bo
 export const AGENT_PERMISSIONS: PermissionGroup[] = [
   { scope: "read", label: "Read", charges: false,
     summary: "Always included. Find your websites and your organization’s, read what a website is missing, search Folio’s published AI answers and the pages it has read, and open saved runs, reports and changes.",
-    highlights: ["folio_organizations", "folio_website_gaps", "folio_index_search", "folio_index_pages", "folio_visibility"],
-    tools: ["folio_targets", "folio_organizations", "folio_website_gaps", "folio_index", "folio_index_overview", "folio_index_search", "folio_index_answer", "folio_index_website",
+    highlights: ["folio_find", "folio_organizations", "folio_website_gaps", "folio_index_search", "folio_index_pages", "folio_visibility"],
+    tools: ["folio_targets", "folio_find", "folio_organizations", "folio_website_gaps", "folio_index", "folio_index_overview", "folio_index_search", "folio_index_answer", "folio_index_website",
       "folio_index_pages", "folio_observation", "folio_run", "folio_visibility", "folio_seo_reports", "folio_capabilities", "folio_run_history", "folio_observations",
       "folio_page_evidence", "folio_visibility_compare", "folio_changes"] },
   { scope: "changes", label: "Record changes", charges: false,

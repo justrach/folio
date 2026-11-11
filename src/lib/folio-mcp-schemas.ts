@@ -79,8 +79,10 @@ const websiteGaps = obj({website:obj({id:s,name:s,url:s,domain:s,access:z.enum([
 const organizations = obj({items:z.array(obj({id:s,name:s,role:z.enum(["owner","member"]),members:z.array(obj({name:s,role:z.enum(["owner","member"]),agents:n,you:b})),
   websites:z.array(obj({websiteId:s,name:s,domain:s,sharedBy:s}))})),note:s});
 
+const find = obj({query:sn,truncated:b,items:z.array(obj({kind:z.enum(["website","organization","seo-report","search-console"]),title:s,detail:s,url:s,websiteId:sn,organizationId:sn,reportId:sn})),note:s});
+
 export const folioSuccessSchemas: Record<string,z.ZodType> = {
-  folio_website_gaps:websiteGaps,folio_organizations:organizations,
+  folio_website_gaps:websiteGaps,folio_organizations:organizations,folio_find:find,
   folio_index_overview:obj({source:indexSource,updatedAt:s,questions:n,publishedQuestions:n,publishedAnswers:n,recommendedWebsites:n,citedSources:n,categories:z.array(obj({audience:s,category:s,questions:n,published:n})),howToAsk:s,caveat:s,crawl:obj({available:b,pages:nn,domains:nn,updatedAt:sn})}),
   folio_index_pages:obj({available:b,reason:sn,terms:strings,mode:z.enum(["semantic","all_terms","any_term"]),semantic:z.enum(["used","no_results","unavailable","not_configured"]),domain:sn,candidates:n,candidatesCapped:b,
     items:z.array(obj({pageId:s,url:s,title:sn,domain:sn,section:sn,excerpt:s,fetchedAt:sn,matchedTerms:n,score:nn})),matching:s,caveat:s,recorded:b}),

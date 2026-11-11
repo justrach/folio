@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
-import { serveFolioMcp, invokeFolioTool, type FolioToolContext } from "../src/lib/folio-mcp";
+import { serveFolioMcp, invokeFolioTool, folioTools, type FolioToolContext } from "../src/lib/folio-mcp";
+import { FOLIO_APP_CALLS, FOLIO_APP_MIME, FOLIO_APP_URI } from "../src/lib/folio-app";
 import { parseAgentObservation, parseAgentQuery } from "../src/lib/agent-api-input";
 
 const context = { db: {}, principal: { keyId: "fixture", ownerId: "alice", scopes: ["read"] }, env: {} } as FolioToolContext;
@@ -94,6 +95,45 @@ test("the no-key index endpoint exposes only published-index reads, no prompts a
   } finally { await client.close(); }
   await assert.rejects(invokeFolioTool("folio_targets", {}, open));
 });
+test("Folio's MCP App: two read tools point at one ui:// page, read with resources/read; the no-key endpoint has none", async () => {
+  const client = new Client({ name: "apps-host-fixture", version: "1" });
+  await client.connect(new StreamableHTTPClientTransport(new URL("https://folio.example/api/mcp"), { fetch: async (url, init) => serveFolioMcp(new Request(url, init), context) }));
+  let html = "";
+  try {
+    const tools = (await client.listTools()).tools;
+    const withApp = tools.filter(tool => (tool._meta as { ui?: { resourceUri?: string } } | undefined)?.ui?.resourceUri);
+    assert.deepEqual(withApp.map(tool => tool.name).sort(), ["folio_find", "folio_website_gaps"]);
+    for (const tool of withApp) {
+      assert.equal((tool._meta as Record<string, unknown>)["ui/resourceUri"], FOLIO_APP_URI, "the deprecated key some hosts still read");
+      assert.equal(tool.annotations?.readOnlyHint, true);
+    }
+    const listed = (await client.listResources()).resources.find(resource => resource.uri === FOLIO_APP_URI);
+    assert.equal(listed?.mimeType, FOLIO_APP_MIME);
+    const read = (await client.readResource({ uri: FOLIO_APP_URI })).contents[0] as unknown as { mimeType: string; text: string; _meta: { ui: { prefersBorder: boolean; csp?: unknown } } };
+    assert.equal(read.mimeType, "text/html;profile=mcp-app");
+    assert.deepEqual(read._meta.ui, { prefersBorder: true }, "no CSP domains: the page gets the host's no-network default");
+    html = read.text;
+  } finally { await client.close(); }
+  assert.match(html, /^<!doctype html>/);
+  assert.match(html, /"ui\/initialize"/);
+  assert.doesNotThrow(() => new Function(html.split("<script>")[1].split("</script>")[0]), "the page's script parses");
+  // The page reaches Folio only through the host, only with read tools, and never puts data into innerHTML.
+  assert.doesNotMatch(html, /fetch\(|XMLHttpRequest|WebSocket|<script src|<link /);
+  assert.equal(html.match(/innerHTML/g)?.length, 1, "only the static icons");
+  assert.deepEqual([...new Set([...html.matchAll(/callTool\("([a-z_]+)"/g)].map(match => match[1]))].sort(), [...FOLIO_APP_CALLS].sort());
+  for (const name of FOLIO_APP_CALLS) {
+    const tool = folioTools.find(item => item.name === name)!;
+    assert.ok(tool.scope === "read" && !tool.paid && !tool.write, name);
+  }
+  const open: FolioToolContext = { ...context, principal: { keyId: "", ownerId: "", scopes: [] }, publicIndex: true };
+  const publicClient = new Client({ name: "apps-public-fixture", version: "1" });
+  await publicClient.connect(new StreamableHTTPClientTransport(new URL("https://folio.example/api/index-mcp"), { fetch: async (url, init) => serveFolioMcp(new Request(url, init), open) }));
+  try {
+    assert.equal(publicClient.getServerCapabilities()?.resources, undefined);
+    assert.ok((await publicClient.listTools()).tools.every(tool => tool._meta === undefined));
+  } finally { await publicClient.close(); }
+});
+
 test("SEO selection is explicit, keyword-only and survives saved-query parsing", () => {
   assert.deepEqual(parseAgentObservation(parseAgentQuery("https://folio.example/?kind=keyword&caseId=case&useSeoTools=true")), { kind: "keyword", caseId: "case", maxAgeSeconds: 86400, useSeoTools: true });
   assert.throws(() => parseAgentObservation({ kind: "website", websiteId: "site", useSeoTools: true }));

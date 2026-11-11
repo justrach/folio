@@ -6,7 +6,10 @@ import test from "node:test";
 import type { D1Database } from "@cloudflare/workers-types";
 import { Miniflare } from "miniflare";
 import { unstable_splitSqlQuery } from "wrangler";
-import { AgentApiError } from "../src/lib/agent-api-key-store";
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import { AgentApiError, authenticateAgentApiKey, createAgentApiKey } from "../src/lib/agent-api-key-store";
+import { serveFolioMcp } from "../src/lib/folio-mcp";
 import { addMemberByEmail, acceptInvite, createInvite, createOrganization, shareWebsite } from "../src/lib/organizations";
 import { workspaceSearchIndex } from "../src/lib/workspace-search";
 
@@ -64,6 +67,27 @@ test("D1: search lists what each person can open, names and IDs only, and change
     assert.deepEqual(outsider, { websites: [], seoReports: [], searchConsole: [], organizations: [] });
     assert.equal((await db.prepare("SELECT COUNT(*) AS n FROM organization_email_invites").first<{ n: number }>())!.n, 1, "the waiting invite is untouched");
     await assert.rejects(workspaceSearchIndex(db, ""), error => error instanceof AgentApiError && error.status === 401);
+
+    // The same search for agents: folio_find returns the IDs other tools take and links back to this Folio, and records nothing.
+    const key = await createAgentApiKey(db, "rach", { name: "Rach's Claude Desktop", scopes: ["read"] });
+    const client = new Client({ name: "find-agent", version: "1" });
+    await client.connect(new StreamableHTTPClientTransport(new URL("https://folio.example/api/mcp"), { fetch: async (url, init) =>
+      serveFolioMcp(new Request(url, init), { db, principal: await authenticateAgentApiKey(db, key.token, "read"), env: {}, origin: "https://folio.example" }) }));
+    try {
+      type Found = { result: { query: string | null; truncated: boolean; items: { kind: string; title: string; url: string; websiteId: string | null; organizationId: string | null; reportId: string | null }[] } };
+      const found = (await client.callTool({ name: "folio_find", arguments: { q: "manusfixture" } })).structuredContent as Found;
+      assert.deepEqual(found.result.items.map(item => [item.kind, item.title, item.websiteId ?? item.organizationId ?? item.reportId, item.url]), [
+        ["website", "manusfixture.com", "site-manus", "https://folio.example/websites?site=site-manus"],
+        ["seo-report", "manusfixture.com", "seo-done", "https://folio.example/search-data?report=seo-done"],
+        ["search-console", "manusfixture.com", "gsc-1", "https://folio.example/search-console?report=gsc-1"],
+        // The organization matches through the domain it shares, so it ranks below the exact matches.
+        ["organization", "Manus", org.id, `https://folio.example/orgs?org=${org.id}`],
+      ]);
+      const everything = (await client.callTool({ name: "folio_find", arguments: {} })).structuredContent as Found;
+      assert.deepEqual([everything.result.query, everything.result.items.length, everything.result.truncated], [null, 6, false]);
+      assert.deepEqual(((await client.callTool({ name: "folio_find", arguments: { q: "nothing-like-this" } })).structuredContent as Found).result.items, []);
+    } finally { await client.close(); }
+    assert.equal((await db.prepare("SELECT COUNT(*) AS n FROM agent_index_asks").first<{ n: number }>())!.n, 0, "finding is not recorded as activity");
     assert.equal(provider.mock.callCount(), 0);
   } finally { await current.dispose(); await rm(directory, { recursive: true, force: true }); }
 });

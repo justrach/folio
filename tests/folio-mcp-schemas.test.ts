@@ -34,6 +34,8 @@ const websiteGaps=buildWebsiteGaps({website:{id:"site",name:"Example",url:"https
   yourQuestions:{completed:2,named:1},crawl:{state:"in_index",pagesCrawled:3,inventoryPages:100,lastFetchedAt:at,profileName:"Example",topSections:[{path:"/docs",pages:60}]}});
 const fixtures:Record<string,unknown>={
   folio_website_gaps:websiteGaps,
+  folio_find:{query:"example",truncated:false,items:[{kind:"website",title:"example.com",detail:"Your website",url:"https://usefolio.site/websites?site=site",websiteId:"site",organizationId:null,reportId:null},
+    {kind:"seo-report",title:"example.com",detail:"Search & backlinks report · Nov 10, 2026",url:"https://usefolio.site/search-data?report=report",websiteId:null,organizationId:null,reportId:"report"}],note:"Pass a websiteId to folio_website_gaps."},
   folio_organizations:{items:[{id:"org",name:"Example team",role:"owner",members:[{name:"Owner",role:"owner",agents:1,you:true},{name:"Teammate",role:"member",agents:0,you:false}],websites:[{websiteId:"site",name:"Example",domain:"example.com",sharedBy:"Owner"}]}],note:"Pass a websiteId to folio_website_gaps."},
   folio_changes:{...page,items:[change]},folio_change_record:{change:{...change,status:"proposed",publication:null},replayed:false},folio_change_update:{change},
   folio_targets:{...page,kind:"keyword",items:[{id:"case",suiteId:"suite",createdAt:at,query:"Which tool?",targetUrl:null,language:"en",locale:"en-US",searchMode:"open-web"}]},
