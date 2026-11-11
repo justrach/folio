@@ -269,6 +269,39 @@ After deployment, a live check over HTTPS used two temporary read keys named "Co
 `/agents` returned 200, and the served chunk contains the consent card. Add to Cursor, Add to VS Code and the Claude
 Desktop install have not been run in the real apps.
 
+**OAuth for MCP clients** (`aeec64a`) followed on 11 November 2026: frontend `cdd1dc85-e86c-457a-9ec4-fc6817d6992a`,
+backend `0b1828f5-efd6-4872-aaae-16ab6edf409a` (`--keep-vars`). No secret change.
+- Migration `0031_mcp_oauth.sql` was applied to production Postgres `public` before the deploy, in one transaction with
+  `IF NOT EXISTS`: `oauth_clients` (8 columns), `oauth_codes` (13), `oauth_tokens` (8), the `oauth_tokens_key` index,
+  and the nullable `agent_api_keys.oauth_client_id`.
+- New routes: `/.well-known/oauth-protected-resource[/api/mcp]` and `/.well-known/oauth-authorization-server`
+  (the frontend Worker forwards `/.well-known/oauth-*` to the backend), `/api/oauth/register`, `/api/oauth/token`,
+  `/api/oauth/revoke`, `/api/oauth/authorize`, and the consent page `/oauth/authorize`.
+- `folio.mcpb` is now byte-identical across builds. JSZip had stamped its `server/` folder entry with the build time.
+- Backend upload: 4.44 MB gzipped.
+
+Validation: typecheck, 456 unit tests, the D1 integration tests for these areas including the new OAuth flow tests,
+6 of 6 consent-page and 10 of 10 Connect-your-agent browser checks, the production build and both smoke tests.
+- Five D1 tests first failed with `connect ETIMEDOUT 127.0.0.1` (and one Miniflare decode assert) while another
+  worktree's dev-server proxy held about 10,200 loopback sockets. All passed on rerun.
+- Before deploying, the official MCP SDK client ran the whole flow against the local preview, with the consent page
+  in a real browser.
+
+After deployment, a live check used the official MCP SDK client over HTTPS against `https://usefolio.site`:
+- Both discovery documents returned 200 at their root and path forms, naming `https://usefolio.site/api/mcp` and
+  the issuer `https://usefolio.site` with `S256` PKCE and client ID metadata documents.
+- `/api/mcp` without a token returned 401 with the `resource_metadata` pointer. `/oauth/authorize` returned 200.
+- The SDK registered itself and asked for consent. The approval was recorded with `approveAuthorization` for the
+  owner, because the script has no browser session on the live site. The SDK then exchanged the code over HTTPS
+  (Bearer, 3600 s, `read`, with a refresh token).
+- MCP server `1.9.0` listed 20 tools, and `folio_organizations` returned Manus.
+- Refresh rotated the token, and reusing the old refresh token returned `invalid_grant`. The new access token got 200
+  on `/api/mcp` and 401 on `/api/v1/sites`.
+- After revocation, `/api/mcp` returned 401 with `error="invalid_token"`.
+- Cleanup: 1 key, 1 code and 1 client deleted; no tokens remained.
+
+claude.ai, ChatGPT and Claude Code have not connected through it yet.
+
 ### Vector store
 
 Page embeddings live in turbopuffer, not Postgres (see [embeddings](EMBEDDINGS.md)).
