@@ -84,5 +84,7 @@ Operational facts worth knowing:
 
 - Two roles exist on the branch: `postgres.<branch>` (the near-superuser created on 7 November) and `pscale_api_z2bd3c08olj5.<branch>` (created 27 September, **owns every table**). Ownership, not grants, controls `ALTER TABLE`; a non-owner role cannot alter those tables even with `CREATEROLE`.
 - Migrations `0023_reconciliation_health.sql` and `0024_seo_report_detail.sql` were applied as the owning role, so the mirror's `d1_migrations` journal is at `0024`.
+- This database is no longer only a mirror: since the 7 November 2026 cutover it is the production system of record ([Postgres migration](POSTGRES-MIGRATION.md)), and a local server started with `DB_ENGINE=postgres` reads and writes it. Treat local writes as production writes.
+- `0026_website_changes.sql` and `0027_agent_index_asks.sql` (one table and one index each) were created in its `public` schema on 11 November 2026 through the `scripts/pg-schema.ts` translation, with the role in `PLANETSCALE_APP_URL`. No `d1_migrations` row was added; the journal still ends at `0024` although the onboarding migrations are also present.
 - Credentials live only in the ignored `.dev.vars` as `PLANETSCALE_APP_URL`. Rotate them with `pscale role reset folio main z2bd3c08olj5 --org <org>`; the previous password stops working immediately.
 - No sync job exists. If the mirror becomes a read model, the direction must be one-way (D1 → Postgres) and the writer must run as the owning role; dual writes would put paid reservations and owner predicates at risk.

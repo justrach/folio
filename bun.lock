@@ -6,6 +6,7 @@
       "name": "folio-visibility",
       "dependencies": {
         "@better-auth/drizzle-adapter": "latest",
+        "@codegraff/sdk": "^0.5.1",
         "@modelcontextprotocol/sdk": "1.30.0",
         "@opennextjs/cloudflare": "1.20.16",
         "@radix-ui/react-select": "2.3.8",
@@ -196,6 +197,20 @@
     "@cloudflare/workerd-windows-64": ["@cloudflare/workerd-windows-64@1.20261104.1", "", { "os": "win32", "cpu": "x64" }, "sha512-b/fnEU1leVm8UrI2EHQ4MSrK2vmnWdR1jefRyEUDZe3ucpKY0PWi4bVxWh5niZdlL0MIc4C5tXNXTlAMZpKDdA=="],
 
     "@cloudflare/workers-types": ["@cloudflare/workers-types@5.20260911.1", "", {}, "sha512-yiAvknjulcU85B3yB4aKOn9+l+garWP+AbHgsdCFckeRYDdhZ1rPULi64BDf52R3VTaKqxi47kF+o9ZbjsCt5g=="],
+
+    "@codegraff/graff-darwin-arm64": ["@codegraff/graff-darwin-arm64@0.5.1", "", { "os": "darwin", "cpu": "arm64", "bin": { "graff": "bin/graff" } }, "sha512-Q0Yame6vDi1OeaH1UvDEhJnibgSfdVDFcyGU9ackFC3tGojQD1BTrwo2eoFm3iOYKV9chcbWHM9I1e/chtfmfQ=="],
+
+    "@codegraff/graff-darwin-x64": ["@codegraff/graff-darwin-x64@0.5.1", "", { "os": "darwin", "cpu": "x64", "bin": { "graff": "bin/graff" } }, "sha512-OsdrPK/bIhdcxoxlkpOawo+0FhvQrrA20IXLnYxamzR6HwnVj5hBN4Yx7PZDt0PRMyzlfI7pewvYZDtekEW0Sw=="],
+
+    "@codegraff/graff-linux-arm64": ["@codegraff/graff-linux-arm64@0.5.1", "", { "os": "linux", "cpu": "arm64", "bin": { "graff": "bin/graff" } }, "sha512-PmXj5TTsC0ZbI6GX6A6kqJ0Ebm3f6q/KRqGqmCitOvR5ZPTdLNkbVhkRY0ClM5NRq6Dl2PcQCwifeX2nbmrtDQ=="],
+
+    "@codegraff/graff-linux-x64": ["@codegraff/graff-linux-x64@0.5.1", "", { "os": "linux", "cpu": "x64", "bin": { "graff": "bin/graff" } }, "sha512-SsWU5yYUtQdffIE5tN1ho2JN28nXdoB77VUg/2MMgQf96eGvWuiN+FXxAysBiPDassLpQ1iiwiNU2gn9O7dcyA=="],
+
+    "@codegraff/graff-win32-arm64": ["@codegraff/graff-win32-arm64@0.5.1", "", { "os": "win32", "cpu": "arm64", "bin": { "graff": "bin/graff.exe" } }, "sha512-o/5+x2hBYMwsakYXggYTVIf3M0LttRzDkd2oCU0Aix5PPrQ+BArns8FJoTgumhJxaNs76JK5sHfnIKtx6lScmg=="],
+
+    "@codegraff/graff-win32-x64": ["@codegraff/graff-win32-x64@0.5.1", "", { "os": "win32", "cpu": "x64", "bin": { "graff": "bin/graff.exe" } }, "sha512-eIpC2oDMnk7sBCOuI4iRBNNU6zQoTmBEQjnUIYvVG6bKc30B8ROdDQ8wEKMz5QsAUICzeDjydck4Mc2Fx+Hlxw=="],
+
+    "@codegraff/sdk": ["@codegraff/sdk@0.5.1", "", { "optionalDependencies": { "@codegraff/graff-darwin-arm64": "0.5.1", "@codegraff/graff-darwin-x64": "0.5.1", "@codegraff/graff-linux-arm64": "0.5.1", "@codegraff/graff-linux-x64": "0.5.1", "@codegraff/graff-win32-arm64": "0.5.1", "@codegraff/graff-win32-x64": "0.5.1" } }, "sha512-R0cvdm3uKZ3qg9NrmeNAI9tHWQPn2oulyZ6EyOsVMOA+dBELRmfN+y1tdS/Z4vRPwTasJZSXKUP/dgN7qdsUZQ=="],
 
     "@cspotcode/source-map-support": ["@cspotcode/source-map-support@0.8.1", "", { "dependencies": { "@jridgewell/trace-mapping": "0.3.9" } }, "sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw=="],
 

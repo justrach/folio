@@ -2,8 +2,13 @@ import type { D1Database } from "@cloudflare/workers-types";
 
 /** Atomic per-account hourly budget. A failed or ambiguous paid request still
  * consumes a slot because it may have been billed. Never key this by email. */
-export async function consumeSeoLookupSlot(db: D1Database, key: string, limit: number): Promise<number | null> {
-  const now = Date.now();
+export function consumeSeoLookupSlot(db: D1Database, key: string, limit: number): Promise<number | null> {
+  return consumeRateSlot(db, key, limit, 3_600_000);
+}
+
+/** The same atomic counter for any window. Returns the slot number, or null when the window is full. */
+export async function consumeRateSlot(db: D1Database, key: string, limit: number, windowMs: number): Promise<number | null> {
+  const now = Date.now(), start = now - windowMs;
   const slot = await db.prepare(
     `INSERT INTO rate_limit (id, key, count, last_request)
      VALUES (?, ?, 1, ?)
@@ -16,10 +21,10 @@ export async function consumeSeoLookupSlot(db: D1Database, key: string, limit: n
     crypto.randomUUID(),
     key,
     now,
-    now - 3_600_000,
-    now - 3_600_000,
+    start,
+    start,
     now,
-    now - 3_600_000,
+    start,
     limit,
   ).first<{ count: number }>();
   return slot?.count ?? null;

@@ -80,9 +80,9 @@ Owner-only reports and exports use private, no-store responses. Deleting a termi
 
 ## Closing the improvement loop
 
-Today, an owner can inspect a finding, review/download a technical repair, apply it to the website, start a fresh evaluation, and compare completed reports. Folio does not yet persist a single change record linking those actions, automatically publish repairs, or schedule fresh evaluations.
+Today, an owner can inspect a finding, review/download a technical repair, apply it to the website, start a fresh evaluation, and compare completed reports. Folio does not automatically publish repairs or schedule fresh evaluations.
 
-The next implementation milestone is a saved **baseline → approved change → implementation confirmation → fresh retest → check differences** record. It should retain the original evidence, distinguish changed references/model settings from changed page content, and show failures and unmeasured outcomes. Recurring fresh measurements need explicit opt-in and monetary budgets before activation.
+For search questions, Folio now saves a **baseline → recorded change → reported publication → retest → per-question difference** record. The owner's coding agent records the change over MCP, the owner confirms publication under `/agents`, and a later answer is paired with the baseline only when its settings match. Changed settings, a missing baseline and unfinished retests stay unmeasured with their reason. Publication is reported, not verified, and a difference is not a causal claim. See the [AEO walkthrough](AEO-DEMO.md). Captured-page evaluations (`website-evidence-v1`) are not yet linked to change records. Recurring fresh measurements need explicit opt-in and monetary budgets before activation.
 
 An evaluated company's own API would be a separate task-success suite: a defined task, an approved test endpoint, bounded credentials/actions, expected response assertions, and a recorded result. It is not part of this captured-page suite. The current APIs have distinct jobs: OpenAI executes the review, Folio stores/verifies it, and DataForSEO supplies independently requested SEO observations.
 

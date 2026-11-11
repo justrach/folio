@@ -5,7 +5,7 @@ import { z } from "zod";
 const s = z.string(), n = z.number(), b = z.boolean(), nil = z.null();
 const sn = s.nullable(), nn = n.nullable(), strings = z.array(s);
 const obj = z.strictObject;
-const scope = z.enum(["read", "evaluate", "seo"]);
+const scope = z.enum(["read", "evaluate", "seo", "changes"]);
 const mode = z.enum(["open-web", "reviewed-domains"]);
 const status = z.enum(["queued", "running", "requires_action", "completed", "failed", "cancelled"]);
 export const folioErrorSchema = obj({code:s,message:s,retryDisposition:z.enum(["inspect_saved_state_reuse_same_request_key","wait_then_reuse_same_request_key","correct_request_before_retry"]),requiredScope:scope.nullable()});
@@ -49,14 +49,41 @@ const comparison = obj({state:z.enum(["matched","unmeasured"]),pairs:z.array(obj
 const publicObservation = obj({id:s,queryId:s,observedAt:s,status:z.literal("completed"),model:s,surface:z.literal("openai-managed-agents"),searchMode:z.literal("open-web"),harnessVersion:s,environmentType:s,recommendations:z.array(obj({position:n,name:s,url:sn,reason:s.optional(),citationUrls:strings})),citations:z.array(obj({url:s,title:sn.optional()})),limitations:strings});
 const index = obj({format:z.literal("folio-public-dashboard-v1"),updatedAt:s,summary:obj({queryCount:n,publishedQueryCount:n,publishedObservationCount:n,completedUnpublishedQueryCount:n,collection:obj({notStarted:n,queued:n,running:n,completed:n,failed:n,cancelled:n,unresolved:n}),uniqueRecommendedWebsiteCount:n,uniqueCitedSourceCount:n}),queries:z.array(obj({id:s,audience:s,category:s,query:s,language:s,locale:s,collection:obj({status:z.enum(["not-started","queued","running","completed","failed","cancelled","unresolved"]),startedAt:sn,finishedAt:sn}),resultStatus:z.enum(["published","awaiting-publication","not-published"]),latestObservation:publicObservation.nullable(),observationCount:n})),observations:z.array(publicObservation),htmlCoverage:obj({catalogWebsiteCount:n,measuredHomepageCount:n,unavailableHomepageCount:n,notMeasuredHomepageCount:n,generatedAt:s,suiteVersion:s,scope:s}).nullable().optional()});
 
+const changeAnswer = obj({runId:s,observedAt:s,targetNamed:z.enum(["yes","no","unknown"]),targetCited:b.nullable(),position:nn});
+const change = obj({id:s,website:site,title:s,summary:s,status:z.enum(["proposed","published","withdrawn"]),recordedBy:obj({keyId:sn,keyName:sn}),files:strings,referenceUrl:sn,createdAt:s,updatedAt:s,
+  publication:obj({at:s,reportedBy:z.enum(["agent","owner"]),provenance:s}).nullable(),
+  questions:z.array(obj({caseId:s,query:s,state:z.enum(["awaiting_publication","withdrawn","baseline_unmeasured","baseline_after_publication","awaiting_retest","retest_incomplete","incompatible_retest","retested"]),baseline:changeAnswer.nullable(),retest:changeAnswer.nullable(),
+    movement:z.enum(["newly_named","no_longer_named","newly_cited","no_longer_cited","moved_up","moved_down","unchanged","unknown"]).nullable(),reasons:strings})),
+  outcome:obj({targeted:n,retested:n,improved:n,declined:n,unchanged:n,unknown:n,awaitingRetest:n,unmeasured:n}),nextStep:s,caveat:s});
+
+const indexSource = z.enum(["live-published-data","bundled-snapshot"]);
+const indexStatus = z.enum(["published","awaiting-publication","not-published"]);
+const indexRow = obj({queryId:s,query:s,audience:s,category:s,resultStatus:indexStatus,observedAt:sn,model:sn,recommendations:z.array(obj({position:n,name:s,domain:sn})),recommendationCount:n,page:s,matchedTerms:n});
+const indexPage = {nextCursor:sn,truncated:b,total:n};
+const crawlSite = obj({available:b,reason:sn,domain:s,state:z.enum(["in_index","not_in_index","unknown"]),pagesCrawled:nn,lastFetchedAt:sn,
+  profile:obj({name:sn,profiledDomain:s,category:sn,description:sn,inventoryPages:nn,sampledPages:nn,sections:nn,rankedKeywords:nn,profiledAt:sn}).nullable(),
+  topSections:z.array(obj({path:s,pages:n,share:nn})),note:s});
+
 export const folioSuccessSchemas: Record<string,z.ZodType> = {
+  folio_index_overview:obj({source:indexSource,updatedAt:s,questions:n,publishedQuestions:n,publishedAnswers:n,recommendedWebsites:n,citedSources:n,categories:z.array(obj({audience:s,category:s,questions:n,published:n})),howToAsk:s,caveat:s,crawl:obj({available:b,pages:nn,domains:nn,updatedAt:sn})}),
+  folio_index_pages:obj({available:b,reason:sn,terms:strings,mode:z.enum(["semantic","all_terms","any_term"]),semantic:z.enum(["used","no_results","unavailable","not_configured"]),domain:sn,candidates:n,candidatesCapped:b,
+    items:z.array(obj({pageId:s,url:s,title:sn,domain:sn,section:sn,excerpt:s,fetchedAt:sn,matchedTerms:n,score:nn})),matching:s,caveat:s,recorded:b}),
+  folio_index_search:obj({source:indexSource,terms:strings,items:z.array(indexRow),...indexPage,matching:s,caveat:s,recorded:b}),
+  folio_index_answer:obj({source:indexSource,question:obj({id:s,query:s,audience:s,category:s,language:s,locale:s}),resultStatus:indexStatus,collectionStatus:z.enum(["not-started","queued","running","completed","failed","cancelled","unresolved"]),
+    answer:obj({observationId:s,observedAt:s,model:s,searchMode:s,harnessVersion:s,recommendations:z.array(obj({position:n,name:s,url:sn,domain:sn,reason:sn,citationUrls:strings})),citations:z.array(obj({url:s,title:sn})),limitations:strings}).nullable(),
+    otherObservations:z.array(obj({observationId:s,observedAt:s,model:s})),observationCount:n,page:s,note:s,caveat:s,recorded:b}),
+  folio_index_website:obj({source:indexSource,domain:s,state:z.enum(["named","cited_only","not_in_published_answers"]),publishedQuestions:n,namedIn:n,citedIn:n,averagePosition:nn,bestPosition:nn,
+    categories:z.array(obj({category:s,answers:n})),alsoNamed:z.array(obj({domain:s,answers:n})),
+    answers:obj({items:z.array(obj({queryId:s,query:s,category:s,position:nn,cited:b,observedAt:s,model:s,page:s})),...indexPage}),
+    htmlReadiness:obj({name:s,page:s,status:s,score:nn,capturedAt:s,suiteVersion:s,scope:s}).nullable(),matching:s,caveat:s,crawl:crawlSite.nullable(),recorded:b}),
+  folio_changes:obj({...page,items:z.array(change)}),folio_change_record:obj({change,replayed:b}),folio_change_update:obj({change}),
   folio_keyword_research:obj({id:s,domain:s,status:z.enum(["pending","complete","needs_attention"]),createdAt:s,publication:z.literal("private"),replayed:b,result:providerObservation(obj({seed:s,searchEngine:z.literal("Google"),locationCode:n,languageCode:s,note:s,keywords:z.array(obj({keyword:s,searchVolume:nn,cpcUsd:nn,advertisingCompetition:nn,updatedAt:sn,monthlySearches:z.array(obj({year:n,month:n,searchVolume:nn}))}))})).nullable()}),
   folio_index:index,
   folio_targets:z.discriminatedUnion("kind",[obj({...page,kind:z.literal("website"),items:z.array(site.extend({created_at:n}))}),obj({...page,kind:z.literal("keyword"),items:z.array(obj({id:s,suiteId:s,createdAt:s,query:s,targetUrl:sn,language:s,locale:s,searchMode:mode}))})]),
   folio_run:observation,folio_evaluate:observation,folio_reconcile:observation,folio_observation:savedObservation,
   folio_run_history:obj({...page,items:z.array(run.nullable()),changePolling:sn}),
   folio_observations:obj({items:z.array(z.union([obj({target,result:savedObservation}),obj({target,error:folioErrorSchema})]))}),
-  folio_capabilities:obj({version:s,supportedFeatures:strings,allowedScopes:z.array(scope),tools:z.array(obj({name:s,requiredScope:scope,allowed:b,paid:b,requirements:strings,conditionalScopes:z.array(obj({when:s,requiredScope:scope,allowed:b}))})),observationTargets:obj({website:obj({kind:z.literal("website"),websiteId:s}),keyword:obj({kind:z.literal("keyword"),caseId:s})})}),
+  folio_capabilities:obj({version:s,supportedFeatures:strings,prompts:strings,allowedScopes:z.array(scope),tools:z.array(obj({name:s,requiredScope:scope,allowed:b,paid:b,requirements:strings,conditionalScopes:z.array(obj({when:s,requiredScope:scope,allowed:b}))})),observationTargets:obj({website:obj({kind:z.literal("website"),websiteId:s}),keyword:obj({kind:z.literal("keyword"),caseId:s})})}),
   folio_seo_lookup:seoLookup,folio_sandbox_seo:seoLookup,
   folio_seo_reports:z.union([
     obj({...page,items:z.array(obj({id:s,domain:s,createdAt:s,retrievedAt:sn,detailState:z.enum(["collected","not_collected"]).optional()}))}),

@@ -2,6 +2,7 @@ import "server-only";
 import { isRecordedKeywordOpenWebModel } from "./keyword-models";
 import { createHash } from "node:crypto";
 import { keywordAgentHarnessVersion } from "./keyword-benchmark-agent";
+import { CODEGRAFF_KEYWORD_ENVIRONMENT, codegraffKeywordHarnessVersion } from "./codegraff-keyword-agent";
 import { keywordSearchMode, type KeywordBenchmarkAnswer, type KeywordBenchmarkRun } from "./keyword-benchmark-types";
 import { validateKeywordBenchmarkAnswer } from "./keyword-benchmark-store";
 import { validateKeywordCollectionEvidence } from "./keyword-search-mode";
@@ -25,8 +26,9 @@ function publicAnswerFields(answer: KeywordBenchmarkAnswer) {
 function projectObservation(run: KeywordBenchmarkRun, query: PublicSearchQuery, privateIdentifiers: string[], website: boolean): PublicSearchObservation {
   if (run.status !== "completed" || !run.answer || !run.sessionId || !run.answer.collection || !sameQuery(run, query)
     || (!website && (run.case.targetUrl !== null || (run.case.referenceFacts?.length ?? 0) > 0)) || keywordSearchMode(run.case.searchMode) !== "open-web"
-    || !isRecordedKeywordOpenWebModel(run.model) || run.environmentType !== "openai_hosted" || run.allowedDomains.length
-    || run.harnessVersion !== keywordAgentHarnessVersion("open-web"))
+    || !isRecordedKeywordOpenWebModel(run.model) || run.allowedDomains.length
+    || !((run.environmentType === "openai_hosted" && run.harnessVersion === keywordAgentHarnessVersion("open-web"))
+      || (run.environmentType === CODEGRAFF_KEYWORD_ENVIRONMENT && run.harnessVersion === codegraffKeywordHarnessVersion("open-web"))))
     throw new PublicCollectionUsageError(website
       ? "Publication requires a completed supported-model open-web collection for this exact question and the standard target-withheld harness."
       : "Export requires a completed supported-model open-web collection for this exact public query, without private targets or reference facts.");

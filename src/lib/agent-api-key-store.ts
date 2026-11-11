@@ -1,6 +1,6 @@
 import "server-only";
 import type { D1Database } from "@cloudflare/workers-types";
-import type { AgentApiKeySummary, AgentApiPrincipal, AgentApiScope } from "./agent-observation-types";
+import { AGENT_API_SCOPES, type AgentApiKeySummary, type AgentApiPrincipal, type AgentApiScope } from "./agent-observation-types";
 export type { AgentApiKeySummary, AgentApiPrincipal, AgentApiScope } from "./agent-observation-types";
 
 export class AgentApiError extends Error {
@@ -26,8 +26,8 @@ export async function createAgentApiKey(db: D1Database, ownerId: string,
   input: { name: string; scopes: AgentApiScope[]; expiresInDays?: number }, options: { now?: Date } = {}) {
   owner(ownerId);
   if (typeof input.name !== "string" || !input.name.trim() || input.name.length > 100 || /[\u0000-\u001f]/.test(input.name)) throw new AgentApiError("Use a key name of 1–100 characters.");
-  if (!Array.isArray(input.scopes) || !input.scopes.includes("read") || input.scopes.length > 3 || new Set(input.scopes).size !== input.scopes.length || input.scopes.some(scope => !["read", "evaluate", "seo"].includes(scope)))
-    throw new AgentApiError("Choose read access, optionally with evaluation or paid SEO permission.");
+  if (!Array.isArray(input.scopes) || !input.scopes.includes("read") || input.scopes.length > AGENT_API_SCOPES.length || new Set(input.scopes).size !== input.scopes.length || input.scopes.some(scope => !AGENT_API_SCOPES.includes(scope)))
+    throw new AgentApiError("Choose read access, optionally with evaluation, paid SEO or change-recording permission.");
   const days = input.expiresInDays ?? 30;
   if (!Number.isInteger(days) || days < 1 || days > 90) throw new AgentApiError("Keys must expire in 1–90 days.");
   const now = timestamp(options.now), id = crypto.randomUUID();

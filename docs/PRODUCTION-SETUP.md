@@ -95,3 +95,16 @@ wrangler secret put TURBOPUFFER_API_KEY --config wrangler.jsonc              # f
 wrangler secret put TURBOPUFFER_API_KEY --config wrangler.production.jsonc   # folio-visibility
 ```
 
+The MCP tool `folio_index_pages` embeds each question through the Codegraff gateway
+(`gemini-embedding-2`) and queries turbopuffer itself, so the app worker needs the gateway
+key as well as `TURBOPUFFER_API_KEY`. Without both it uses the index service when `INDEX_API_KEY`
+is set, and otherwise a word match, and says which. Not yet set or verified on the deployed worker:
+
+```sh
+wrangler secret put CODEGRAFF_API_KEY --config wrangler.production.jsonc     # folio-visibility
+```
+
+The same secret switches keyword runs to Folio's own Codegraff agent ([Codegraff agent](CODEGRAFF-AGENT.md)).
+That key is copied into each short-lived run sandbox, so use a dedicated key with a monthly budget.
+To fall back to OpenAI without removing the key, set the plain variable `KEYWORD_AGENT_PROVIDER=openai`.
+

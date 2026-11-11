@@ -1,7 +1,9 @@
 import type { KeywordBenchmarkAnswer, KeywordBenchmarkUsage } from "./keyword-benchmark-types";
 import type { EvaluationRun } from "./evals";
 
-export type AgentApiScope = "read" | "evaluate" | "seo";
+/** `changes` records owner-visible website changes; it never spends or edits the website. */
+export type AgentApiScope = "read" | "evaluate" | "seo" | "changes";
+export const AGENT_API_SCOPES: readonly AgentApiScope[] = ["read", "evaluate", "seo", "changes"];
 export type AgentApiPrincipal = { ownerId: string; keyId: string; scopes: AgentApiScope[] };
 export type AgentApiKeySummary = {
   id: string; name: string; prefix: string; scopes: AgentApiScope[];

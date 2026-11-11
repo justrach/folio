@@ -87,6 +87,8 @@ import { XStandingPanel } from "./x-standing";
 import { PublicBenchmarkDashboard } from "./public-benchmark-dashboard";
 import "./public-overview-shell.css";
 import { KeywordActivitySummary } from "./keyword-activity-summary";
+import { WebsiteChangesPanel } from "./website-changes-panel";
+import { IndexAsksPanel } from "./index-asks-panel";
 import "./evaluation-page-shell.css";
 import { KeywordBenchmarksPanel } from "./keyword-benchmarks-panel";
 import { DeveloperToolsIndex } from "./developer-tools-index";
@@ -1033,7 +1035,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
                 />
               )}
               {section === "analytics" && <ProductAnalyticsPanel key={ownerId??"signed-out"} ownerId={ownerId}/>}
-              {section === "agents" && <><KeywordActivitySummary /><AgentRunsPanel /></>}
+              {section === "agents" && <><WebsiteChangesPanel /><IndexAsksPanel /><KeywordActivitySummary /><AgentRunsPanel /></>}
               {section === "evaluations" && (
                 <EvaluationsPanel initialTargetUrl={actual?.url} />
               )}

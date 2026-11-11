@@ -15,6 +15,16 @@ import { acknowledgeKeywordBenchmarkCancellation, createKeywordBenchmarkSuite, g
 import { isKeywordBenchmarkId, keywordSearchMode, type KeywordBenchmarkCaseInput, type KeywordBenchmarkRun } from "./keyword-benchmark-types";
 
 import { KEYWORD_OPEN_WEB_MODELS, isKeywordOpenWebModel } from "./keyword-models";
+import { cancelCodegraffKeywordSession, CODEGRAFF_KEYWORD_ENVIRONMENT, CODEGRAFF_KEYWORD_MODELS, codegraffKeywordConfigured, codegraffKeywordFingerprint,
+  codegraffKeywordHarnessVersion, createCodegraffKeywordSession, isCodegraffKeywordSession, reconcileCodegraffKeywordSession } from "./codegraff-keyword-agent";
+import { stopCodegraffAgent } from "./codegraff-agent";
+
+/** Folio's own Codegraff agent is the default keyword provider. OpenAI remains for Folio MCP tool runs,
+ * models the gateway does not serve, KEYWORD_AGENT_PROVIDER=openai, or a missing Codegraff key. */
+export function keywordProvider(env: AgentsEnvironment, model: string, tools: { seo?: boolean; typesafe?: boolean } = {}): "codegraff" | "openai" {
+  return env.KEYWORD_AGENT_PROVIDER?.trim() !== "openai" && codegraffKeywordConfigured(env) && !tools.seo && !tools.typesafe
+    && CODEGRAFF_KEYWORD_MODELS.includes(model) ? "codegraff" : "openai";
+}
 
 export const KEYWORD_BENCHMARK_LIMITS = { maxRunsPerDay: 6, maxActiveRuns: 1 } as const;
 export type KeywordBenchmarkServiceOptions = KeywordAgentOptions & { useSeoTools?: boolean; useTypesafeTools?: boolean; now?: Date; allowedDomains?: string[];
@@ -27,7 +37,8 @@ export class KeywordBenchmarkPersistenceError extends Error {
   }
 }
 export function keywordBenchmarkAccess(env: AgentsEnvironment, ownerId: string) {
-  const connection = getAgentsConnectionStatus(env);
+  const openai = getAgentsConnectionStatus(env);
+  const connection = { ...openai, configured: openai.configured || codegraffKeywordConfigured(env) };
   const authorized = Boolean(ownerId) && (env.OPENAI_ALLOWED_USER_IDS ?? "").split(",").map(value => value.trim()).filter(Boolean).includes(ownerId);
   const maxActiveRuns = authorized && (env.OPENAI_PARALLEL_USER_IDS ?? "").split(",").map(value => value.trim()).includes(ownerId) ? 3 : 1;
   return { configured: connection.configured, authorized, canRun: connection.configured && authorized, model: connection.model, openWebModels: KEYWORD_OPEN_WEB_MODELS,
@@ -98,7 +109,11 @@ export async function keywordBenchmarkExecutionConfig(trial: KeywordBenchmarkCas
   }
   if (options.useTypesafeTools && searchMode !== "open-web") throw new KeywordBenchmarkStoreError("TypeSafe tools require an open-web question.",400);
   const allowedDomains = searchMode === "open-web" ? [] : keywordAllowedDomains(options.allowedDomains ?? [...KEYWORD_BENCHMARK_ALLOWED_DOMAINS]);
-  return { searchMode, allowedDomains, model: searchMode === "open-web" ? selectedModel ?? KEYWORD_OPEN_WEB_MODEL : getAgentsConnectionStatus(env).model, harnessVersion: keywordAgentHarnessVersion(searchMode, options.useSeoTools, options.useTypesafeTools),
+  const model = searchMode === "open-web" ? selectedModel ?? KEYWORD_OPEN_WEB_MODEL : getAgentsConnectionStatus(env).model;
+  if (keywordProvider(env, model, { seo: options.useSeoTools, typesafe: options.useTypesafeTools }) === "codegraff")
+    return { searchMode, allowedDomains, model, harnessVersion: codegraffKeywordHarnessVersion(searchMode), environmentType: CODEGRAFF_KEYWORD_ENVIRONMENT,
+      environmentFingerprint: await codegraffKeywordFingerprint(allowedDomains, searchMode), deadlineMs: KEYWORD_AGENT_DEADLINE_MS };
+  return { searchMode, allowedDomains, model, harnessVersion: keywordAgentHarnessVersion(searchMode, options.useSeoTools, options.useTypesafeTools),
     environmentType: "openai_hosted", environmentFingerprint: options.useTypesafeTools ? await agentApiHash((await keywordEnvironmentFingerprint(allowedDomains, searchMode)) + (options.useSeoTools ? ":sandbox-seo-v2" : "") + ":typesafe-tool-v1") : options.useSeoTools ? await agentApiHash((await keywordEnvironmentFingerprint(allowedDomains, searchMode)) + ":sandbox-seo-v2") : await keywordEnvironmentFingerprint(allowedDomains, searchMode), deadlineMs: KEYWORD_AGENT_DEADLINE_MS };
 }
 /** Paid start: validate before reserving, then commit the one-attempt marker before one provider POST. */
@@ -114,6 +129,8 @@ export async function startKeywordBenchmark(db: D1Database, ownerId: string,
   if (options.useTypesafeTools) typesafeToolUrl(env, ownerId);
   if (options.useSeoTools) sandboxSeoUrl(env, ownerId, trial.targetUrl);
   const config = await keywordBenchmarkExecutionConfig(trial, env, options, input.model);
+  if (config.environmentType !== CODEGRAFF_KEYWORD_ENVIRONMENT && !getAgentsConnectionStatus(env).configured)
+    throw new KeywordBenchmarkStoreError("These run settings need the OpenAI provider, which is not configured.", 503);
   const providerInput = { runId: "preflight", caseId: trial.id, query: trial.query, language: trial.language, locale: trial.locale,
     model: config.model, allowedDomains: config.allowedDomains, searchMode: config.searchMode };
   buildKeywordBenchmarkRequest(providerInput);
@@ -134,7 +151,8 @@ export async function startKeywordBenchmark(db: D1Database, ownerId: string,
   catch { return updateKeywordBenchmarkRun(db, ownerId, run.id, run.revision, { status: "failed", error: "The benchmark case is not valid for this evaluator." }); }
   run = await markKeywordBenchmarkCreateAttempt(db, ownerId, run.id, run.revision);
   try {
-    const receipt = await createKeywordBenchmarkSession(frozenInput, env, options);
+    const receipt = config.environmentType === CODEGRAFF_KEYWORD_ENVIRONMENT
+      ? await createCodegraffKeywordSession(frozenInput, env, options) : await createKeywordBenchmarkSession(frozenInput, env, options);
     return persistReceipt(db, ownerId, run, { sessionId: receipt.sessionId, providerMetadata: receipt.providerMetadata, usage: receipt.usage,
       status: receipt.status === "failed" ? "failed" : receipt.status === "requires_action" ? "requires_action" : "running",
       error: receipt.status === "failed" ? "The provider session failed." : receipt.status === "requires_action" ? "The provider session requires attention." : null });
@@ -161,7 +179,8 @@ export async function cancelKeywordBenchmark(db: D1Database, ownerId: string, id
   try { run = await reserveKeywordBenchmarkCancellation(db, ownerId, run.id, run.revision); }
   catch (error) { if (error instanceof KeywordBenchmarkStoreError) return ownedRun(db, ownerId, id); throw error; }
   try {
-    await cancelKeywordBenchmarkSession(run.sessionId!, env, options);
+    if (isCodegraffKeywordSession(run.sessionId)) await cancelCodegraffKeywordSession(run.sessionId, env, options);
+    else await cancelKeywordBenchmarkSession(run.sessionId!, env, options);
     try { return await acknowledgeKeywordBenchmarkCancellation(db, ownerId, run.id, run.revision); }
     catch { return ownedRun(db, ownerId, id); }
   } catch {
@@ -175,6 +194,9 @@ export async function reconcileKeywordBenchmark(db: D1Database, ownerId: string,
   let run = await ownedRun(db, ownerId, id);
   let initialInputUnconfirmed = false;
   if (!run.sessionId) return run;
+  const codegraff = isCodegraffKeywordSession(run.sessionId);
+  // A finished Codegraff sandbox is destroyed once its outcome is saved; nothing later remains to retrieve.
+  if (codegraff && terminal(run)) return run;
   if (terminal(run)) {
     try {
       const observed = await reconcileKeywordBenchmarkSession(run.sessionId, env, { ...options, expectedAllowedDomains: run.allowedDomains, expectedSearchMode: keywordSearchMode(run.case.searchMode) });
@@ -182,7 +204,9 @@ export async function reconcileKeywordBenchmark(db: D1Database, ownerId: string,
     } catch { return ownedRun(db,ownerId,id); }
   }
   try {
-    const observation = await reconcileKeywordBenchmarkSession(run.sessionId!, env, { ...options, expectedAllowedDomains: run.allowedDomains, expectedSearchMode: keywordSearchMode(run.case.searchMode) });
+    const observation = codegraff
+      ? await reconcileCodegraffKeywordSession(run.sessionId, env, { ...options, expectedAllowedDomains: run.allowedDomains, expectedSearchMode: keywordSearchMode(run.case.searchMode), cancelRequested: Boolean(run.cancelAttemptAt) })
+      : await reconcileKeywordBenchmarkSession(run.sessionId!, env, { ...options, expectedAllowedDomains: run.allowedDomains, expectedSearchMode: keywordSearchMode(run.case.searchMode) });
     initialInputUnconfirmed = Boolean(observation.initialInputUnconfirmed);
     const pendingCancel = run.cancelAttemptAt && ["queued", "running", "requires_action"].includes(observation.status);
     run = await updateKeywordBenchmarkRun(db, ownerId, run.id, run.revision, {
@@ -202,6 +226,8 @@ export async function reconcileKeywordBenchmark(db: D1Database, ownerId: string,
       catch { run = await ownedRun(db, ownerId, id); }
     }
   }
+  // Saved terminal outcome first, then end sandbox billing. A failed destroy leaves the VM to its auto-stop.
+  if (codegraff && terminal(run)) await stopCodegraffAgent(run.sessionId!, env, options).catch(() => undefined);
   // A saved deadline cannot tell us whether remote work already finished. Retrieve first.
   if (!initialInputUnconfirmed && !terminal(run) && run.deadlineAt && (options.now ?? new Date()).getTime() >= Date.parse(run.deadlineAt) && !run.cancelAttemptAt)
     return cancelKeywordBenchmark(db, ownerId, id, env, options);

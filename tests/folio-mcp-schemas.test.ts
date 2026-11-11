@@ -11,7 +11,7 @@ import { evaluateHtml } from "../src/lib/evaluation";
 import { fetchSeoOverview } from "../src/lib/dataforseo";
 
 const at="2026-09-13T00:00:00.000Z";
-const context={db:{},principal:{keyId:"fixture",ownerId:"alice",scopes:["read","evaluate","seo"]},env:{}} as FolioToolContext;
+const context={db:{},principal:{keyId:"fixture",ownerId:"alice",scopes:["read","evaluate","seo","changes"]},env:{}} as FolioToolContext;
 const page={nextCursor:null,truncated:false,ordering:"created_at DESC, id DESC"};
 const keywordRun={id:"run",kind:"keyword",status:"completed",model:"fixture",surface:"openai-managed-agents",createdAt:at,updatedAt:at,observedAt:at,result:{text:"Illustrative answer",mentions:[{name:"Cline",url:"https://github.com/cline/cline",citationUrls:["https://cline.bot/"]}],citations:[{url:"https://cline.bot/",title:"Cline"}]},usage:{inputTokens:null,outputTokens:null,totalTokens:null,costUsd:null},error:null,pollUrl:"/api/v1/runs/keyword/run",recovery:null,provenance:{searchMode:"open-web",harnessVersion:"fixture-v1",environmentFingerprint:"fixture",environmentType:"hosted",allowedDomains:[],completedSearchCount:1}};
 const observation={disposition:"saved",freshness:{maxAgeSeconds:86400,observedAt:at,ageSeconds:10,fresh:true},run:keywordRun};
@@ -20,7 +20,13 @@ const pendingReport={id:"seo",domain:"example.com",createdAt:at,retrievedAt:null
 const error={code:"not_found",message:"Missing saved target",retryDisposition:"correct_request_before_retry",requiredScope:null};
 const rawRun:Parameters<typeof compareVisibility>[0][number]={kind:"baseline",baselineRunId:null,publication:"private",sessionId:null,createAttemptAt:null,deadlineAt:null,cancelAttemptAt:null,cancelAcknowledgedAt:null,updatedAt:at,revision:0,usage:keywordRun.usage,providerMetadata:{environmentId:null,requestId:null,turnId:null},error:null,id:"run",caseId:"case",suiteId:"suite",case:{query:"Which tool?",targetUrl:"https://example.com",language:"en",locale:"en-US",rubricVersion:"v1",searchMode:"open-web" as const},status:"completed" as const,model:"fixture",harnessVersion:"fixture-v1",environmentFingerprint:"fixture",environmentType:"hosted",surface:"openai-managed-agents" as const,allowedDomains:[],createdAt:at,answer:keywordRun.result};
 const report=visibilityReport([rawRun]);
+const changeAnswer={runId:"run",observedAt:at,targetNamed:"no",targetCited:false,position:null};
+const change={id:"change",website:{id:"site",name:"Example",url:"https://example.com"},title:"Answer the pricing question",summary:"Illustrative summary",status:"published",recordedBy:{keyId:"fixture",keyName:null},files:["content/pricing.md"],referenceUrl:null,createdAt:at,updatedAt:at,
+  publication:{at,reportedBy:"owner",provenance:"Reported by the caller"},
+  questions:[{caseId:"case",query:"Which tool?",state:"retested",baseline:changeAnswer,retest:{...changeAnswer,runId:"later",targetNamed:"yes",position:2},movement:"newly_named",reasons:[]},{caseId:"other",query:"Which plan?",state:"baseline_unmeasured",baseline:null,retest:null,movement:null,reasons:["No completed answer"]}],
+  outcome:{targeted:2,retested:1,improved:1,declined:0,unchanged:0,unknown:0,awaitingRetest:0,unmeasured:1},nextStep:"Report the differences",caveat:"Observations only"};
 const fixtures:Record<string,unknown>={
+  folio_changes:{...page,items:[change]},folio_change_record:{change:{...change,status:"proposed",publication:null},replayed:false},folio_change_update:{change},
   folio_targets:{...page,kind:"keyword",items:[{id:"case",suiteId:"suite",createdAt:at,query:"Which tool?",targetUrl:null,language:"en",locale:"en-US",searchMode:"open-web"}]},
   folio_observation:saved,folio_run:observation,folio_evaluate:observation,folio_reconcile:observation,
   folio_run_history:{...page,items:[keywordRun],changePolling:null},
@@ -32,7 +38,7 @@ const fixtures:Record<string,unknown>={
   folio_visibility:{website:{id:"site",name:"Example",url:"https://example.com"},platform:"openai",surface:"openai-managed-agents",searchMode:"open-web",dateRange:{startDate:null,endDate:null,timeZone:"UTC"},coverage:{attemptsLoaded:1,limit:100,truncated:false,nextCursor:null,unresolvedAttempts:0},methodology:"Saved answer",...report,daily:[{date:"2026-09-13",...report.current}],platforms:[{platform:"openai",models:["fixture"],...report.current}]},
   folio_visibility_compare:{...compareVisibility([rawRun],[{...rawRun,id:"later"}]),coverage:{baseline:{nextCursor:null,truncated:false},comparison:{nextCursor:null,truncated:false},scope:"Current pages"}},
 };
-const args:Record<string,Record<string,unknown>>={folio_keyword_research:{domain:"example.com",seed:"website checker",requestKey:"fixture-key",confirmSpend:true},folio_targets:{kind:"keyword"},folio_observation:{kind:"keyword",caseId:"case"},folio_run:{kind:"keyword",runId:"run"},folio_evaluate:{kind:"keyword",caseId:"case",requestKey:"fixture-key",confirmSpend:true},folio_reconcile:{kind:"keyword",runId:"run"},folio_run_history:{kind:"keyword"},folio_observations:{targets:[{kind:"keyword",caseId:"case"}]},folio_seo_lookup:{domain:"example.com",requestKey:"fixture-key",confirmSpend:true},folio_page_evidence:{websiteId:"site"},folio_visibility:{websiteId:"site"},folio_visibility_compare:{websiteId:"site",baselineStart:"2026-09-01T00:00:00Z",baselineEnd:"2026-09-05T00:00:00Z",comparisonStart:"2026-09-06T00:00:00Z",comparisonEnd:"2026-09-14T00:00:00Z"}};
+const args:Record<string,Record<string,unknown>>={folio_index_pages:{q:"cron jobs",limit:3},folio_index_search:{q:"project tools",limit:3},folio_index_website:{domain:"notion.com",limit:3},folio_change_record:{websiteId:"site",title:"Answer the pricing question",summary:"Illustrative summary",caseIds:["case"],requestKey:"fixture-key"},folio_change_update:{changeId:"change",status:"published"},folio_keyword_research:{domain:"example.com",seed:"website checker",requestKey:"fixture-key",confirmSpend:true},folio_targets:{kind:"keyword"},folio_observation:{kind:"keyword",caseId:"case"},folio_run:{kind:"keyword",runId:"run"},folio_evaluate:{kind:"keyword",caseId:"case",requestKey:"fixture-key",confirmSpend:true},folio_reconcile:{kind:"keyword",runId:"run"},folio_run_history:{kind:"keyword"},folio_observations:{targets:[{kind:"keyword",caseId:"case"}]},folio_seo_lookup:{domain:"example.com",requestKey:"fixture-key",confirmSpend:true},folio_page_evidence:{websiteId:"site"},folio_visibility:{websiteId:"site"},folio_visibility_compare:{websiteId:"site",baselineStart:"2026-09-01T00:00:00Z",baselineEnd:"2026-09-05T00:00:00Z",comparisonStart:"2026-09-06T00:00:00Z",comparisonEnd:"2026-09-14T00:00:00Z"}};
 
 async function clientFor(execute:typeof invokeFolioTool, sandbox=false){
   const client=new Client({name:"all-output-fixtures",version:"1"});
@@ -43,6 +49,19 @@ async function clientFor(execute:typeof invokeFolioTool, sandbox=false){
 test("every advertised per-tool success passes the SDK round trip without dropping nested evidence",async()=>{
   fixtures.folio_index=await invokeFolioTool("folio_index",{},context);
   fixtures.folio_capabilities=await invokeFolioTool("folio_capabilities",{},context);
+  // Real published answers from the bundled artifacts; the fixture database has no tables, so nothing is recorded.
+  fixtures.folio_index_overview=await invokeFolioTool("folio_index_overview",{},context);
+  const found=await invokeFolioTool("folio_index_search",args.folio_index_search,context) as {items:{queryId:string}[];recorded:boolean};
+  assert.ok(found.items.length>0);assert.equal(found.recorded,false);
+  fixtures.folio_index_search=found;
+  args.folio_index_answer={queryId:found.items[0].queryId};
+  fixtures.folio_index_answer=await invokeFolioTool("folio_index_answer",args.folio_index_answer,context);
+  fixtures.folio_index_website=await invokeFolioTool("folio_index_website",args.folio_index_website,context);
+  // The fixture database has no crawl tables: the crawled index reports itself unavailable instead of failing the read.
+  const pages=await invokeFolioTool("folio_index_pages",args.folio_index_pages,context) as {available:boolean;items:unknown[];recorded:boolean};
+  assert.deepEqual([pages.available,pages.items.length,pages.recorded],[false,0,false]);
+  fixtures.folio_index_pages=pages;
+  assert.equal((fixtures.folio_index_website as {crawl:{available:boolean}}).crawl.available,false);
   for(const sandbox of [false,true]){
     const client=await clientFor(async name=>fixtures[name],sandbox);
     try{

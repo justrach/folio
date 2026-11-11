@@ -1,5 +1,5 @@
 import { AgentApiError } from "./agent-api-key-store";
-import type { AgentObservationInput, AgentObservationKind, AgentApiScope } from "./agent-observation-types";
+import { AGENT_API_SCOPES, type AgentObservationInput, type AgentObservationKind, type AgentApiScope } from "./agent-observation-types";
 
 export function onlyFields(input: Record<string, unknown>, allowed: string[]) {
   if (Object.keys(input).some(key => !allowed.includes(key)))
@@ -46,7 +46,7 @@ export function parseAgentQuery(url: string): Record<string, unknown> {
 }
 export function parseAgentKeyInput(input: Record<string, unknown>): { name: string; scopes: AgentApiScope[]; expiresInDays?: number } {
   onlyFields(input, ["name", "scopes", "expiresInDays"]);
-  if (typeof input.name !== "string" || !Array.isArray(input.scopes) || input.scopes.some(scope => scope !== "read" && scope !== "evaluate" && scope !== "seo") ||
-    (input.expiresInDays !== undefined && typeof input.expiresInDays !== "number")) throw new AgentApiError("Use a name, read/evaluate/seo scopes, and an optional key lifetime.");
+  if (typeof input.name !== "string" || !Array.isArray(input.scopes) || input.scopes.some(scope => !AGENT_API_SCOPES.includes(scope)) ||
+    (input.expiresInDays !== undefined && typeof input.expiresInDays !== "number")) throw new AgentApiError("Use a name, read/evaluate/seo/changes scopes, and an optional key lifetime.");
   return { name: input.name, scopes: input.scopes as AgentApiScope[], ...(input.expiresInDays === undefined ? {} : { expiresInDays: input.expiresInDays as number }) };
 }

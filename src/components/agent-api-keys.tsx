@@ -20,6 +20,7 @@ function OwnerApiKeys({account}:{account:string}) {
   const [name, setName] = useState("");
   const [canEvaluate, setCanEvaluate] = useState(false);
   const [canSeo, setCanSeo] = useState(false);
+  const [canRecord, setCanRecord] = useState(false);
   const [days, setDays] = useState(30);
   const [token, setToken] = useState<string | null>(null);
   const [error, setError] = useState("");
@@ -58,9 +59,9 @@ function OwnerApiKeys({account}:{account:string}) {
   async function create() {
     setBusy("create"); setError(""); setNotice(""); setToken(null);
     try {
-      const body = await request<{ key: AgentApiKeySummary; token: string }>("/api/agent-keys", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, scopes: ["read", ...(canEvaluate ? ["evaluate"] : []), ...(canSeo ? ["seo"] : [])], expiresInDays: days }) });
+      const body = await request<{ key: AgentApiKeySummary; token: string }>("/api/agent-keys", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, scopes: ["read", ...(canEvaluate ? ["evaluate"] : []), ...(canSeo ? ["seo"] : []), ...(canRecord ? ["changes"] : [])], expiresInDays: days }) });
       if (!body || !mounted.current) return;
-      setKeys(current => [body.key, ...current]); setToken(body.token); setName(""); setCanEvaluate(false); setCanSeo(false);
+      setKeys(current => [body.key, ...current]); setToken(body.token); setName(""); setCanEvaluate(false); setCanSeo(false); setCanRecord(false);
     } catch (failure) { if (mounted.current) setError("Key creation could not be confirmed. Reload the key list before trying again."); }
     finally { if (mounted.current) setBusy(""); }
   }
@@ -81,6 +82,7 @@ function OwnerApiKeys({account}:{account:string}) {
       <div className="api-key-fields"><label>Key name<input value={name} maxLength={100} required onChange={event => setName(event.target.value)} placeholder="My research agent" disabled={Boolean(busy)} /></label><label>Expires after<UiSelect value={days} onChange={event => setDays(Number(event.target.value))} disabled={Boolean(busy)}><option value={7}>7 days</option><option value={30}>30 days</option><option value={90}>90 days</option></UiSelect></label></div>
       <label className="api-key-permission"><input type="checkbox" checked={canEvaluate} disabled={Boolean(busy)} onChange={event => setCanEvaluate(event.target.checked)} /><span>Allow this key to start evaluations<small>Can incur usage charges. Your account’s website access, run limits, and active-task limits still apply.</small></span></label>
       <label className="api-key-permission"><input type="checkbox" checked={canSeo} disabled={Boolean(busy)} onChange={event => setCanSeo(event.target.checked)} /><span>Allow paid SEO lookups<small>DataForSEO charges apply. Up to 20 lookups per hour; repeated requests with the same idempotency key reuse the saved report.</small></span></label>
+      <label className="api-key-permission"><input type="checkbox" checked={canRecord} disabled={Boolean(busy)} onChange={event => setCanRecord(event.target.checked)} /><span>Allow this key to record website changes<small>Your agent can save what it changed and report when it is live, so you can compare answers before and after. No charges. It cannot edit or publish your website.</small></span></label>
       <button className="button primary" disabled={Boolean(busy) || !name.trim()}>{busy === "create" ? <Loader2 size={15} className="eval-spin" /> : <KeyRound size={15} />}Create API key</button><p className="api-small">Read access is always included. Keys expire and can be revoked here.</p>
     </form>
     {error && <p role="alert" className="api-error">{error}</p>}{notice && <p role="status">{notice}</p>}

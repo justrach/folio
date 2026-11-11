@@ -34,16 +34,21 @@ export async function agentApiContext(request: Request, scope: AgentApiScope = "
     OPENAI_UNMETERED_USER_IDS: values.OPENAI_UNMETERED_USER_IDS || process.env.OPENAI_UNMETERED_USER_IDS,
     OPENAI_PARALLEL_USER_IDS: values.OPENAI_PARALLEL_USER_IDS || process.env.OPENAI_PARALLEL_USER_IDS,
     SCAN_ALLOWED_HOSTS: values.SCAN_ALLOWED_HOSTS || process.env.SCAN_ALLOWED_HOSTS,
+    CODEGRAFF_API_KEY: values.CODEGRAFF_API_KEY || process.env.CODEGRAFF_API_KEY,
+    KEYWORD_AGENT_PROVIDER: values.KEYWORD_AGENT_PROVIDER || process.env.KEYWORD_AGENT_PROVIDER,
+    TURBOPUFFER_API_KEY: values.TURBOPUFFER_API_KEY || process.env.TURBOPUFFER_API_KEY,
+    INDEX_API_KEY: values.INDEX_API_KEY || process.env.INDEX_API_KEY,
+    FOLIO_INDEX_URL: values.FOLIO_INDEX_URL || process.env.FOLIO_INDEX_URL,
   } satisfies AgentRunEnvironment };
 }
 
-/** Creating and revoking keys requires the browser owner and configured origin. */
-export async function agentKeyContext(request: Request, mutation = false) {
+/** Owner-only browser actions (keys, recorded changes) require the session and, for writes, the configured origin. */
+export async function agentKeyContext(request: Request, mutation = false, purpose = "manage your Folio API keys") {
   const auth = await getAuth();
   const session = await getSession(request.headers);
-  if (!session) throw new AgentApiError("Sign in to manage your Folio API keys.", 401, "unauthorized");
+  if (!session) throw new AgentApiError(`Sign in to ${purpose}.`, 401, "unauthorized");
   if (mutation && !isTrustedWriteOrigin(request, auth.options.baseURL))
-    throw new AgentApiError("Manage keys from this Folio workspace.", 403, "invalid_origin");
+    throw new AgentApiError("Make this change from this Folio workspace.", 403, "invalid_origin");
   return { ownerId: session.user.id, db: await getDb() };
 }
 

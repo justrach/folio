@@ -20,7 +20,9 @@ import { getOwnedSeoReport } from "./seo-store";
 import { pendingSavedSeoAction } from "./managed-seo-tool";
 import { assertAllowedUrl, boundedFetch, configuredScanHosts, normalizeScanUrl, ScanError } from "./scanner";
 
-export type AgentRunEnvironment = AgentsEnvironment & { SCAN_ALLOWED_HOSTS?: string; TYPESAFE_API_KEY?: string; TYPESAFE_ALLOWED_USER_IDS?: string };
+export type AgentRunEnvironment = AgentsEnvironment & { SCAN_ALLOWED_HOSTS?: string; TYPESAFE_API_KEY?: string; TYPESAFE_ALLOWED_USER_IDS?: string;
+  /** Semantic page search: the embedding gateway and vector store, or the index service. Server-only; never returned to callers. */
+  CODEGRAFF_API_KEY?: string; TURBOPUFFER_API_KEY?: string; INDEX_API_KEY?: string; FOLIO_INDEX_URL?: string };
 
 export function managedRunAccess(env: AgentRunEnvironment, ownerId: string) {
   const connection = getAgentsConnectionStatus(env);

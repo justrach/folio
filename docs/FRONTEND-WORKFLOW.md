@@ -200,7 +200,11 @@ The target is required. **Optional reference answers** accepts a product name an
 
 ## Follow the session and inspect its returns
 
-`/agents` presents saved sessions with **Queued**, **Running**, **Needs attention**, **Completed**, **Failed**, or **Cancelled** status. Selecting a row reads that run's activity. **Refresh returns** reconciles existing provider state, **Cancel run** requests cancellation, and **Open evaluation** leads to the detailed report.
+`/agents` opens with **Changes from your agent**: website changes a connected coding agent recorded over MCP, each with its targeted questions and the answer saved before the change. **Confirm it's live** saves the owner's statement that the change is published; **Withdraw** retires the record. Neither starts an evaluation. After new answers are saved for those questions, each row shows the answer before and after, or the reason the two cannot be compared. **Open its questions** leads to `/benchmarks` for that website without starting a run. See the [AEO walkthrough](AEO-DEMO.md).
+
+**What your agents asked** lists the searches, answer reads and website lookups that agents made against the published index with one of the owner's keys: a one-line summary, the key name, the time, and a link to the published answer when the ask was about one question. It reads saved rows only. Agents on the no-key endpoint do not appear.
+
+Below it, `/agents` presents saved sessions with **Queued**, **Running**, **Needs attention**, **Completed**, **Failed**, or **Cancelled** status. Selecting a row reads that run's activity. **Refresh returns** reconciles existing provider state, **Cancel run** requests cancellation, and **Open evaluation** leads to the detailed report.
 
 While the workspace is visible, queued/running sessions are reconciled approximately every ten seconds. OpenAI performs the task remotely; the browser does not execute the agent. Needs-attention runs require an explicit refresh or action in the UI. The activity dock links back to the relevant session. The separately configured scheduler can retrieve existing sessions; it does not create new evaluations or approve tool results.
 

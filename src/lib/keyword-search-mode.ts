@@ -20,7 +20,9 @@ export function validateKeywordCollectionEvidence(value: unknown): KeywordCollec
     !value.searchItems.some(item => item.status === "completed") ||
     new Set(value.searchItems.map(item => item.id)).size !== value.searchItems.length) return invalid();
   const command = value.validationItem;
-  if (["id", "type", "turn_id", "status", "exit_code", "output"].some(key => !Object.hasOwn(command, key)) || !isKeywordBenchmarkId(command.id) || command.type !== "command_execution" ||
+  // OpenAI sessions validate inside their hosted sandbox; Codegraff runs are validated by Folio's own server after retrieval.
+  if (["id", "type", "turn_id", "status", "exit_code", "output"].some(key => !Object.hasOwn(command, key)) || !isKeywordBenchmarkId(command.id) ||
+    (command.type !== "command_execution" && command.type !== "folio_host_validation") ||
     command.turn_id !== value.rootTurnId || command.status !== "completed" || (command.exit_code !== 0 && command.exit_code !== null) ||
     typeof command.output !== "string" || !command.output.split("\n").some(line => line.trim() === "FOLIO_KEYWORD_JSON_VALID")) return invalid();
   try {

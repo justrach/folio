@@ -2,6 +2,8 @@
 
 The frontend and any external agent read the index through this HTTP contract. The implementation lives in the private `folio-index` service; this document, and `src/lib/index-client.ts`, are the public half.
 
+This is the crawled-page index service. Agents with a Folio key search the same pages over MCP with `folio_index_pages`. The app embeds the question and queries the same turbopuffer namespace itself, and calls this service's `/search` only when it lacks those keys; it reads the `research` tables for a word-match fallback and per-website crawl coverage (no keyword rows). Two things observed when calling this service on 11 November 2026: `/search` with `entityId` returned no items for every entity tried, and about a third of requests (9 of 24) failed with `500` after 15 seconds; the published-answers index is a different dataset that needs no key. See [Ask the published index](MCP.md#ask-the-published-index).
+
 Base URL: **`https://backend.usefolio.site`** (Cloudflare Worker, private index). Base path: `/api/index/v1`.
 
 Authentication: every request needs `Authorization: Bearer <index key>`. Missing or invalid keys return `401` before the database is touched. The index is private: there is no anonymous mode, and keys are issued per consumer and revoked by rotating the Worker secret.

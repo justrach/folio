@@ -60,7 +60,7 @@ Start a hackathon walkthrough at `/hackathon`: public saved rankings, the GPT-6.
 | `/benchmarks` | Private keyword questions, baseline/fresh observations, sources and comparisons |
 | `/docs/api` | Public HTTP reference and signed-in Folio API-key management |
 | `/evaluations` | Search questions and saved rankings by default; Page evidence keeps website checks and exports |
-| `/agents`      | Managed sessions, status, returned items and background activity                       |
+| `/agents`      | Changes recorded by your coding agent (before/after answers), what your agents asked the index, managed sessions, status, returned items and background activity |
 | `/pricing`     | Proposed plans, metered usage model and private plan-interest preference               |
 | `/settings`    | Account and integration information                                                    |
 | `/privacy`     | Data handling, Google/GitHub permissions, retention, and support contact              |
@@ -162,6 +162,8 @@ Provider credentials and access controls remain server-side. The public director
 ## Authenticated MCP and sandbox SEO
 
 Folio now includes `/api/mcp` for coding clients and `/api/v1/seo` for explicit, idempotent DataForSEO lookups. Keyword sandboxes can opt into one selected-domain SEO lookup with a short-lived capability; existing evaluation keys require a separate `seo` permission. See [MCP setup and behavior](docs/MCP.md) for migration, configuration, client examples and validation limits.
+
+Any agent can read the published index without a key at `/api/index-mcp` (`claude mcp add --transport http folio-index http://localhost:3001/api/index-mcp`): search saved answers, read one, or see where a website is named. It is read-only and saves nothing about the request.
 
 ### Public website audits
 

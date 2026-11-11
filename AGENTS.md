@@ -55,8 +55,10 @@ Restart the dev server after intended `.dev.vars` changes. Obtain D1 through the
 | --- | --- |
 | Page routing and shell | `src/app/[[...slug]]/page.tsx`, `src/components/dashboard.tsx` |
 | Product story and charts | `landing.tsx`, `charts.tsx`, `published-index.tsx`, their adjacent styles |
-| Managed provider transport | `src/lib/agents.ts` |
+| Managed provider transport | `src/lib/agents.ts` (OpenAI website evaluations), `codegraff-agent.ts` + `codegraff-keyword-agent.ts` (Folio's own Graff agent for keyword runs), `docs/CODEGRAFF-AGENT.md` |
 | Run orchestration and access | `src/lib/agent-runs.ts`, `eval-api.ts`, `src/app/api/evaluations/` |
+| Agent MCP, change records, guided prompts | `src/lib/folio-mcp.ts`, `website-changes.ts`, `website-change-outcome.ts`, `aeo-prompts.ts`, `src/app/api/changes/`, `src/components/website-changes-panel.tsx`, `docs/AEO-DEMO.md` |
+| Published and crawled index for agents (no-key MCP, ask feed) | `src/lib/index-answers.ts`, `index-pages.ts` (Postgres `research` schema, keyed), `index-asks.ts`, `src/app/api/index-mcp/`, `src/app/api/index-asks/`, `src/components/index-asks-panel.tsx`, `docs/MCP.md` |
 | Browser evaluation state | `src/components/evaluation-workspace.tsx`, `evaluations-panel.tsx`, `agent-runs-panel.tsx` |
 | Navigation and overview summary | `src/lib/evaluation-navigation.ts`, `src/components/workspace-evaluation-summary.tsx` |
 | Suite, references, verifier | `src/lib/evals.ts`, `expected-facts.ts`, `eval-verifier.ts` |
@@ -110,6 +112,8 @@ Google sign-in requests identity scopes only; Search Console uses an explicit sa
 - OpenAI executes remotely. Visible browser polling and the optional scheduler retrieve existing work; neither starts new tasks nor supplies pending tool results.
 - `read_saved_seo_report` can return only the explicitly selected, frozen owner report after the owner action. It performs no new DataForSEO lookup; returning it can resume paid OpenAI inference. Preserve its single-submission reservation.
 - Cancellation acknowledgement is not a terminal result. Retain actual failure/cancellation, unknown usage, provider IDs needed for recovery, and optimistic revision guards.
+
+Keyword runs default to Folio's own Codegraff agent instead (see [Codegraff agent](docs/CODEGRAFF-AGENT.md)): Graff in a standard (non-fleet) sandbox, gateway `/v1/search` as its only discovery tool, the same reservation → one create → read-only reconcile → destroy contract, and citations limited to URLs the run retrieved. OpenAI stays the provider for website evaluations and for keyword runs with Folio MCP tools.
 
 ## Evidence semantics
 
@@ -167,7 +171,8 @@ Retain meaningful test failures and report the exact scope passed. Do not update
 - [Monetization](docs/MONETIZATION.md) is proposed packaging. Pricing currently records interest; no active checkout, subscriptions, credit wallet, or team entitlement is implied.
 - The user-confirmed publication destination is the existing public repository `justrach/folio` (`origin`). Inspect staged changes before an authorized commit/push; exclude secrets, `.local`, Wrangler state, private evidence, and generated test reports. Do not change repository visibility.
 - Consult [TODO.md](TODO.md) for current launch blockers. Production Cloudflare provisioning, hosted CI account limits, and actual billing are separate dependencies; local success does not complete them.
-- Saved change-to-retest records, recurring fresh monitoring, independent public agent benchmarks, consumer-AI collectors, verified domain ownership, team roles, and automatic repair publishing require explicit implementation and validation before product claims.
+- Change records pair a saved baseline answer with a matched retest after a caller-reported publication. Recording, reading or confirming one must never start an evaluation, and a difference is an observation, not a causal claim. A live run of the full loop is still unvalidated.
+- Change records for captured-page evaluations, recurring fresh monitoring, independent public agent benchmarks, consumer-AI collectors, verified domain ownership, team roles, and automatic repair publishing require explicit implementation and validation before product claims.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

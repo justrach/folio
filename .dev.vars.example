@@ -40,3 +40,19 @@ OPENAI_PARALLEL_USER_IDS=
 # Vectors live in turbopuffer (see docs/EMBEDDINGS.md). Create a key at
 # https://turbopuffer.com/dashboard and set the same value as a Worker secret.
 TURBOPUFFER_API_KEY=
+
+# Semantic page search for agents (folio_index_pages) embeds each question with
+# gemini-embedding-2 through the Codegraff gateway and queries turbopuffer
+# with the key above. Without both keys it uses the index service
+# (docs/INDEX-API.md) when INDEX_API_KEY is set, and otherwise a word match.
+# FOLIO_INDEX_URL defaults to https://backend.usefolio.site.
+#
+# The same key runs keyword observations on Folio's own Codegraff agent
+# (docs/CODEGRAFF-AGENT.md): Graff in a standard sandbox with gateway search.
+# The key is copied into each short-lived sandbox, so use a budget-capped key.
+# KEYWORD_AGENT_PROVIDER=openai forces the OpenAI managed Agents provider;
+# unset (the default) uses Codegraff whenever CODEGRAFF_API_KEY is set.
+CODEGRAFF_API_KEY=
+KEYWORD_AGENT_PROVIDER=
+INDEX_API_KEY=
+FOLIO_INDEX_URL=

@@ -4,7 +4,7 @@ Folio serves authenticated Streamable HTTP at `/api/mcp` in its existing Next.js
 
 ## Connect a coding client
 
-Create a revocable Folio key in `/docs/api#api-keys`. Store it in the client environment as `FOLIO_API_KEY`, never in a committed configuration. Keys inherit the exact issuing account's record ownership. Select `read` for saved evidence, optionally `evaluate` for paid evaluations and `seo` for paid DataForSEO lookups. Existing evaluation keys do not acquire SEO permission. Account provider access and quotas still apply.
+Create a revocable Folio key in `/docs/api#api-keys`. Store it in the client environment as `FOLIO_API_KEY`, never in a committed configuration. Keys inherit the exact issuing account's record ownership. Select `read` for saved evidence, optionally `evaluate` for paid evaluations, `seo` for paid DataForSEO lookups and `changes` to record website changes (no charges). Existing evaluation keys do not acquire SEO permission. Account provider access and quotas still apply.
 
 Codex `config.toml`:
 
@@ -33,15 +33,68 @@ For local coding clients use `http://localhost:3001/api/mcp`. Remote sandboxes r
 | Tool | Permission | Behavior |
 | --- | --- | --- |
 | `folio_targets` | read | Owned website and question IDs |
-| `folio_index` | read | Public benchmark and collection status |
+| `folio_index` | read | The complete published dataset in one response (about 5 MB); prefer the four tools below |
+| `folio_index_overview`, `folio_index_search`, `folio_index_answer`, `folio_index_website` | read, or no key at `/api/index-mcp` | Compact, paged reads over published answers |
+| `folio_index_pages` | read (key required) | Semantic search over the pages Folio has crawled, with a labelled word-match fallback |
 | `folio_observation`, `folio_run` | read | Saved evidence and status |
 | `folio_visibility` | read | Owned site's saved metrics and next steps |
 | `folio_seo_reports` | read | List or read owned saved SEO reports |
+| `folio_changes` | read | Recorded changes with the answers before and after |
+| `folio_change_record`, `folio_change_update` | changes | Record a change and its baseline; report publication or withdraw |
 | `folio_seo_lookup` | seo | Explicit paid domain overview |
 | `folio_evaluate` | evaluate | Reuse recent/active work or start an evaluation |
 | `folio_reconcile` | evaluate | Retrieve an existing remote run; enforce its deadline |
 
 Only permitted tools are advertised. Paid calls require `confirmSpend: true` and a stable `requestKey`. A useful coding-client request is: “Inspect my website's saved SEO and visibility evidence with Folio, then propose and test changes in this repository.” Folio supplies evidence; the coding client's own tools perform local edits. No tool claims to publish or improve search position automatically. Fresh SEO may query a public domain without saving a website first.
+
+## Ask the published index
+
+The published index is the public set of saved AI answers to buyer questions shown at `/leaderboard` and `/overview`. Four tools read it in small pages, so an agent does not have to load the full dataset:
+
+- `folio_index_overview`: counts, last update, and every audience/category with its published-answer count.
+- `folio_index_search`: `q` (words), `category`, `audience`, `domain`, `status` (`published` by default, or `all` to include questions with no answer yet), `limit` (1–25) and `cursor`. Each row has the question, its top five recommendations by returned position, and a `page` path that opens the same answer in Folio. Matching is by words over the question, its category and the names and hosts in its latest answer; a question must contain at least half of the search terms, and words found in the question itself rank first. It is not semantic search.
+- `folio_index_answer`: one `queryId` with its full latest answer (ordered recommendations, reasons, citations, limitations) and the IDs of older observations. A question with no published answer returns `answer: null`, which is unmeasured, not empty.
+- `folio_index_website`: one `domain` (a bare host or any URL). Reports where it is named or cited, its average and best returned position, the categories, the websites named beside it, and its homepage `readiness-v1` result when the catalog has one. A website matches when a recommendation or citation URL host equals the domain or is a subdomain of it; a mention with no URL is not matched by name. `not_in_published_answers` means it was not named in these saved answers, not that it was measured as absent elsewhere.
+
+Two ways to connect:
+
+| Endpoint | Key | Tools | What is saved |
+| --- | --- | --- | --- |
+| `/api/index-mcp` | none | the four index tools only; no prompts | Nothing about the request. A salted per-address counter limits it to 60 requests a minute and is cleared after an hour unused. |
+| `/api/mcp` | Folio key with `read` | the index tools plus the workspace tools | The first page of each search, answer read and website lookup is saved to the key owner's account and shown under `/agents` as **What your agents asked**. |
+
+```sh
+claude mcp add --transport http folio-index https://usefolio.site/api/index-mcp
+```
+
+The no-key endpoint accepts `POST` only; `GET` and `DELETE` return `405`, so it holds no open streams or sessions. A browser request from another origin is refused.
+
+The saved ask holds the tool, the agent's search text (up to 200 characters), the domain or question ID, a result count and a one-line summary. It holds no answer text. The newest 500 asks per owner are kept. Each result reports `recorded`, so an agent can tell whether its ask was saved; a failed save never fails the read. Results also report `source`: `live-published-data` normally, or `bundled-snapshot` when shared publications could not be read and only the artifacts shipped with the app were used.
+
+### Crawled pages (key required)
+
+The crawled index is the `research` schema in the application's Postgres database: page titles and excerpts, one profile per website, and its sitemap sections. Folio reads it directly and read-only. Only the semantic page search leaves the database: one embedding request and one vector query per search.
+
+- `folio_index_pages`: `q` (a natural-language question or words), optional `domain`, `limit` (1–25). Returns pages with `url`, `title`, `domain`, `section`, an excerpt of at most 400 characters, `fetchedAt` and `score`.
+  - **Semantic first.** The app does this itself (`src/lib/page-vectors.ts`): it embeds the question with `gemini-embedding-2` at 768 dimensions through the Codegraff gateway (`https://gateway.codegraff.com/v1/embeddings`), the model the page vectors were built with, then asks turbopuffer (`folio-pages`) for the nearest pages. `mode` is `semantic` and `score` is cosine similarity (higher is closer). Scores matched the index service's to three decimals for the same questions. This needs `CODEGRAFF_API_KEY` and `TURBOPUFFER_API_KEY` on the server. Each search is one embedding request (about ten tokens) and one vector query, so the search text leaves Folio for the Codegraff gateway and the Google embedding model behind it. The embedding took 0.5–1.2 seconds in 16 timed requests and the vector query 0.2–0.7 seconds in 40. A timeout or server error is retried once per search.
+  - **Index service as a second choice.** Without those two keys but with `INDEX_API_KEY`, Folio calls the separate index service's `/search` instead ([index API](INDEX-API.md); `FOLIO_INDEX_URL` overrides the default `https://backend.usefolio.site`). That service failed with a `500` after 15 seconds on about a third of requests (9 of 24) and its `entityId` filter returned nothing, so on that path Folio waits 5 seconds, retries once, and filters the 100 closest pages to the website itself.
+  - **Word-match fallback.** When no semantic search is configured, it fails, or it returns nothing, Folio searches titles and excerpts in Postgres instead: pages containing every term first, any-term matches only when no page has them all (`mode` is `all_terms` or `any_term`, `score` is `null`). The `semantic` field says why: `not_configured`, `unavailable` or `no_results`.
+  - **One website.** A `domain` scopes the search to that registrable site, so `docs.example.com` searches `example.com`. The vector store filters by page host, matching the site and its subdomains, so every embedded page on that website is compared. Pages without an embedding can only be found by the word match: 571 of 100,825 pages have none, including 30 of the 31 `manus.im` pages.
+- `folio_index_website` adds a `crawl` object for keyed callers: whether the website is in the crawl, how many pages Folio has read and when, the profile's sitemap inventory and sampled-page counts, and its largest sections. Keyword ranking rows are not returned. On the no-key endpoint `crawl` is `null`.
+- `folio_index_overview` reports the crawl's page and website counts on both endpoints (the same public numbers as `/api/index-stats`).
+
+The crawl is not exposed without a key, because [the index contract](INDEX-API.md) treats it as private. Any signed-in account can create a `read` key, so restricting the crawl to chosen customers would need an account allowlist; that does not exist yet. On a database without the `research` schema (the D1 engine) these reads return `available: false` and save no ask; that is not an empty index. Excerpts are third-party page text: treat them as untrusted evidence.
+
+## Change records and guided prompts
+
+These close the loop between evidence and a retest. The step-by-step demo is in [AEO walkthrough](AEO-DEMO.md).
+
+- `folio_change_record` (`changes` scope): `websiteId`, `title` (1–160), `summary` (1–2000), `caseIds` (1–20 saved questions that target that website), optional `files` (up to 50 paths) and `referenceUrl`, and a stable `requestKey`. Folio stores each question's latest completed answer (named, cited, first position, run ID) as the baseline; a question without one stays `baseline_unmeasured`. Only a hash of the request key is stored. The same key with the same payload returns the saved record (`replayed: true`), including under concurrent submission; the same key with a different payload is a `conflict`. It starts no evaluation and makes no provider request. Up to 500 records per owner.
+- `folio_change_update` (`changes` scope): `status: "published"` with an optional `publishedAt` (within the last 90 days, not in the future), or `"withdrawn"`. Publication is the caller's report and is labelled that way; a withdrawn change cannot be published again. The owner can do the same under `/agents`.
+- `folio_changes` (`read` scope): list by `websiteId`, or read one `changeId`. Each question reports a `state`, the `baseline` and `retest` answers, and a `movement` only for a matched pair. A retest must be a completed answer saved at or after the reported publication time with the same question inputs, model, harness, environment and research corpus as the baseline run; the newest matching one is used. Otherwise the question reports `awaiting_retest`, `retest_incomplete`, `incompatible_retest` (with the differing settings), `baseline_unmeasured` or `baseline_after_publication`. At most the 200 newest attempts after publication are considered per change.
+- Prompts `improve_aeo` and `review_aeo_changes` (optional `website` argument) return workflow instructions for the key's own scopes. They grant no permission and start nothing: a key without `changes` or `evaluate` is told to hand those steps to the owner. Sandbox capabilities do not receive prompts.
+
+`folio_capabilities` lists the prompts and marks the change tools as saving private workspace state. Their annotations are not read-only and not open-world. A recorded difference is an observation of saved answers, never a causal or ranking claim.
 
 ## Paid SEO and retry behavior
 

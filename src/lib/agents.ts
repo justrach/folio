@@ -23,6 +23,10 @@ export type AgentsEnvironment = {
   OPENAI_MAX_RUNS_PER_DAY?: string;
   OPENAI_UNMETERED_USER_IDS?: string;
   OPENAI_PARALLEL_USER_IDS?: string;
+  /** Runs keyword observations on Folio's own Codegraff agent when set. */
+  CODEGRAFF_API_KEY?: string;
+  /** "openai" forces the managed OpenAI Agents provider for keyword runs; otherwise Codegraff is used when configured. */
+  KEYWORD_AGENT_PROVIDER?: string;
 };
 
 export type EvaluationEvidence = {
