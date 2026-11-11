@@ -16,7 +16,7 @@ const report = { website: { id: "site-manus", name: "manus.im", url: "https://ma
 /** Organization writes only; product analytics events are not part of these flows. */
 const orgPosts = (state: { posts: Record<string, unknown>[] }) => state.posts.filter(post => String(post.path).startsWith("/api/organizations"));
 
-async function setup(page: Page, options: { signedIn?: boolean; organizations?: boolean; joinedByEmail?: boolean } = {}) {
+async function setup(page: Page, options: { signedIn?: boolean; organizations?: boolean; joinedByEmail?: boolean; emailVerified?: boolean } = {}) {
   const state = { posts: [] as Record<string, unknown>[], created: false, joined: false, pending: [] as { id: string; email: string; addedAt: string; expiresAt: string; addedBy: string | null }[] };
   const detail = () => ({ id: "org-1", name: "Manus", createdAt: at, yourRole: "owner",
     members: [member("rach", "Rach Pradhan", "owner", true, [{ name: "Rach's Claude Code", lastUsedAt: at }]), ...(state.joined ? [member("avery", "Avery Chen", "member", false)] : [])],
@@ -26,7 +26,7 @@ async function setup(page: Page, options: { signedIn?: boolean; organizations?: 
   await page.route("**/api/**", async route => {
     const url = new URL(route.request().url()), method = route.request().method(), body = method === "POST" ? route.request().postDataJSON() as Record<string, unknown> : null;
     if (body) state.posts.push({ path: url.pathname, ...body });
-    if (url.pathname === "/api/auth/get-session") return route.fulfill({ json: options.signedIn === false ? null : { user: { id: "rach", name: "Rach Pradhan", email: "rach@example.test", emailVerified: true }, session: { id: "s", userId: "rach", expiresAt: "2099-01-01T00:00:00Z" } } });
+    if (url.pathname === "/api/auth/get-session") return route.fulfill({ json: options.signedIn === false ? null : { user: { id: "rach", name: "Rach Pradhan", email: "rach@example.test", emailVerified: options.emailVerified ?? true }, session: { id: "s", userId: "rach", expiresAt: "2099-01-01T00:00:00Z" } } });
     if (url.pathname === "/api/organizations" && method === "GET") return route.fulfill({ json: { organizations: options.organizations || options.joinedByEmail || state.created || state.joined ? [{ id: "org-1", name: "Manus", role: "owner", members: 1, websites: 1, createdAt: at }] : [],
       joined: options.joinedByEmail ? [{ id: "org-1", name: "Manus", addedBy: "Rach Pradhan" }] : [] } });
     if (url.pathname === "/api/organizations" && method === "POST") { state.created = true; return route.fulfill({ status: 201, json: { organization: { id: "org-1", name: body!.name, role: "owner", members: 1, websites: 0, createdAt: at } } }); }
@@ -102,11 +102,15 @@ test("an owner adds someone by email before they have an account, sees them wait
   await expect(invites).toContainText("They don’t need a Folio account yet");
   await invites.getByLabel("Email").fill("Natalie@manus.ai");
   await invites.getByRole("button", { name: "Add", exact: true }).click();
-  await expect(page.getByRole("status").filter({ hasText: "will join Manus when they sign in" })).toContainText("/login?next=/orgs");
+  await expect(page.getByRole("status").filter({ hasText: "will join Manus when they sign in" })).toContainText("Send them the invite below");
   const waiting = invites.getByRole("list", { name: "Waiting to sign in" });
   await expect(waiting).toContainText("natalie@manus.ai");
   await expect(invites.getByLabel("Email")).toHaveValue("");
-  await expect(invites.getByRole("button", { name: "Copy sign-in link" })).toBeVisible();
+  // Folio sends nothing: the owner's own mail app opens with a note that says which address to sign in with.
+  const mailto = new URL((await waiting.getByRole("link", { name: "Email the invite" }).getAttribute("href"))!);
+  expect([mailto.protocol, mailto.pathname, mailto.searchParams.get("subject")]).toEqual(["mailto:", "natalie@manus.ai", "Join Manus on Folio"]);
+  expect(mailto.searchParams.get("body")).toMatch(/Sign in with Google or GitHub as natalie@manus\.ai[\s\S]*\/login\?next=\/orgs[\s\S]*Rach$/);
+  await expect(waiting.getByRole("button", { name: "Copy message" })).toBeVisible();
   await waiting.getByRole("button", { name: "Cancel" }).click();
   await expect(waiting).toHaveCount(0);
   expect(orgPosts(state).map(post => [post.action, post.email ?? post.inviteId])).toEqual([["add_by_email", "Natalie@manus.ai"], ["cancel_email_invite", "pending-1"]]);
@@ -116,9 +120,30 @@ test("an owner adds someone by email before they have an account, sees them wait
 test("someone added by email lands in the organization and is told who added them", async ({ page }) => {
   const state = await setup(page, { joinedByEmail: true });
   await page.goto("/orgs");
-  await expect(page.getByRole("status").filter({ hasText: "Rach Pradhan added you to Manus." })).toBeVisible();
+  const welcome = page.getByRole("region", { name: "Welcome to Manus" });
+  await expect(welcome.getByRole("status")).toContainText("Rach Pradhan added you to Manus.");
   await expect(page.getByRole("heading", { name: "Manus", level: 2 })).toBeVisible();
+  // Two first steps, both on this page: the shared report, then their own agent.
+  await expect(welcome.getByRole("link", { name: "Read what manus.im is missing" })).toHaveAttribute("href", "#org-websites-title");
+  await expect(welcome.getByRole("link", { name: "Connect your agent" })).toHaveAttribute("href", "#connect");
+  await welcome.getByRole("button", { name: "Dismiss" }).click();
+  await expect(welcome).toHaveCount(0);
   expect(orgPosts(state)).toHaveLength(0);
+});
+
+test("an account whose email isn't verified is told how adding by email works", async ({ page }) => {
+  await setup(page, { emailVerified: false });
+  await page.goto("/orgs");
+  await expect(page.getByRole("region", { name: "Start an organization" })).toContainText("Were you added by email? That only works when you sign in with Google or GitHub");
+});
+
+test("the sign-in link an owner sends explains how to join automatically", async ({ page }) => {
+  await setup(page, { signedIn: false });
+  await page.goto("/login?next=/orgs");
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await expect(page.locator(".login-form-panel")).toContainText("with the email you were added with, and you’ll join it automatically");
+  await page.goto("/login");
+  await expect(page.locator(".login-form-panel")).toContainText("Choose how you’d like to continue.");
 });
 
 test("a pasted invite link previews the organization and joins only after the person confirms", async ({ page }) => {
@@ -134,6 +159,7 @@ test("a pasted invite link previews the organization and joins only after the pe
   await invitation.getByRole("button", { name: "Join organization" }).click();
   await expect(page.getByRole("heading", { name: "Manus", level: 2 })).toBeVisible();
   await expect(page.getByRole("region", { name: "Members and their agents" })).toContainText("Avery Chen");
+  await expect(page.getByRole("region", { name: "Welcome to Manus" })).toContainText("You joined Manus with Rach Pradhan’s invite.");
   expect(orgPosts(state).filter(post => post.action === "accept")).toHaveLength(1);
   expect(orgPosts(state).at(-1)?.action).toBe("accept");
   expect(state.posts.every(post => post.token === undefined || post.token === token)).toBe(true);

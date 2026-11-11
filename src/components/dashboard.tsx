@@ -1913,9 +1913,14 @@ function Login({ onNotify }: { onNotify: (s: string) => void }) {
           <span className="login-kicker">Your Folio workspace</span>
           <h1 id="login-title">{signup ? "Create your account." : "Welcome back."}</h1>
           <p>
-            {signup
-              ? "Keep your websites, questions, and reports together."
-              : emailMode ? "Sign in with your email." : "Choose how you’d like to continue."}
+            {/* /orgs is where the sign-in link an owner sends leads; only a provider-verified email joins by itself. */}
+            {returnTo === "/orgs"
+              ? signup || emailMode
+                ? "Added to a team by email? Only a Google or GitHub sign-in with that address joins it by itself; with an email account, ask for an invite link."
+                : "Added to a team? Use Google, or GitHub under More sign-in options, with the email you were added with, and you’ll join it automatically."
+              : signup
+                ? "Keep your websites, questions, and reports together."
+                : emailMode ? "Sign in with your email." : "Choose how you’d like to continue."}
           </p>
           <div className="login-providers" hidden={emailMode}>
           {googleConfigured && <button className="login-choice login-choice-google" type="button" disabled={busy} onClick={async () => {

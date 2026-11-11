@@ -8,6 +8,12 @@ const key = (id: string, name: string, lastUsedAt: string | null, scopes = ["rea
 
 async function setup(page: Page, options: { signedIn?: boolean; keys?: Key[] } = {}) {
   const state = { keys: options.keys ?? [], posts: [] as { path: string; body: Record<string, unknown> }[], keyReads: 0 };
+  // Record what the copy buttons put on the clipboard.
+  await page.addInitScript(() => {
+    const copied: string[] = [];
+    Object.defineProperty(window, "__copied", { value: copied });
+    Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: async (text: string) => { copied.push(text); } } });
+  });
   await page.route("**/api/**", async route => {
     const url = new URL(route.request().url()), method = route.request().method();
     if (url.pathname === "/api/auth/get-session") return route.fulfill({ json: options.signedIn === false ? null
@@ -26,6 +32,8 @@ async function setup(page: Page, options: { signedIn?: boolean; keys?: Key[] } =
   return state;
 }
 const keyPosts = (state: { posts: { path: string; body: Record<string, unknown> }[] }) => state.posts.filter(post => post.path === "/api/agent-keys");
+const copied = (page: Page) => page.evaluate(() => (window as unknown as { __copied: string[] }).__copied.at(-1) ?? null);
+const currentStep = (page: Page) => page.locator('.ao-step[aria-current="step"] h3');
 
 test("a person picks their agent, creates its key without seeing it on screen, and sees it connect", async ({ page }) => {
   const state = await setup(page);
@@ -46,7 +54,9 @@ test("a person picks their agent, creates its key without seeing it on screen, a
   await expect(panel.getByRole("checkbox", { name: /Read · always included/ })).toBeDisabled();
   await panel.getByRole("checkbox", { name: /Record changes/ }).check();
   await expect(panel.getByText("Connection status")).toBeVisible();
+  await expect(currentStep(page)).toHaveText("Create a key for Cursor");
   await panel.getByRole("button", { name: "Create key" }).click();
+  await expect(currentStep(page)).toHaveText("Add Folio to Cursor");
 
   expect(keyPosts(state).map(post => post.body)).toEqual([{ name: "Rach’s Cursor", scopes: ["read", "changes"], expiresInDays: 30 }]);
   const secret = panel.getByLabel("Your new key");
@@ -64,6 +74,7 @@ test("a person picks their agent, creates its key without seeing it on screen, a
   await expect(panel.locator(".ao-status")).toContainText("Connected", { timeout: 12_000 });
   await expect(panel.locator(".ao-status")).toContainText("Rach’s Cursor");
   await expect(panel.locator(".ao-status")).toContainText("used just now");
+  await expect(currentStep(page)).toHaveText("Ask it something");
 
   // Prompts adapt to the first saved website, and the references open.
   await expect(panel.locator(".ao-prompt")).toHaveCount(4);
@@ -84,9 +95,14 @@ test("clients that ignore shell variables say where to paste the key", async ({ 
   await panel.getByRole("radio", { name: /Claude Desktop/ }).click();
   await expect(panel).toContainText("mcp-remote");
   await expect(panel).toContainText("Bearer <your Folio key>");
+  await expect(panel).toContainText("Replace <your Folio key> with your key.");
   await panel.getByRole("button", { name: "Create key" }).click();
   await expect(panel.getByRole("button", { name: "Copy key" })).toBeVisible();
   await expect(panel).toContainText("Claude Desktop doesn’t read your terminal’s variables");
+  // The config on screen keeps the placeholder; its copy carries the new key, ready to paste.
+  await expect(panel.locator("pre").filter({ hasText: "mcp-remote" })).not.toContainText(token);
+  await panel.getByRole("button", { name: "Copy with your key" }).click();
+  expect(JSON.parse((await copied(page))!).mcpServers.folio.env.FOLIO_AUTH).toBe(`Bearer ${token}`);
   expect(keyPosts(state)).toHaveLength(1);
 });
 
@@ -97,16 +113,26 @@ test("Manus, a cloud agent, gets the public address, a Bearer token to paste, an
   await panel.getByRole("radio", { name: /Manus/ }).click();
   await expect(panel.getByRole("heading", { name: "Add Folio to Manus" })).toBeVisible();
   await expect(panel).toContainText("open Connectors, choose Create");
-  // The page runs locally here, but Manus calls from the internet, so the URL is the public one.
-  await expect(panel.locator("figure").filter({ hasText: "Server URL" }).locator("pre")).toHaveText("https://usefolio.site/api/mcp");
+  // Manus's form, field by field. The page runs locally here, but Manus calls from the internet, so the URL is the public one.
+  const fields = panel.locator(".ao-fields");
+  await expect(fields.locator("dt")).toHaveText(["Server name", "Server URL", "Bearer token"]);
+  await expect(fields.locator("div").filter({ hasText: "Server URL" }).locator("code")).toHaveText("https://usefolio.site/api/mcp");
+  await expect(fields.locator("div").filter({ hasText: "Bearer token" })).toContainText("Paste the key from step 2");
   await expect(panel).toContainText("not the address this page is open on");
-  await expect(panel).toContainText("choose Bearer token and paste the key from step 2");
   await expect(panel).toContainText("hasn’t run them in a Manus account yet");
   await expect(panel.locator("figure").filter({ hasText: "Ask it in Manus" })).toContainText("call folio_organizations");
   await expect(panel.getByLabel("Key name")).toHaveValue("Rach’s Manus");
   await panel.getByRole("button", { name: "Create key" }).click();
-  await expect(panel.getByRole("button", { name: "Copy key" })).toBeVisible();
+  await expect(panel.locator(".ao-new-key").getByRole("button", { name: "Copy key" })).toBeVisible();
   await expect(panel).toContainText("Manus doesn’t read your terminal’s variables");
+  // The token row now offers the key itself, masked on screen and whole in the copy.
+  const tokenRow = fields.locator("div").filter({ hasText: "Bearer token" });
+  await expect(tokenRow.locator("code")).toContainText("folio_v1_cccc•");
+  await expect(tokenRow).not.toContainText(token);
+  await tokenRow.getByRole("button", { name: "Copy key" }).click();
+  expect(await copied(page)).toBe(token);
+  await fields.locator("div").filter({ hasText: "Server URL" }).getByRole("button", { name: "Copy" }).click();
+  expect(await copied(page)).toBe("https://usefolio.site/api/mcp");
   expect(keyPosts(state).map(post => post.body)).toEqual([{ name: "Rach’s Manus", scopes: ["read"], expiresInDays: 30 }]);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(await page.evaluate(() => innerWidth + 1));
 });

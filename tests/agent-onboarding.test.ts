@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { AGENT_PERMISSIONS, CONNECTION_TROUBLESHOOTING, agentClients, connectionTestCommand, exportLine, mcpEndpoint, reachableOrigin, starterPrompts } from "../src/lib/agent-onboarding";
+import { AGENT_PERMISSIONS, CONNECTION_TROUBLESHOOTING, KEY_PLACEHOLDER, agentClients, connectionTestCommand, exportLine, isFormField, mcpEndpoint, onboardingProgress, reachableOrigin, starterPrompts,
+  withKey } from "../src/lib/agent-onboarding";
+import { inviteMailto, inviteMessage, signInLink } from "../src/lib/organization-invite-message";
 import { folioTools } from "../src/lib/folio-mcp";
 
 const origin = "https://usefolio.site";
@@ -44,6 +46,49 @@ test("Manus, a cloud agent, is always pointed at an address the internet can rea
   assert.equal(reachableOrigin("https://usefolio.site/"), "https://usefolio.site");
   assert.ok(manus("https://usefolio.site").notes.some(note => /hasn’t run them in a Manus account/.test(note)), "the setup says it is unverified");
   assert.ok(CONNECTION_TROUBLESHOOTING.some(item => item.problem.startsWith("Manus")));
+  // Manus is a form: three one-line fields, the last of which is the key itself.
+  assert.deepEqual(manus("https://usefolio.site").blocks.map(block => [block.label, isFormField(block)]), [["Server name", true], ["Server URL", true], ["Bearer token", true]]);
+  assert.equal(manus("https://usefolio.site").blocks[2].code, KEY_PLACEHOLDER);
+});
+
+test("a new key is filled in only where a snippet asks for it, and only in the copy", () => {
+  const token = `folio_v1_${"d".repeat(64)}`, clients = agentClients(origin);
+  const desktop = clients.find(client => client.id === "claude-desktop")!.blocks[0].code;
+  assert.equal(JSON.parse(withKey(desktop, token)).mcpServers.folio.env.FOLIO_AUTH, `Bearer ${token}`);
+  assert.equal(withKey("Authorization: Bearer <your Folio key>", token), `Authorization: Bearer ${token}`);
+  // Clients that read FOLIO_API_KEY never contain the placeholder, so their copy is unchanged.
+  for (const client of clients.filter(item => item.readsShellEnvironment))
+    for (const block of client.blocks) assert.equal(withKey(block.code, token), block.code, `${client.id}: ${block.label}`);
+  // Multi-line files and commands stay code blocks; single values become form rows.
+  assert.ok(!isFormField(clients[0].blocks[0]));
+  assert.ok(isFormField(clients.find(client => client.id === "other")!.blocks[0]));
+});
+
+test("the panel points at the next step: key, then setup until the key is used, then prompts", () => {
+  const at = (input: Partial<Parameters<typeof onboardingProgress>[0]>) => onboardingProgress({ signedIn: true, activeKeys: 0, usedKeys: 0, newKey: null, ...input });
+  assert.deepEqual(at({ signedIn: false, activeKeys: 2, usedKeys: 2 }), { keyReady: false, connected: false, current: 2 });
+  assert.deepEqual(at({}), { keyReady: false, connected: false, current: 2 });
+  assert.deepEqual(at({ activeKeys: 1 }), { keyReady: true, connected: false, current: 3 });
+  assert.deepEqual(at({ activeKeys: 1, usedKeys: 1 }), { keyReady: true, connected: true, current: 5 });
+  // A key made on the page is followed until its own first call, even if older keys were used.
+  assert.deepEqual(at({ activeKeys: 2, usedKeys: 1, newKey: { used: false } }), { keyReady: true, connected: false, current: 3 });
+  assert.deepEqual(at({ activeKeys: 2, usedKeys: 2, newKey: { used: true } }), { keyReady: true, connected: true, current: 5 });
+});
+
+test("the note an owner sends says which email to sign in with and links to /orgs", () => {
+  const input = { organization: "Manus", email: "natalie@manus.test", origin: "https://usefolio.site/", from: "Rach" };
+  assert.equal(signInLink(input.origin), "https://usefolio.site/login?next=/orgs");
+  const { subject, body } = inviteMessage(input);
+  assert.equal(subject, "Join Manus on Folio");
+  assert.match(body, /as natalie@manus\.test/);
+  assert.match(body, /https:\/\/usefolio\.site\/login\?next=\/orgs/);
+  assert.match(body, /Rach$/);
+  assert.doesNotMatch(inviteMessage({ ...input, from: null }).body, /Rach/);
+  const mailto = new URL(inviteMailto(input));
+  assert.equal(mailto.protocol, "mailto:");
+  assert.equal(mailto.pathname, "natalie@manus.test");
+  assert.equal(mailto.searchParams.get("subject"), subject);
+  assert.equal(decodeURIComponent(inviteMailto(input).split("&body=")[1]), body);
 });
 
 test("the terminal check reads the key from the environment and calls a read-only tool", () => {

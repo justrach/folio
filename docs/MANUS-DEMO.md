@@ -6,7 +6,7 @@ A ten-minute walkthrough on `https://usefolio.site`: where manus.im shows up, wh
 
 1. Sign in, open **Organizations** (`/orgs`) and select **Manus**. It shares `manus.im`.
 2. Under **Invite people**, either:
-   - **Add by email** each person, even before they have a Folio account. They join the first time they sign in with that email through Google or GitHub; until then they're listed as waiting to sign in (for 30 days), and you can cancel them. Folio sends no email: send them the sign-in link shown there (`https://usefolio.site/login?next=/orgs`).
+   - **Add by email** each person, even before they have a Folio account. They join the first time they sign in with that email through Google or GitHub; until then they're listed as waiting to sign in (for 30 days), and you can cancel them. Folio sends no email: next to each waiting person, **Email the invite** opens your own mail app with a short note (which address to sign in with, and the link `https://usefolio.site/login?next=/orgs`), and **Copy message** copies the same note for chat.
    - Or press **Create invite link** and copy it. The link is shown once, works for 14 days and up to 25 people. Revoke it there after the meeting if you like.
 3. Have a terminal with Claude Code (or Codex) ready, and a Folio key in `FOLIO_API_KEY` ([create one](/docs/api#api-keys); read access is enough).
 
@@ -24,7 +24,7 @@ The **Search and backlinks** panel below has the raw counts: 1.47M backlinks fro
 
 ## 2. Join the organization (2 minutes)
 
-People you added by email just sign in with Google at the link you sent: they land in the organization, with a note saying who added them. With an invite link instead, each person opens it, signs in with Google, and presses **Join organization**; opening the link adds nobody by itself. Either way, they then see:
+People you added by email just sign in with Google at the link you sent; the sign-in page tells them to use the address they were added with. They land in the organization on a **Welcome** card that says who added them and points to two first steps: read the shared report, and connect their agent. With an invite link instead, each person opens it, signs in with Google, and presses **Join organization**; opening the link adds nobody by itself. Either way, they then see:
 
 - the shared `manus.im` report (the saved data of whoever shared it),
 - the members, and the agents each member has connected (key names and last use, never the key),
@@ -36,6 +36,7 @@ The **Connect your agent** panel on the organization page (also at `/agents#conn
 
 1. **Pick your agent**: Claude Code, Codex, Cursor, VS Code (Copilot agent mode), Claude Desktop, Manus, or any MCP client.
 2. **Create a key for it** right there. It's named after the agent ("Rach's Claude Code"), has read access by default, and can optionally record changes or, deliberately, spend. The key is shown once and masked on screen; **Copy export line** copies `export FOLIO_API_KEY="…"`. Safe to do while screen-sharing.
+   The step to do next is ringed, and the steps after it wait in grey until it's done.
 3. **Add Folio to it.** For Claude Code that's one command:
 
    ```sh
@@ -43,9 +44,9 @@ The **Connect your agent** panel on the organization page (also at `/agents#conn
      --header "Authorization: Bearer $FOLIO_API_KEY"
    ```
 
-   There's also a `.mcp.json` the team can commit to its repository (it holds no key; each person sets their own `FOLIO_API_KEY`), and the matching setup for each other client.
+   There's also a `.mcp.json` the team can commit to its repository (it holds no key; each person sets their own `FOLIO_API_KEY`), and the matching setup for each other client. For clients that can't read `FOLIO_API_KEY` (Claude Desktop, VS Code, Manus, any MCP client), the screen keeps a `<your Folio key>` placeholder, and once the key exists, **Copy with your key** copies the setup with the key already in it.
 
-   **For Manus itself**, pick **Manus**: in Manus, open **Connectors → Create** and add a custom MCP server by URL, named `folio`, with URL `https://usefolio.site/api/mcp` and the key as a **Bearer token** (**Copy key** copies just the key). Manus tests the connection when it's saved. Then turn the folio connector on in a task and ask it to list the folio tools and call `folio_organizations`. These steps follow Manus's documentation and haven't been run in a Manus account yet, so try them before the meeting if you can; if Manus reports 403 `Untrusted MCP origin`, Folio needs to accept Manus's origin first.
+   **For Manus itself**, pick **Manus**: in Manus, open **Connectors → Create** and add a custom MCP server by URL, named `folio`, with URL `https://usefolio.site/api/mcp` and the key as a **Bearer token**. The panel lays these out as Manus's three form fields, each with its own copy button; after step 2 the token row's **Copy key** copies the new key. Manus tests the connection when it's saved. Then turn the folio connector on in a task and ask it to list the folio tools and call `folio_organizations`. These steps follow Manus's documentation and haven't been run in a Manus account yet, so try them before the meeting if you can; if Manus reports 403 `Untrusted MCP origin`, Folio needs to accept Manus's origin first.
 4. **Check it's connected**: `claude mcp list` should show `folio: … ✔ Connected`. The status box on the page turns green by itself the moment the new key makes its first call, and the agent appears under **Members and their agents**.
 5. **Ask it something.** Four ready prompts: what manus.im is missing, who AI answers recommend instead, whether its pages answer the big searches, and fixing the top gap in the website's repository (in Claude Code, `/mcp__folio__improve_aeo` runs the guided version).
 

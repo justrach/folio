@@ -1,7 +1,8 @@
 /**
  * How a person connects their own agent to Folio over MCP: per-client setup, the permission each tool
  * needs, and starter prompts. Client-safe (no secrets, no server imports). Snippets reference the key
- * through an environment variable or a placeholder; a real key is never written into them.
+ * through an environment variable or KEY_PLACEHOLDER; a real key is never written into them. The page
+ * fills the placeholder only in what it copies (withKey), never in what it shows.
  */
 import type { AgentApiScope } from "./agent-observation-types";
 
@@ -15,6 +16,11 @@ export type AgentClientSetup = {
 };
 
 export const FOLIO_KEY_ENV = "FOLIO_API_KEY";
+export const KEY_PLACEHOLDER = "<your Folio key>";
+/** The snippet with the person's new key in place of the placeholder. For the clipboard only. */
+export const withKey = (code: string, token: string) => code.split(KEY_PLACEHOLDER).join(token);
+/** A one-line text block is a value typed into a form (Manus, any client), not a file or command. */
+export const isFormField = (block: SetupBlock) => block.language === "text" && !block.code.includes("\n");
 /** Where cloud agents reach Folio when this page is open on a computer the internet can't reach. */
 export const FOLIO_PUBLIC_ORIGIN = "https://usefolio.site";
 export const mcpEndpoint = (origin: string) => `${origin.replace(/\/$/, "")}/api/mcp`;
@@ -76,26 +82,24 @@ export function agentClients(origin: string): AgentClientSetup[] {
       blocks: [
         { label: "Add Folio", file: "claude_desktop_config.json", language: "json",
           code: json({ mcpServers: { folio: { command: "npx", args: ["-y", "mcp-remote", url, "--header", "Authorization:${FOLIO_AUTH}"],
-            env: { FOLIO_AUTH: "Bearer <your Folio key>" } } } }) },
+            env: { FOLIO_AUTH: `Bearer ${KEY_PLACEHOLDER}` } } } }) },
       ],
       check: { label: "Check it", code: "Quit and reopen Claude Desktop, then open the tools menu in a new chat", expect: "folio listed with its tools" },
-      notes: ["Desktop apps don’t see your terminal’s variables, so the key goes in this file: replace <your Folio key>.",
+      notes: ["Desktop apps don’t see your terminal’s variables, so the key goes in this file.",
         "Claude.ai and ChatGPT web connectors need OAuth sign-in, which Folio doesn’t offer yet."] },
     // From Manus's documentation (Connectors → Create → custom MCP server by URL); not yet run in a Manus account.
     { id: "manus", label: "Manus", kind: "Cloud agent", readsShellEnvironment: false,
-      intro: "Manus works on its own computer in the cloud and reaches Folio over the internet. In Manus, open Connectors, choose Create, and add a custom MCP server by URL with these details.",
+      intro: "Manus works on its own computer in the cloud and reaches Folio over the internet. In Manus, open Connectors, choose Create, add a custom MCP server by URL, and fill in these three fields. Manus tests the connection when you save it.",
       blocks: [
         { label: "Server name", language: "text", code: "folio" },
         { label: "Server URL", language: "text", code: cloudUrl },
-        { label: "If Manus asks for a header instead of a token", language: "text", code: "Authorization: Bearer <your Folio key>" },
+        { label: "Bearer token", language: "text", code: KEY_PLACEHOLDER },
       ],
       check: { label: "Ask it", code: "Use the folio connector. List the folio tools you can use, then call folio_organizations and tell me which websites you can read.",
         expect: "the folio_ tools your key allows, then your websites and your organization’s" },
       notes: [
-        "For authentication, choose Bearer token and paste the key from step 2. Manus tests the connection when you save it.",
-        "Manus keeps the key in your Manus account, and any task with the folio connector turned on can use it. Start with Read only and a short expiry.",
-        "Turn the folio connector on for the task, or add it to a Manus Project so every task in it starts with Folio.",
-        "The last prompt in step 5 edits your website’s code: give Manus the repository through its GitHub connector, or use Claude Code, Codex or Cursor.",
+        `If Manus asks for a header instead of a token, use the name Authorization and the value Bearer followed by your key.`,
+        "Then turn the folio connector on in a task, or add it to a Manus Project so every task in it starts with Folio. Any task with it on can use the key, so start with Read only and a short expiry.",
         ...(cloud === origin.replace(/\/$/, "") ? [] : [`Manus calls Folio from the internet, so this uses ${cloud}, not the address this page is open on.`]),
         "These steps follow Manus’s documentation; Folio hasn’t run them in a Manus account yet. If the test fails, tell us what Manus shows.",
       ] },
@@ -103,11 +107,21 @@ export function agentClients(origin: string): AgentClientSetup[] {
       intro: "Folio speaks Streamable HTTP MCP. Point your client at the endpoint with a bearer token.",
       blocks: [
         { label: "Endpoint", language: "text", code: url },
-        { label: "Header", language: "text", code: "Authorization: Bearer <your Folio key>" },
+        { label: "Header", language: "text", code: `Authorization: Bearer ${KEY_PLACEHOLDER}` },
       ],
       check: null,
       notes: ["Each request is independent: no session to keep alive, and GET streams aren’t needed.", "Browser-based clients must run on this Folio site’s own origin."] },
   ];
+}
+
+/**
+ * Which step the person is on. A key made on this page is tracked until its first call; otherwise any
+ * active key that has been used counts as connected (someone adding a second agent can skip ahead).
+ */
+export function onboardingProgress(input: { signedIn: boolean; activeKeys: number; usedKeys: number; newKey: { used: boolean } | null }) {
+  const keyReady = input.signedIn && input.activeKeys > 0;
+  const connected = keyReady && (input.newKey ? input.newKey.used : input.usedKeys > 0);
+  return { keyReady, connected, current: !keyReady ? 2 : !connected ? 3 : 5 } as const;
 }
 
 /** A terminal check that needs no agent: lists the websites the key can read. Uses the env variable, never the key itself. */

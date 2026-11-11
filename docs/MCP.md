@@ -4,7 +4,7 @@ Folio serves authenticated Streamable HTTP at `/api/mcp` in its existing Next.js
 
 ## Connect a coding client
 
-The **Connect your agent** panel (on `/agents#connect` and every organization page) does this step by step: pick a client, create a key for it inline (shown once, masked on screen), copy that client's setup, watch a status box turn green when the key makes its first call, then paste a starter prompt. Its snippets, permission guide and troubleshooting come from `src/lib/agent-onboarding.ts`; a unit test keeps the permission guide in step with each tool's scope here.
+The **Connect your agent** panel (on `/agents#connect` and every organization page) does this step by step: pick a client, create a key for it inline (shown once, masked on screen), copy that client's setup, watch a status box turn green when the key makes its first call, then paste a starter prompt. The step to do next is highlighted (`onboardingProgress`). Setups for clients that can't read `FOLIO_API_KEY` show a `<your Folio key>` placeholder; once a key is created on the page, their copy buttons fill it in (`withKey`), while the screen keeps the placeholder or a masked key. Its snippets, permission guide and troubleshooting come from `src/lib/agent-onboarding.ts`; a unit test keeps the permission guide in step with each tool's scope here.
 
 Setups shown there, each checked on 11 November 2026 against production with a temporary read key (since deleted):
 

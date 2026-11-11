@@ -5,12 +5,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Bot, Check, CircleCheck, Copy, Eye, EyeOff, KeyRound, Loader2, MessageSquareText, PlugZap, ShieldCheck, Terminal, Wrench } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import type { AgentApiKeySummary, AgentApiScope } from "@/lib/agent-observation-types";
-import { AGENT_PERMISSIONS, CONNECTION_TROUBLESHOOTING, agentClients, connectionTestCommand, exportLine, publicIndexEndpoint, reachableOrigin, starterPrompts, type AgentClientId, type SetupBlock } from "@/lib/agent-onboarding";
+import { AGENT_PERMISSIONS, CONNECTION_TROUBLESHOOTING, KEY_PLACEHOLDER, agentClients, connectionTestCommand, exportLine, isFormField, onboardingProgress, publicIndexEndpoint, reachableOrigin, starterPrompts,
+  withKey, type AgentClientId, type SetupBlock } from "@/lib/agent-onboarding";
 import { UiSelect } from "./ui/select";
 import "./agent-onboarding.css";
 
 const WATCH_MS = 15 * 60_000, POLL_MS = 4_000;
 const active = (key: AgentApiKeySummary, now: number) => !key.revokedAt && Date.parse(key.expiresAt) > now;
+/** What the screen shows of a new key: enough to recognise it, never enough to use it. */
+const masked = (token: string) => `${token.slice(0, 13)}${"•".repeat(16)}`;
 function used(iso: string | null, now: number) {
   if (!iso) return "not used yet";
   const seconds = Math.max(0, (now - Date.parse(iso)) / 1000);
@@ -23,11 +26,27 @@ export function CopyButton({ text, label = "Copy", className = "" }: { text: str
     try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1600); } catch { /* The text stays selectable. */ }
   }}>{copied ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}{copied ? "Copied" : label}</button>;
 }
-function Code({ block }: { block: SetupBlock }) {
+/** A file or command. If it needs the key and one was just created, copying fills it in; the screen keeps the placeholder. */
+function Code({ block, token = null }: { block: SetupBlock; token?: string | null }) {
+  const keyed = block.code.includes(KEY_PLACEHOLDER);
   return <figure className="ao-code">
-    <figcaption><span>{block.label}{block.file && <code>{block.file}</code>}</span><CopyButton text={block.code} /></figcaption>
+    <figcaption><span>{block.label}{block.file && <code>{block.file}</code>}</span>
+      {keyed && token ? <CopyButton text={withKey(block.code, token)} label="Copy with your key" /> : <CopyButton text={block.code} />}</figcaption>
     <pre data-language={block.language}>{block.code}</pre>
+    {keyed && <p className="ao-expect">{token ? "The copy includes your new key, so there’s nothing to replace." : `Replace ${KEY_PLACEHOLDER} with your key.`}</p>}
   </figure>;
+}
+/** Values typed into a client’s form, one per row, each with its own copy button. */
+function Fields({ blocks, token }: { blocks: SetupBlock[]; token: string | null }) {
+  return <dl className="ao-fields">{blocks.map(block => {
+    const keyOnly = block.code === KEY_PLACEHOLDER, keyed = block.code.includes(KEY_PLACEHOLDER);
+    return <div key={block.label}>
+      <dt>{block.label}</dt>
+      <dd><code>{keyOnly && token ? masked(token) : block.code}</code>
+        {keyed && token ? <CopyButton text={withKey(block.code, token)} label={keyOnly ? "Copy key" : "Copy with your key"} />
+          : keyOnly ? <span className="ao-field-hint">Paste the key from step 2</span> : <CopyButton text={block.code} />}</dd>
+    </div>;
+  })}</dl>;
 }
 
 /** The signed-in person's keys, with a light poll while a new key waits for its first call. Reads only. */
@@ -77,6 +96,14 @@ export function AgentOnboarding({ domain = null, organization = null, onKeysChan
   const connected = live.filter(key => key.lastUsedAt).sort((a, b) => Date.parse(b.lastUsedAt!) - Date.parse(a.lastUsedAt!));
   const prompts = starterPrompts({ domain, organization });
   const firstName = session?.user.name?.split(/\s+/)[0] ?? "My";
+  // The key made on this page, for the copy buttons in step 3. It lives only in this tab’s memory.
+  const fresh = watch && watched && !watched.revokedAt ? watch.token : null;
+  const progress = onboardingProgress({ signedIn, activeKeys: live.length, usedKeys: connected.length, newKey: watch && watched ? { used: Boolean(watched.lastUsedAt) } : null });
+  const done = (n: number) => (n === 2 && progress.keyReady) || ((n === 3 || n === 4) && progress.connected);
+  const step = (n: number) => ({ className: `ao-step ${n === progress.current ? "is-current" : done(n) ? "is-done" : n > progress.current ? "is-later" : ""}`,
+    "aria-current": n === progress.current ? "step" as const : undefined });
+  const number = (n: number) => <span className={`ao-number ${done(n) ? "is-done" : ""}`}>{done(n) ? <Check size={14} aria-label="Done" /> : n}</span>;
+  const fields = client.blocks.filter(isFormField), files = client.blocks.filter(block => !isFormField(block));
 
   const body = <>
     <ol className="ao-steps">
@@ -87,7 +114,7 @@ export function AgentOnboarding({ domain = null, organization = null, onKeysChan
             <strong>{item.label}</strong><small>{item.kind}</small></button>)}</div>
       </div></li>
 
-      <li className="ao-step"><span className={`ao-number ${live.length ? "is-done" : ""}`}>{live.length ? <Check size={14} aria-label="Done" /> : "2"}</span><div className="ao-step-body">
+      <li {...step(2)}>{number(2)}<div className="ao-step-body">
         <h3><KeyRound size={16} aria-hidden="true" />Create a key for {client.label}</h3>
         {isPending ? <p role="status">Checking your sign-in…</p> : !signedIn
           ? <p>Each person uses their own key. <Link href={`/login?next=${encodeURIComponent(organization ? "/orgs" : "/agents")}`}>Sign in to create one</Link>.</p>
@@ -96,15 +123,16 @@ export function AgentOnboarding({ domain = null, organization = null, onKeysChan
             onCreated={(key, token) => { setKeys(previous => [key, ...(previous ?? [])]); setWatch({ id: key.id, token, since: Date.now() }); setNow(Date.now()); onKeysChanged?.(); }} />}
       </div></li>
 
-      <li className="ao-step"><span className="ao-number">3</span><div className="ao-step-body">
+      <li {...step(3)}>{number(3)}<div className="ao-step-body">
         <h3><PlugZap size={16} aria-hidden="true" />Add Folio to {client.label}</h3>
         <p>{client.intro}</p>
-        <div className="ao-blocks">{client.blocks.map(block => <Code key={block.label} block={block} />)}</div>
+        {fields.length > 0 && <Fields blocks={fields} token={fresh} />}
+        {files.length > 0 && <div className="ao-blocks">{files.map(block => <Code key={block.label} block={block} token={fresh} />)}</div>}
         {client.notes.length > 0 && <ul className="ao-notes">{client.notes.map(note => <li key={note}>{note}</li>)}</ul>}
         <p className="ao-aside">Just looking around? <code>{publicIndexEndpoint(client.id === "manus" ? reachableOrigin(origin) : origin)}</code> needs no key and reads Folio’s published AI answers only.</p>
       </div></li>
 
-      <li className="ao-step"><span className={`ao-number ${connected.length ? "is-done" : ""}`}>{connected.length ? <Check size={14} aria-label="Done" /> : "4"}</span><div className="ao-step-body">
+      <li {...step(4)}>{number(4)}<div className="ao-step-body">
         <h3><Terminal size={16} aria-hidden="true" />Check it’s connected</h3>
         <div className="ao-check-grid">
           <div>
@@ -119,7 +147,7 @@ export function AgentOnboarding({ domain = null, organization = null, onKeysChan
         </div>
       </div></li>
 
-      <li className="ao-step"><span className="ao-number">5</span><div className="ao-step-body">
+      <li {...step(5)}>{number(5)}<div className="ao-step-body">
         <h3><MessageSquareText size={16} aria-hidden="true" />Ask it something</h3>
         <p>Paste one of these into {client.label}. Each says which tools it uses and what the key needs; none of them spends credits.</p>
         <div className="ao-prompts">{prompts.map(prompt => <article key={prompt.id} className="ao-prompt">
@@ -180,11 +208,11 @@ function KeyForm({ clientLabel, firstName, organization, readsShell, existing, n
     const line = exportLine(created.token);
     return <div className="ao-new-key" role="status">
       <p><CircleCheck size={16} aria-hidden="true" /><strong>{created.name} is ready.</strong> The key is shown only now; copy it before you leave this page.</p>
-      <div className="ao-secret"><code aria-label="Your new key">{revealed ? line : `export FOLIO_API_KEY="${created.token.slice(0, 13)}${"•".repeat(16)}"`}</code>
+      <div className="ao-secret"><code aria-label="Your new key">{revealed ? line : `export FOLIO_API_KEY="${masked(created.token)}"`}</code>
         <button type="button" className="button secondary ao-copy" onClick={() => setRevealed(value => !value)}>{revealed ? <EyeOff size={14} aria-hidden="true" /> : <Eye size={14} aria-hidden="true" />}{revealed ? "Hide" : "Show"}</button>
         <CopyButton text={readsShell ? line : created.token} label={readsShell ? "Copy export line" : "Copy key"} /></div>
       <p className="ao-aside">{readsShell ? `Paste it into the terminal you start ${clientLabel} from. To keep it for new terminals, add the same line to ~/.zshrc (or your shell’s profile).`
-        : `${clientLabel} doesn’t read your terminal’s variables: paste the key where step 3 says.`}{organization ? ` Teammates in ${organization} see this agent’s name and when it was last used, never the key.` : ""}</p>
+        : `${clientLabel} doesn’t read your terminal’s variables. In step 3, the copy buttons that mention your key put it in for you.`}{organization ? ` Teammates in ${organization} see this agent’s name and when it was last used, never the key.` : ""}</p>
       <button type="button" className="text-link" onClick={() => setCreated(null)}>Create another key</button>
     </div>;
   }

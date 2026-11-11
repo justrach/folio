@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowRight, Bot, Globe2, Link2, LogOut, Mail, Plus, Share2, UserPlus, Users } from "lucide-react";
+import { ArrowRight, Bot, Globe2, Link2, LogOut, Mail, Plus, Send, Share2, UserPlus, Users } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import type { InvitePreview, JoinedByEmail, OrganizationDetail, OrganizationSummary } from "@/lib/organizations";
 import { UiSelect } from "./ui/select";
 import { WebsiteVisibility } from "./website-visibility";
 import { AgentOnboarding, CopyButton } from "./agent-onboarding";
+import { inviteMailto, inviteMessage } from "@/lib/organization-invite-message";
 import "./organizations.css";
 
 const PENDING_INVITE = "folio-pending-invite";
@@ -45,31 +46,34 @@ export function Organizations() {
     <div className="org-actions"><Link className="button primary" href="/login?next=/orgs">Sign in to continue<ArrowRight size={15} aria-hidden="true" /></Link>
       <Link className="button secondary" href="/orgs?view=preview">See the sample team preview</Link></div>
   </section>;
-  return <SignedIn key={session.user.id} pending={pending} clearPending={() => { sessionStorage.removeItem(PENDING_INVITE); setPending(null); }}
+  return <SignedIn key={session.user.id} emailVerified={session.user.emailVerified === true} pending={pending} clearPending={() => { sessionStorage.removeItem(PENDING_INVITE); setPending(null); }}
     onInvite={token => { sessionStorage.setItem(PENDING_INVITE, token); setPending(token); }} />;
 }
 
-function SignedIn({ pending, clearPending, onInvite }: { pending: string | null; clearPending: () => void; onInvite: (token: string) => void }) {
+function SignedIn({ emailVerified, pending, clearPending, onInvite }: { emailVerified: boolean; pending: string | null; clearPending: () => void; onInvite: (token: string) => void }) {
   const [organizations, setOrganizations] = useState<OrganizationSummary[] | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [creating, setCreating] = useState(false);
-  const [joined, setJoined] = useState<JoinedByEmail[]>([]);
+  // Organizations this person just joined, with how they joined: each gets a short welcome until dismissed.
+  const [welcome, setWelcome] = useState<Record<string, string>>({});
+  const greet = useCallback((items: { id: string; text: string }[]) => {
+    if (items.length) setWelcome(previous => ({ ...previous, ...Object.fromEntries(items.map(item => [item.id, item.text])) }));
+  }, []);
   const load = useCallback(async (choose?: string) => {
     try {
       // Reading the list also joins any organization that added this person's verified email.
       const { organizations: list, joined: added = [] } = await call<{ organizations: OrganizationSummary[]; joined?: JoinedByEmail[] }>("/api/organizations");
-      if (added.length) setJoined(added);
+      greet(added.map(item => ({ id: item.id, text: `${item.addedBy ?? "An owner"} added you to ${item.name}.` })));
       const pick = choose ?? added[0]?.id;
       setOrganizations(list); setSelected(previous => pick ?? (previous && list.some(item => item.id === previous) ? previous : list[0]?.id ?? null)); setError("");
     } catch (failure) { setError(failure instanceof Error ? failure.message : "Your organizations couldn’t be loaded."); }
-  }, []);
+  }, [greet]);
   useEffect(() => { void load(); }, [load]);
   if (!organizations) return error ? <p role="alert">{error} <button className="text-link" onClick={() => void load()}>Try again</button></p> : <p role="status">Loading organizations…</p>;
   return <div className="org-workspace">
-    {joined.length > 0 && <p role="status" className="org-notice">{joined.map(item => `${item.addedBy ?? "An owner"} added you to ${item.name}.`).join(" ")} You can leave {joined.length === 1 ? "it" : "any of them"} at the bottom of the page.</p>}
-    {pending && <JoinCard token={pending} onDone={async organizationId => { clearPending(); await load(organizationId ?? undefined); }} />}
-    {organizations.length === 0 ? <StartCard onCreated={id => load(id)} onInvite={onInvite} />
+    {pending && <JoinCard token={pending} onDone={async (organizationId, joinedVia) => { clearPending(); if (organizationId && joinedVia) greet([{ id: organizationId, text: `You joined ${joinedVia.name}${joinedVia.invitedBy ? ` with ${joinedVia.invitedBy}’s invite` : ""}.` }]); await load(organizationId ?? undefined); }} />}
+    {organizations.length === 0 ? <StartCard emailVerified={emailVerified} onCreated={id => load(id)} onInvite={onInvite} />
       : <>
         <div className="org-switcher">
           {organizations.length > 1 && <label>Organization<UiSelect aria-label="Organization" value={selected ?? ""} onChange={event => setSelected(event.target.value)}>
@@ -78,12 +82,14 @@ function SignedIn({ pending, clearPending, onInvite }: { pending: string | null;
           <JoinByLink compact onInvite={onInvite} />
         </div>
         {creating && <CreateForm onCreated={async id => { setCreating(false); await load(id); }} />}
-        {selected && <OrganizationView key={selected} id={selected} onLeft={() => load()} onChanged={() => load(selected)} />}
+        {selected && <OrganizationView key={selected} id={selected} onLeft={() => load()} onChanged={() => load(selected)}
+          welcome={Object.hasOwn(welcome, selected) ? welcome[selected] : null}
+          onDismissWelcome={() => setWelcome(previous => Object.fromEntries(Object.entries(previous).filter(([id]) => id !== selected)))} />}
       </>}
   </div>;
 }
 
-function JoinCard({ token, onDone }: { token: string; onDone: (organizationId: string | null) => Promise<void> }) {
+function JoinCard({ token, onDone }: { token: string; onDone: (organizationId: string | null, joined?: { name: string; invitedBy: string | null }) => Promise<void> }) {
   const [preview, setPreview] = useState<InvitePreview | null>(null);
   const [error, setError] = useState(""), [busy, setBusy] = useState(false);
   useEffect(() => { call<{ invite: InvitePreview }>("/api/organizations/invites", { action: "preview", token }).then(result => setPreview(result.invite), failure => setError(failure.message)); }, [token]);
@@ -96,7 +102,7 @@ function JoinCard({ token, onDone }: { token: string; onDone: (organizationId: s
     <div className="org-actions">
       {!preview.alreadyMember && <button className="button primary" disabled={busy} onClick={async () => {
         setBusy(true);
-        try { const result = await call<{ organizationId: string }>("/api/organizations/invites", { action: "accept", token }); await onDone(result.organizationId); }
+        try { const result = await call<{ organizationId: string }>("/api/organizations/invites", { action: "accept", token }); await onDone(result.organizationId, { name: preview.organization.name, invitedBy: preview.invitedBy }); }
         catch (failure) { setError(failure instanceof Error ? failure.message : "Joining didn’t work."); setBusy(false); }
       }}>Join organization</button>}
       <button className="button secondary" disabled={busy} onClick={() => void onDone(preview.alreadyMember ? preview.organization.id : null)}>{preview.alreadyMember ? "Open it" : "Not now"}</button>
@@ -132,18 +138,21 @@ function JoinByLink({ compact = false, onInvite }: { compact?: boolean; onInvite
   return compact ? <details className="org-join-details"><summary><Link2 size={14} aria-hidden="true" />Join with a link</summary>{form}</details> : form;
 }
 
-function StartCard({ onCreated, onInvite }: { onCreated: (id: string) => Promise<void> | void; onInvite: (token: string) => void }) {
+function StartCard({ emailVerified, onCreated, onInvite }: { emailVerified: boolean; onCreated: (id: string) => Promise<void> | void; onInvite: (token: string) => void }) {
   return <section className="panel org-start" aria-label="Start an organization">
     <header><Users size={22} aria-hidden="true" /><div><h2>Work on websites together</h2>
       <p>An organization is a team in Folio. Members share websites, read the same “where it shows up” reports, and connect their own agents, which can read everything the team shares.</p></div></header>
     <div className="org-start-grid">
       <div><h3>Create one</h3><p>You become its owner and can invite people with a link.</p><CreateForm onCreated={onCreated} /></div>
-      <div><h3>Join one</h3><p>Someone in the organization sends you an invite link.</p><JoinByLink onInvite={onInvite} /></div>
+      <div><h3>Join one</h3><p>Someone in the organization sends you an invite link.</p><JoinByLink onInvite={onInvite} />
+        {/* Said to every unverified account alike, so it reveals nothing about who was added. */}
+        {!emailVerified && <p className="org-hint">Were you added by email? That only works when you sign in with Google or GitHub using that address, because this account’s email isn’t verified. Or ask for an invite link instead.</p>}</div>
     </div>
   </section>;
 }
 
-function OrganizationView({ id, onLeft, onChanged }: { id: string; onLeft: () => void; onChanged: () => void }) {
+function OrganizationView({ id, onLeft, onChanged, welcome, onDismissWelcome }: { id: string; onLeft: () => void; onChanged: () => void;
+  welcome: string | null; onDismissWelcome: () => void }) {
   const { data: session } = authClient.useSession();
   const [detail, setDetail] = useState<OrganizationDetail | null>(null);
   const [error, setError] = useState(""), [notice, setNotice] = useState(""), [busy, setBusy] = useState(false);
@@ -166,12 +175,26 @@ function OrganizationView({ id, onLeft, onChanged }: { id: string; onLeft: () =>
     } catch (failure) { setError(failure instanceof Error ? failure.message : "That didn’t work."); return false; } finally { setBusy(false); }
   }
   if (!detail) return error ? <p role="alert">{error}</p> : <p role="status">Loading the organization…</p>;
-  const owner = detail.yourRole === "owner", waiting = detail.pending ?? [], signInLink = `${origin}/login?next=/orgs`;
+  const owner = detail.yourRole === "owner", waiting = detail.pending ?? [], firstSite = detail.websites[0] ?? null;
+  const from = session?.user.name?.split(/\s+/)[0] ?? null;
   return <div className="org-detail">
     <header className="panel org-head">
       <div className="org-mark" aria-hidden="true">{initials(detail.name)}</div>
       <div><h2>{detail.name}</h2><p><span className="org-role">{owner ? "Owner" : "Member"}</span>{detail.members.length} member{detail.members.length === 1 ? "" : "s"} · {detail.websites.length} shared website{detail.websites.length === 1 ? "" : "s"} · since {day(detail.createdAt)}</p></div>
     </header>
+    {welcome && <section className="panel org-welcome" aria-labelledby="org-welcome-title">
+      <div>
+        <h3 id="org-welcome-title">Welcome to {detail.name}</h3>
+        <p role="status">{welcome} Two things to do first:</p>
+        <ol className="org-welcome-steps">
+          <li>{firstSite ? <><a href="#org-websites-title">Read what {firstSite.domain} is missing</a><span>The team’s shared report. Nothing to set up.</span></>
+            : <><a href="#org-websites-title">Share a website</a><span>Nothing is shared yet. Share one of yours, or wait for a teammate to.</span></>}</li>
+          <li><a href="#connect">Connect your agent</a><span>With your own key, so it can read the same reports.</span></li>
+        </ol>
+        <p className="org-hint">Not expecting this? You can leave at the bottom of the page.</p>
+      </div>
+      <button type="button" className="text-link" onClick={onDismissWelcome}>Dismiss</button>
+    </section>}
     {notice && <p role="status" className="org-notice">{notice}</p>}
     {error && <p role="alert" className="org-notice is-error">{error}</p>}
 
@@ -216,19 +239,25 @@ function OrganizationView({ id, onLeft, onChanged }: { id: string; onLeft: () =>
       <div className="org-invite-ways">
         <div className="org-invite-way">
           <h3><Mail size={16} aria-hidden="true" />Add by email</h3>
-          <p>They don’t need a Folio account yet. They join {detail.name} the first time they sign in with this email through Google or GitHub. Folio doesn’t send an email, so send them the sign-in link yourself.</p>
+          <p>They don’t need a Folio account yet. They join {detail.name} the first time they sign in with this email through Google or GitHub. Folio doesn’t send email: once they’re listed below, send the invite from your own mail app or copy the message.</p>
           <form className="org-add-email" onSubmit={async event => {
             event.preventDefault();
             const address = email.trim();
-            if (await act({ action: "add_by_email", email: address }, `${address} will join ${detail.name} when they sign in with that email. Send them ${signInLink}.`)) setEmail("");
+            if (await act({ action: "add_by_email", email: address }, `${address} will join ${detail.name} when they sign in with that email. Send them the invite below.`)) setEmail("");
           }}>
             <label>Email<input type="email" value={email} maxLength={254} autoComplete="off" placeholder="name@company.com" onChange={event => setEmail(event.target.value)} required /></label>
             <button className="button primary" disabled={busy || !email.trim()}>Add</button>
           </form>
-          {waiting.length > 0 && <ul className="org-invite-list" aria-label="Waiting to sign in">{waiting.map(item => <li key={item.id}>
-            <span><strong>{item.email}</strong> · waiting to sign in</span><span>Added {day(item.addedAt)}{item.addedBy ? ` by ${item.addedBy}` : ""} · until {day(item.expiresAt)}</span>
-            <button type="button" className="text-link" disabled={busy} onClick={() => void act({ action: "cancel_email_invite", inviteId: item.id }, `${item.email} won’t be added.`)}>Cancel</button></li>)}</ul>}
-          <div className="org-sign-in-link"><code>{signInLink}</code><CopyButton text={signInLink} label="Copy sign-in link" /></div>
+          {waiting.length > 0 && <ul className="org-waiting" aria-label="Waiting to sign in">{waiting.map(item => {
+            const message = { organization: detail.name, email: item.email, origin, from };
+            return <li key={item.id}>
+              <div><strong>{item.email}</strong><span>Waiting to sign in · added {day(item.addedAt)}{item.addedBy ? ` by ${item.addedBy}` : ""} · until {day(item.expiresAt)}</span></div>
+              <div className="org-waiting-actions">
+                <a className="button secondary ao-copy" href={inviteMailto(message)}><Send size={14} aria-hidden="true" />Email the invite</a>
+                <CopyButton text={inviteMessage(message).body} label="Copy message" />
+                <button type="button" className="text-link" disabled={busy} onClick={() => void act({ action: "cancel_email_invite", inviteId: item.id }, `${item.email} won’t be added.`)}>Cancel</button>
+              </div></li>;
+          })}</ul>}
         </div>
         <div className="org-invite-way">
           <h3><Link2 size={16} aria-hidden="true" />Share an invite link</h3>
