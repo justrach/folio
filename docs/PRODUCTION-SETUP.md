@@ -135,6 +135,16 @@ deployment `/orgs` and `/orgs?view=preview` returned 200 and the organization AP
 On the owner's request a **Manus** organization was created on the owner's account with `manus.im` shared; it has
 no other members and no invite link yet.
 
+**Connect your agent** (`23199b4`) followed: frontend `83756c23-b71e-4ebc-9042-b016cf95268e`, backend
+`dfdd9986-2432-4d24-8f83-23a0b60feffc` (`--keep-vars`). No migration or secret change. The client setups were checked
+against production with a temporary read key named "Setup check (temporary)", deleted afterwards along with its
+recorded asks. The organization detail and website-gaps reads now run their queries one at a time; in parallel they
+exhausted the 25-connection Postgres under concurrent local loads. Validation: typecheck, 435 unit tests, 9 D1
+integration tests, the production build and both smoke tests; the browser checks for this panel passed earlier in
+the day, and a later local rerun was cut short by the dev server's `workerd` connection leak (see TODO). After
+deployment `/agents`, `/orgs`, `/websites` and `/docs/api` returned 200, `/api/agent-keys` returned 401 without a
+session, and the served stylesheet includes the panel.
+
 ### Vector store
 
 Page embeddings live in turbopuffer, not Postgres (see [embeddings](EMBEDDINGS.md)).
