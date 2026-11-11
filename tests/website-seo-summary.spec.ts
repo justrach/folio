@@ -130,6 +130,50 @@ test("an incomplete website report keeps missing values distinct from measured z
   expect(state.posts).toBe(0);
 });
 
+test("a failed latest lookup falls back to the last report with numbers and says so", async ({page}) => {
+  const failedAt = "2026-11-11T04:32:00.000Z";
+  const failed = { ...codegraff, id: "saved-failed", createdAt: failedAt, retrievedAt: failedAt, result: { ...codegraff.result, status: "error", fetchedAt: failedAt,
+    organic: { status: "error", data: null }, backlinks: { status: "error", data: null } } };
+  const state = await setup(page);
+  await page.route("**/api/seo-reports", route => route.fulfill({json: {reports: [failed, codegraff].map(({result, ...saved}) => ({...saved, status: result.status}))}}));
+  await page.route(`**/api/seo-reports/${failed.id}`, route => { state.reads.push(failed.id); return route.fulfill({json: {report: failed}}); });
+  await page.goto("/websites");
+  const summary = page.getByRole("region", {name: "Website search and backlinks"});
+  await expect(summary).toContainText("142");
+  await expect(summary).toContainText("didn’t return any data");
+  await expect(summary.locator("dd").filter({hasText: /^Unavailable$/})).toHaveCount(0);
+  expect(state.reads).toEqual([failed.id, codegraff.id]);
+  expect(state.posts).toBe(0);
+});
+
+test("a report with no data at all shows one explanation instead of empty numbers", async ({page}) => {
+  const state = await setup(page);
+  await page.route(`**/api/seo-reports/${codegraff.id}`, route => route.fulfill({json: {report: {
+    ...codegraff, result: {...codegraff.result, status: "error", organic: {status: "error", data: null}, backlinks: {status: "error", data: null}},
+  }}}));
+  await page.goto("/websites");
+  const summary = page.getByRole("region", {name: "Website search and backlinks"});
+  await expect(summary).toContainText("The last update didn’t return any data");
+  await expect(summary.locator("dd")).toHaveCount(0);
+  await expect(summary.getByRole("button", {name: "Update website data", exact: true})).toBeEnabled();
+  expect(state.posts).toBe(0);
+});
+
+test("a domain without ranking data reads as none found, large counts are shortened", async ({page}) => {
+  await setup(page);
+  await page.route(`**/api/seo-reports/${codegraff.id}`, route => route.fulfill({json: {report: {
+    ...codegraff, result: {...codegraff.result, organic: {status: "empty", data: null},
+      backlinks: {status: "success", data: {backlinks: 1474900, referringDomains: 14634, referringMainDomains: 12001}}},
+  }}}));
+  await page.goto("/websites");
+  const summary = page.getByRole("region", {name: "Website search and backlinks"});
+  await expect(summary.locator("dd").filter({hasText: /^None found$/})).toHaveCount(2);
+  await expect(summary.locator("dd").filter({hasText: /^1\.47M$/})).toHaveAttribute("title", "1,474,900");
+  await expect(summary).toContainText("14,634");
+  await expect(summary).toContainText("12,001 main domains");
+  await expect(summary).not.toContainText("Some data is unavailable");
+});
+
 test("opening an existing Search Console property adds its private website without requesting new search or model work", async ({page}) => {
   const state = await setup(page);
   const connectedSite = {...sites[0], url: "https://codegraff.com/", name: "codegraff.com"};

@@ -109,6 +109,13 @@ backend `832e1ec7-1974-4d90-a10a-5cd2392f4a8f` (`--keep-vars`). Typecheck, 427 u
 build and both smoke tests passed; production pages returned 200, private APIs 401, and the served
 stylesheets include `--folio-raised`. This release was then fast-forwarded to `main`.
 
+The production `DATAFORSEO_LOGIN` / `DATAFORSEO_PASSWORD` secrets were being rejected (HTTP 401 on both
+lookups of a website update); they were replaced with the working account credentials the same day.
+`manus.im` was added as a saved website for the owner, and one lookup each was saved for
+`usefolio.site` and `manus.im` ($0.072 in total). The website **Search and backlinks** panel was then
+redesigned: a lookup that returned nothing shows one explanation and falls back to the last report
+with numbers, a domain without ranking data reads "None found", and large counts are shortened.
+
 ### Vector store
 
 Page embeddings live in turbopuffer, not Postgres (see [embeddings](EMBEDDINGS.md)).
