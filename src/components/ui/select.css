@@ -3,7 +3,7 @@
   width: 100%; min-width: 0; min-height: 44px; height: auto; padding: 10px 12px;
   border: 1px solid var(--folio-edge); border-radius: 16px;
   background: var(--folio-surface); color: var(--folio-ink);
-  font: 400 13px/1.5 var(--folio-font-body); text-align: left; cursor: pointer;
+  font: 400 14px/1.5 var(--folio-font-body); text-align: left; cursor: pointer;
 }
 .folio-select-trigger > span:first-child { min-width: 0; }
 .folio-select-value { display: block; white-space: normal; overflow-wrap: anywhere; }
@@ -16,7 +16,7 @@
   max-height: min(360px, var(--radix-select-content-available-height)); overflow: hidden;
   border: 1px solid var(--folio-edge); border-radius: 14px;
   background: var(--folio-surface); color: var(--folio-ink);
-  box-shadow: 0 10px 30px var(--folio-dialog-shadow); font: 400 13px/1.5 var(--folio-font-body);
+  box-shadow: 0 10px 30px var(--folio-dialog-shadow); font: 400 14px/1.5 var(--folio-font-body);
 }
 .folio-select-viewport { padding: 5px; max-height: inherit; overscroll-behavior: contain; }
 .folio-select-option { position: relative; display: flex; align-items: center; min-height: 40px; padding: 10px 32px 10px 10px; border-radius: 6px; white-space: normal; overflow-wrap: anywhere; cursor: pointer; outline: none; }
@@ -24,8 +24,8 @@
 .folio-select-option[data-highlighted], .folio-select-option[data-state="checked"] { background: var(--folio-accent-soft); color: var(--folio-ink); }
 .folio-select-option[data-disabled] { opacity: .45; cursor: not-allowed; }
 .folio-select-check { position: absolute; display: flex; right: 10px; top: 12px; }
-.folio-select-group { padding: 12px 10px 5px; color: var(--folio-text-secondary); font-size: 12px; font-weight: 500; }
-.api-code-heading .folio-select-trigger { width: auto; min-width: 100px; margin-left: auto; font-size: 12px; }
+.folio-select-group { padding: 12px 10px 5px; color: var(--folio-text-secondary); font-size: 13px; font-weight: 500; }
+.api-code-heading .folio-select-trigger { width: auto; min-width: 100px; margin-left: auto; font-size: 13px; }
 @media (max-width: 700px) {
   .folio-select-trigger { font-size: 16px; }
   .folio-select-option { min-height: 44px; font-size: 14px; }

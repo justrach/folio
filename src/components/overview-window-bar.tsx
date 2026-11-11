@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useId, useMemo, useRef, useState } from "react";
-import { CalendarRange, Check, Download, FileSpreadsheet } from "lucide-react";
+import { CalendarRange, Check, ChevronDown, Download, FileSpreadsheet } from "lucide-react";
 import { scrubIndex } from "@/lib/overview-question-filters";
 import { byteSize, formatBytes, WINDOW_PRESETS, type DailyPoint, type DateWindow } from "@/lib/overview-window";
 
@@ -157,7 +157,7 @@ export function OverviewWindowBar({ window, bounds, label, series, inWindow, exp
       </div>
       <ExportMenu exports={exports} label={label} />
     </div>
-    <p className="owb-scope" role="status">{label}: {inWindow.questions} {inWindow.questions === 1 ? "question" : "questions"} with an attempt, {inWindow.attempts} saved {inWindow.attempts === 1 ? "attempt" : "attempts"}, {inWindow.audits} {inWindow.audits === 1 ? "audit" : "audits"}. Answer cards use all loaded history.</p>
-    {series.length ? <details className="owb-inspector"><summary className="squishy-control">Inspect saved activity</summary><RangeChart key={`${series[0].day}:${series.at(-1)?.day}:${label}`} series={series} /></details> : <p className="owb-scope">No saved attempts loaded yet, so there is no activity to chart.</p>}
+    <p className="owb-scope" role="status">{label}: {inWindow.questions} {inWindow.questions === 1 ? "question" : "questions"} with an attempt, {inWindow.attempts} saved {inWindow.attempts === 1 ? "attempt" : "attempts"}, {inWindow.audits} {inWindow.audits === 1 ? "audit" : "audits"}.{window.preset !== "all" && " The date range narrows the question list, activity and audits. Answer charts still use all loaded history."}</p>
+    {series.length ? <details className="owb-inspector"><summary>Inspect saved activity<ChevronDown size={15} aria-hidden="true"/></summary><RangeChart key={`${series[0].day}:${series.at(-1)?.day}:${label}`} series={series} /></details> : <p className="owb-scope">No saved attempts loaded yet, so there is no activity to chart.</p>}
   </section>;
 }

@@ -192,37 +192,52 @@ html[data-folio-theme="dark"]{--folio-globe-ink:#e3eae4;--folio-globe-muted:#a0a
 :root{--folio-usage-view:#4e54e8;--folio-usage-work:#8462ce}
 html[data-folio-theme="dark"]{--folio-usage-view:#a7aaff;--folio-usage-work:#c3a6ee}
 
-/* Workspace chrome: shared light/dark tokens. */
+/* Workspace chrome: shared light/dark tokens.
+   Contrast targets on the surface, checked with the WCAG formula: body ink at least 15:1, secondary text 9:1,
+   muted text 7:1, control borders (edge-strong) 3:1. Hairlines (edge) are decorative and stay below that.
+   Shell, canvas and surface step apart by tone so a white card reads against the canvas without a heavy border. */
 .app-shell.folio-workspace {
-  --folio-shell: #e9e9ed;
-  --folio-canvas: #f7f7f8;
+  --folio-shell: #dddfe5;
+  --folio-canvas: #f2f3f5;
   --folio-surface: #ffffff;
   --folio-white: #ffffff;
-  --folio-surface-muted: #f0f1f2;
-  --folio-ink: #2c3631;
-  --folio-charcoal: #2c3631;
-  --folio-text-secondary: #5f6862;
-  --folio-text-muted: #667069;
-  --folio-text-faint: #667069;
-  --folio-edge: #e1e5e2;
-  --folio-edge-strong: #b5bfb9;
-  --folio-accent-soft: #e9efea;
+  /* Fill for raised controls: the selected tab or segment, secondary buttons, the current navigation item.
+     It equals the surface in light. In dark it is lighter than the muted track, so "raised" reads as raised. */
+  --folio-raised: #ffffff;
+  --folio-surface-muted: #e7e9ec;
+  --folio-ink: #141c17;
+  --folio-charcoal: #141c17;
+  --folio-text-secondary: #404a44;
+  --folio-text-muted: #515b55;
+  --folio-text-faint: #515b55;
+  --folio-edge: #cdd4cf;
+  --folio-edge-strong: #7c8981;
+  --folio-accent: #285038;
+  --folio-accent-hover: #1d3d2b;
+  --folio-accent-soft: #dde8df;
   --folio-brief-button-shadow: 0 3px 7px #16291b1a;
-  --folio-control-shadow: 0 2px 5px #222b2412, 0 5px 14px #222b2406;
+  /* The 1px ring gives raised white controls an edge on white panels, where a soft shadow alone disappears. */
+  --folio-control-shadow: 0 0 0 1px #141c171f, 0 1px 2px #141c171a, 0 4px 12px #141c170f;
 }
+/* Dark targets on the surface: ink at least 13:1 (near-white on a dark panel cannot reach the light theme's 15:1
+   without a harsh pure white), secondary text 10:1, muted text 9:1, control borders 4.5:1. The ladder runs
+   shell < canvas < surface < muted track < raised control, each step lighter than the last. */
 html[data-folio-theme="dark"] .app-shell.folio-workspace {
-  --folio-shell: #171d1a;
-  --folio-canvas: #1e2521;
-  --folio-surface: #28312b;
-  --folio-white: #28312b;
-  --folio-surface-muted: #313b34;
-  --folio-ink: #ecf0ec;
-  --folio-charcoal: #ecf0ec;
-  --folio-text-secondary: #bdc9bf;
-  --folio-text-muted: #a9b9ad;
-  --folio-text-faint: #a9b9ad;
-  --folio-edge: #303c34;
-  --folio-edge-strong: #697e6f;
-  --folio-accent-soft: #304438;
-  --folio-control-shadow: 0 3px 7px #070d0840, 0 6px 16px #070d0820;
+  --folio-shell: #0b0f0d;
+  --folio-canvas: #141a16;
+  --folio-surface: #212a24;
+  --folio-white: #212a24;
+  --folio-raised: #3e4b43;
+  --folio-surface-muted: #2c3730;
+  --folio-ink: #f6f9f6;
+  --folio-charcoal: #f6f9f6;
+  --folio-text-secondary: #d6dfd8;
+  --folio-text-muted: #c3cfc6;
+  --folio-text-faint: #c3cfc6;
+  --folio-edge: #42514a;
+  --folio-edge-strong: #7f9486;
+  --folio-accent: #b3d8be;
+  --folio-accent-hover: #c6e5cf;
+  --folio-accent-soft: #2f4638;
+  --folio-control-shadow: 0 0 0 1px #f6f9f624, 0 3px 7px #070d0859, 0 6px 16px #070d0833;
 }

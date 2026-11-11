@@ -11,6 +11,7 @@ import { ArrowUpRight, Check, ChevronRight, RefreshCw, Search } from "lucide-rea
 import { assertPublicDashboardData, type PublicDashboardData } from "@/lib/public-dashboard";
 import { publicModelView, type PublicModelTask } from "@/lib/public-model-view";
 import { RecordedRanking } from "./recorded-ranking";
+import { WorkspaceState } from "./workspace-state";
 import "./ranked-search-table.css";
 import "./public-benchmark-dashboard.css";
 
@@ -86,8 +87,11 @@ export function PublicBenchmarkDashboard() {
     return () => { disposed = true; controller.abort(); if (timer) clearTimeout(timer); };
   }, [revision]);
 
-  if (!data) return <section className={`public-benchmark-loading${error ? " public-benchmark-loading--error" : ""}`} aria-label="Public benchmark results" aria-busy={!error}>
-    {error ? <><h2>Public results are unavailable</h2><p>The saved benchmark could not be loaded. Try again to retrieve it.</p><button className="button secondary" onClick={() => setRevision(value => value + 1)}>Try again</button></> : <><p role="status">Loading public benchmark results…</p><div className="public-benchmark-placeholder" aria-hidden="true" /></>}
+  if (!data && error) return <WorkspaceState aria-label="Public benchmark results" aria-busy={false} title="Public results are unavailable" actions={<button type="button" className="button secondary" onClick={() => setRevision(value => value + 1)}>Try again</button>}>
+    <p>The saved benchmark could not be loaded. Try again to retrieve it.</p>
+  </WorkspaceState>;
+  if (!data) return <section className="public-benchmark-loading" aria-label="Public benchmark results" aria-busy={true}>
+    <p role="status">Loading public benchmark results…</p><div className="public-benchmark-placeholder" aria-hidden="true" />
   </section>;
 
   const view = publicModelView(data, model);
