@@ -185,6 +185,31 @@ passed on rerun), 30 browser checks on desktop and mobile, the production build 
 `/settings`, `/orgs`, `/search-data` and the `?org=`/`?report=` forms returned 200, `/api/workspace-search` returned
 401 without a session, and the served bundle contains the new search box.
 
+**Folio as an MCP App** (`cdf19ad`) followed: frontend `95b7919a-150a-424b-865e-e04d780ae7a2`, backend
+`05827bd9-692e-4f2e-805d-5c9672a348ff` (`--keep-vars`). No migration or secret change. MCP server `1.8.0` adds
+`folio_find` and the `ui://folio/workspace.html` resource; `folio_find` and `folio_website_gaps` carry `_meta.ui`. New
+dev dependency `@modelcontextprotocol/ext-apps` 1.7.5 (tests only; nothing in the Workers imports it).
+
+Before deploying, Folio's MCP handler ran against production Postgres for the owner in a read-only session, with no
+key created. Validation: typecheck, 444 unit tests, the 15 D1 integration tests for these areas, 18 browser checks
+including the page under the official `AppBridge` on desktop and mobile, the production build and both smoke tests.
+Transient failures, all of which passed on rerun:
+- Several D1 tests and one page load hit `connect ETIMEDOUT 127.0.0.1` while another session's local `workerd` held
+  thousands of loopback sockets.
+- The load-sensitive `workerd` unit test failed once.
+- The frontend smoke test failed once.
+- A first build failed on a type error in a new test, which was fixed.
+
+After deployment, a live check over HTTPS used a temporary read key named "MCP App check (temporary)". The key stayed
+in memory and was deleted afterwards (1 key deleted, 0 recorded asks, none remaining). It found:
+- server `folio` `1.8.0` with the resources capability;
+- both tools pointing at the app;
+- the page served as `text/html;profile=mcp-app` with `prefersBorder`;
+- `folio_find` "manus" returning the Manus organization, `manus.im` and its saved report, with `https://usefolio.site`
+  links.
+
+The app has not been opened in Claude Desktop or VS Code.
+
 ### Vector store
 
 Page embeddings live in turbopuffer, not Postgres (see [embeddings](EMBEDDINGS.md)).
