@@ -84,6 +84,25 @@ Validation: TypeScript, all 258 unit tests, 44 affected desktop/mobile browser c
 
 Live API validation confirmed 3,500 questions, 286 published observations, 121 distinct recommended hosts and 1,142 distinct cited URLs. All 286 observations are Astra open-web results; this release creates no new observations or model diversity. Homepage/login/overview returned 200; anonymous private site/benchmark APIs returned 401. The independent mention index retained its three cohorts and ten query breakdowns. These are different evaluation scopes and are not pooled.
 
+## 11 November Codegraff agent and index MCP release
+
+Deployed from `feat/codegraff-agent-and-index-mcp` (`bd6116e`, based on `82754f5`): keyword runs on Folio's
+own Codegraff agent, the AEO change loop, the published-index MCP endpoint and crawled-page search.
+Backend `folio-visibility` version `e00d583f-5ff1-42ba-98d7-0c746ac9131e` (`--keep-vars`), frontend
+`folio-frontend` version `459ad2c0-394b-4a28-9b50-3e96ae9e8009`. Rollback targets: backend
+`fbbf63dc-9784-4979-9ed8-9db8cbacb649`, frontend `f4848c41-77be-49ab-82e7-6166bac9f4e0`.
+
+`CODEGRAFF_API_KEY` was set on `folio-visibility` (the owner's existing key). The Postgres tables
+`website_changes` and `agent_index_asks` already existed. The D1 rollback engine still lists migrations
+0023–0027 as pending; they were not applied.
+
+Validation: typecheck, 427 unit tests, the keyword/public/hold-release/agent-API D1 integrations, the
+production OpenNext build and both built-Worker smoke tests. After deployment: homepage, `/leaderboard`,
+`/login` and `/api/public/benchmarks` returned 200; anonymous `/api/benchmarks`, `/api/changes` and
+`/api/index-asks` returned 401; `/api/index-mcp` answered initialize, `tools/list` and
+`folio_index_overview` from live published data, returned 405 to GET and 403 to a foreign origin.
+No keyword run was started as a deployment check.
+
 ### Vector store
 
 Page embeddings live in turbopuffer, not Postgres (see [embeddings](EMBEDDINGS.md)).
