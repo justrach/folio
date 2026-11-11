@@ -93,6 +93,10 @@ This guide describes the current UI. The [evaluation loop](EVALUATION-LOOP.md) e
 
 The `/seo` checks panel shows a left-hand percentage breakdown of all checks (including optional checks), with status filters and an inspector on the right. No tests appear until a user selects Pass, Needs improvement, Fail, or Optional using a bar or filter. Rows then expand to show findings, short supporting notes, and points. Optional checks are labeled Not scored; these count-based percentages are not the weighted SEO score. On mobile the breakdown stacks above the inspector. Saved evidence and scoring remain unchanged.
 
+## Onboarding website entry
+
+Step 1 of `/start` opens with the website form only, centered in a single column on desktop and stacked naturally on mobile. It does not show public example rankings or reserve an empty side panel. Typing a website still opens the existing private page-check preview; clearing the address removes it. The free check and Search Console handoff remain explicit actions. Public rankings and later competitor suggestions are unchanged.
+
 ## Customer question preview
 
 In `/start`, step 4 (**Customers**) previews the first question as the owner edits their customer and task descriptions. Long words and URLs wrap inside the preview on desktop and mobile without clipping, truncation, or changing the entered text. Editing this preview starts no paid work; customer descriptions are preserved without a field-length cap, while the shared task retains its 120-character limit.
