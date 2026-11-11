@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { selectValue } from "./select-helpers";
 
 const at = "2026-11-11T08:00:00.000Z";
 const token = `folio_join_${"ab".repeat(24)}`;
@@ -16,7 +17,7 @@ const report = { website: { id: "site-manus", name: "manus.im", url: "https://ma
 /** Organization writes only; product analytics events are not part of these flows. */
 const orgPosts = (state: { posts: Record<string, unknown>[] }) => state.posts.filter(post => String(post.path).startsWith("/api/organizations"));
 
-async function setup(page: Page, options: { signedIn?: boolean; organizations?: boolean; joinedByEmail?: boolean; emailVerified?: boolean } = {}) {
+async function setup(page: Page, options: { signedIn?: boolean; organizations?: boolean; joinedByEmail?: boolean; emailVerified?: boolean; second?: boolean } = {}) {
   const state = { posts: [] as Record<string, unknown>[], created: false, joined: false, pending: [] as { id: string; email: string; addedAt: string; expiresAt: string; addedBy: string | null }[] };
   const detail = () => ({ id: "org-1", name: "Manus", createdAt: at, yourRole: "owner",
     members: [member("rach", "Rach Pradhan", "owner", true, [{ name: "Rach's Claude Code", lastUsedAt: at }]), ...(state.joined ? [member("avery", "Avery Chen", "member", false)] : [])],
@@ -27,7 +28,8 @@ async function setup(page: Page, options: { signedIn?: boolean; organizations?: 
     const url = new URL(route.request().url()), method = route.request().method(), body = method === "POST" ? route.request().postDataJSON() as Record<string, unknown> : null;
     if (body) state.posts.push({ path: url.pathname, ...body });
     if (url.pathname === "/api/auth/get-session") return route.fulfill({ json: options.signedIn === false ? null : { user: { id: "rach", name: "Rach Pradhan", email: "rach@example.test", emailVerified: options.emailVerified ?? true }, session: { id: "s", userId: "rach", expiresAt: "2099-01-01T00:00:00Z" } } });
-    if (url.pathname === "/api/organizations" && method === "GET") return route.fulfill({ json: { organizations: options.organizations || options.joinedByEmail || state.created || state.joined ? [{ id: "org-1", name: "Manus", role: "owner", members: 1, websites: 1, createdAt: at }] : [],
+    if (url.pathname === "/api/organizations" && method === "GET") return route.fulfill({ json: { organizations: options.organizations || options.joinedByEmail || state.created || state.joined ? [{ id: "org-1", name: "Manus", role: "owner", members: 1, websites: 1, createdAt: at },
+        ...(options.second ? [{ id: "org-2", name: "Codegraff", role: "member", members: 3, websites: 0, createdAt: at }] : [])] : [],
       joined: options.joinedByEmail ? [{ id: "org-1", name: "Manus", addedBy: "Rach Pradhan" }] : [] } });
     if (url.pathname === "/api/organizations" && method === "POST") { state.created = true; return route.fulfill({ status: 201, json: { organization: { id: "org-1", name: body!.name, role: "owner", members: 1, websites: 0, createdAt: at } } }); }
     if (url.pathname === "/api/organizations/invites") {
@@ -40,6 +42,7 @@ async function setup(page: Page, options: { signedIn?: boolean; organizations?: 
       if (body?.action === "invite") return route.fulfill({ json: { token, invite: { id: "invite-1", createdAt: at, expiresAt: at, uses: 0, maxUses: 25, createdBy: null }, organization: { ...detail(), invites: [{ id: "invite-1", createdAt: at, expiresAt: at, uses: 0, maxUses: 25, createdBy: "Rach Pradhan" }] } } });
       return route.fulfill({ json: { organization: detail() } });
     }
+    if (url.pathname === "/api/organizations/org-2") return route.fulfill({ json: { organization: { ...detail(), id: "org-2", name: "Codegraff", yourRole: "member", websites: [], invites: null, pending: null, activity: [] } } });
     if (url.pathname === "/api/sites/site-manus/visibility") return route.fulfill({ json: { report } });
     if (url.pathname === "/api/agent-keys" && method === "GET") return route.fulfill({ json: { keys: [{ id: "k1", name: "Rach's Claude Code", prefix: "folio_v1_cccccccc", scopes: ["read"], createdAt: at, expiresAt: "2099-01-01T00:00:00.000Z", revokedAt: null, lastUsedAt: at }] } });
     if (method !== "GET") return route.fulfill({ status: 403, json: { error: { message: "Unplanned write in a browser fixture." } } });
@@ -129,6 +132,17 @@ test("someone added by email lands in the organization and is told who added the
   await welcome.getByRole("button", { name: "Dismiss" }).click();
   await expect(welcome).toHaveCount(0);
   expect(orgPosts(state)).toHaveLength(0);
+});
+
+test("a search result's ?org= opens that organization once, and the person can still switch", async ({ page }) => {
+  await setup(page, { organizations: true, second: true });
+  await page.goto("/orgs?org=org-2");
+  await expect(page.getByRole("heading", { name: "Codegraff", level: 2 })).toBeVisible();
+  await selectValue(page.getByRole("combobox", { name: "Organization", exact: true }), "org-1");
+  await expect(page.getByRole("heading", { name: "Manus", level: 2 })).toBeVisible();
+  // Someone else's ID selects nothing.
+  await page.goto("/orgs?org=org-9");
+  await expect(page.getByRole("heading", { name: "Manus", level: 2 })).toBeVisible();
 });
 
 test("an account whose email isn't verified is told how adding by email works", async ({ page }) => {

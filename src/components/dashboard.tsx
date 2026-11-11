@@ -6,12 +6,11 @@ import Link from "next/link";
 import Image from "next/image";
 import "./login.css";
 import { DashboardAppearance, DashboardNavigation } from "./dashboard-appearance";
-import { LabelInput } from "./bencho/label-input/LabelInput";
-import "./bencho/label-input/LabelInput.css";
+import { CommandSearch } from "./command-search";
 import "./dashboard-refresh.css";
 import "./dashboard-soft.css";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowDown,
   ArrowLeft,
@@ -364,7 +363,6 @@ function WorkspaceDashboard({ section }: { section: string }) {
   const ownerId = session?.user.id ?? null;
   const scans = !isPending && scanOwnerId === ownerId ? storedScans : [];
   const activeScan = !isPending && scanOwnerId === ownerId ? storedActiveScan : null;
-  const [search, setSearch] = useState("");
   const [mode, setMode] = useState<"sample" | "measured">("sample");
   const [agentStatus, setAgentStatus] = useState(false);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -421,6 +419,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
     return () => window.removeEventListener("keydown", key);
   }, []);
   const actual = !demoRequested && mode === "measured" ? activeScan : null;
+  const searchableAudits = useMemo(() => scans.map((scan) => ({ id: scan.id, url: scan.url, createdAt: scan.createdAt, seoScore: scan.seoScore })), [scans]);
   async function exportReport() {
     if (!demoRequested && mode === "measured" && !actual) {
       notify("Run or select an audit to export its evidence.");
@@ -1081,7 +1080,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
                   : "Find your next step."
           }
           onClose={() => setModal(null)}
-          initialFocus={modal === "search" ? ".lbi-field" : undefined}
+          initialFocus={modal === "search" ? ".command-search-field input" : undefined}
         >
           {modal === "scan" && (
             <ScanForm
@@ -1129,40 +1128,8 @@ function WorkspaceDashboard({ section }: { section: string }) {
             </div>
           )}
           {modal === "search" && (
-            <>
-              <LabelInput field="Search pages" value={search} onValueChange={setSearch} autoFocus placeholder="Search pages, tools, or reports…" corner={10} />
-              <div className="search-results">
-                {[
-                  ...navigation,
-                  {
-                    label: "The Folio Index",
-                    href: "/leaderboard",
-                    section: "leaderboard",
-                    icon: Trophy,
-                  },
-                  {
-                    label: "Your agents",
-                    href: "/agents",
-                    section: "agents",
-                    icon: Bot,
-                  },
-                ]
-                  .filter((n) =>
-                    n.label.toLowerCase().includes(search.toLowerCase()),
-                  )
-                  .map((n) => (
-                    <Link
-                      key={n.section}
-                      href={n.href}
-                      onClick={() => setModal(null)}
-                    >
-                      <n.icon size={18} />
-                      {n.label}
-                      <ArrowRight size={14} />
-                    </Link>
-                  ))}
-              </div>
-            </>
+            <CommandSearch signedIn={!!session} audits={searchableAudits} onClose={() => setModal(null)}
+              onOpenAudit={(id) => { const scan = scans.find((item) => item.id === id); setModal(null); if (scan) openScan(scan); }} />
           )}
         </Dialog>
       )}

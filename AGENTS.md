@@ -54,6 +54,7 @@ Restart the dev server after intended `.dev.vars` changes. Obtain D1 through the
 | Area | Files to start with |
 | --- | --- |
 | Page routing and shell | `src/app/[[...slug]]/page.tsx`, `src/components/dashboard.tsx` |
+| Find anything (⌘K) | `src/lib/command-search.ts` (every page, its synonyms, ranking), `src/components/command-search.tsx`, `src/lib/workspace-search.ts` + `src/app/api/workspace-search/` (the signed-in person's websites, reports and organizations; names and IDs only) |
 | Product story and charts | `landing.tsx`, `charts.tsx`, `published-index.tsx`, their adjacent styles |
 | Managed provider transport | `src/lib/agents.ts` (OpenAI website evaluations), `codegraff-agent.ts` + `codegraff-keyword-agent.ts` (Folio's own Graff agent for keyword runs), `docs/CODEGRAFF-AGENT.md` |
 | Run orchestration and access | `src/lib/agent-runs.ts`, `eval-api.ts`, `src/app/api/evaluations/` |

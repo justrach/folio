@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { ArrowRight, Bot, Globe2, Link2, LogOut, Mail, Plus, Send, Share2, UserPlus, Users } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
@@ -55,6 +56,12 @@ function SignedIn({ emailVerified, pending, clearPending, onInvite }: { emailVer
   const [selected, setSelected] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [creating, setCreating] = useState(false);
+  // ?org= (from search) selects one of the person's organizations once; it grants nothing.
+  const hint = useSearchParams().get("org");
+  const [hinted, setHinted] = useState<string | null>(null);
+  useEffect(() => {
+    if (hint && hint !== hinted && organizations?.some(item => item.id === hint)) { setSelected(hint); setHinted(hint); }
+  }, [hint, hinted, organizations]);
   // Organizations this person just joined, with how they joined: each gets a short welcome until dismissed.
   const [welcome, setWelcome] = useState<Record<string, string>>({});
   const greet = useCallback((items: { id: string; text: string }[]) => {

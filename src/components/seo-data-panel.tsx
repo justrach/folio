@@ -467,6 +467,13 @@ export function SeoDataPanel() {
     }
   }
 
+  // ?report= (from search) opens one of this person's saved reports: a free read that never starts a lookup.
+  const reportHint = searchParams.get("report");
+  useEffect(() => {
+    if (isPending || !ownerId || !reportHint || !/^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/.test(reportHint)) return;
+    void openReport(reportHint);
+  }, [isPending, ownerId, reportHint]);
+
   async function collectDetail() {
     if (!ownerId || !activeReportId || busy || detailBusy || !ready) return;
     const requestedBy = ownerId;
