@@ -145,6 +145,10 @@ the day, and a later local rerun was cut short by the dev server's `workerd` con
 deployment `/agents`, `/orgs`, `/websites` and `/docs/api` returned 200, `/api/agent-keys` returned 401 without a
 session, and the served stylesheet includes the panel.
 
+On the owner's request, `natalie@manus.ai` (an existing Google sign-in account) was added to the owner's **Manus**
+organization as a member, through the app's own invite-and-join functions; the one-off invite was revoked
+immediately, so the organization has no active invite link. She can read the shared `manus.im` report.
+
 ### Vector store
 
 Page embeddings live in turbopuffer, not Postgres (see [embeddings](EMBEDDINGS.md)).
