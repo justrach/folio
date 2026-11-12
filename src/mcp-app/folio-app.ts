@@ -162,7 +162,7 @@ function sources(report: WebsiteGapsReport): Child[] {
     el("b", { text: perMonth(value) })]);
   return [
     el("h3", { text: "Where these numbers come from" }),
-    el("p", { class: "note", text: "Google positions, search estimates and link counts come from third-party data providers, shown beside Folio’s own records: its saved AI answers and its crawl of the website." }),
+    el("p", { class: "note", text: "Folio combines third-party data providers with its own index of AI answers and crawled pages." }),
     el("div", { class: "check" }, [
       check.state === "compared" && google && estimate ? el("div", { class: "meters" }, [
         meter("Google Search Console", `${google.scope === "united_states" ? "US clicks" : "clicks, all countries"} · ${day(google.endDate)}`, google.monthlyClicks, "google"),

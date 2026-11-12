@@ -49,7 +49,7 @@ Since 12 November 2026 the **Where these numbers come from** panel (on `/website
 
 - `provider` is `Search data provider` (`google_positions`, `search_volumes`, `visits_estimate`) or `Link data provider` (`backlinks`). The details say "a third-party provider's" record, estimate or crawl. The Search Console comparison labels the estimate `Search data provider, US` with its date.
 - Each card says "provider", singular, because each of those numbers comes from one external provider today. The panel's opening line says "third-party data providers", plural, as the category the search and link numbers belong to.
-- These numbers are shown beside Folio's own records (saved AI answers and its crawl). They are not blended, weighted or corrected against them, and none is drawn from several providers. The Search Console block is a comparison: it sets Google's clicks beside the estimate and changes neither.
+- The opening line reads: "Folio combines third-party data providers with its own index of AI answers and crawled pages." "Combines" means the report brings the providers' numbers and Folio's own index together in one place. Each number still comes from one source, and no number is blended, weighted or corrected against another. The Search Console block is a comparison: it sets Google's clicks beside the estimate and changes neither.
 - `provider` values in saved SEO reports, the privacy page and the paid-lookup permissions still name DataForSEO.
 
 ## What to say when someone asks "why is your data better than Ahrefs or Similarweb?"

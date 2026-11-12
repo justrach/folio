@@ -27,7 +27,7 @@ function NumberSources({ report }: { report: WebsiteGapsReport }) {
   const top = Math.max(google?.monthlyClicks ?? 0, estimate?.monthlyVisits ?? 0, 1);
   return <section className="wv-sources" aria-labelledby="wv-sources-title">
     <h3 id="wv-sources-title">Where these numbers come from</h3>
-    <p className="wv-meta">Google positions, search estimates and link counts come from third-party data providers, shown beside Folio’s own records: its saved AI answers and its crawl of the website.</p>
+    <p className="wv-meta">Folio combines third-party data providers with its own index of AI answers and crawled pages.</p>
     <div className={`wv-check is-${check.state}`}>
       <p className="wv-check-title">{check.state === "compared" ? "The estimate beside Google’s own count" : "Search visits"}</p>
       {check.state === "compared" && google && estimate && <dl className="wv-check-bars">
