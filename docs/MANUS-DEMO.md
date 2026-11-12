@@ -5,7 +5,7 @@ A ten-minute walkthrough on `https://usefolio.site`: where manus.im shows up, wh
 ## Checked on 12 November 2026
 
 Run against production (`https://usefolio.site/api/mcp`) over plain MCP with a *Read & record changes* key, not through any one agent:
-- The server (`folio` 1.10.0) lists 22 tools and the prompts `improve_aeo` and `review_aeo_changes`. `folio_capabilities` says "This connection can read and record changes. It can’t start paid work."
+- The server (`folio` 1.10.0 at the time of the check; 1.10.1 since the release later that day) lists 22 tools and the prompts `improve_aeo` and `review_aeo_changes`. `folio_capabilities` says "This connection can read and record changes. It can’t start paid work."
 - `folio_organizations` returns Manus (2 members) sharing `manus.im`. `folio_find` with "manus" returns the organization, the website and two saved search & backlinks reports.
 - `folio_website_gaps` for `manus.im` returns the report in section 1, with third-party sources named by kind, not by vendor.
 - OAuth sign-in is live: `/.well-known/oauth-protected-resource` and `/.well-known/oauth-authorization-server` answer, and a call without a key gets a `WWW-Authenticate` header pointing at them.

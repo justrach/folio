@@ -404,6 +404,28 @@ and no secret change. Rollback targets: frontend `783484fd-7671-4f5c-9a5c-add95b
   "DataForSEO, US" label.
 - Not checked on production: the panel in a signed-in browser. It was rendered locally with mocked data only.
 
+**Guided prompts for shared websites** (`6da8e22`) followed on 12 November 2026: frontend
+`ec216c52-c7d5-46de-98c6-4be46cff4b52`, backend `c18fe5a0-e5af-46ca-8ddb-cc6dde594985` (`--keep-vars`). No migration
+and no secret change. Rollback targets: frontend `6b3e0c39-aaeb-4f1d-bff4-87a26c4c7076`, backend
+`14b25302-a472-4b06-9c11-7fe330d421bd`.
+- The `improve_aeo` and `review_aeo_changes` prompts find a website through `folio_targets` or
+  `folio_organizations`, say which tools are refused for a shared website, and carry on from the gaps report when no
+  question has a completed answer ([AEO walkthrough](AEO-DEMO.md)). The consent card's paid actions, the key form,
+  the API reference and four MCP tool descriptions say "a third-party data provider" in place of the vendor's name
+  ([data sources](DATA-SOURCES.md)). Text only: no access rule, tool, schema or paid path changed. Server version
+  1.10.1.
+- Validation: typecheck, 479 unit tests, 52 D1 integration tests, the production build and both smoke tests. Five
+  browser specs (agent onboarding, agent keys, sign-in consent, organizations, API reference) passed 63 cases. The
+  full browser suite was not rerun for this change.
+- After deployment the same eight pages and `/docs/api` returned 200, the site, organization, onboarding and
+  agent-key APIs returned 401 without a session, `/api/mcp` returned 401 without a key, and the public benchmarks
+  read returned 200. `folio_capabilities` reported version 1.10.1. `/docs/api`, its `reference.md` and
+  `/api/openapi.json` contain the new wording and no vendor name, and the scripts `/agents` serves contain the new
+  paid-actions line.
+- Not checked on production: the text `prompts/get` returns and the tool descriptions, which need a key; the
+  version match is the evidence that they come from this build. No agent has run the new prompt as an organization
+  member, and the consent card was not opened in a signed-in browser.
+
 ### Vector store
 
 Page embeddings live in turbopuffer, not Postgres (see [embeddings](EMBEDDINGS.md)).
