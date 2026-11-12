@@ -29,7 +29,7 @@ const manus = {
   notChecked: [{ id: "ai-answers", area: "ai_answers", title: "100 questions about it are waiting for answers", detail: "None has a published answer yet. That is unmeasured, not absent.", nextStep: "Collect answers for those questions.", link: { label: "See the questions", url: "/overview?query=ai-assistants-v1" } }],
   sources: [
     { id: "search_console", label: "Clicks from Google", provider: "Google Search Console", kind: "google", asOf: "2026-11-08", detail: "Google’s own count of clicks and impressions for this property." },
-    { id: "visits_estimate", label: "Search visits and ranking searches", provider: "DataForSEO", kind: "estimate", asOf: at, detail: "Estimated from searches a month and the share of clicks expected at each position." },
+    { id: "visits_estimate", label: "Search visits and ranking searches", provider: "Search data provider", kind: "estimate", asOf: at, detail: "Estimated from searches a month and the share of clicks expected at each position." },
   ],
   googleCheck: { state: "compared", searchConsole: { reportId: "gsc", property: "sc-domain:manus.im", startDate: "2026-10-12", endDate: "2026-11-08", scope: "united_states", clicks: 50000, monthlyClicks: 53571 },
     estimate: { monthlyVisits: 62748, fetchedAt: at }, ratio: 0.854, finding: "Google counted 50,000 clicks from US searches in the 28 days to Nov 8, 2026 (about 53,571 a month). The third-party estimate is 62,748 a month, 17% above Google’s own count.",
@@ -103,6 +103,7 @@ test("a website shows where it comes up, what it's missing and what hasn't been 
   await expect(sources.locator(".wv-check-bars")).toContainText("US clicks");
   await expect(sources.locator("[data-source-id='search_console']")).toContainText("Google’s own count");
   await expect(sources.locator("[data-source-id='visits_estimate']")).toContainText("Estimate");
+  await expect(sources).not.toContainText("DataForSEO");
   await expect(sources.getByRole("link", { name: /Ahrefs’s study/ })).toHaveAttribute("href", "https://ahrefs.com/blog/traffic-estimations-accuracy/");
   expect(state.mutations).toBe(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(await page.evaluate(() => innerWidth + 1));

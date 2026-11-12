@@ -31,7 +31,7 @@ const report = { website: { id: "site-manus", name: "manus.im", url: "https://ma
   notChecked: [{ id: "ai", area: "ai_answers", title: "AI answers", detail: "None of the 100 questions naming Manus has been answered yet.", nextStep: "Run them.", link: null }],
   sources: [
     { id: "search_console", label: "Clicks from Google", provider: "Google Search Console", kind: "google", asOf: "2026-11-08", detail: "Google’s own count of clicks and impressions." },
-    { id: "visits_estimate", label: "Search visits and ranking searches", provider: "DataForSEO", kind: "estimate", asOf: at, detail: "Estimated from searches a month and expected clicks." },
+    { id: "visits_estimate", label: "Search visits and ranking searches", provider: "Search data provider", kind: "estimate", asOf: at, detail: "Estimated from searches a month and expected clicks." },
   ],
   googleCheck: { state: "compared", searchConsole: { reportId: "gsc", property: "sc-domain:manus.im", startDate: "2026-10-12", endDate: "2026-11-08", scope: "united_states", clicks: 50000, monthlyClicks: 53571 },
     estimate: { monthlyVisits: 62748, fetchedAt: at }, ratio: 0.854, finding: "Google counted 50,000 clicks from US searches in the 28 days to Nov 8, 2026 (about 53,571 a month). The third-party estimate is 62,748 a month, 17% above Google’s own count.",
@@ -100,6 +100,7 @@ test("the official MCP Apps host bridge renders Folio's search, opens a website'
   await expect(frame.locator(".meters")).toContainText("62,748/mo");
   await expect(frame.locator("[data-source-id='search_console']")).toContainText("Google’s own count");
   await expect(frame.locator("[data-source-id='visits_estimate']")).toContainText("Estimate");
+  await expect(frame.locator(".meters")).not.toContainText("DataForSEO");
   await expect(frame.locator(".metric").nth(2)).toContainText("Search visits a month (estimate)");
   await frame.getByRole("button", { name: "Ahrefs’s study" }).click();
   await expect.poll(async () => (await calls("open-link")).at(-1)).toBe("https://ahrefs.com/blog/traffic-estimations-accuracy/");

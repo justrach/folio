@@ -162,10 +162,11 @@ function sources(report: WebsiteGapsReport): Child[] {
     el("b", { text: perMonth(value) })]);
   return [
     el("h3", { text: "Where these numbers come from" }),
+    el("p", { class: "note", text: "Google positions, search estimates and link counts come from third-party data providers, shown beside Folio’s own records: its saved AI answers and its crawl of the website." }),
     el("div", { class: "check" }, [
       check.state === "compared" && google && estimate ? el("div", { class: "meters" }, [
         meter("Google Search Console", `${google.scope === "united_states" ? "US clicks" : "clicks, all countries"} · ${day(google.endDate)}`, google.monthlyClicks, "google"),
-        meter("Third-party estimate", `DataForSEO, US${day(estimate.fetchedAt) ? ` · ${day(estimate.fetchedAt)}` : ""}`, estimate.monthlyVisits, "estimate")]) : null,
+        meter("Third-party estimate", `Search data provider, US${day(estimate.fetchedAt) ? ` · ${day(estimate.fetchedAt)}` : ""}`, estimate.monthlyVisits, "estimate")]) : null,
       el("p", { text: check.finding }),
       el("p", { class: "note" }, [`${check.caveat.text} `, el("button", { type: "button", class: "link", text: "Ahrefs’s study", onclick: () => openLink(check.caveat.sourceUrl) })]),
     ]),

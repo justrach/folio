@@ -18,6 +18,7 @@ Research date: 11 November 2026. Competitor statements below come from each comp
    - Folio's own data shows why it matters. For `codegraff.com`, Search Console counted 149 clicks in the 28 days to 10 September 2026, about 160 a month across all countries. DataForSEO's saved estimate from 17 September was 0.16 visits a month from US searches. Some of that gap is non-US clicks, but not a thousandfold.
 2. **Every number says what it is.**
    - Each figure in the report is labelled Google's own count, Estimate, Third-party record or Recorded by Folio, with its provider and date (`sources` in `folio_website_gaps`).
+   - The report names third-party sources by kind, not by vendor: `Search data provider` for positions, searches a month and visits, `Link data provider` for links. See [How the report names providers](#how-the-report-names-providers).
    - Missing data stays "not measured", never zero, and unknowns are listed apart from findings.
 3. **AI answers can be checked.**
    - Folio's AI-answer numbers count answers it recorded itself, saving each full answer with its citations, model and date. Anyone can open the answer behind a number.
@@ -41,6 +42,15 @@ Research date: 11 November 2026. Competitor statements below come from each comp
 | Pages read | Folio's own crawler, against the website's sitemaps | Recorded by Folio | Site Audit crawls | Not reviewed here |
 
 "Not reviewed here" means we did not check, not that the product lacks it.
+
+## How the report names providers
+
+Since 12 November 2026 the **Where these numbers come from** panel (on `/websites` and in the MCP App) and the `sources` returned by `folio_website_gaps` no longer name the vendor. The table above keeps naming DataForSEO as internal reference.
+
+- `provider` is `Search data provider` (`google_positions`, `search_volumes`, `visits_estimate`) or `Link data provider` (`backlinks`). The details say "a third-party provider's" record, estimate or crawl. The Search Console comparison labels the estimate `Search data provider, US` with its date.
+- Each card says "provider", singular, because each of those numbers comes from one external provider today. The panel's opening line says "third-party data providers", plural, as the category the search and link numbers belong to.
+- These numbers are shown beside Folio's own records (saved AI answers and its crawl). They are not blended, weighted or corrected against them, and none is drawn from several providers. The Search Console block is a comparison: it sets Google's clicks beside the estimate and changes neither.
+- `provider` values in saved SEO reports, the privacy page and the paid-lookup permissions still name DataForSEO.
 
 ## What to say when someone asks "why is your data better than Ahrefs or Similarweb?"
 

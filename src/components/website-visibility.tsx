@@ -27,12 +27,13 @@ function NumberSources({ report }: { report: WebsiteGapsReport }) {
   const top = Math.max(google?.monthlyClicks ?? 0, estimate?.monthlyVisits ?? 0, 1);
   return <section className="wv-sources" aria-labelledby="wv-sources-title">
     <h3 id="wv-sources-title">Where these numbers come from</h3>
+    <p className="wv-meta">Google positions, search estimates and link counts come from third-party data providers, shown beside Folio’s own records: its saved AI answers and its crawl of the website.</p>
     <div className={`wv-check is-${check.state}`}>
       <p className="wv-check-title">{check.state === "compared" ? "The estimate beside Google’s own count" : "Search visits"}</p>
       {check.state === "compared" && google && estimate && <dl className="wv-check-bars">
         <div><dt>Google Search Console<small>{google.scope === "united_states" ? "US clicks" : "clicks, all countries"} · {day(google.endDate)}</small></dt>
           <dd><span className="wv-check-bar is-google" style={{ width: `${Math.max(1, 100 * google.monthlyClicks / top)}%` }} /><b>{count(google.monthlyClicks)}/mo</b></dd></div>
-        <div><dt>Third-party estimate<small>DataForSEO, US{day(estimate.fetchedAt) ? ` · ${day(estimate.fetchedAt)}` : ""}</small></dt>
+        <div><dt>Third-party estimate<small>Search data provider, US{day(estimate.fetchedAt) ? ` · ${day(estimate.fetchedAt)}` : ""}</small></dt>
           <dd><span className="wv-check-bar is-estimate" style={{ width: `${Math.max(1, 100 * estimate.monthlyVisits / top)}%` }} /><b>{approx(estimate.monthlyVisits)}/mo</b></dd></div>
       </dl>}
       <p>{check.finding}</p>

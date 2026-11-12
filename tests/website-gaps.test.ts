@@ -85,8 +85,8 @@ test("answered questions that leave the site out, and its own saved answers, bec
 test("every number says where it comes from, and the visits estimate sits next to Google's own count for the owner", () => {
   const report = buildWebsiteGaps(manus);
   assert.deepEqual(report.sources.map(item => [item.id, item.provider, item.kind]), [
-    ["google_positions", "DataForSEO", "third_party"], ["search_volumes", "DataForSEO", "estimate"], ["visits_estimate", "DataForSEO", "estimate"],
-    ["backlinks", "DataForSEO", "third_party"], ["ai_answers", "Folio", "folio"], ["crawl", "Folio", "folio"]]);
+    ["google_positions", "Search data provider", "third_party"], ["search_volumes", "Search data provider", "estimate"], ["visits_estimate", "Search data provider", "estimate"],
+    ["backlinks", "Link data provider", "third_party"], ["ai_answers", "Folio", "folio"], ["crawl", "Folio", "folio"]]);
   assert.equal(report.sources[0].asOf, "2026-11-07T03:08:49.653Z");
   // Without an imported Search Console property the estimate is labelled as one, with the published error rate.
   assert.equal(report.googleCheck.state, "estimate_only");

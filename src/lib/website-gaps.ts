@@ -302,17 +302,17 @@ function dataSources(search: WebsiteSearchSummary, google: WebsiteGapsReport["go
   if (check.searchConsole) sources.push({ id: "search_console", label: "Clicks from Google", provider: "Google Search Console", kind: "google", asOf: check.searchConsole.endDate,
     detail: "Google’s own count of clicks and impressions for this property, imported from the owner’s Search Console account." });
   if (google.state === "tracked") sources.push(
-    { id: "google_positions", label: "Google positions", provider: "DataForSEO", kind: "third_party", asOf: google.capturedAt,
-      detail: "DataForSEO’s record of Google’s US results for each search on the day it checked. Positions move daily, so a check on another day, or by another tool, can differ." },
-    { id: "search_volumes", label: "Searches a month", provider: "DataForSEO", kind: "estimate", asOf: google.capturedAt,
-      detail: "DataForSEO’s estimate of monthly US searches for each phrase. Every tool estimates these; only Google has the exact counts." });
+    { id: "google_positions", label: "Google positions", provider: "Search data provider", kind: "third_party", asOf: google.capturedAt,
+      detail: "A third-party provider’s record of Google’s US results for each search on the day it checked. Positions move daily, so a check on another day, or by another tool, can differ." },
+    { id: "search_volumes", label: "Searches a month", provider: "Search data provider", kind: "estimate", asOf: google.capturedAt,
+      detail: "A third-party provider’s estimate of monthly US searches for each phrase. Every tool estimates these; only Google has the exact counts." });
   const has = (measure: Measure) => measure.state !== "missing";
   if (search.state === "measured" && (has(search.estimatedMonthlyVisits) || has(search.rankingKeywords)))
-    sources.push({ id: "visits_estimate", label: "Search visits and ranking searches", provider: "DataForSEO", kind: "estimate", asOf: search.fetchedAt,
+    sources.push({ id: "visits_estimate", label: "Search visits and ranking searches", provider: "Search data provider", kind: "estimate", asOf: search.fetchedAt,
       detail: "Estimated from searches a month and the share of clicks expected at each position, summed over the US searches it ranks for." });
   if (search.state === "measured" && (has(search.backlinks) || has(search.referringDomains)))
-    sources.push({ id: "backlinks", label: "Links and linking websites", provider: "DataForSEO", kind: "third_party", asOf: search.fetchedAt,
-      detail: "Counted from DataForSEO’s own crawl of the web. Each tool’s crawler finds a different share of the web, so link counts differ between tools." });
+    sources.push({ id: "backlinks", label: "Links and linking websites", provider: "Link data provider", kind: "third_party", asOf: search.fetchedAt,
+      detail: "Counted from a third-party provider’s crawl of the web. Each tool’s crawler finds a different share of the web, so link counts differ between tools." });
   if (index) sources.push({ id: "ai_answers", label: "AI answers", provider: "Folio", kind: "folio", asOf: null,
     detail: "Folio asks AI models buyer questions with web search on and saves each full answer with its citations, so every answer counted here can be opened and checked." });
   if (crawl.state === "in_index") sources.push({ id: "crawl", label: "Pages read", provider: "Folio", kind: "folio", asOf: crawl.lastFetchedAt,
