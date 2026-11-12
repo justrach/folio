@@ -274,8 +274,7 @@ function OnboardingFlow({ proof, starterPacks, signedIn }: OnboardingProps & { s
       setStep(2);
     }); }}>
       <label className="ob-field">Website address<div className="ob-input"><span aria-hidden="true">https://</span><input name="url" inputMode="url" autoComplete="url" autoFocus required value={url} onChange={event => setUrl(event.target.value.replace(/^https?:\/\//, ""))} placeholder="yourwebsite.com" /></div></label>
-      <div className="ob-actions"><button className="ob-btn primary" type="submit" disabled={busy || !url.trim()}>{busy ? "Checking your page…" : <>Check my page <Arrow /></>}</button>
-        <Link className="ob-quiet" href={signedIn ? "/search-console" : "/login?return=/search-console"}>Import from Search Console</Link></div>
+      <div className="ob-actions"><button className="ob-btn primary" type="submit" disabled={busy || !url.trim()}>{busy ? "Checking your page…" : <>Check my page <Arrow /></>}</button></div>
       {error && <p className="ob-error" role="alert">{error}</p>}
       <Trust>Free. Folio reads one public page and changes nothing on your site.</Trust>
     </form>
