@@ -162,7 +162,7 @@ test("every prompt names the website, keeps the agent on Folio's tools, starts n
       assert.match(fix.text, /Only that website’s owner can record the change/);
       assert.doesNotMatch(fix.text, /folio_change_record|folio_visibility/);
     } else {
-      assert.match(fix.text, /no baseline yet and stop/);
+      assert.match(fix.text, /no baseline yet, so nothing to compare before and after, then carry on with its gaps; Google and link data aren’t AI-answer findings/);
       assert.match(fix.text, /Publishing is my step/);
       assert.match(fix.text, /A retest costs money, so don’t start one; ask me\./);
     }
@@ -178,7 +178,7 @@ test("prompts that would come back empty are marked from the saved report, and t
   const empty = promptReadiness(report({ crawl: "not_in_index", namedIn: 0, gaps: ["google-no-rankings"], completed: 0 }));
   assert.equal(empty.pages, "Folio hasn’t read this website’s pages yet, so this one will come back empty.");
   assert.match(empty.competitors!, /No published answer in Folio names this website/);
-  assert.match(empty.fix!, /baseline check/);
+  assert.match(empty.fix!, /no before-and-after to compare until questions are run/);
   assert.equal(empty.gaps, undefined, "the gaps prompt always has the report to read");
   assert.match(promptReadiness(report({ gaps: ["links-few"] })).pages!, /just off page one/);
   assert.equal(promptReadiness(report({ namedIn: 0, published: 4 })).competitors, undefined, "related published answers are enough");

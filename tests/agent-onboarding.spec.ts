@@ -186,6 +186,7 @@ test("Claude Code gets one command with the key in it, paid actions are opt-in, 
   await expect(consent.getByRole("radio", { name: "Select" })).toHaveCount(0);
   // Paid actions stay folded away, and say they charge when chosen.
   await consent.getByText("Paid actions").click();
+  await expect(consent.locator(".cc-paid")).not.toContainText("DataForSEO");
   await consent.getByRole("checkbox", { name: /Paid search lookups · can charge/ }).check();
   await expect(consent).toContainText("Can spend: paid search lookups.");
   await consent.getByRole("checkbox", { name: /Paid search lookups · can charge/ }).uncheck();

@@ -67,5 +67,13 @@ test("next steps and prompts never report publication or spend without the owner
   const readOnly = aeoPromptText("improve_aeo", ["read"]);
   assert.ok(readOnly.includes("This key cannot record changes") && readOnly.includes("This key cannot start evaluations"));
   assert.ok(!readOnly.includes("call folio_evaluate"));
+  // A member can't record a shared website's change with any key, so the new-key advice is for the person's own website only.
+  assert.ok(readOnly.includes("only if this is my own website, tell me to create a Folio key with the \"record website changes\" permission"));
   assert.ok(aeoPromptText("review_aeo_changes", ["read"]).includes("folio_changes"));
+  // A website shared through an organization is found with folio_organizations and handed back to its owner to record.
+  const recorder = aeoPromptText("improve_aeo", ["read", "changes"]);
+  assert.ok(recorder.includes("folio_organizations") && recorder.includes("only its owner can record the change in Folio, so do not call folio_change_record"));
+  // Without a completed answer the prompt says so and carries on with the evidence that exists; it never stops dead.
+  assert.ok(recorder.includes("no question has a completed AI answer yet, so there is nothing to compare before and after"));
+  assert.doesNotMatch(recorder, /\bstop\b/i);
 });

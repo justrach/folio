@@ -20,7 +20,7 @@ export const AGENT_PERMISSIONS: PermissionGroup[] = [
     summary: "Run a fresh AI answer or website evaluation. Each run is charged; your account’s limits still apply, and the agent must pass confirmSpend.",
     highlights: ["folio_evaluate", "folio_reconcile"], tools: ["folio_evaluate", "folio_reconcile"] },
   { scope: "seo", label: "Paid search lookups", charges: true,
-    summary: "Run a new search and backlink lookup or keyword research (DataForSEO charges apply). Saved reports are readable without it.",
+    summary: "Run a new search and backlink lookup or keyword research from a third-party data provider (charges apply). Saved reports are readable without it, at no charge.",
     highlights: ["folio_seo_lookup", "folio_keyword_research"], tools: ["folio_seo_lookup", "folio_keyword_research"] },
 ];
 const ORDER: AgentApiScope[] = ["read", "changes", "evaluate", "seo"];

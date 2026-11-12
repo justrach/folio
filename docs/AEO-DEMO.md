@@ -31,12 +31,13 @@ Codex and the JSON configuration are in [MCP](MCP.md). Use `https://usefolio.sit
 
 ## 2. Run the guided prompt
 
-In Claude Code: `/mcp__folio__improve_aeo` (optionally with the website name). Other clients list it as the `improve_aeo` MCP prompt. The text adapts to the key: a read-only key is told to hand recording and retesting back to the owner.
+In Claude Code: `/mcp__folio__improve_aeo` (optionally with the website name). Other clients list it as the `improve_aeo` MCP prompt. The text adapts to the key: a read-only key is told to hand recording and retesting back to the owner. The same text covers a website shared with you through an organization: the agent finds it with `folio_organizations`, reads `folio_website_gaps` and the published index, and hands a title, summary and files back for the website's owner to record, because `folio_visibility`, `folio_page_evidence`, `folio_changes` and change recording work only on your own websites.
 
 The agent then:
 
-1. Finds the website (`folio_targets`) and reads its saved answers (`folio_visibility`): for each question, whether the website was named, cited, and at which position, plus the pages competitors were cited for.
-2. Picks at most three questions where the website is missing, reads the captured page (`folio_page_evidence`) and the matching files in the repository.
+1. Finds the website (`folio_targets`, or `folio_organizations` for a shared one), reads what it is missing (`folio_website_gaps`) and its saved answers (`folio_visibility`): for each question, whether the website was named, cited, and at which position, plus the pages competitors were cited for.
+   If no question has a completed answer, it says there is nothing to compare before and after yet and that running questions is a paid step started in Folio, then carries on with the Google searches, links and unchecked items in `folio_website_gaps`, without presenting them as findings about AI answers.
+2. Picks at most three questions where the website is missing (or, for a shared website or without a baseline, three gaps its own content can fix), reads the captured page (`folio_page_evidence`, own websites only) and the matching files in the repository.
 3. Proposes truthful edits and waits for approval. It makes them with its own tools.
 4. Calls `folio_change_record` with a title, a summary, the question IDs and the files changed. Folio saves each question's latest completed answer as the baseline.
 
