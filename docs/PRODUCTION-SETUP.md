@@ -388,6 +388,22 @@ frontend `dd8d27c7-73d2-45f5-9993-c458c0ba1f10`, backend `ad8d6d23-7a22-4dd1-a96
 - Not checked on production: the signed-in agents page, creating a key, the sign-in consent page, and the prompts
   pasted into a real agent. These were checked locally with mocked browser fixtures only.
 
+**Unnamed data sources** (`0d665f1`, `22626ef`) followed on 12 November 2026: frontend
+`6b3e0c39-aaeb-4f1d-bff4-87a26c4c7076`, backend `14b25302-a472-4b06-9c11-7fe330d421bd` (`--keep-vars`). No migration
+and no secret change. Rollback targets: frontend `783484fd-7671-4f5c-9a5c-add95bebc28b`, backend
+`7c33e176-31fb-4526-a425-79c1181229bf`.
+- The website report's "Where these numbers come from" panel, its MCP App copy and the `sources` that
+  `folio_website_gaps` returns no longer name the data vendor. Cards read "Search data provider" or "Link data
+  provider", and the line under the title is the owner's wording ([data sources](DATA-SOURCES.md)). The privacy
+  page, the paid lookup tools and saved reports still name the vendor.
+- Validation: typecheck, 479 unit tests, the production build and both smoke tests. The three browser specs for
+  the panel passed 24 cases. The full browser suite and the D1 integration tests were not rerun for this change.
+- After deployment the same eight pages returned 200, the site, organization, onboarding and agent-key APIs
+  returned 401 without a session, and the public benchmarks read returned 200. `folio_website_gaps` for
+  usefolio.site returned the new `provider` values, and the scripts `/websites` serves contain the new line and no
+  "DataForSEO, US" label.
+- Not checked on production: the panel in a signed-in browser. It was rendered locally with mocked data only.
+
 ### Vector store
 
 Page embeddings live in turbopuffer, not Postgres (see [embeddings](EMBEDDINGS.md)).
