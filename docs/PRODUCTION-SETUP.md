@@ -444,10 +444,15 @@ and no secret change. Rollback targets: frontend `ec216c52-c7d5-46de-98c6-4be46c
   without a session, the site, organization, onboarding, agent-key and analytics-report APIs returned 401, `/api/mcp`
   returned 401 without a key, and the public benchmarks read returned 200. The scripts and styles `/websites` serves
   contain the new sources rows and no trace of the run card. `folio_capabilities` still reported 1.10.1 and 22 tools.
-- Not checked on production: `/admin` and `/folio-internal/analytics` as a signed-in admin, and the report panel in a
-  signed-in browser. Before this release the built backend, run locally against the production database as an admin,
-  returned 500 and then hung on `/admin` before succeeding; why the pages did not open for the owner was not observed
-  directly.
+- The owner then opened both pages signed in and reported that both show data. The backend log for those loads shows
+  `/admin` returning 200 in 1.3 s and `/folio-internal/analytics` returning 200. The log capture ended before the
+  panel's `/api/analytics/report` request, so that request's status was not recorded.
+- Still open: the `/admin` request logged seven `unhandledRejection: TypeError: This socket has been closed.` lines
+  while succeeding, and `/api/index-stats` and `/api/public/benchmarks` log the same. They come from the connection
+  pool closing each connection after one use, not from this release, and were not fixed here.
+- Not checked on production: the report panel in a signed-in browser. Before this release the built backend, run
+  locally against the production database as an admin, returned 500 and then hung on `/admin` before succeeding; the
+  owner's original failure was not observed directly.
 
 ### Vector store
 
