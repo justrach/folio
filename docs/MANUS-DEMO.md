@@ -10,7 +10,7 @@ Run against production (`https://usefolio.site/api/mcp`) over plain MCP with a *
 - `folio_website_gaps` for `manus.im` returns the report in section 1, with third-party sources named by kind, not by vendor.
 - OAuth sign-in is live: `/.well-known/oauth-protected-resource` and `/.well-known/oauth-authorization-server` answer, and a call without a key gets a `WWW-Authenticate` header pointing at them.
 
-Three things did not hold up: page search for prompt 3, AI answers for prompt 2, and the Manus connector, which nobody has run. Each has an item below.
+Three things did not hold up: page search for prompt 3, AI answers for prompt 2, and the Manus connector, which nobody has run. Page search was fixed later the same day (item 5); the other two each have an item below.
 
 ## Before the meeting
 
@@ -30,7 +30,7 @@ Three things did not hold up: page search for prompt 3, AI answers for prompt 2,
    ```
 
    Good: 22 for *Read & record changes*, 20 for *Read only*. 0 means the reply was an error: run it without the last three pipes and read it (401 is a bad key).
-5. **Prompt 3 ("Do its pages answer the big searches?").** Checked on 12 November 2026: page search within manus.im returns one page, `https://www.manus.im/features/automations`, for every search tried. The pages Google ranks for the big searches (`/tools/ai-image-generator`, `/tools/ai-rap-generator`, `/playbook/video-generator`) aren't searchable, and the panel may not mark the prompt as empty, because Folio has read some manus.im pages. Skip it, or run it and present the answer as what it is: Folio hasn't read those pages yet. Adding pages happens in the index pipeline, outside this repository.
+5. **Prompt 3 ("Do its pages answer the big searches?").** This works since 12 November 2026. That morning page search within manus.im returned one page for every search; later that day the 560 English pages in manus.im's sitemaps, plus `/pricing`, were read and embedded through the index pipeline (outside this repository). Checked afterwards over MCP: "ai image generator" returns `/tools/ai-image-generator` first, "ai video generator" returns `/playbook/video-generator`, "rap generator" returns `/tools/ai-rap-generator`, and "pricing plans and credits" returns `/help/credits` and `/pricing`. Two things to say if asked: the translated pages (about 3,400 under `/ar`, `/de`, `/es` and the other language folders) are not read, and the report's "pages read" count (591) includes 30 sampled pages that have no saved text, so 561 are searchable. Excerpts start with the page's navigation links, so open the page rather than reading the excerpt aloud.
 6. **Prompt 2 ("Who do AI answers recommend instead?").** None of the 100 questions about Manus has an answer, so it comes back "unmeasured", not a list of rivals; the panel may mark it as likely empty and list it last. Say so and present measuring as the next step (section 4). Fallback talking point: `folio_index_website` returns an HTML readiness score for the manus.im homepage (85 on 12 November 2026). Give its scope with it: "A bounded HTML rubric for one page; not search rank or AI visibility."
 7. **The Manus connector is untested.** Try section 3's Manus steps in a Manus account if you can. Two failures to expect: 403 `Untrusted MCP origin` if Manus sends an `Origin` header (Folio refuses every origin but its own; on 12 November 2026 manus.im, app.manus.im and manus.ai origins were all refused, and accepting one is a code change, not a setting), and 406 if it doesn't send `Accept: application/json, text/event-stream`. Fallback: demo with Claude Code or Codex. Don't say those were tested today: the key path was checked over plain MCP, not through each client.
 
@@ -106,4 +106,4 @@ Real: organizations, invite links and adding by email, membership, roles, shared
 
 Untested: connecting Manus itself (documented steps, not yet run in a Manus account), and MCP Apps in Claude Desktop or VS Code.
 
-Not yet: per-member credit budgets, shared question sets (questions still belong to the person who saved them), and any measurement of Manus in AI answers until those questions are run. Page search covers one manus.im page. The list of broken links isn't collected, only their count.
+Not yet: per-member credit budgets, shared question sets (questions still belong to the person who saved them), and any measurement of Manus in AI answers until those questions are run. Page search covers manus.im's 561 English pages, not its translations. The list of broken links isn't collected, only their count.
