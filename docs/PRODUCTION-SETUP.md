@@ -426,6 +426,29 @@ and no secret change. Rollback targets: frontend `6b3e0c39-aaeb-4f1d-bff4-87a26c
   version match is the evidence that they come from this build. No agent has run the new prompt as an organization
   member, and the consent card was not opened in a signed-in browser.
 
+**Report polish and admin pages** (`e799015`) followed on 12 November 2026: frontend
+`e4684668-bb7b-4daa-9663-760d680ab6ac`, backend `ebbb0331-8686-432b-8183-84f707069681` (`--keep-vars`). No migration
+and no secret change. Rollback targets: frontend `ec216c52-c7d5-46de-98c6-4be46cff4b52`, backend
+`c18fe5a0-e5af-46ca-8ddb-cc6dde594985`.
+- The floating run card is gone from every page; an invisible component keeps the same background refresh of running
+  sessions. The website report's titles follow the type scale, and its sources are ruled rows, not a grid of cards
+  ([design](../design.md)). `/admin` makes five independent reads where it made up to eleven in sequence, marks a
+  failed section "couldn't be read", and has an error boundary; the analytics page and its report route use the shared
+  session helper, and the panel names the failure by status ([product analytics](PRODUCT-ANALYTICS.md)). The
+  development sign-in now runs only when `BETTER_AUTH_URL` is a loopback origin ([local dev](LOCAL-DEV.md)).
+- Validation: typecheck, 486 unit tests, the production build and both smoke tests. Nine browser specs for the touched
+  pages ran 86 cases; all passed except `index-layout-gui`, which also fails on `9d1f2f5`. Seven cases failed on
+  local connection timeouts in the parallel run and passed when rerun alone. The full browser suite and the D1
+  integration tests were not rerun. A review found eight issues; their fixes were tested, not re-reviewed.
+- After deployment the eight pages and `/docs/api` returned 200, `/admin` and `/folio-internal/analytics` returned 404
+  without a session, the site, organization, onboarding, agent-key and analytics-report APIs returned 401, `/api/mcp`
+  returned 401 without a key, and the public benchmarks read returned 200. The scripts and styles `/websites` serves
+  contain the new sources rows and no trace of the run card. `folio_capabilities` still reported 1.10.1 and 22 tools.
+- Not checked on production: `/admin` and `/folio-internal/analytics` as a signed-in admin, and the report panel in a
+  signed-in browser. Before this release the built backend, run locally against the production database as an admin,
+  returned 500 and then hung on `/admin` before succeeding; why the pages did not open for the owner was not observed
+  directly.
+
 ### Vector store
 
 Page embeddings live in turbopuffer, not Postgres (see [embeddings](EMBEDDINGS.md)).
