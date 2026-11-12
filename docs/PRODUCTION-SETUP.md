@@ -369,6 +369,25 @@ no secret change and no API change. Rollback targets: frontend `57d01953-30b6-40
 - Not checked on production: the signed-in workspace and onboarding steps 3 to 8, which were checked locally and
   with mocked browser fixtures only. Safari and Firefox were not tested.
 
+**Connect your agent** (`dc8434f`) followed on 12 November 2026: frontend `783484fd-7671-4f5c-9a5c-add95bebc28b`,
+backend `7c33e176-31fb-4526-a425-79c1181229bf` (`--keep-vars`). No migration and no secret change. Rollback targets:
+frontend `dd8d27c7-73d2-45f5-9993-c458c0ba1f10`, backend `ad8d6d23-7a22-4dd1-a96b-11785ae940b1`.
+- The agents page lists connected agents first, with what each can do and whether it can start paid work, then the
+  ready-made prompts, then the steps for another agent. The MCP server's instructions and `folio_capabilities`
+  (`summary`, `visibleTools`, server version 1.10.0) say the same thing to the agent ([MCP](MCP.md)). API additions
+  only: `GET /api/agent-keys` also returns `connection`. No paid path, scope, limit or authentication changed.
+- Validation: typecheck, 479 unit tests, 52 D1 integration tests, the production build and both smoke tests. The
+  eight connect browser specs passed 81 cases on the final tree. The full browser suite, run one fix earlier, passed
+  536 cases and failed the same 15 that fail on `2eb2403`. The same build was served on `staging.usefolio.site`
+  first.
+- After deployment `/`, `/start`, `/orgs`, `/websites`, `/login`, `/leaderboard`, `/agents` and `/pricing` returned
+  200, the site, organization, onboarding and agent-key APIs returned 401 without a session, `/api/mcp` returned 401
+  without a key, and the public benchmarks read returned 200. `folio_capabilities`, called through an existing
+  connection with the `read` and `changes` permissions, reported version 1.10.0, the summary "can read and record
+  changes. It can't start paid work" and 22 visible tools. `/agents` references the same script files as staging.
+- Not checked on production: the signed-in agents page, creating a key, the sign-in consent page, and the prompts
+  pasted into a real agent. These were checked locally with mocked browser fixtures only.
+
 ### Vector store
 
 Page embeddings live in turbopuffer, not Postgres (see [embeddings](EMBEDDINGS.md)).
