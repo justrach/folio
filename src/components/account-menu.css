@@ -6,8 +6,8 @@
 .app-shell .account-menu .account-menu-trigger > svg { display: block; flex: none; color: var(--folio-text-muted); }
 .account-menu-trigger[aria-expanded="true"] > svg { color: var(--folio-ink); }
 @media (min-width: 761px) { .folio-workspace[data-nav-compact="true"] .account-menu .account-menu-trigger > svg { display: none; } }
-/* On phones the open navigation drawer (and its scrim) sits above the floating agent notebook (z-index 45), which
-   otherwise covered the account row at the bottom of the drawer. */
+/* On phones the open navigation drawer (and its scrim) sits above the page's other layers, so nothing covers the
+   account row at the bottom of the drawer. */
 @media (max-width: 760px) {
   .app-shell .sidebar.open { z-index: 47; }
   .app-shell .sidebar-scrim { z-index: 46; }

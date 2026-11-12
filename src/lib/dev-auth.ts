@@ -10,8 +10,10 @@ import "server-only";
  *
  * This is deliberately narrow:
  * - it is off unless `DEV_AUTH=1` is set in the local environment;
- * - it refuses to run when `BETTER_AUTH_URL` points at the deployed origin, so a
- *   copied `.dev.vars` cannot turn production into an open workspace;
+ * - it runs only when `BETTER_AUTH_URL` is a loopback origin (localhost,
+ *   127.0.0.1 or [::1], any port) and throws for anything else, including an
+ *   unset value, so a copied `.dev.vars` cannot turn a deployed app into an open
+ *   workspace;
  * - it never creates the account. Run `bun run dev:seed` first, so foreign keys
  *   and owner scoping still behave like the real thing.
  */
@@ -37,12 +39,21 @@ export type DevSession = {
   };
 };
 
+/** An allowlist, not a denylist: only http(s) on localhost, 127.0.0.1 or [::1], on any port. */
+export function isLoopbackOrigin(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return (url.protocol === "http:" || url.protocol === "https:") && ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname);
+  } catch {
+    return false;
+  }
+}
+
 export function devAuthUserId(env: Record<string, unknown> = {}): string | null {
   const enabled = (env.DEV_AUTH ?? process.env.DEV_AUTH) === "1";
   if (!enabled) return null;
-  const configured = String(env.BETTER_AUTH_URL ?? process.env.BETTER_AUTH_URL ?? "");
-  if (/usefolio\.site/i.test(configured))
-    throw new Error("DEV_AUTH must never be enabled against the deployed origin. Unset it in .dev.vars.");
+  if (!isLoopbackOrigin(String(env.BETTER_AUTH_URL ?? process.env.BETTER_AUTH_URL ?? "")))
+    throw new Error("DEV_AUTH only runs when BETTER_AUTH_URL is a loopback origin (localhost, 127.0.0.1 or [::1]). Unset it in .dev.vars.");
   const userId = String(env.DEV_AUTH_USER_ID ?? process.env.DEV_AUTH_USER_ID ?? "").trim();
   return userId || null;
 }

@@ -149,7 +149,7 @@ test("signed-in evaluation page requires configured access and never launches au
   expect(creates).toBe(0);
 });
 
-test("the activity dock distinguishes proven preparation failure from attempted creation", async ({ page }) => {
+test("a failed run is listed under Failed on the agents page and opens with its recorded error", async ({ page }) => {
   await mockAccount(page);
   const value: EvaluationRun = { ...await createDemoEvaluationRun(), id: "preparation-fixture", mode: "live", status: "failed",
     sessionId: null, result: null, events: [], error: "Fixture source capture failed.", siteName: "Private preparation fixture" };
@@ -159,13 +159,14 @@ test("the activity dock distinguishes proven preparation failure from attempted 
     if (route.request().method() === "POST") creates++;
     return route.fulfill({ json: { runs: [evaluationSummary(value)], connection, suite: EVAL_SUITE } });
   });
-  await page.goto("/visibility");
-  const dock = page.getByRole("complementary", { name: "Background agent activity", exact: true });
-  await expect(dock).toContainText("Preparation failed · inspect details");
-  value.events.push({ id: "session-create-attempt", at: value.createdAt, type: "session", title: "Fixture creation attempted" });
-  await page.reload();
-  await expect(dock).toContainText("Run failed · inspect returns");
-  await expect(dock).not.toContainText("Preparation failed");
+  await page.goto("/agents");
+  const failed = page.locator(".agent-task-group").filter({ has: page.locator(".agent-task-group-label", { hasText: "Failed" }) });
+  await expect(failed.locator(".agent-task-row")).toHaveCount(1);
+  await expect(failed.locator(".agent-task-row")).toContainText("Private preparation fixture");
+  await expect(failed.locator(".agent-task-row .eval-status")).toHaveText("Failed");
+  await expect(page.locator(".agent-detail-heading")).toContainText("Private preparation fixture");
+  await expect(page.locator(".agent-detail-heading .eval-status")).toHaveText("Failed");
+  await expect(page.locator(".agent-detail .eval-run-error")).toHaveText("Fixture source capture failed.");
   expect(creates).toBe(0);
 });
 
@@ -222,11 +223,10 @@ test("managed session starts once, follows navigation, exposes private returns, 
   await expect(page.getByRole("heading", { name: "Evaluation queued", exact: true })).toBeVisible();
   expect(creates).toEqual([{ domain: "example.com", mode: "managed" }]);
 
-  await navigate(page, "/visibility");
-  const dock = page.getByRole("complementary", { name: "Background agent activity", exact: true });
-  await expect(dock).toContainText("Private GUI source");
-  await expect(dock).toContainText("Waiting to start");
-  await dock.getByRole("link", { name: "Open agent session for Private GUI source", exact: true }).click();
+  await navigate(page, "/agents");
+  const queued = page.locator(".agent-task-row").filter({ hasText: "Private GUI source" });
+  await expect(queued.locator(".eval-status")).toHaveText("Queued");
+  await queued.click();
   await expect(page).toHaveURL(/\/agents\?run=gui-managed-evidence$/);
   await expect(page.locator(".agent-detail-heading")).toContainText("Private GUI source");
   await expect(page.locator(".eval-session-id code")).toHaveText("sess_gui_fixture");

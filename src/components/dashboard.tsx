@@ -100,7 +100,7 @@ import { LivePublicIndex } from "./live-public-index";
 import { RankedSearchTable } from "./ranked-search-table";
 import "./index-page.css";
 import { EvaluationsPanel } from "./evaluations-panel";
-import { AgentRunsPanel, AgentRunDock } from "./agent-runs-panel";
+import { AgentRunsPanel, AgentRunSync } from "./agent-runs-panel";
 import { evaluationHref, readEvaluationIntent } from "@/lib/evaluation-navigation";
 import { WebsiteSwitcher } from "./website-switcher";
 import { AccountMenu } from "./account-menu";
@@ -512,7 +512,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
         <details className="sidebar-more" open={!["overview","websites","evaluations","settings"].includes(section)}><summary className="nav-link" title="More tools"><MoreHorizontal size={17} boil/><span>More tools</span></summary><nav aria-label="More tools">{navigation.filter(item=>!["overview","websites","evaluations"].includes(item.section)).map(item=><Link key={item.section} href={item.href} title={item.label} className={`nav-link ${section===item.section?"active":""}`} aria-current={section===item.section?"page":undefined} onClick={()=>setMobileOpen(false)}><item.icon size={17} boil/><span>{item.label}</span></Link>)}<Link href="/leaderboard" title="The Folio Index" className="nav-link" onClick={()=>setMobileOpen(false)}><Trophy size={17} boil/><span>The Folio Index</span></Link><Link href="/agents" title="Your agents" className={`nav-link ${section==="agents"?"active":""}`} aria-current={section==="agents"?"page":undefined} onClick={()=>setMobileOpen(false)}><Bot size={17} boil/><span>Your agents</span></Link><Link href="/orgs" title="Organizations" className={`nav-link ${section==="orgs"?"active":""}`} aria-current={section==="orgs"?"page":undefined} onClick={()=>setMobileOpen(false)}><Building2 size={17} boil/><span>Organizations</span></Link><Link href="/docs/api" title="API reference" className="nav-link" onClick={()=>setMobileOpen(false)}><Code2 size={17} boil/><span>API reference</span></Link><Link href="/pricing" title="Plans & usage" className="nav-link" onClick={()=>setMobileOpen(false)}><BookOpen size={17} boil/><span>Plans & usage</span></Link></nav></details>
         <div className="sidebar-bottom">
           <GettingStarted userId={session?.user.id ?? null} page={section} onNavigate={() => setMobileOpen(false)} />
-          {isAdminOwner(session?.user.email) && <Link className="nav-link" href="/folio-internal/analytics" title="Product analytics"><BarChart3 size={17} boil/><span>Product analytics</span></Link>}
+          {isAdminOwner(session?.user.email) && <Link className="nav-link" href="/folio-internal/analytics" title="Product analytics" onClick={()=>setMobileOpen(false)}><BarChart3 size={17} boil/><span>Product analytics</span></Link>}
           {isAdminOwner(session?.user.email) && <Link href="/admin" title="Admin" className="nav-link" onClick={()=>setMobileOpen(false)}><ShieldCheck size={17} boil/><span>Admin</span></Link>}
           <Link
             href="/settings"
@@ -1133,7 +1133,7 @@ function WorkspaceDashboard({ section }: { section: string }) {
           )}
         </Dialog>
       )}
-      {section !== "leaderboard" && section !== "orgs" && !usageDemo && <AgentRunDock />}
+      {section !== "leaderboard" && section !== "orgs" && !usageDemo && <AgentRunSync />}
       {toast && (
         <div className="toast" role="status">
           <CheckCheck size={18} />

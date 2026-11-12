@@ -21,6 +21,6 @@ export async function readAdminAnalyticsReport(
     });
     return Response.json({...data, asOf: new Date().toISOString()}, {headers});
   } catch {
-    return Response.json({error: 'Product analytics could not be loaded. Check storage migrations.'}, {status: 503, headers});
+    return Response.json({error: 'Product analytics couldn’t be read just now.'}, {status: 503, headers});
   }
 }

@@ -5,7 +5,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight, ArrowUpRight, Bot, ChevronDown, CircleDashed, FileCheck2,
-  Loader2, LockKeyhole, Plus, RefreshCw, ShieldCheck, X,
+  Loader2, LockKeyhole, Plus, RefreshCw, ShieldCheck,
 } from "@/components/icons";
 import type { EvaluationRun } from "@/lib/evals";
 import { evaluationHref, readEvaluationIntent } from "@/lib/evaluation-navigation";
@@ -129,20 +129,12 @@ export function AgentRunsPanel() {
   </div>;
 }
 
-export function AgentRunDock() {
+/** Keeps saved sessions advancing while the person works on other pages, and renders nothing. It reads and reconciles
+ * exactly as the floating run card it replaces did: off on the pages that already poll (and on the overview), and only
+ * for a signed-in owner, which `useEvaluationWorkspace` checks. It never creates a run. */
+export function AgentRunSync() {
   const pathname = usePathname();
   const onRunPage = pathname.startsWith("/evaluations") || pathname.startsWith("/agents") || pathname.startsWith("/benchmarks") || pathname.startsWith("/overview");
-  const workspace = useEvaluationWorkspace({ enabled: !onRunPage });
-  const [dismissed, setDismissed] = useState("");
-  const [observedRun, setObservedRun] = useState<string | null>(null);
-  const active = workspace.runs.filter(activeRun);
-  const attention = workspace.runs.find((run) => run.status === "requires_action" || run.status === "failed");
-  const recentlyCompleted = workspace.runs.find((run) => run.id === observedRun && run.status === "completed");
-  const run = active[0] ?? recentlyCompleted ?? attention;
-  const preparationFailed = run?.mode === "live" && run.status === "failed" && run.sessionId === null &&
-    (run as (EvaluationRun & { preparationFailed?: boolean }) | undefined)?.preparationFailed === true;
-  const activeId = active[0]?.id ?? null;
-  useEffect(() => { if (activeId) setObservedRun(activeId); }, [activeId]);
-  if (onRunPage || !workspace.ownerId || !run || dismissed === `${run.id}:${run.status}`) return null;
-  return <aside className="agent-run-dock" aria-label="Background agent activity"><span className="agent-dock-icon">{activeRun(run) ? <Loader2 size={17} className="eval-spin" /> : <Bot size={18} />}</span><div><span className="agent-dock-label">{active.length > 1 ? `${active.length} sessions in progress` : "Your agent notebook"}</span><strong>{run.siteName || run.targetUrl}</strong><span className="agent-dock-state">{workspace.error ? "Status refresh unavailable" : run.status === "running" ? "Working in the background" : run.status === "queued" ? "Waiting to start" : run.status === "completed" ? "Report ready · inspect the evidence" : run.status === "requires_action" ? "Session needs attention" : preparationFailed ? "Preparation failed · inspect details" : "Run failed · inspect returns"}</span></div><Link href={`/agents?run=${encodeURIComponent(run.id)}`} aria-label={`Open agent session for ${run.siteName || run.targetUrl}`}><ArrowUpRight size={17} /></Link><button type="button" aria-label="Dismiss agent activity" onClick={() => setDismissed(`${run.id}:${run.status}`)}><X size={13} /></button></aside>;
+  useEvaluationWorkspace({ enabled: !onRunPage });
+  return null;
 }

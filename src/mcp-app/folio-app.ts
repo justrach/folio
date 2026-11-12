@@ -21,6 +21,8 @@ type Child = Node | string | null | undefined | false;
 const APP_VERSION = "1.1.0";
 const number = new Intl.NumberFormat("en-US");
 const KIND: Record<DataSourceKind, string> = { google: "Google’s own count", estimate: "Estimate", third_party: "Third-party record", folio: "Recorded by Folio" };
+// Sources read by kind, as on the website page: Google's own count, estimates, third-party records, then Folio's own.
+const KIND_ORDER: DataSourceKind[] = ["google", "estimate", "third_party", "folio"];
 const ICONS: Record<string, [string, Record<string, string>][]> = {
   website: [["circle", { cx: "12", cy: "12", r: "9" }], ["path", { d: "M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" }]],
   organization: [["circle", { cx: "9", cy: "8", r: "3.5" }], ["path", { d: "M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-4-6" }]],
@@ -170,9 +172,10 @@ function sources(report: WebsiteGapsReport): Child[] {
       el("p", { text: check.finding }),
       el("p", { class: "note" }, [`${check.caveat.text} `, el("button", { type: "button", class: "link", text: "Ahrefs’s study", onclick: () => openLink(check.caveat.sourceUrl) })]),
     ]),
-    (report.sources ?? []).length ? el("ul", { class: "sources", "aria-label": "Sources" }, report.sources.map(source => el("li", { class: "source", "data-source-id": source.id }, [
+    (report.sources ?? []).length ? el("ul", { class: "sources", "aria-label": "Sources" }, [...report.sources].sort((a, b) => KIND_ORDER.indexOf(a.kind) - KIND_ORDER.indexOf(b.kind)).map(source => el("li", { class: "source", "data-source-id": source.id }, [
+      el("strong", { class: "label", text: source.label }),
       el("span", { class: `kind ${source.kind}`, text: KIND[source.kind] }),
-      el("span", null, [el("strong", { text: source.label }), ` · ${source.provider}${day(source.asOf) ? ` · ${day(source.asOf)}` : ""}`]),
+      el("span", { class: "meta" }, [el("span", { text: source.provider }), day(source.asOf) && " ", day(source.asOf) && el("span", { text: `· ${day(source.asOf)}` })]),
       el("span", { class: "detail", text: source.detail })]))) : null,
   ];
 }

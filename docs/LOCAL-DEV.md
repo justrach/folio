@@ -16,7 +16,8 @@ move.
 | Login | not required — every request is already that account |
 
 Pseudo auth is `src/lib/dev-auth.ts`. It is off unless `DEV_AUTH=1` is set, it
-refuses to run when `BETTER_AUTH_URL` contains `usefolio.site`, and it never
+runs only when `BETTER_AUTH_URL` is a loopback origin (`localhost`, `127.0.0.1` or
+`[::1]`, any port) and throws for any other value or none, and it never
 creates the account — `bun run dev:seed` does, so owner scoping and foreign keys
 still behave like production. No token, cookie, or OAuth round trip is involved.
 
@@ -80,8 +81,8 @@ saved sites, read a report, or start an explicit run against the local app.
 
 - `DEV_AUTH` lives only in `.dev.vars`, which Wrangler never uploads. Worker
   secrets are set separately (`wrangler secret put`).
-- The guard throws if the configured `BETTER_AUTH_URL` is the deployed origin, so
-  copying this file onto a deployed config fails loudly instead of opening the
+- The guard throws unless the configured `BETTER_AUTH_URL` is a loopback origin,
+  so copying this file onto a deployed config fails loudly instead of opening the
   workspace.
 - The dev account is a normal row in `"user"`. Delete it with
   `DELETE FROM "user" WHERE id = 'dev-local-user'`; saves, scans, runs and

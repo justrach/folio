@@ -33,7 +33,7 @@ function fixtureHtml(value: PublicSearchObservation) {
   </main></body></html>`;
 }
 
-test("Index has one compact view selector and does not mount the private activity dock", async ({ page }, testInfo) => {
+test("Index has one compact view selector", async ({ page }, testInfo) => {
   const writes: string[] = [];
   const pageErrors: string[] = [];
   const reads: string[] = [];
@@ -48,7 +48,6 @@ test("Index has one compact view selector and does not mount the private activit
   await expect(page.getByRole("heading", { name: "The Folio Index", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Sample rankings", exact: true })).toHaveCount(1);
   await expect(page.getByRole("group", { name: "Evaluation view", exact: true })).toHaveCount(1);
-  await expect(page.getByRole("complementary", { name: "Background agent activity" })).toHaveCount(0);
   await page.getByRole("button",{name:"Sample rankings",exact:true}).click();
   await expect(page.locator(".ranked-search-query")).toBeVisible();
   const headingSize = await page.locator("h1").evaluate(element => parseFloat(getComputedStyle(element).fontSize));

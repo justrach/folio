@@ -40,7 +40,7 @@ function readRecentRuns(value: unknown, target: string | null): RecentEvaluation
   return (runs as RecentEvaluation[]).filter(run => !target || normalizedTarget(run.targetUrl) === target).sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)).slice(0, 3);
 }
 
-/** A saved-state preview only. The separate agent dock reconciles provider sessions. */
+/** A saved-state preview only. Provider sessions are reconciled by the agents and evaluations pages and, on other workspace pages, by `AgentRunSync`. */
 export function WorkspaceEvaluationSummary({ initialTargetUrl, filterTargetUrl }: { initialTargetUrl?: string; filterTargetUrl?: string }) {
   const { data: session, isPending } = useSession();
   const ownerId = session?.user.id ?? null;

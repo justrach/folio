@@ -14,7 +14,8 @@ remains at the edge, with backend HTTP calls using the service binding.
 `folio-frontend-preview` serves the generated OpenNext UI on its Workers URL.
 The `production` environment deploys `folio-frontend` in front of the existing
 `usefolio.site` custom-domain application. It forwards `/api` and `/api/*`
-requests unchanged through the `FOLIO_BACKEND` service binding. Authentication,
+requests unchanged through the `FOLIO_BACKEND` service binding, and does the same
+for the internal pages `/admin`, `/folio-internal` and `/folio-internal/*`. Authentication,
 cookies, record ownership, provider limits and database operations remain in
 `folio-visibility`; the frontend receives no database binding or provider secrets.
 No migration or production record copy is required for a presentation release.

@@ -3,8 +3,8 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { isAdmin } from "@/lib/admin";
-import { adminOverview } from "@/lib/admin-data";
-import { revenueSummary } from "@/lib/stripe-revenue";
+import { adminOverview, type AdminOverview } from "@/lib/admin-data";
+import { revenueSummary, type RevenueSummary } from "@/lib/stripe-revenue";
 import { RevenueGlobe } from "@/components/revenue-globe";
 import "./admin.css";
 
@@ -28,13 +28,31 @@ function when(value: string | null): string {
   return date.toLocaleDateString();
 }
 
+const UNREAD = "couldn’t be read";
+const unreadable = (columns: number) => <tr><td colSpan={columns} className="admin-unavailable">{UNREAD}</td></tr>;
+
+/** Reads that fail become a note on the page, never a 500: an admin should still see what could be read. */
+async function readOverview(): Promise<AdminOverview | null> {
+  try { return await adminOverview(); } catch (error) {
+    console.error("admin page: overview couldn't be read", error instanceof Error ? error.message : error);
+    return null;
+  }
+}
+async function readRevenue(): Promise<RevenueSummary | null> {
+  try { return await revenueSummary(30); } catch (error) {
+    console.error("admin page: revenue couldn't be read", error instanceof Error ? error.message : error);
+    return null;
+  }
+}
+
 export default async function AdminPage() {
   const session = await getSession(await headers());
   // A non-admin gets the same 404 as a signed-out visitor: the page does not
   // advertise that it exists.
   if (!session || !isAdmin(session.user.email)) notFound();
 
-  const [data, revenue] = await Promise.all([adminOverview(), revenueSummary(30)]);
+  const [data, revenue] = await Promise.all([readOverview(), readRevenue()]);
+  const missing = data && ([data.index, data.queue, data.priorities, data.storage.databaseBytes, data.storage.tableBytes, data.crawl].some(part => part === null) || data.vectors.state === "unavailable");
 
   return (
     <main className="admin">
@@ -45,32 +63,34 @@ export default async function AdminPage() {
         <p>Signed in as {session.user.email}. This page is limited to the owner accounts and is not indexed.</p>
       </header>
 
-      <RevenueGlobe summary={revenue} />
+      {revenue ? <RevenueGlobe summary={revenue} /> : <p className="admin-alert" role="alert">Revenue couldn’t be read just now. Reload to try again.</p>}
 
+      {!data ? <p className="admin-alert" role="alert">Index and crawl figures couldn’t be read just now. Reload to try again.</p> : <>
+      {missing && <p className="admin-alert" role="status">Some figures couldn’t be read just now and are marked below. Reload to try again.</p>}
       <section className="admin-grid">
         <div className="admin-card">
           <span>Pages indexed</span>
-          <strong>{data.index.pages.toLocaleString()}</strong>
-          <small>{data.index.domains} organisations · newest {when(data.index.updatedAt)}</small>
+          <strong>{data.index ? data.index.pages.toLocaleString() : "—"}</strong>
+          <small>{data.index ? `${data.index.domains.toLocaleString()} organisations · newest ${when(data.index.updatedAt)}` : UNREAD}</small>
         </div>
         <div className="admin-card">
           <span>Vectors (turbopuffer)</span>
           <strong>{data.vectors.rows === null ? "—" : data.vectors.rows.toLocaleString()}</strong>
           <small>
-            {data.vectors.namespace} · {bytes(data.vectors.bytes)} · index {data.vectors.indexStatus ?? "unknown"}
+            {data.vectors.state === "unavailable" ? UNREAD : `${data.vectors.namespace} · ${bytes(data.vectors.bytes)} · index ${data.vectors.indexStatus ?? "unknown"}`}
           </small>
         </div>
         <div className="admin-card">
           <span>Queue</span>
-          <strong>{data.queue.unread.toLocaleString()}</strong>
+          <strong>{data.queue ? data.queue.unread.toLocaleString() : "—"}</strong>
           <small>
-            {data.queue.extracted.toLocaleString()} extracted · {data.queue.failed.toLocaleString()} failed · {data.queue.total.toLocaleString()} known
+            {data.queue ? `${data.queue.extracted.toLocaleString()} extracted · ${data.queue.failed.toLocaleString()} failed · ${data.queue.total.toLocaleString()} known` : UNREAD}
           </small>
         </div>
         <div className="admin-card">
           <span>Database</span>
           <strong>{bytes(data.storage.databaseBytes)}</strong>
-          <small>Postgres, all schemas</small>
+          <small>{data.storage.databaseBytes === null ? UNREAD : "Postgres, all schemas"}</small>
         </div>
       </section>
 
@@ -80,10 +100,10 @@ export default async function AdminPage() {
           <tbody>
             <tr><td>Namespace</td><td>{data.vectors.namespace}</td></tr>
             <tr><td>Region</td><td>{data.vectors.region}</td></tr>
-            <tr><td>Rows</td><td>{data.vectors.rows === null ? "unavailable (no key or timeout)" : data.vectors.rows.toLocaleString()}</td></tr>
+            <tr><td>Rows</td><td>{data.vectors.state === "no_key" ? "unavailable (no key)" : data.vectors.state === "unavailable" ? UNREAD : data.vectors.rows === null ? "unknown" : data.vectors.rows.toLocaleString()}</td></tr>
             <tr><td>Logical bytes</td><td>{bytes(data.vectors.bytes)}</td></tr>
             <tr><td>Index status</td><td>{data.vectors.indexStatus ?? "unknown"}</td></tr>
-            <tr><td>Embeddings recorded</td><td>{data.index.embedded.toLocaleString()}</td></tr>
+            <tr><td>Embeddings recorded</td><td>{data.index ? data.index.embedded.toLocaleString() : UNREAD}</td></tr>
           </tbody>
         </table>
       </section>
@@ -93,11 +113,13 @@ export default async function AdminPage() {
         <table>
           <thead><tr><th>State</th><th className="num">URLs</th></tr></thead>
           <tbody>
-            <tr><td>Never fetched</td><td className="num">{data.queue.unread.toLocaleString()}</td></tr>
-            <tr><td>Extracted</td><td className="num">{data.queue.extracted.toLocaleString()}</td></tr>
-            <tr><td>Failed</td><td className="num">{data.queue.failed.toLocaleString()}</td></tr>
-            <tr><td>Fetched in the last 24h</td><td className="num">{(data.crawl.last24h ?? 0).toLocaleString()}</td></tr>
-            <tr><td>Newest page</td><td className="num">{when(data.crawl.latestFetchedAt)}</td></tr>
+            {data.queue ? <>
+              <tr><td>Never fetched</td><td className="num">{data.queue.unread.toLocaleString()}</td></tr>
+              <tr><td>Extracted</td><td className="num">{data.queue.extracted.toLocaleString()}</td></tr>
+              <tr><td>Failed</td><td className="num">{data.queue.failed.toLocaleString()}</td></tr>
+            </> : <tr><td>Queue states</td><td className="num admin-unavailable">{UNREAD}</td></tr>}
+            <tr><td>Fetched in the last 24h</td><td className={data.crawl ? "num" : "num admin-unavailable"}>{data.crawl ? data.crawl.last24h.toLocaleString() : UNREAD}</td></tr>
+            <tr><td>Newest page</td><td className={data.crawl ? "num" : "num admin-unavailable"}>{data.crawl ? when(data.crawl.latestFetchedAt) : UNREAD}</td></tr>
           </tbody>
         </table>
       </section>
@@ -108,10 +130,10 @@ export default async function AdminPage() {
         <table>
           <thead><tr><th>Verdict</th><th className="num">Domains</th><th className="num">Pending URLs</th></tr></thead>
           <tbody>
-            {data.priorities.map(row => (
+            {data.priorities === null ? unreadable(3) : data.priorities.length === 0 ? <tr><td colSpan={3}>No domains rated yet.</td></tr> : data.priorities.map(row => (
               <tr key={row.verdict}>
                 <td>{row.verdict}</td>
-                <td className="num">{(row.domains ?? 0).toLocaleString()}</td>
+                <td className="num">{row.domains.toLocaleString()}</td>
                 <td className="num">{(row.pending ?? 0).toLocaleString()}</td>
               </tr>
             ))}
@@ -124,12 +146,13 @@ export default async function AdminPage() {
         <table>
           <thead><tr><th>Table</th><th className="num">Size</th></tr></thead>
           <tbody>
-            {data.storage.tableBytes.map(row => (
+            {data.storage.tableBytes === null ? unreadable(2) : data.storage.tableBytes.length === 0 ? <tr><td colSpan={2}>No tables in the research schema.</td></tr> : data.storage.tableBytes.map(row => (
               <tr key={row.name}><td><code>{row.name}</code></td><td className="num">{bytes(row.bytes)}</td></tr>
             ))}
           </tbody>
         </table>
       </section>
+      </>}
 
       <footer>
         <span>Allowlist: rachxpradhan@gmail.com · yuxilim22@gmail.com (plus <code>ADMIN_EMAILS</code> when set).</span>

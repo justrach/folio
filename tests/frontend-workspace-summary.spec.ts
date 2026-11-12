@@ -175,3 +175,22 @@ test("loading and late responses cannot restore one owner's summary after logout
   expect(state.nonReadEvaluations).toEqual([]);
   expect(state.otherApiWrites).toEqual([]);
 });
+
+test("the summary tells a run that failed before any session apart from one whose creation was attempted", async ({ page }) => {
+  const { completed } = await makeRuns();
+  const prepared: EvaluationRun = { ...completed, id: "summary-preparation", siteName: "Preparation private review", status: "failed",
+    sessionId: null, result: null, events: [], error: "Fixture source capture failed." };
+  const attempted: EvaluationRun = { ...prepared, id: "summary-attempted", siteName: "Attempted private review", createdAt: "2026-09-12T08:00:00.000Z",
+    events: [{ id: "session-create-attempt", at: timestamp, type: "session", title: "Fixture creation attempted" }] };
+  const state = await fixture(page, [prepared, attempted]);
+  await page.goto("/overview?view=workspace");
+  const summary = page.getByRole("region", { name: "Workspace evaluations", exact: true });
+  const preparation = summary.getByRole("listitem").filter({ hasText: "Preparation private review" });
+  await expect(preparation.locator(".wes-status")).toHaveText("Capture preparation failed");
+  await expect(preparation).toContainText("The page could not be prepared; no agent session was created.");
+  const creation = summary.getByRole("listitem").filter({ hasText: "Attempted private review" });
+  await expect(creation.locator(".wes-status")).toHaveText("Failed");
+  await expect(creation).toContainText("No verified result saved");
+  await expect(creation).not.toContainText("preparation failed");
+  expect(state.nonReadEvaluations).toEqual([]);
+});

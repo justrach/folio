@@ -17,3 +17,5 @@
 .admin code { font-family: var(--folio-font-mono); font-size: 12px; }
 .admin footer { color: var(--folio-text-muted); font-size: 12px; margin-top: 28px; }
 @media (max-width: 760px) { .admin-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.admin-alert { border: 1px solid var(--folio-edge-strong); border-radius: 10px; color: var(--folio-ink); font-size: 14px; margin: 0 0 16px; padding: 12px 16px; }
+.admin td.admin-unavailable { color: var(--folio-text-muted); }

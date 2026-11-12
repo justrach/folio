@@ -17,6 +17,8 @@ const path = (url: string | null) => { if (!url) return null; try { const parsed
 const BANDS: { id: GoogleBand; label: string }[] = [{ id: "top3", label: "Top 3" }, { id: "page1", label: "Rest of page 1" }, { id: "page2", label: "Page 2" }, { id: "deeper", label: "Page 3 or later" }];
 const SEVERITY = { high: "High priority", medium: "Worth fixing", low: "Minor" } as const;
 const KIND: Record<DataSourceKind, string> = { google: "Google’s own count", estimate: "Estimate", third_party: "Third-party record", folio: "Recorded by Folio" };
+// The list reads by kind: Google's own count, then estimates, then third-party records, then what Folio recorded itself.
+const KIND_ORDER: DataSourceKind[] = ["google", "estimate", "third_party", "folio"];
 const approx = (value: number) => value > 0 && value < 1 ? "under 1" : count(Math.round(value));
 
 /** Where each number comes from, and the visits estimate beside Google's own count when the owner has imported it. */
@@ -25,24 +27,27 @@ function NumberSources({ report }: { report: WebsiteGapsReport }) {
   if (!check) return null;
   const google = check.searchConsole, estimate = check.estimate;
   const top = Math.max(google?.monthlyClicks ?? 0, estimate?.monthlyVisits ?? 0, 1);
+  const ordered = [...sources].sort((a, b) => KIND_ORDER.indexOf(a.kind) - KIND_ORDER.indexOf(b.kind));
   return <section className="wv-sources" aria-labelledby="wv-sources-title">
     <h3 id="wv-sources-title">Where these numbers come from</h3>
     <p className="wv-meta">Folio combines third-party data providers with its own index of AI answers and crawled pages.</p>
     <div className={`wv-check is-${check.state}`}>
       <p className="wv-check-title">{check.state === "compared" ? "The estimate beside Google’s own count" : "Search visits"}</p>
       {check.state === "compared" && google && estimate && <dl className="wv-check-bars">
-        <div><dt>Google Search Console<small>{google.scope === "united_states" ? "US clicks" : "clicks, all countries"} · {day(google.endDate)}</small></dt>
+        <div><dt>Google Search Console<small><span>{google.scope === "united_states" ? "US clicks" : "clicks, all countries"}</span> <span>· {day(google.endDate)}</span></small></dt>
           <dd><span className="wv-check-bar is-google" style={{ width: `${Math.max(1, 100 * google.monthlyClicks / top)}%` }} /><b>{count(google.monthlyClicks)}/mo</b></dd></div>
-        <div><dt>Third-party estimate<small>Search data provider, US{day(estimate.fetchedAt) ? ` · ${day(estimate.fetchedAt)}` : ""}</small></dt>
+        <div><dt>Third-party estimate<small><span>Search data provider, US</span>{day(estimate.fetchedAt) && <> <span>· {day(estimate.fetchedAt)}</span></>}</small></dt>
           <dd><span className="wv-check-bar is-estimate" style={{ width: `${Math.max(1, 100 * estimate.monthlyVisits / top)}%` }} /><b>{approx(estimate.monthlyVisits)}/mo</b></dd></div>
       </dl>}
       <p>{check.finding}</p>
       {check.state === "estimate_only" && report.website.access !== "organization" && <Link className="wv-inline-link" href="/search-console">Import from Search Console<ArrowUpRight size={13} aria-hidden="true" /></Link>}
       <p className="wv-caveat">{check.caveat.text} <a href={check.caveat.sourceUrl} target="_blank" rel="noopener noreferrer">Ahrefs’s study<ArrowUpRight size={12} aria-hidden="true" /></a></p>
     </div>
-    {sources.length > 0 && <ul className="wv-source-list">{sources.map(source => <li key={source.id} data-source-id={source.id}>
+    {ordered.length > 0 && <ul className="wv-source-list">{ordered.map(source => <li key={source.id} data-source-id={source.id}>
+      <strong className="wv-source-label">{source.label}</strong>
       <span className={`wv-kind is-${source.kind}`}>{KIND[source.kind]}</span>
-      <div><strong>{source.label}</strong><span className="wv-source-meta">{source.provider}{day(source.asOf) ? ` · ${day(source.asOf)}` : ""}</span><p>{source.detail}</p></div>
+      <span className="wv-source-meta"><span>{source.provider}</span>{day(source.asOf) && <> <span>· {day(source.asOf)}</span></>}</span>
+      <p>{source.detail}</p>
     </li>)}</ul>}
   </section>;
 }
@@ -70,7 +75,7 @@ export function WebsiteVisibility({ websiteId, refresh = 0 }: { websiteId: strin
   const error = state.key === key ? state.error : null;
   // The placeholder holds the report's shape, so the page below doesn't jump when the report arrives.
   if (!report) return <section className="panel website-visibility" aria-label="Where this website shows up" aria-busy={!error}>
-    <h2>Where it shows up</h2>{error ? <p role="alert">{error}</p> : <><p role="status"><InkSpinner />Loading where this website shows up…</p>
+    <h2 className="wv-title">Where it shows up</h2>{error ? <p role="alert">{error}</p> : <><p role="status"><InkSpinner />Loading where this website shows up…</p>
       <div className="wv-skeleton" aria-hidden="true"><span /><span /><span /></div></>}
   </section>;
 
@@ -79,9 +84,13 @@ export function WebsiteVisibility({ websiteId, refresh = 0 }: { websiteId: strin
   const maxVolume = Math.max(1, ...google.searches.map(item => item.searchVolume ?? 0));
   const read = crawl.pagesCrawled !== null && crawl.inventoryPages ? Math.min(1, crawl.pagesCrawled / crawl.inventoryPages) : null;
   const maxSection = Math.max(1, ...crawl.topSections.map(item => item.pages));
+  // Bars that are all (nearly) the same length say nothing, so even sections are listed compactly without them.
+  // Even means the largest and smallest differ by at most a tenth of the largest, on the raw counts; all zeros are even.
+  const sectionPages = crawl.topSections.map(item => item.pages), largestSection = Math.max(0, ...sectionPages);
+  const evenSections = sectionPages.length < 2 || 10 * (largestSection - Math.min(...sectionPages)) <= largestSection;
   return <section className="panel website-visibility" aria-label={`Where ${website.domain} shows up`}>
     <header className="wv-head">
-      <h2>Where it shows up</h2>
+      <h2 className="wv-title">Where it shows up</h2>
       {website.access === "organization" && <p className="wv-shared">Shared with you through {website.organizations.map(item => item.name).join(", ")}. Reports are the sharing member’s saved data.</p>}
       <p className="wv-summary">{report.summary}</p>
     </header>
@@ -136,8 +145,8 @@ export function WebsiteVisibility({ websiteId, refresh = 0 }: { websiteId: strin
           <div className="wv-stat"><strong>{count(crawl.pagesCrawled ?? 0)}</strong><span>{crawl.inventoryPages ? `of ${count(crawl.inventoryPages)} pages in its sitemaps` : "pages read"}</span></div>
           {read !== null && <div className="wv-progress" role="img" aria-label={`${Math.round(read * 1000) / 10}% of its pages read`}><span style={{ width: `${Math.max(1, read * 100)}%` }} /></div>}
           {crawl.topSections.length > 0 && <><p className="wv-subhead">Largest sections in its sitemaps</p>
-            <ul className="wv-sections">{crawl.topSections.map(item => <li key={item.path}><span className="wv-page">{item.path}</span>
-              <span className="wv-bar" aria-hidden="true"><span style={{ width: `${100 * item.pages / maxSection}%` }} /></span><span>{count(item.pages)}</span></li>)}</ul></>}
+            <ul className={evenSections ? "wv-sections is-even" : "wv-sections"}>{crawl.topSections.map(item => <li key={item.path}><span className="wv-page">{item.path}</span>
+              {!evenSections && <span className="wv-bar" aria-hidden="true"><span style={{ width: `${100 * item.pages / maxSection}%` }} /></span>}<span>{count(item.pages)}</span></li>)}</ul></>}
         </> : <p className="wv-empty">{crawl.state === "unavailable" ? "Folio’s crawl couldn’t be read right now." : "Folio hasn’t read this website yet."}</p>}
       </section>
     </div>
